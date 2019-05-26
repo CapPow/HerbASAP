@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>700</width>
+    <width>705</width>
     <height>627</height>
    </rect>
   </property>
@@ -28,7 +28,20 @@
         <string>Auto Post Processing</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_16">
-        <item row="1" column="0">
+        <item row="0" column="0">
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QPushButton" name="pushButton_close">
@@ -59,18 +72,12 @@
           </item>
          </layout>
         </item>
-        <item row="0" column="0">
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
+        <item row="1" column="0">
+         <widget class="QPushButton" name="pushButton_testFunction">
+          <property name="text">
+           <string>testFunction</string>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -89,7 +96,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>658</width>
+             <width>663</width>
              <height>513</height>
             </rect>
            </property>
@@ -319,9 +326,9 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>0</y>
-               <width>641</width>
-               <height>853</height>
+               <y>-163</y>
+               <width>646</width>
+               <height>860</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -621,24 +628,64 @@
                  <bool>false</bool>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_7">
-                 <item row="0" column="0">
-                  <widget class="QCheckBox" name="checkBox_vignettingCorrection">
-                   <property name="text">
-                    <string>Vignetting correction</string>
-                   </property>
-                  </widget>
+                 <item row="5" column="1">
+                  <layout class="QHBoxLayout" name="horizontalLayout">
+                   <item>
+                    <widget class="QLabel" name="label_2">
+                     <property name="text">
+                      <string>Approximate focal distance to subject</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QDoubleSpinBox" name="doubleSpinBox_focalDistance">
+                     <property name="suffix">
+                      <string>cm</string>
+                     </property>
+                     <property name="minimum">
+                      <double>10.000000000000000</double>
+                     </property>
+                     <property name="maximum">
+                      <double>999.990000000000009</double>
+                     </property>
+                     <property name="value">
+                      <double>25.500000000000000</double>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_3">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
                  </item>
-                 <item row="1" column="0">
+                 <item row="5" column="0">
                   <widget class="QCheckBox" name="checkBox_distortionCorrection">
                    <property name="text">
                     <string>Distortion correction</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="0">
+                 <item row="4" column="0">
                   <widget class="QCheckBox" name="checkBox_chromaticAberrationCorrection">
                    <property name="text">
                     <string>Chromatic Aberration correction</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="0">
+                  <widget class="QCheckBox" name="checkBox_vignettingCorrection">
+                   <property name="text">
+                    <string>Vignetting correction</string>
                    </property>
                   </widget>
                  </item>
@@ -796,7 +843,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>700</width>
+     <width>705</width>
      <height>22</height>
     </rect>
    </property>
@@ -844,9 +891,6 @@
   <tabstop>comboBox_colorCheckerPosition</tabstop>
   <tabstop>checkBox_performWhiteBalance</tabstop>
   <tabstop>group_equipmentDetection</tabstop>
-  <tabstop>checkBox_vignettingCorrection</tabstop>
-  <tabstop>checkBox_distortionCorrection</tabstop>
-  <tabstop>checkBox_chromaticAberrationCorrection</tabstop>
   <tabstop>group_metaDataApplication</tabstop>
   <tabstop>plainTextEdit_collectionName</tabstop>
   <tabstop>pushButton_beginMonitoring</tabstop>
@@ -867,7 +911,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>431</x>
-     <y>185</y>
+     <y>22</y>
     </hint>
     <hint type="destinationlabel">
      <x>381</x>
@@ -883,7 +927,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>268</x>
-     <y>233</y>
+     <y>70</y>
     </hint>
     <hint type="destinationlabel">
      <x>503</x>
@@ -899,7 +943,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>356</x>
-     <y>354</y>
+     <y>191</y>
     </hint>
     <hint type="destinationlabel">
      <x>604</x>
@@ -915,7 +959,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>312</x>
-     <y>397</y>
+     <y>234</y>
     </hint>
     <hint type="destinationlabel">
      <x>255</x>
@@ -931,7 +975,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>56</x>
-     <y>335</y>
+     <y>172</y>
     </hint>
     <hint type="destinationlabel">
      <x>341</x>
@@ -947,7 +991,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>101</x>
-     <y>432</y>
+     <y>269</y>
     </hint>
     <hint type="destinationlabel">
      <x>158</x>
@@ -963,7 +1007,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>163</x>
-     <y>492</y>
+     <y>329</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -979,7 +1023,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>83</x>
-     <y>516</y>
+     <y>356</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -995,7 +1039,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>100</x>
-     <y>552</y>
+     <y>396</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -1011,7 +1055,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>80</x>
-     <y>611</y>
+     <y>455</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -1027,7 +1071,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>612</x>
-     <y>658</y>
+     <y>502</y>
     </hint>
     <hint type="destinationlabel">
      <x>698</x>
@@ -1043,7 +1087,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>572</x>
-     <y>724</y>
+     <y>568</y>
     </hint>
     <hint type="destinationlabel">
      <x>699</x>
@@ -1059,7 +1103,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>585</x>
-     <y>777</y>
+     <y>621</y>
     </hint>
     <hint type="destinationlabel">
      <x>699</x>
@@ -1075,7 +1119,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>599</x>
-     <y>829</y>
+     <y>673</y>
     </hint>
     <hint type="destinationlabel">
      <x>697</x>
@@ -1091,7 +1135,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>606</x>
-     <y>880</y>
+     <y>724</y>
     </hint>
     <hint type="destinationlabel">
      <x>698</x>
@@ -1331,7 +1375,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>356</x>
-     <y>185</y>
+     <y>22</y>
     </hint>
     <hint type="destinationlabel">
      <x>695</x>
@@ -1347,7 +1391,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>445</x>
-     <y>181</y>
+     <y>18</y>
     </hint>
     <hint type="destinationlabel">
      <x>697</x>
@@ -1363,7 +1407,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>400</x>
-     <y>232</y>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
      <x>692</x>
@@ -1379,7 +1423,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>281</x>
-     <y>101</y>
+     <y>-62</y>
     </hint>
     <hint type="destinationlabel">
      <x>696</x>
@@ -1395,11 +1439,91 @@
    <hints>
     <hint type="sourcelabel">
      <x>96</x>
-     <y>152</y>
+     <y>-11</y>
     </hint>
     <hint type="destinationlabel">
      <x>265</x>
      <y>22</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_testFunction</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>testFunction()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>571</x>
+     <y>538</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>694</x>
+     <y>542</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_distortionCorrection</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>label_2</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>232</x>
+     <y>360</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>470</x>
+     <y>361</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_distortionCorrection</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>doubleSpinBox_focalDistance</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>130</x>
+     <y>359</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>546</x>
+     <y>366</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_focalDistance</sender>
+   <signal>editingFinished()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>saveSettings()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>527</x>
+     <y>353</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>697</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_focalDistance</sender>
+   <signal>editingFinished()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>updateEqSettings()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>510</x>
+     <y>354</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>700</x>
+     <y>418</y>
     </hint>
    </hints>
   </connection>
@@ -1409,5 +1533,7 @@
   <slot>setFolderPath()</slot>
   <slot>updateCatalogNumberPreviews()</slot>
   <slot>testFeatureCompatability()</slot>
+  <slot>testFunction()</slot>
+  <slot>updateEqSettings()</slot>
  </slots>
 </ui>

@@ -37,10 +37,12 @@ import lensfunpy
 import piexif
 import rawpy
 from rawpy import LibRawNonFatalError
+#from PIL import Image
 import cv2
 # internal libs
 from ui.postProcessingUI import Ui_MainWindow
 from libs.bcRead import bcRead
+from libs.eqRead import eqRead
 
 class appWindow(QMainWindow):
     def __init__(self):
@@ -59,6 +61,10 @@ class appWindow(QMainWindow):
         # fill in the previews
         self.updateCatalogNumberPreviews()
         self.bcRead = bcRead(parent=self.mainWindow)
+        self.eqRead = eqRead(parent=self.mainWindow)
+        # assign applicable user settings for eqRead. 
+        # this function is here, for ease of slot assignment in pyqt designer
+        self.updateEqSettings()
 
 #        self.versionCheck()
 
@@ -122,9 +128,21 @@ class appWindow(QMainWindow):
 #        self.parent.w.label_zoomLevel.setText(f'{str(valueToSet).rjust(4," ")}%')  # update the label
 #        self.settings.setValue('value_zoomLevel', valueToSet)  # update settings
 
+    def testFunction(self):
+        """ a development assistant function, connected to a GUI button
+        used to test various functions before complete GUI integration."""
+
+        imgPath, _ = QtWidgets.QFileDialog.getOpenFileName(
+                None, "Open Sample Image", QtCore.QDir.homePath())
+        # open the file
+        im = self.openImageFile(imgPath)
+        # call eqRead's lens correction
+        cv2.imwrite('origImg.jpg', im)
+        correctedImg = self.eqRead.lensCorrect(im, imgPath)
+        cv2.imwrite('alteredImg.jpg', correctedImg)
 
     def openImageFile(self, imgPath):
-        """ given an image path, attempts to return an openCV image object """
+        """ given an image path, attempts to return a numpy array image object """
         # use rawpy to convert raw to openCV
         try:
             with rawpy.imread(imgPath) as raw:
@@ -136,19 +154,49 @@ class appWindow(QMainWindow):
         return im
 
     def testFeatureCompatability(self):
-        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(
+        """ called by the "pushButton_selectTestImage."
+            
+            given image path input from the user, calls testFeature() for
+            each process class. Enabling passing groups, while disabling 
+            failing groups.
+            
+            Ideally, the user will select an example image from their 
+            imaging setup and the available features will become available."""
+        
+        imgPath, _ = QtWidgets.QFileDialog.getOpenFileName(
                 None, "Open Sample Image", QtCore.QDir.homePath())
-        im = self.openImageFile(fileName)
+
+        try:
+            im = self.openImageFile(imgPath)
+            bcStatus = self.bcRead.testFeature(im)
+            #ccStatus = self.colorChecker.testFeature(im)
+            eqStatus = self.eqRead.testFeature(imgPath)
+        except Exception as e:
+            # TODO add user notify for this error.
+            print(e)
+            bcStatus = False
+            ccStatus = False
+            eqStatus = False 
         
-        bcStatus = self.bcRead.testFeature(im)
         self.mainWindow.group_barcodeDetection.setEnabled(bcStatus)
-        
-        #ccStatus = self.colorChecker.testFeature(im)
         #self.mainWindow.group_colorCheckerDetection.setEnabled(ccStatus)
-        
-        #eqStatus = self.equipDetect.testFeature(im)
-        #self.mainWindow.group_equipmentDetection.setEnabled(eqStatus)
-        
+        self.mainWindow.group_equipmentDetection.setEnabled(eqStatus)
+
+    def updateEqSettings(self):
+        """ called when a change is made to any appropriate fields in 
+        equipment detection group. Updates the eqRead class' properties.
+        This avoids having to read from the UI each time a eqRead function is
+        called."""
+
+        cmDistance = self.mainWindow.doubleSpinBox_focalDistance.value()
+        mDistance = cmDistance / 100
+        # set focal distance for distortion correction
+        self.eqRead.mDistance = mDistance
+
+        # set preferences for equipment detection group processes
+        self.eqRead.vignettingCorrection = self.mainWindow.checkBox_vignettingCorrection.isChecked()
+        self.eqRead.distortionCorrection = self.mainWindow.checkBox_distortionCorrection.isChecked()
+        self.eqRead.chromaticAberrationCorrection = self.mainWindow.checkBox_chromaticAberrationCorrection.isChecked()
 
     def updateCatalogNumberPreviews(self):
         """ called when a change is made to any of the appropriate fields in 
@@ -323,6 +371,10 @@ class appWindow(QMainWindow):
         # QSpinBox
         spinBox_catalogDigits = int(self.get('spinBox_catalogDigits', 6))
         self.mainWindow.spinBox_catalogDigits.setValue(spinBox_catalogDigits)
+        
+        # QDoubleSpinBox
+        doubleSpinBox_focalDistance = float(self.get('doubleSpinBox_focalDistance', 25.5))
+        self.mainWindow.doubleSpinBox_focalDistance.setValue(doubleSpinBox_focalDistance)
 
         # slider
         #value_LogoScaling = int(self.get('value_LogoScaling', 100))
@@ -424,7 +476,11 @@ class appWindow(QMainWindow):
         # QSpinBox
         spinBox_catalogDigits = self.mainWindow.spinBox_catalogDigits.value()
         self.settings.setValue('spinBox_catalogDigits', spinBox_catalogDigits)
-
+        
+        # QDoubleSpinBox
+        doubleSpinBox_focalDistance = self.mainWindow.doubleSpinBox_focalDistance.value()
+        self.settings.setValue('doubleSpinBox_focalDistance', doubleSpinBox_focalDistance)
+        
         # slider
         #value_LogoScaling = self.mainWindow.value_LogoScaling.value()
         #self.settings.setValue('value_LogoScaling', value_LogoScaling)
