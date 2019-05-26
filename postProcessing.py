@@ -1,247 +1,445 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Thu May  2 16:12:33 2019
 
-@author: Caleb Powell
-
-A starting point for a GUI automating image post processing in natural history
-digitization efforts. The program is expected to be a user interface for 
-setting preferences including: 
-
-    - which post-processing functions to use 
-        > i.e., should it rename files based on barcode values
-    - how to use them
-        > i.e., what is the barcode pattern to match on
-    - where to look for unprocesesd images
-        > i.e., where are the images going after being taken
-    - what do do with processed images
-        > i.e., where to save processed images, and in what format
-        
-In addition to setting preferences, predominately displayed on the GUI should
-be a button to start monitoring a folder for post-processing. This should be
-run while imaging is going on. The program will monitor a predetermined folder 
-for new images, which need processed and process them as they're being created.
-
-It may be ideal for it to always clear out the folder it is monitoring. This 
-way backlogged postprocessing may also be cleared if the program was started 
-later. This program will prevent collections managers from having to perform 
-time intensive post processing.
-
-Features in demand for such a program are:
-    - rename file based on a barcode value present in image
-        > functions exist, requires GUI elements, testing
-    - correct lens aberration correction
-        > functions exist, requires GUI elements, testing
-    - load raw formats (.cr2), save into interoperable (.jpg, .tiff) formats.
-        > functions exist, requires GUI elements, testing
-    - apply exif data
-        > no functions, capacity exists in piexif library.
-    - image orientation (correct rotation)
-        > assume color chip location is static, use GUI to select that location
-        > no functions, requires color chip detection, GUI elements, testing
-    - white balance
-        > no functions, requires color chip detection, GUI elements, testing
-
-
+#    This program is free software; you can redistribute it and/or
+#    modify it under the terms of the GNU General Public License
+#    as published by the Free Software Foundation; either version 3
+#    of the License, or (at your option) any later version.
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 """
 
+    AYUP (as of yet unnamed program) performs post processing steps on raw 
+    format images of natural history specimens. Specifically designed for 
+    Herbarium sheet images.
+
+"""
+__author__ = "Caleb Powell, Joey Shaw"
+__credits__ = ["Caleb Powell, Joey Shaw"]
+__email__ = "calebadampowell@gmail.com"
+__status__ = "Alpha"
+__version__ = 'v0.0.1-alpha'
+
+import os
+import sys
+# UI libs
+from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtCore import QSettings, Qt, QObject
+# image libs
 import lensfunpy
 import piexif
 import rawpy
 from rawpy import LibRawNonFatalError
-import PIL
-from pyzbar.pyzbar import decode
-import re
 import cv2
-import os
+# internal libs
+from ui.postProcessingUI import Ui_MainWindow
+from libs.bcRead import bcRead
 
-# this library can go away once we set up a GUI
-# ideally, we'll monitor a folder while program is running 
-# new additions to the folder will be processed according to GUI preferences
-import glob
+class appWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.init_ui()
 
-# below are early states of the various functions 
+    def init_ui(self):
+        self.mainWindow = Ui_MainWindow()
+        self.mainWindow.setupUi(self)        
+        # initiate the persistant settings
+        # todo update this when name is decided on
+        self.settings = QSettings('AYUP', 'AYUP')        
+        self.settings.setFallbacksEnabled(False)    # File only, no fallback to registry.
+        # populate the settings based on the previous preferences
+        self.populateSettings()
+        # fill in the previews
+        self.updateCatalogNumberPreviews()
+        self.bcRead = bcRead(parent=self.mainWindow)
 
-def detImagingEquipment(inputImage):
-    """ given an image file object, attempts to determine
-        the make/model of the camera body and lens. """
-    # extract exif data as dict
-    exifDict = piexif.load(inputImage)
-    imgDict = {}
-    for ifd in ("0th", "Exif", "GPS", "1st"):
-        for tag in exifDict[ifd]:
-            tagName = (piexif.TAGS[ifd][tag]["name"])#, exif_dict[ifd][tag])
-            #print(piexif.TAGS[ifd][tag]["name"], exifDict[ifd][tag])
-            if tagName.lower() in ('make','model','lensmaker','lensmodel','focallength', 'fnumber'):
-                imgDict[tagName.lower()] = exifDict[ifd][tag]
-    for k,v in imgDict.items():
-        if isinstance(v, bytes):
-            imgDict[k] = v.decode("utf-8")
+#        self.versionCheck()
 
-    camMaker = imgDict.get('make','')
-    camModel = imgDict.get('model','')
-    lensMaker = imgDict.get('lensmaker','')
-    lensModel = imgDict.get('lensmodel','')
-    focalLength = imgDict.get('focallength','')[0]
-    apertureValue = imgDict.get('fnumber','')[0]
-    # load the equipment database
-    db = lensfunpy.Database()
-    # lookup the camera details
-    cam = db.find_cameras(camMaker, camModel, loose_search=False)[0]
-    # lookup the lens details
-    lens = db.find_lenses(cam, lensMaker, lensModel, loose_search=False)[0]
-    
-    return cam, lens, focalLength, apertureValue
+#    def versionCheck(self):
+#        """ checks the github repo's latest release version number against
+#        local and offers the user to visit the new release page if different"""
+#        #  be sure to only do this once a day.
+#        today = str(date.today())
+#        lastChecked = self.settings.get('date_versionCheck', today)
+#        self.w.date_versionCheck = today
+#        if today != lastChecked:
+#            import requests
+#            import webbrowser
+#            apiURL = 'https://api.github.com/repos/CapPow/collBook/releases/latest'
+#            try:
+#                apiCall = requests.get(apiURL)
+#                status = str(apiCall)
+#            except ConnectionError:
+#                #  if no internet, don't bother the user.
+#                pass
+#            result = apiCall.json()
+#            if '200' in status:  # if the return looks bad, don't bother user
+#                url = result['html_url']
+#                version = result['tag_name']
+#                if version.lower() != self.w.version.lower():
+#                    message = f'A new version ( {version} ) of collBook has been released. Would you like to visit the release page?'
+#                    title = 'collBook Version'
+#                    answer = self.userAsk(message, title, inclHalt = False)
+#                    if answer:# == QMessageBox.Yes:
+#                        link=url
+#                        self.showMinimized() #  hide the app about to pop up.
+#                        #  instead display a the new release
+#                        webbrowser.open(link,autoraise=1)
+#            self.settings.saveSettings()  # save the new version check date
 
-def lensCorrect(imCV, inputImg, distance = 0.3):
-    """ Attempts to perform lens corrections using origional image metadata.
-    
-        imCV = an open cv formatted image object,
-        inputImg = the origional file object (for metadata extraction)
-        distance = the focal distance in meters to subject"""
+#
+#    def setMaxZoom(self):
+#        try:
+#            self.parent.updatePreview()
+#        except AttributeError:
+#            pass
+#        screenSize = (self.parent.geometry())
+#        screenX = screenSize.width()
+#        xMax = screenX * 0.6
+#        screenY = screenSize.height()
+#        yMax = screenY * 0.75
+#        #  resulting pdfs are 96dpi skip calling getPixmap twice, Assume 96
+#        #  96dpi / 25.4mm per inch = 3.780 dots per mm
+#        label_X = int(self.settingsWindow.value_X.value() * (3.780))
+#        label_Y = int(self.settingsWindow.value_Y.value() * (3.780))
+#        max_XZoom = xMax / label_X
+#        max_YZoom = yMax / label_Y
+#        max_Zoom = int(min(max_XZoom, max_YZoom) * 100)
+#        self.parent.w.value_zoomLevel.setMaximum(max_Zoom)
+#        currentZoom = int(self.parent.w.value_zoomLevel.value())
+#        if currentZoom > max_Zoom:
+#            valueToSet = (max_Zoom)
+#        else:
+#            valueToSet = currentZoom
+#        self.parent.w.value_zoomLevel.setValue(valueToSet)
+#        self.parent.w.label_zoomLevel.setText(f'{str(valueToSet).rjust(4," ")}%')  # update the label
+#        self.settings.setValue('value_zoomLevel', valueToSet)  # update settings
+
+
+    def openImageFile(self, imgPath):
+        """ given an image path, attempts to return an openCV image object """
+        # use rawpy to convert raw to openCV
+        try:
+            with rawpy.imread(imgPath) as raw:
+                rgb = raw.postprocess() # a numpy RGB array
+                im = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR) # the OpenCV image
+        # if it is not a raw format, just try and open it.
+        except LibRawNonFatalError:
+            im = cv2.imread(imgPath)
+        return im
+
+    def testFeatureCompatability(self):
+        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(
+                None, "Open Sample Image", QtCore.QDir.homePath())
+        im = self.openImageFile(fileName)
         
-    #TODO add GUI elements to determine focal distance for individual setup
+        bcStatus = self.bcRead.testFeature(im)
+        self.mainWindow.group_barcodeDetection.setEnabled(bcStatus)
+        
+        #ccStatus = self.colorChecker.testFeature(im)
+        #self.mainWindow.group_colorCheckerDetection.setEnabled(ccStatus)
+        
+        #eqStatus = self.equipDetect.testFeature(im)
+        #self.mainWindow.group_equipmentDetection.setEnabled(eqStatus)
+        
+
+    def updateCatalogNumberPreviews(self):
+        """ called when a change is made to any of the appropriate fields in 
+        barcode detection group. Updates the example preview labels"""
+
+        # skip everything if the group is not enabled.
+        if not self.mainWindow.group_renameByBarcode.isEnabled():
+            return
+        
+        # recompile the regexPattern
+        try:
+            self.bcRead.bcReadcompileRegexPattern()
+        except AttributeError:
+            # bcRead may not have been imported yet
+            pass
+        
+        # update bc pattern preview
+        prefix = self.mainWindow.lineEdit_catalogNumberPrefix.text()
+        digits = int(self.mainWindow.spinBox_catalogDigits.value())
+        startingNum = ''.join(str(x) for x in list(range(digits)))
+        startingNum = startingNum.zfill(digits)  # fill in leading zeroes
+        previewText = f'{prefix}{startingNum}'  # assemble the preview string.
+        self.mainWindow.label_previewDisplay.setText(previewText) # set it
+        # update dup naming preview
+        dupNamingPolicy = self.mainWindow.comboBox_dupNamingPolicy.currentText()
+        if dupNamingPolicy == 'append LOWER case letter':
+            dupPreviewEnd = 'a'
+        elif dupNamingPolicy == 'append UPPER case letter':
+            dupPreviewEnd = 'A'
+        elif dupNamingPolicy == 'append Number with underscore':
+            dupPreviewEnd = '1'
+        elif dupNamingPolicy == 'OVERWRITE original image with newest':
+            dupPreviewEnd = ''
+        else:
+            return
+        dupPreviewText = f'{previewText}{dupPreviewEnd}'
+        self.mainWindow.label_dupPreviewDisplay.setText(dupPreviewText) # set it
+
+    def setFolderPath(self):
+        """ Called by all of the "Browse" buttons in Image Location Tab.
+        Assigns selected folder name to the associated lineEdit.
+        Uses hacky methods to lineEdit associated to button."""
+
+        # this only works with strict object naming conventions.
+        # get name of button pressed
+        buttonPressed = self.sender().objectName().split('_')[-1]
+        # use string methods to get the associated lineEdit name
+        # use eval method to convert string to variable.
+        targetField = eval(f'self.mainWindow.lineEdit_{buttonPressed}')
+        targetDir = QtWidgets.QFileDialog.getExistingDirectory(
+                None, 'Select a folder:', QtCore.QDir.homePath(),
+                QtWidgets.QFileDialog.ShowDirsOnly)
+        targetField.setText(targetDir)
+
+    # Functions related to the saving and retrieval of preference settings
+
+    def has(self, key):
+        return self.settings.contains(key)
+
+    def setValue(self, key, value):
+        return self.settings.setValue(key, value)
+
+    def get(self, key, altValue = ""):
+        result = self.settings.value(key, altValue)
+        if result == 'true':
+            result = True
+        elif result == 'false':
+            result = False
+        return result
     
-    # extract the exif
-    cam, lens, focalLength, apertureValue = detImagingEquipment(inputImg)
-    # determine the image shape
-    height, width = imCV.shape[0], imCV.shape[1]
+    def populateQComboBoxSettings(self, obj, value):
+        """ sets a QComboBox based on a string value. Presumed to be a more
+        durable method. obj is the qComboBox object, and value is a string
+        to search for"""
+        index = obj.findText(value)
+        obj.setCurrentIndex(index)
+
+    def convertCheckState(self, stringState):
+        """ given a string either "true" or "false" returns the proper Qt.CheckState"""
+        if str(stringState).lower() != 'true':
+            return Qt.Unchecked
+        else:
+            return Qt.Checked
     
-    # use lensfunpy to calculate corrections
-    mod = lensfunpy.Modifier(lens, cam.crop_factor, width, height)
-    mod.initialize(focalLength, apertureValue, distance)
-    undist_coords = mod.apply_geometry_distortion()
+    def convertEnabledState(self, stringState):
+        """ given a string either "true" or "false" returns the bool"""
+        if str(stringState).lower() != 'true':
+            return False
+        else:
+            return True
 
-    # apply the corrections using openCV
-    im_undistorted = cv2.remap(imCV, undist_coords, None, cv2.INTER_LANCZOS4)
+    def populateSettings(self):
+        """ uses self.settings to populate the preferences widget's selections"""
 
-    # save the results
-    #pre, ext = os.path.splitext(outputImgName)
-    #outputImgName = pre + outputFormat
-    #cv2.imwrite(outputImgName, im_undistorted)
-    return im_undistorted
+        # Many fields are connected to save on 'changed' signals
+        # block those emissions while populating values.
+        children = self.mainWindow.tabWidget.findChildren(QObject)
+        [x.blockSignals(True) for x in children]
 
-def openRawAsOpenCV(inputImg):
-    """ given an image file, attempts
-        to return an openCV image object"""
-    # use rawpy to convert raw to openCV
-    try:
-        with rawpy.imread(inputImg) as raw:
-            rgb = raw.postprocess() # a numpy RGB array
-            im = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR) # the OpenCV image
-    # if it is not a raw format, just try and open it.
-    except LibRawNonFatalError:
-        im = cv2.imread(inputImg)
-    return im
+        # QComboBox
+        comboBox_imageOrientation = self.get('comboBox_imageOrientation', 'Portrait')
+        self.populateQComboBoxSettings( self.mainWindow.comboBox_imageOrientation, comboBox_imageOrientation)
+        comboBox_colorCheckerPosition = self.get('comboBox_colorCheckerPosition', 'Upper right')
+        self.populateQComboBoxSettings( self.mainWindow.comboBox_colorCheckerPosition, comboBox_colorCheckerPosition)
+        comboBox_dupNamingPolicy = self.get('comboBox_dupNamingPolicy', 'append LOWER case letter')
+        self.populateQComboBoxSettings( self.mainWindow.comboBox_dupNamingPolicy, comboBox_dupNamingPolicy)
 
-def decodeBarcode(imCV):
-    """ given an openCV image object, attempts to
-        decode the barcodes, returning a list of
-        matching results."""
+        # QLineEdit
+        lineEdit_catalogNumberPrefix = self.get('lineEdit_catalogNumberPrefix','')
+        self.mainWindow.lineEdit_catalogNumberPrefix.setText(lineEdit_catalogNumberPrefix)
+        lineEdit_inputPath = self.get('lineEdit_inputPath','')
+        self.mainWindow.lineEdit_inputPath.setText(lineEdit_inputPath)
+        lineEdit_pathUnalteredRaw = self.get('lineEdit_pathUnalteredRaw','')
+        self.mainWindow.lineEdit_pathUnalteredRaw.setText(lineEdit_pathUnalteredRaw)
+        lineEdit_pathProcessedJpg = self.get('lineEdit_pathProcessedJpg','')
+        self.mainWindow.lineEdit_pathProcessedJpg.setText(lineEdit_pathProcessedJpg)
+        lineEdit_pathProcessedTIFF = self.get('lineEdit_pathProcessedTIFF','')
+        self.mainWindow.lineEdit_pathProcessedTIFF.setText(lineEdit_pathProcessedTIFF)
+        lineEdit_pathProcessedPng = self.get('lineEdit_pathProcessedPng','')
+        self.mainWindow.lineEdit_pathProcessedPng.setText(lineEdit_pathProcessedPng)
 
-    # option here to include code format restrictions
-        # decode(Image.open('pyzbar/tests/qrcode.png'), symbols=[ZBarSymbol.QRCODE])
-    # if successful, returns a list of barcodes similar to below:
-    # [Decoded(data=b'ETSU006566', type='CODE39', rect=Rect(left=3278, top=219, width=523, height=100), 
-    #   polygon=[Point(x=3278, y=219), Point(x=3278, y=319), Point(x=3801, y=318), Point(x=3801, y=222)])]
+        # QPlainTextEdit
+        plainTextEdit_collectionName = self.get('plainTextEdit_collectionName','')
+        self.mainWindow.plainTextEdit_collectionName.setPlainText(plainTextEdit_collectionName)
+        plainTextEdit_collectionURL = self.get('plainTextEdit_collectionURL','')
+        self.mainWindow.plainTextEdit_collectionURL.setPlainText(plainTextEdit_collectionURL)
+        plainTextEdit_contactEmail = self.get('plainTextEdit_contactEmail','')
+        self.mainWindow.plainTextEdit_contactEmail.setPlainText(plainTextEdit_contactEmail)
+        plainTextEdit_contactName = self.get('plainTextEdit_contactName','')
+        self.mainWindow.plainTextEdit_contactName.setPlainText(plainTextEdit_contactName)
+        plainTextEdit_copywriteLicense = self.get('plainTextEdit_copywriteLicense','')
+        self.mainWindow.plainTextEdit_copywriteLicense.setPlainText(plainTextEdit_copywriteLicense)
 
-    bcData = decode(imCV)  # get the barcode data
-    # if nothing is decoded, iterate through the rotation list and keep trying.
-    if len(bcData) == 0:
-        for i in rotationList:
-            rotatedImg = rotateImage(imCV, i)
-            bcData = decode(rotatedImg)
-            if len(bcData) != 0:
-                break
-            # give up
-            print('could not find a barcode value in image')
-        # pull out all pattern matching bcValues
-    bcValues = [x.data.decode("utf-8") for x in bcData if collectionPatterns.match(x.data.decode("utf-8"))]
-    
-    # if bcValues > 1:
-    # add pyqt5 dialog box with list picker for bcValues
+        # QCheckBox
+        # note: the fallback value of '' will trigger an unchecked condition in self.convertCheckState()
+        checkBox_performWhiteBalance = self.convertCheckState(self.get('checkBox_performWhiteBalance',''))
+        self.mainWindow.checkBox_performWhiteBalance.setCheckState(checkBox_performWhiteBalance)
+        checkBox_vignettingCorrection = self.convertCheckState(self.get('checkBox_vignettingCorrection',''))
+        self.mainWindow.checkBox_vignettingCorrection.setCheckState(checkBox_vignettingCorrection)
+        checkBox_distortionCorrection = self.convertCheckState(self.get('checkBox_distortionCorrection',''))
+        self.mainWindow.checkBox_distortionCorrection.setCheckState(checkBox_distortionCorrection)
+        checkBox_chromaticAberrationCorrection = self.convertCheckState(self.get('checkBox_chromaticAberrationCorrection',''))
+        self.mainWindow.checkBox_chromaticAberrationCorrection.setCheckState(checkBox_chromaticAberrationCorrection)
+        checkBox_metaDataApplication = self.convertCheckState(self.get('checkBox_metaDataApplication',''))
+        self.mainWindow.checkBox_metaDataApplication.setCheckState(checkBox_metaDataApplication)
 
-    if len(bcValues) == 1:
-        bcValue = bcValues[0]
-    else:
-        bcValue = None
+        # QGroupbox (checkstate)
+        group_renameByBarcode = self.get('group_renameByBarcode','')
+        self.mainWindow.group_renameByBarcode.setChecked(group_renameByBarcode)
+        group_keepUnalteredRaw = self.get('group_keepUnalteredRaw','')
+        self.mainWindow.group_keepUnalteredRaw.setChecked(group_keepUnalteredRaw)
+        group_saveProcessedJpg = self.get('group_saveProcessedJpg','')
+        self.mainWindow.group_saveProcessedJpg.setChecked(group_saveProcessedJpg)
+        group_saveProcessedTIFF = self.get('group_saveProcessedTIFF','')
+        self.mainWindow.group_saveProcessedTIFF.setChecked(group_saveProcessedTIFF)
+        group_saveProcessedPng = self.get('group_saveProcessedPng','')
+        self.mainWindow.group_saveProcessedPng.setChecked(group_saveProcessedPng)
+        
+        # QGroupbox (enablestate)
+        group_barcodeDetection = self.convertEnabledState(self.get('group_barcodeDetection',''))
+        self.mainWindow.group_barcodeDetection.setEnabled(group_barcodeDetection)
+        group_colorCheckerDetection = self.convertEnabledState(self.get('group_colorCheckerDetection',''))
+        self.mainWindow.group_colorCheckerDetection.setEnabled(group_colorCheckerDetection)
+        group_verifyRotation = self.convertEnabledState(self.get('group_verifyRotation',''))
+        self.mainWindow.group_verifyRotation.setEnabled(group_verifyRotation)
+        group_equipmentDetection = self.convertEnabledState(self.get('group_equipmentDetection',''))
+        self.mainWindow.group_equipmentDetection.setEnabled(group_equipmentDetection)
+        # metaDataApplication should always be an option
+        #group_metaDataApplication = self.convertEnabledState(self.get('group_metaDataApplication','true'))
+        #self.mainWindow.group_metaDataApplication.setEnabled(group_metaDataApplication)
 
-    return bcValue
+        # QSpinBox
+        spinBox_catalogDigits = int(self.get('spinBox_catalogDigits', 6))
+        self.mainWindow.spinBox_catalogDigits.setValue(spinBox_catalogDigits)
 
+        # slider
+        #value_LogoScaling = int(self.get('value_LogoScaling', 100))
+        #self.settings.value_LogoScaling.setValue(value_LogoScaling)
+        #self.scalingChanged(value_LogoScaling)
 
-def rotateImage(imCV, angle):
-    """ given an opencv image object, and an angle 
-        return the rotated image"""
-    # see: https://stackoverflow.com/questions/22041699/rotate-an-image-without-cropping-in-opencv-in-c/33564950#33564950
+        # radiobutton
+        #value_DarkTheme = self.get('value_DarkTheme', False)
+        #self.settings.value_DarkTheme.setChecked(value_DarkTheme)
+        #value_LightTheme = self.get('value_LightTheme', True)
+        #self.settings.value_LightTheme.setChecked(value_LightTheme)
 
-    print(f'trying {angle} deg rotation')
+        # clean up
+        # allow signals again
+        [x.blockSignals(False) for x in children]
 
-    height, width = imCV.shape[:2]
-    image_center = (width/2, height/2)
-    rotation_mat = cv2.getRotationMatrix2D(image_center, angle, 1.)
-    abs_cos = abs(rotation_mat[0,0])
-    abs_sin = abs(rotation_mat[0,1])
-    bound_w = int(height * abs_sin + width * abs_cos)
-    bound_h = int(height * abs_cos + width * abs_sin)
-    rotation_mat[0, 2] += bound_w/2 - image_center[0]
-    rotation_mat[1, 2] += bound_h/2 - image_center[1]
-    rotated_mat = cv2.warpAffine(imCV, rotation_mat, (bound_w, bound_h))
-    return rotated_mat
-    
+    def saveSettings(self):
+        """ stores the preferences widget's selections to self.settings"""
 
-def saveImg(imCV, saveName, outputFolder = '', outputFormat = '.jpg'):
-    """ saves an openCV image object as an image."""
+        # save the version number
+#        version = self.version
+#        self.setValue('version', version)
+#        # save the laste date we checked the version number
+#        try:
+#            date_versionCheck = self.parent.w.date_versionCheck
+#        except AttributeError:  # first run may not yet have this saved.
+#            date_versionCheck = ""
+#        self.setValue('date_versionCheck', date_versionCheck)
 
-    #pre, ext = os.path.splitext(outputImgName)
-    #outputImgName = pre + outputFormat
-    savePath = outputFolder + saveName + outputFormat
-    print('saving to: ', savePath)
-    cv2.imwrite(savePath, imCV)
-    
-def processImage(inputImg):
-    """ given a raw formatted image, attempts to
-        perform the necessary postprocessing steps."""
-    # open the image as an openCV object
-    imCV = openRawAsOpenCV(inputImg)
-    # attempt to make lens corrections
-    imCV = lensCorrect(imCV, inputImg)
-    # attempt to decode a barcode
-    barCode = decodeBarcode(imCV)
-    # if barcode decoded, use it to name the file
-    if barCode != None:
-        saveName = barCode
-    else:
-        saveName = os.path.basename(inputImg)
+        # QComboBox
+        comboBox_imageOrientation = self.mainWindow.comboBox_imageOrientation.currentText()
+        self.settings.setValue('comboBox_imageOrientation', comboBox_imageOrientation)
+        comboBox_colorCheckerPosition = self.mainWindow.comboBox_colorCheckerPosition.currentText()
+        self.settings.setValue('comboBox_colorCheckerPosition', comboBox_colorCheckerPosition)
+        
+        # QLineEdit
+        lineEdit_catalogNumberPrefix = self.mainWindow.lineEdit_catalogNumberPrefix.text()
+        self.settings.setValue('lineEdit_catalogNumberPrefix', lineEdit_catalogNumberPrefix)
+        lineEdit_inputPath = self.mainWindow.lineEdit_inputPath.text()
+        self.settings.setValue('lineEdit_inputPath', lineEdit_inputPath)
+        lineEdit_pathUnalteredRaw = self.mainWindow.lineEdit_pathUnalteredRaw.text()
+        self.settings.setValue('lineEdit_pathUnalteredRaw', lineEdit_pathUnalteredRaw)
+        lineEdit_pathProcessedJpg = self.mainWindow.lineEdit_pathProcessedJpg.text()
+        self.settings.setValue('lineEdit_pathProcessedJpg', lineEdit_pathProcessedJpg)
+        lineEdit_pathProcessedTIFF = self.mainWindow.lineEdit_pathProcessedTIFF.text()
+        self.settings.setValue('lineEdit_pathProcessedTIFF', lineEdit_pathProcessedTIFF)
+        lineEdit_pathProcessedPng = self.mainWindow.lineEdit_pathProcessedPng.text()
+        self.settings.setValue('lineEdit_pathProcessedPng', lineEdit_pathProcessedPng)
 
-    saveImg(imCV, saveName, outputFolder='./correctedImages/')
-    
-    
-    return imCV
+        # QPlainTextEdit        
+        plainTextEdit_collectionName = self.mainWindow.plainTextEdit_collectionName.toPlainText()
+        self.settings.setValue('plainTextEdit_collectionName', plainTextEdit_collectionName)
+        plainTextEdit_collectionURL = self.mainWindow.plainTextEdit_collectionURL.toPlainText()
+        self.settings.setValue('plainTextEdit_collectionURL', plainTextEdit_collectionURL)
+        plainTextEdit_contactEmail = self.mainWindow.plainTextEdit_contactEmail.toPlainText()
+        self.settings.setValue('plainTextEdit_contactEmail', plainTextEdit_contactEmail)
+        plainTextEdit_contactName = self.mainWindow.plainTextEdit_contactName.toPlainText()
+        self.settings.setValue('plainTextEdit_contactName', plainTextEdit_contactName)
+        plainTextEdit_copywriteLicense = self.mainWindow.plainTextEdit_copywriteLicense.toPlainText()
+        self.settings.setValue('plainTextEdit_copywriteLicense', plainTextEdit_copywriteLicense)
 
-# define some constants
+        # QCheckBox
+        checkBox_performWhiteBalance = self.mainWindow.checkBox_performWhiteBalance.isChecked()
+        self.settings.setValue('checkBox_performWhiteBalance', checkBox_performWhiteBalance)
+        checkBox_vignettingCorrection = self.mainWindow.checkBox_vignettingCorrection.isChecked()
+        self.settings.setValue('checkBox_vignettingCorrection', checkBox_vignettingCorrection)
+        checkBox_distortionCorrection = self.mainWindow.checkBox_distortionCorrection.isChecked()
+        self.settings.setValue('checkBox_distortionCorrection', checkBox_distortionCorrection)
+        checkBox_chromaticAberrationCorrection = self.mainWindow.checkBox_chromaticAberrationCorrection.isChecked()
+        self.settings.setValue('checkBox_chromaticAberrationCorrection', checkBox_chromaticAberrationCorrection)
+        checkBox_metaDataApplication = self.mainWindow.checkBox_metaDataApplication.isChecked()
+        self.settings.setValue('checkBox_metaDataApplication', checkBox_metaDataApplication)
 
-# pre-compile the stored collection regex patterns.
-collectionPatterns = [(r'^(UCHT\d{6})\D*'),
-                      (r'^(TENN-V-\d{7})\D*'),
-                      (r'^(APSC\d{7})\D*'),
-                      (r'^(HTTU\d{6})\D*'),
-                      (r'^(ETSU\d{6})\D*'),
-                      (r'^(MTSU\d{6})\D*'),
-                      (r'^(SWMT\d{5})\D*'),
-                      (r'^(UTM\d{5})\D*'),
-                      (r'^(UOS\d{5})\D*'),
-                      (r'^(MEM\d{6})\D*'),
-                      (r'^(GSMNP\d{5})\D*')]
-# join the stored patterns into a single "OR" joined pattern
-collectionPatterns = re.compile( '|'.join( collectionPatterns) )
+        # QGroupbox (checkstate)
+        group_renameByBarcode = self.mainWindow.group_renameByBarcode.isChecked()
+        self.settings.setValue('group_renameByBarcode',group_renameByBarcode)
+        group_keepUnalteredRaw = self.mainWindow.group_keepUnalteredRaw.isChecked()
+        self.settings.setValue('group_keepUnalteredRaw',group_keepUnalteredRaw)
+        group_saveProcessedTIFF = self.mainWindow.group_saveProcessedTIFF.isChecked()
+        self.settings.setValue('group_saveProcessedTIFF',group_saveProcessedTIFF)
+        group_saveProcessedJpg = self.mainWindow.group_saveProcessedJpg.isChecked()
+        self.settings.setValue('group_saveProcessedJpg',group_saveProcessedJpg)
+        group_saveProcessedPng = self.mainWindow.group_saveProcessedPng.isChecked()
+        self.settings.setValue('group_saveProcessedPng',group_saveProcessedPng)
 
-# a list of rotations to attempt after failed barcode attempt decode
-rotationList = [12, 24, 36, 48]
+        # QGroupbox (enablestate)
+        group_barcodeDetection = self.mainWindow.group_barcodeDetection.isEnabled()
+        self.settings.setValue('group_barcodeDetection', group_barcodeDetection)
+        group_colorCheckerDetection = self.mainWindow.group_colorCheckerDetection.isEnabled()
+        self.settings.setValue('group_colorCheckerDetection',group_colorCheckerDetection)
+        group_verifyRotation = self.mainWindow.group_verifyRotation.isEnabled()
+        self.settings.setValue('group_verifyRotation',group_verifyRotation)
+        group_equipmentDetection = self.mainWindow.group_equipmentDetection.isEnabled()
+        self.settings.setValue('group_equipmentDetection',group_equipmentDetection)
+        # metaDataApplication should always be an option
+        #group_metaDataApplication = self.mainWindow.group_metaDataApplication.isEnabled()
+        #self.settings.setValue('group_metaDataApplication',group_metaDataApplication)
 
-# run the script to demonstrate functions
+        # QSpinBox
+        spinBox_catalogDigits = self.mainWindow.spinBox_catalogDigits.value()
+        self.settings.setValue('spinBox_catalogDigits', spinBox_catalogDigits)
 
-for img in glob.glob('./testImages/*.*'):
-    #outputImgName = f'./correctedImages/{os.path.basename(img)}'
-    imCV = processImage(img)
+        # slider
+        #value_LogoScaling = self.mainWindow.value_LogoScaling.value()
+        #self.settings.setValue('value_LogoScaling', value_LogoScaling)
+
+        # radiobutton
+        #value_DarkTheme = self.mainWindow.value_DarkTheme.isChecked()
+        #self.settings.setValue('value_DarkTheme', value_DarkTheme)
+        #value_LightTheme = self.mainWindow.value_LightTheme.isChecked()
+        #self.settings.setValue('value_LightTheme', value_LightTheme)
+
+app = QtWidgets.QApplication(sys.argv)
+w = appWindow()
+# check if there are theme settings
+#if w.settings.get('value_DarkTheme', False):
+#    app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+w.show()
+
+sys.exit(app.exec_())

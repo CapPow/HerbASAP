@@ -1,0 +1,4 @@
+## Various commands to rebuild the UI classes after making changes in QT Designer.
+
+pyrcc5 -o Resources_rc.py ui/resources/Resources.qrc
+pyuic5 -o ui/postProcessingUI.py ui/postProcessingUI.ui
