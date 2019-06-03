@@ -259,7 +259,7 @@ class appWindow(QMainWindow):
     def setValue(self, key, value):
         return self.settings.setValue(key, value)
 
-    def get(self, key, altValue = ""):
+    def get(self, key, altValue = None):
         result = self.settings.value(key, altValue)
         if result == 'true':
             result = True
@@ -344,15 +344,16 @@ class appWindow(QMainWindow):
         self.mainWindow.checkBox_metaDataApplication.setCheckState(checkBox_metaDataApplication)
 
         # QGroupbox (checkstate)
-        group_renameByBarcode = self.get('group_renameByBarcode','')
+        #group_renameByBarcode = self.get('group_renameByBarcode','')
+        group_renameByBarcode = self.get('group_renameByBarcode',False)
         self.mainWindow.group_renameByBarcode.setChecked(group_renameByBarcode)
-        group_keepUnalteredRaw = self.get('group_keepUnalteredRaw','')
+        group_keepUnalteredRaw = self.get('group_keepUnalteredRaw',False)
         self.mainWindow.group_keepUnalteredRaw.setChecked(group_keepUnalteredRaw)
-        group_saveProcessedJpg = self.get('group_saveProcessedJpg','')
+        group_saveProcessedJpg = self.get('group_saveProcessedJpg',False)
         self.mainWindow.group_saveProcessedJpg.setChecked(group_saveProcessedJpg)
-        group_saveProcessedTIFF = self.get('group_saveProcessedTIFF','')
+        group_saveProcessedTIFF = self.get('group_saveProcessedTIFF',False)
         self.mainWindow.group_saveProcessedTIFF.setChecked(group_saveProcessedTIFF)
-        group_saveProcessedPng = self.get('group_saveProcessedPng','')
+        group_saveProcessedPng = self.get('group_saveProcessedPng',False)
         self.mainWindow.group_saveProcessedPng.setChecked(group_saveProcessedPng)
         
         # QGroupbox (enablestate)
