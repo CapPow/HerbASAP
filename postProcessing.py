@@ -68,6 +68,10 @@ class appWindow(QMainWindow):
 
 #        self.versionCheck()
 
+#   when saving: quality="keep" the original quality is preserved 
+#   The optimize=True "attempts to losslessly reduce image size
+
+
 #    def versionCheck(self):
 #        """ checks the github repo's latest release version number against
 #        local and offers the user to visit the new release page if different"""
@@ -136,9 +140,19 @@ class appWindow(QMainWindow):
                 None, "Open Sample Image", QtCore.QDir.homePath())
         # open the file
         im = self.openImageFile(imgPath)
+
+        #from PIL import Image
+        #from matplotlib.pyplot import imread, imsave
+        #im = imread(imgPath)
+
+        #im = Image.open(imgPath)
+        #Image.fromarray(im).save('origImg.jpg')
+        
+        #Image.fromarray(im).save('origImg.jpg')
         # call eqRead's lens correction
         cv2.imwrite('origImg.jpg', im)
         correctedImg = self.eqRead.lensCorrect(im, imgPath)
+        #Image.fromarray(im).save('alteredImg.jpg')
         cv2.imwrite('alteredImg.jpg', correctedImg)
 
     def openImageFile(self, imgPath):

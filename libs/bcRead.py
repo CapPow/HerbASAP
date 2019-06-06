@@ -23,6 +23,9 @@
 import re
 from pyzbar.pyzbar import decode
 
+import numpy as np
+import cv2
+
 class bcRead():
     def __init__(self, parent=None, *args):
         super(bcRead, self).__init__()
@@ -66,7 +69,8 @@ class bcRead():
         if len(bcData) < 1:
             # if no barcodes are detected
             for i in self.rotationList:
-                img2 = img.rotate((i), resample=Image.NEAREST, expand=True)
+                # try 'wiggling' the image some
+                img2 = rotateImg(img, i)
                 bcData = self.decodeBC(img2)
                 if len(bcData) > 0:
                     break
@@ -82,6 +86,29 @@ class bcRead():
             # TODO if there are >1 bc, save the output under each valid bc number.
             # for now BREAK it
             breakPOINT
+
+
+    
+    def rotateImg(img, angle):
+        """ given a np array image object (img), and an angle rotates the img
+            without cropping the corners.
+        """
+        # see: https://stackoverflow.com/questions/48479656/how-can-i-rotate-an-ndarray-image-properly
+
+        (height, width) = img.shape[:2]
+        (cent_x, cent_y) = (width // 2, height // 2)
+    
+        mat = cv2.getRotationMatrix2D((cent_x, cent_y), -angle, 1.0)
+        cos = np.abs(mat[0, 0])
+        sin = np.abs(mat[0, 1])
+    
+        n_width = int((height * sin) + (width * cos))
+        n_height = int((height * cos) + (width * sin))
+    
+        mat[0, 2] += (n_width / 2) - cent_x
+        mat[1, 2] += (n_height / 2) - cent_y
+    
+        return cv2.warpAffine(img, mat, (n_width, n_height))
 
     def testFeature(self, img):
         """Returns bool condition, if this module functions on a test input."""
