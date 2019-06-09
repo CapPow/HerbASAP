@@ -157,14 +157,15 @@ class appWindow(QMainWindow):
 
     def openImageFile(self, imgPath):
         """ given an image path, attempts to return a numpy array image object """
-        # use rawpy to convert raw to openCV
-        try:
+
+        try:  # use rawpy to convert raw to openCV
             with rawpy.imread(imgPath) as raw:
                 rgb = raw.postprocess() # a numpy RGB array
-                im = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR) # the OpenCV image
         # if it is not a raw format, just try and open it.
         except LibRawNonFatalError:
-            im = cv2.imread(imgPath)
+            rgb = cv2.imread(imgPath)
+        # convert cv2 format to rgb
+        im = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR) # the OpenCV image
         return im
 
     def testFeatureCompatability(self):
