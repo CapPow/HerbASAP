@@ -223,7 +223,9 @@ class appWindow(QMainWindow):
         
         # recompile the regexPattern
         try:
-            self.bcRead.bcReadcompileRegexPattern()
+            prefix = self.lineEdit_catalogNumberPrefix.text()
+            digits = int(self.spinBox_catalogDigits.value())
+            self.bcRead.bcReadcompileRegexPattern(prefix, digits)
         except AttributeError:
             # bcRead may not have been imported yet
             pass

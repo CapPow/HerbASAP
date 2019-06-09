@@ -26,70 +26,109 @@ from pyzbar.pyzbar import decode
 import numpy as np
 import cv2
 
+
 class bcRead():
-    def __init__(self, parent=None, *args):
+    """A barcode reader class
+
+    Args:
+    prefix (str, optional): a collection code prefix. If left empty,
+        Matches any to no value(s)
+
+    digits (int, optional): the quantity of digits expected in the barcode.
+        If left empty, matches any to no digit(s)
+
+    rotation_list (iterable, optional): iterable containing a series of int
+        representing image rotations (in degrees) to attempt if no barcode is 
+        found. Default values are [9, 15, 18]. Rotation attempts stop after any
+        results are found. The list's rotations are cumulative. Short or empty
+        lists will decrease the time before giving up on finding a barcode.
+        
+    Attributes:
+    rePattern (obj): A compiled regex pattern
+    rotation_list (list): The saved rotation list
+    """
+
+    def __init__(self, prefix=".*", digits="*", 
+                 rotation_list=[9,15,18], parent=None, *args):
         super(bcRead, self).__init__()
         self.parent = parent
-        self.compileRegexPattern()
+        self.compileRegexPattern(prefix, digits)
         # This might need promoted to a user preference in mainwindow
-        self.rotationList = [12, -12,  21, -21]
+        self.rotation_list = rotation_list
 
-    def compileRegexPattern(self):
-        """ precompiles collection's regex pattern """
-        prefix = self.parent.lineEdit_catalogNumberPrefix.text()
-        digits = int(self.parent.spinBox_catalogDigits.value())
-        # triple { required for combining regex and f strings
-        collRegEx = fr'^({prefix}\d{{{digits}}})\D*'
+    def compileRegexPattern(self, prefix, digits):
+        """ compiles a collection specific regex pattern """
+        #  if the digits are not explicit, match 0 to any quantity of digits.
+        if digits == "*":
+            collRegEx = rf'^({prefix}\d*)\D*'
+        else:
+            # triple { required for combining regex and f strings
+            collRegEx = rf'^({prefix}\d{{{digits}}})\D*'
         rePattern = re.compile(collRegEx)
         # set the compiled regex as a class attribute.
         self.rePattern = rePattern
 
     def checkPattern(self, bcData):
         """ verifies if the bcData matches the compiled rePattern.
-        Returns bool """
 
+            Args:
+            bcData (str): a decoded barcode value string, which is checked
+            against the collection pattern "self.rePattern"
+
+            Returns (bool): success status of the match
+        """
+        bcData = bcData.data.decode("utf-8")
         if self.rePattern.match(bcData):
             return True
         else:
             return False
-    
-    def decodeBC(self, img):
-        """given a np array image object (img), decodes BCs and returns those
-        which match self.rePattern"""
 
-        bcRawData = decode(img)
-        bcStrings = [x.data.decode("utf-8") for x in bcRawData]
-        bcData = [x for x in bcStrings if self.checkPattern(x)]  # get the barcode data
+    def decodeBC(self, img, return_details=False):
+        """ attempts to decode barcodes from an image array object.
+        
+        Given a np array image object (img), decodes BCs and returns those
+        which match self.rePattern
+        
+        verifies if the bcData matches the compiled rePattern.
+
+        Args:
+        img (numpy.ndarray): a numpy image array object
+        
+        return_details (bool, optional): default = False. Whether or not to 
+            return the barcode(s) bounding box coordinate(s) and format(s) in
+            addition to the barcode value(s). Return a list of dictionaries.
+        
+        Returns (list): a list of matched barcode value(s) found in the image.
+            If return_details = True, then returns a list of dictionaries.
+        """
+
+        # the complete output from pyzbar which matches checkPattern
+        bcRawData = [x for x in decode(img) if self.checkPattern(x)]
+        for deg in self.rotation_list:
+            print(deg)
+            img = self.rotateImg(img, deg)
+            bcRawData = [x for x in decode(img) if self.checkPattern(x)]
+            if len(bcRawData) > 0:
+                break
+
+        if return_details:
+            bcData = []
+            for result in bcRawData:
+                bcValue = result.data.decode("utf-8")
+                bcBox = result.rect
+                bcType = result.type
+                resultDict = {'value':bcValue,
+                              'bbox':bcBox,
+                              'type':bcType}
+                bcData.append(resultDict)
+        else:
+            # filter out non-matching strings
+            bcData = [x.data.decode("utf-8") for x in bcRawData]
+            # a list of matched barcodes found in bcRawData
+
         return bcData
 
-    def retrieveBcMatches(self, img):
-        """ given a np array image object (img), retrieves the BC matches """
-
-        bcData = self.decodeBC(img)
-        if len(bcData) < 1:
-            # if no barcodes are detected
-            for i in self.rotationList:
-                # try 'wiggling' the image some
-                img2 = rotateImg(img, i)
-                bcData = self.decodeBC(img2)
-                if len(bcData) > 0:
-                    break
-            #Give up on rotation, and handle null result
-            return None
-
-        elif len(bcData) == 1:
-            # if only 1 barcode was detected:
-            return bcData
-
-        else:
-            # if there are > 1 barcodes detected.
-            # TODO if there are >1 bc, save the output under each valid bc number.
-            # for now BREAK it
-            breakPOINT
-
-
-    
-    def rotateImg(img, angle):
+    def rotateImg(self, img, angle):
         """ given a np array image object (img), and an angle rotates the img
             without cropping the corners.
         """
