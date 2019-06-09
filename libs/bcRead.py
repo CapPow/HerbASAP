@@ -104,12 +104,14 @@ class bcRead():
 
         # the complete output from pyzbar which matches checkPattern
         bcRawData = [x for x in decode(img) if self.checkPattern(x)]
-        for deg in self.rotation_list:
-            print(deg)
-            img = self.rotateImg(img, deg)
-            bcRawData = [x for x in decode(img) if self.checkPattern(x)]
-            if len(bcRawData) > 0:
-                break
+        # if no results are found, start the using the rotation_list
+        if len(bcRawData) < 1:
+            for deg in self.rotation_list:
+                #print(deg) # useful to see how frequently this happens
+                img = self.rotateImg(img, deg)
+                bcRawData = [x for x in decode(img) if self.checkPattern(x)]
+                if len(bcRawData) > 0:
+                    break
 
         if return_details:
             bcData = []
@@ -153,7 +155,7 @@ class bcRead():
         """Returns bool condition, if this module functions on a test input."""
 
         try:
-            if isinstance(self.retrieveBcMatches(img), list):
+            if isinstance(self.decodeBC(img), list):
                 return True
             else:
                 return False
