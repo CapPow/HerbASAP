@@ -60,7 +60,11 @@ class appWindow(QMainWindow):
         self.populateSettings()
         # fill in the previews
         self.updateCatalogNumberPreviews()
-        self.bcRead = bcRead(parent=self.mainWindow)
+        
+        prefix = self.mainWindow.lineEdit_catalogNumberPrefix.text()
+        digits = int(self.mainWindow.spinBox_catalogDigits.value())
+        self.bcRead = bcRead(prefix, digits, parent=self.mainWindow)
+        
         self.eqRead = eqRead(parent=self.mainWindow)
         # assign applicable user settings for eqRead. 
         # this function is here, for ease of slot assignment in pyqt designer
@@ -138,22 +142,22 @@ class appWindow(QMainWindow):
 
         imgPath, _ = QtWidgets.QFileDialog.getOpenFileName(
                 None, "Open Sample Image", QtCore.QDir.homePath())
+        #  start a timer
+        import time
+        startTime = time.time()
         # open the file
         im = self.openImageFile(imgPath)
-
-        #from PIL import Image
-        #from matplotlib.pyplot import imread, imsave
-        #im = imread(imgPath)
-
-        #im = Image.open(imgPath)
-        #Image.fromarray(im).save('origImg.jpg')
-        
-        #Image.fromarray(im).save('origImg.jpg')
-        # call eqRead's lens correction
-        cv2.imwrite('origImg.jpg', im)
+        # read the BC
+        bc = self.bcRead.decodeBC(im)
+        print(bc)
+        # perform equipment corrections
         correctedImg = self.eqRead.lensCorrect(im, imgPath)
-        #Image.fromarray(im).save('alteredImg.jpg')
+        # save output
         cv2.imwrite('alteredImg.jpg', correctedImg)
+        # finish timer
+        elapsedTime = int(time.time() - startTime)
+        # test total elapsed time so far with rotated and straight images.
+        print(f'opening raw, reading barcode, equipment corrections and saving outputs required {elapsedTime} seconds')
 
     def openImageFile(self, imgPath, demosaic = rawpy.DemosaicAlgorithm.AHD):
         """ given an image path, attempts to return a numpy array image object 
