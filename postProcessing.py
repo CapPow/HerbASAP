@@ -155,17 +155,39 @@ class appWindow(QMainWindow):
         #Image.fromarray(im).save('alteredImg.jpg')
         cv2.imwrite('alteredImg.jpg', correctedImg)
 
-    def openImageFile(self, imgPath):
-        """ given an image path, attempts to return a numpy array image object """
+    def openImageFile(self, imgPath, demosaic = rawpy.DemosaicAlgorithm.AHD):
+        """ given an image path, attempts to return a numpy array image object 
+        
+        rawpy offers many demosaic algorithms. Below are the average
+        computation times (3 repetitions) of opening the same 5796x3870 .CR2 
+        image using my t-430 (i7-3520M @ 4x 3.6GHz). 
+        
+        AAHD took: 9.001 secs.
+        AFD took: 2.603 secs.
+        AHD took: 2.61 secs.
+        AMAZE took: 2.612 secs.
+        DCB took: 4.33 secs.
+        DCB took: 4.333 secs.
+        DHT took: 3.279 secs.
+        LINEAR took: 1.946 secs.
+        LMMSE took: 2.606 secs.
+        MODIFIED_AHD took: 2.615 secs.
+        PPG took: 1.775 secs.
+        VCD took: 2.608 secs.
+        VCD_MODIFIED_AHD took: 2.607 secs.
+        VNG took: 5.334 secs.       
+        
+        see https://letmaik.github.io/rawpy/api/rawpy.Params.html for details.
+        """
 
         try:  # use rawpy to convert raw to openCV
             with rawpy.imread(imgPath) as raw:
-                rgb = raw.postprocess() # a numpy RGB array
+                bgr = raw.postprocess(chromatic_aberration=(1,1),
+                                      demosaic_algorithm = demosaic) 
+                im = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB) # the OpenCV image
         # if it is not a raw format, just try and open it.
         except LibRawNonFatalError:
-            rgb = cv2.imread(imgPath)
-        # convert cv2 format to rgb
-        im = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR) # the OpenCV image
+            im = cv2.imread(imgPath)
         return im
 
     def testFeatureCompatability(self):

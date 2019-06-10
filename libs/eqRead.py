@@ -50,8 +50,6 @@ class eqRead():
         for k,v in imgDict.items():
             if isinstance(v, bytes):
                 imgDict[k] = v.decode("utf-8")
-    
-        software = 'Software'
         #'Artist'
         #'Copyright'
         camMaker = imgDict.get('make','')
@@ -71,7 +69,7 @@ class eqRead():
                   'lens':lens,
                   'focalLength':focalLength,
                   'apertureValue':apertureValue}
-        
+
         # drop keys which are null
         for k,v in result.items():
             if v in ['',None,False]:
@@ -84,59 +82,33 @@ class eqRead():
         """ Attempts to perform lens corrections using origional image metadata.
             im = an opened image object,
             imgPath = the origional file object (for metadata extraction)"""
-        # extract the equipment details. Returned as dict (eq).
-        eq = self.detImagingEquipment(imgPath)
-        # determine the image shape
-        height, width = im.shape[:2]  # ie: im.shape[0], im.shape[1]]
-        mod = lensfunpy.Modifier(eq['lens'],
-                     eq['cam'].crop_factor,
-                     width,
-                     height)
-        mod.initialize(eq['focalLength'],
-                       eq['apertureValue'],
-                       float(self.mDistance),
-                       pixel_format=np.uint16)
 
-
-        undist_coords = mod.apply_geometry_distortion()
-        im_undistorted = cv2.remap(im, undist_coords,  None, cv2.INTER_LANCZOS4)
-
-        # none of the additional mods are working
-        # SEE: https://github.com/letmaik/lensfunpy/issues/17
-
-        #undist_coords = mod.apply_subpixel_geometry_distortion()
-        #undist_coords = mod.apply_subpixel_distortion() 
-        # apply the corrections using openCV
-        #from lensfunpy import util    
-        #im_undistorted = util.remapOpenCv(im, undist_coords)
-        #im_undistorted = util.remap(im, undist_coords) 
-        #cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR) # the OpenCV image
-        #r = im[..., 2]
-        #g = im[..., 1]
-        #b = im[..., 0]
-        
-        #from lensfunpy.util import remapScipy as remap
-
-        #r_undistorted = cv2.remap(r, undist_coords[..., 0], None, cv2.INTER_LANCZOS4)
-        #r_undistorted = remap(r, undist_coords[..., 0])
-        #g_undistorted = cv2.remap(g, undist_coords[..., 1], None, cv2.INTER_LANCZOS4)
-        #g_undistorted = remap(g, undist_coords[..., 1])
-        #g_undistorted = np.rot90(g_undistorted,3)
-        #b_undistorted = cv2.remap(b, undist_coords[..., 2], None, cv2.INTER_LANCZOS4)
-        #b_undistorted = remap(b, undist_coords[..., 2])
-        
-        #im[..., 2] = r_undistorted
-        #im[..., 1] = g_undistorted
-        #im[..., 0] = b_undistorted
-        
-        #print(dir(mod))
-
-        # Returns corrected image as cv2 image object.
-        # Eventually saved with function similar to below.
-        # cv2.imwrite(undistorted_image_path, im_undistorted)
-        
-        #return im
-        return im_undistorted
+        # extract the equipment details. Returned as dict (equip).
+        equip = self.detImagingEquipment(imgPath)
+        # setup equipment variables
+        height, width, rgb = im.shape
+        mod = lensfunpy.Modifier(equip['lens'],
+                                 equip['cam'].crop_factor,
+                                 width,
+                                 height)
+        # is lensfunpy.LensCalibTCA useful here?
+        mod.initialize(equip['focalLength'],
+                       equip['apertureValue'],
+                       flags=lensfunpy.ModifyFlags.ALL)
+        # generate pixel map
+        undist_coords = mod.apply_subpixel_geometry_distortion()        
+        r = im[..., 0]
+        # see for swapaxes: https://github.com/letmaik/lensfunpy/issues/17
+        g = im[..., 1].swapaxes(0,1)
+        b = im[..., 2]
+        r_undistorted = cv2.remap(r, undist_coords[..., 0], None, cv2.INTER_LANCZOS4)
+        g_undistorted = cv2.remap(g, undist_coords[..., 1], None, cv2.INTER_LANCZOS4)
+        b_undistorted = cv2.remap(b, undist_coords[..., 2], None, cv2.INTER_LANCZOS4)
+        # save the channel maps back to the image.
+        im[..., 0] = r_undistorted
+        im[..., 1] = g_undistorted
+        im[..., 2] = b_undistorted
+        return im
 
     def retrieveMetaDataBytes(self, srcPath, dstPath):
         """ given a source image, copys source meta data, and adds additional
