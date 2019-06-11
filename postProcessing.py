@@ -150,19 +150,34 @@ class appWindow(QMainWindow):
         startTime = time.time()
         # open the file
         im = self.openImageFile(imgPath)
-        cv2.imwrite('openedImg.jpg', im)
+
+        # converting to greyscale
+        grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
         # test for bluryness
-        blurStatus = self.blurDetect.blur_check(im)
+        blurStatus = self.blurDetect.blur_check(grey)
         print(f'blurStatus: {blurStatus}')
         # read the BC
-        bc = self.bcRead.decodeBC(im)
+        # scaling appears worth the calculation time.
+        largeDim = 4347
+        smalldim = 2902
+            h, w = grey.shape
+            if w > h:
+                w = largeDim
+                h = smallDim   
+            else:
+                w = smallDim
+                h = largeDim
+            res = cv2.resize(grey,(w, h), interpolation = cv2.INTER_AREA)
+        
+        bc = self.bcRead.decodeBC(grey)
         print(f'barcode(s) found: {bc}')
+
         # perform equipment corrections
         correctedImg = self.eqRead.lensCorrect(im, imgPath)
         # save output
         cv2.imwrite('alteredImg.jpg', correctedImg)
         # finish timer
-        elapsedTime = int(time.time() - startTime)
+        elapsedTime = round(time.time() - startTime, 3)
         # test total elapsed time so far with rotated and straight images.
         print(f'opening raw, testing blur status, reading barcode, equipment corrections and saving outputs required {elapsedTime} seconds')
 
