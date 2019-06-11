@@ -159,17 +159,16 @@ class appWindow(QMainWindow):
         # read the BC
         # scaling appears worth the calculation time.
         largeDim = 4347
-        smalldim = 2902
-            h, w = grey.shape
-            if w > h:
-                w = largeDim
-                h = smallDim   
-            else:
-                w = smallDim
-                h = largeDim
-            res = cv2.resize(grey,(w, h), interpolation = cv2.INTER_AREA)
-        
-        bc = self.bcRead.decodeBC(grey)
+        smallDim = 2902
+        h, w = grey.shape
+        if w > h:
+            w = largeDim
+            h = smallDim
+        else:
+            w = smallDim
+            h = largeDim
+        res = cv2.resize(grey, (w, h), interpolation=cv2.INTER_AREA)
+        bc = self.bcRead.decodeBC(res)
         print(f'barcode(s) found: {bc}')
 
         # perform equipment corrections
@@ -181,15 +180,15 @@ class appWindow(QMainWindow):
         # test total elapsed time so far with rotated and straight images.
         print(f'opening raw, testing blur status, reading barcode, equipment corrections and saving outputs required {elapsedTime} seconds')
 
-    def openImageFile(self, imgPath, demosaic = rawpy.DemosaicAlgorithm.AHD):
+    def openImageFile(self, imgPath, demosaic=rawpy.DemosaicAlgorithm.AHD):
         """ given an image path, attempts to return a numpy array image object
         """
 
         try:  # use rawpy to convert raw to openCV
             with rawpy.imread(imgPath) as raw:
-                bgr = raw.postprocess(chromatic_aberration=(1,1),
-                                      demosaic_algorithm = demosaic) 
-                im = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB) # the OpenCV image
+                bgr = raw.postprocess(chromatic_aberration=(1, 1),
+                                      demosaic_algorithm=demosaic)
+                im = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)  # the OpenCV image
         # if it is not a raw format, just try and open it.
         except LibRawNonFatalError:
             im = cv2.imread(imgPath)
