@@ -43,6 +43,7 @@ import cv2
 from ui.postProcessingUI import Ui_MainWindow
 from libs.bcRead import bcRead
 from libs.eqRead import eqRead
+from libs.blurDetect import blurDetect
 
 class appWindow(QMainWindow):
     def __init__(self):
@@ -64,7 +65,9 @@ class appWindow(QMainWindow):
         prefix = self.mainWindow.lineEdit_catalogNumberPrefix.text()
         digits = int(self.mainWindow.spinBox_catalogDigits.value())
         self.bcRead = bcRead(prefix, digits, parent=self.mainWindow)
-        
+
+        self.blurDetect = blurDetect(parent=self.mainWindow)
+
         self.eqRead = eqRead(parent=self.mainWindow)
         # assign applicable user settings for eqRead. 
         # this function is here, for ease of slot assignment in pyqt designer
@@ -147,9 +150,13 @@ class appWindow(QMainWindow):
         startTime = time.time()
         # open the file
         im = self.openImageFile(imgPath)
+        cv2.imwrite('openedImg.jpg', im)
+        # test for bluryness
+        blurStatus = self.blurDetect.blur_check(im)
+        print(f'blurStatus: {blurStatus}')
         # read the BC
         bc = self.bcRead.decodeBC(im)
-        print(bc)
+        print(f'barcode(s) found: {bc}')
         # perform equipment corrections
         correctedImg = self.eqRead.lensCorrect(im, imgPath)
         # save output
@@ -157,7 +164,7 @@ class appWindow(QMainWindow):
         # finish timer
         elapsedTime = int(time.time() - startTime)
         # test total elapsed time so far with rotated and straight images.
-        print(f'opening raw, reading barcode, equipment corrections and saving outputs required {elapsedTime} seconds')
+        print(f'opening raw, testing blur status, reading barcode, equipment corrections and saving outputs required {elapsedTime} seconds')
 
     def openImageFile(self, imgPath, demosaic = rawpy.DemosaicAlgorithm.AHD):
         """ given an image path, attempts to return a numpy array image object
