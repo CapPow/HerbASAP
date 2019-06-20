@@ -159,8 +159,6 @@ class ColorchipRead():
         :rtype: bool
         """
 
-        # im = Image.open(img_filepath)
-        im = im
         image_width, image_height = im.size
         possible_positions = []
 
@@ -245,17 +243,16 @@ class ColorchipRead():
 
         try:
             best_image.show()
-            print("Returning true")
             return True
-        except ValueError:
-            print("ccRead had a value error")
+        except ValueError as e:
+            print(f"ccRead had a value error: {e}")
             return False
-        except AttributeError:
-            print("ccRead had an attribute error")
+        except AttributeError as e:
+            print(f"ccRead had an attribute error: {e}")
             return False
-        except IndexError:
-            print("ccRead had an index error")
+        except IndexError as e:
+            print(f"ccRead had an index error: {e}")
             return False
-        except SystemError:
-            print("ccRead had a system error")
+        except SystemError as e:
+            print(f"ccRead had a system error: {e}")
             return False
