@@ -57,8 +57,9 @@ class blurDetect():
         https://doi.org/10.1016/j.patcog.2012.11.011
         """
 
-        # convert to grayscale
+        # should arrive in grayscale
         #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        
         # store the variance of openCV's Laplacian operator
         laplacian = cv2.Laplacian(img, cv2.CV_64F).var()
         # calc the image's variance, to account for 'image busyness'

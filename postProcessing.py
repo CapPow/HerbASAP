@@ -31,7 +31,9 @@ import sys
 # UI libs
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtCore import QSettings, Qt, QObject
+from PyQt5.QtCore import (QSettings, Qt, QObject,
+                          QRunnable, pyqtSignal,pyqtSlot,
+                          QThreadPool)
 # image libs
 import lensfunpy
 import piexif
@@ -44,6 +46,79 @@ from ui.postProcessingUI import Ui_MainWindow
 from libs.bcRead import bcRead
 from libs.eqRead import eqRead
 from libs.blurDetect import blurDetect
+from libs.ccRead import ccRead
+
+class Worker_Signals(QObject):
+    '''
+    Defines the signals available from a running worker thread.
+    see: https://www.learnpyqt.com/courses/concurrent-execution/multithreading-pyqt-applications-qthreadpool/
+
+    Supported signals are:
+
+    finished
+        No data
+    
+    error
+        `tuple` (exctype, value, traceback.format_exc() )
+    
+    result
+        `object` data returned from processing, anything
+
+    progress
+        `int` indicating % progress 
+
+    '''
+    finished = pyqtSignal()
+    error = pyqtSignal(tuple)
+    result = pyqtSignal(object)
+    progress = pyqtSignal(int)
+
+class Worker(QRunnable):
+    '''
+    Worker thread
+
+    Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
+    
+    see: https://www.learnpyqt.com/courses/concurrent-execution/multithreading-pyqt-applications-qthreadpool/
+
+    :param callback: The function callback to run on this worker thread. Supplied args and 
+                     kwargs will be passed through to the runner.
+    :type callback: function
+    :param args: Arguments to pass to the callback function
+    :param kwargs: Keywords to pass to the callback function
+
+    '''
+
+    def __init__(self, fn, *args, **kwargs):
+        super(Worker, self).__init__()
+
+        # Store constructor arguments (re-used for processing)
+        self.fn = fn
+        self.args = args
+        self.kwargs = kwargs
+        self.signals = Worker_Signals()    
+
+        # Add the callback to our kwargs
+        #self.kwargs['progress_callback'] = self.signals.progress        
+
+    @pyqtSlot()
+    def run(self):
+        '''
+        Initialise the runner function with passed args, kwargs.
+        '''
+        
+        # Retrieve args/kwargs here; and fire processing using them
+        try:
+            result = self.fn(*self.args, **self.kwargs)
+        except:
+            traceback.print_exc()
+            exctype, value = sys.exc_info()[:2]
+            self.signals.error.emit((exctype, value, traceback.format_exc()))
+        else:
+            self.signals.result.emit(result)  # Return the result of the processing
+        finally:
+            self.signals.finished.emit()  # Done
+
 
 class appWindow(QMainWindow):
     def __init__(self):
@@ -52,7 +127,15 @@ class appWindow(QMainWindow):
 
     def init_ui(self):
         self.mainWindow = Ui_MainWindow()
-        self.mainWindow.setupUi(self)        
+        self.mainWindow.setupUi(self)
+        
+        # set up a threadpool
+        self.threadPool = QThreadPool(self)
+        # determine & assign a safe quantity of threads 75% of resources
+        maxThreads = int(self.threadPool.maxThreadCount() * .75)
+        self.threadPool.setMaxThreadCount(maxThreads)
+        print(f"Multithreading with maximum {self.threadPool.maxThreadCount()} threads")
+        
         # initiate the persistant settings
         # todo update this when name is decided on
         self.settings = QSettings('AYUP', 'AYUP')        
@@ -69,6 +152,9 @@ class appWindow(QMainWindow):
         self.blurDetect = blurDetect(parent=self.mainWindow)
 
         self.eqRead = eqRead(parent=self.mainWindow)
+        
+        self.ccRead = ccRead(parent=self.mainWindow)
+        
         # assign applicable user settings for eqRead. 
         # this function is here, for ease of slot assignment in pyqt designer
         self.updateEqSettings()
@@ -77,7 +163,6 @@ class appWindow(QMainWindow):
 
 #   when saving: quality="keep" the original quality is preserved 
 #   The optimize=True "attempts to losslessly reduce image size
-
 
 #    def versionCheck(self):
 #        """ checks the github repo's latest release version number against
@@ -139,55 +224,102 @@ class appWindow(QMainWindow):
 #        self.parent.w.label_zoomLevel.setText(f'{str(valueToSet).rjust(4," ")}%')  # update the label
 #        self.settings.setValue('value_zoomLevel', valueToSet)  # update settings
 
+    def handle_blur_result(self, result):
+        self.is_blurry = result
+    
+    def alert_blur_finished(self):
+        print('blur detection finished')
+        print(self.is_blurry)
+
+    def handle_bc_result(self, result):
+        self.bc_code = result
+
+    def alert_bc_finished(self):
+        print('bc detection finished')
+        print(self.bc_code)
+
     def testFunction(self):
         """ a development assistant function, connected to a GUI button
         used to test various functions before complete GUI integration."""
 
         imgPath, _ = QtWidgets.QFileDialog.getOpenFileName(
-                None, "Open Sample Image", QtCore.QDir.homePath())
+                None, "Open Sample Image")
         #  start a timer
         import time
         startTime = time.time()
         # open the file
         im = self.openImageFile(imgPath)
+        cv2.imwrite('startedImg.jpg', im)
 
-        # converting to greyscale
+         # converting to greyscale
         grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
         # test for bluryness
-        blurStatus = self.blurDetect.blur_check(grey)
-        print(f'blurStatus: {blurStatus}')
-        # read the BC
-        # scaling appears worth the calculation time.
-        largeDim = 4347
-        smallDim = 2902
-        h, w = grey.shape
-        if w > h:
-            w = largeDim
-            h = smallDim
-        else:
-            w = smallDim
-            h = largeDim
-        res = cv2.resize(grey, (w, h), interpolation=cv2.INTER_AREA)
-        bc = self.bcRead.decodeBC(res)
-        print(f'barcode(s) found: {bc}')
+        
+        blur_worker = Worker(self.blurDetect.blur_check, grey) # Any other args, kwargs are passed to the run function
+        blur_worker.signals.result.connect(self.handle_blur_result)
+        blur_worker.signals.finished.connect(self.alert_blur_finished)
+        self.threadPool.start(blur_worker) # start blur_worker thread
+
+        bc_worker = Worker(self.bcRead.decodeBC, grey) # Any other args, kwargs are passed to the run function
+        bc_worker.signals.result.connect(self.handle_bc_result)
+        bc_worker.signals.finished.connect(self.alert_bc_finished)
+        self.threadPool.start(bc_worker) # start blur_worker thread
 
         # perform equipment corrections
-        correctedImg = self.eqRead.lensCorrect(im, imgPath)
+        im = self.eqRead.lensCorrect(im, imgPath)
+
+        # hardcoded values are approx white RGB values from ccRead:
+        # hardcoding like tihs is ~ to manual White balance.
+        whiteR = 168
+        whiteG = 142
+        whiteB = 91
+        lum = (whiteR + whiteG + whiteB)/3
+        # notice inverted BGR / RGB, somewhere this is not consistant
+        imgB = im[..., 0].copy()
+        imgG = im[..., 1].copy()
+        imgR = im[..., 2].copy()
+        imgR = imgR * lum / whiteR
+        imgG = imgG * lum / whiteG
+        imgB = imgB * lum / whiteB
+        # scale each channel
+        im[..., 0] = imgB
+        im[..., 1] = imgG
+        im[..., 2] = imgR
+        
+
         # save output
-        cv2.imwrite('alteredImg.jpg', correctedImg)
+        cv2.imwrite('alteredImg.jpg', im)
         # finish timer
         elapsedTime = round(time.time() - startTime, 3)
         # test total elapsed time so far with rotated and straight images.
         print(f'opening raw, testing blur status, reading barcode, equipment corrections and saving outputs required {elapsedTime} seconds')
 
-    def openImageFile(self, imgPath, demosaic=rawpy.DemosaicAlgorithm.AHD):
+    def openImageFile(self, imgPath, demosaic=rawpy.DemosaicAlgorithm.AHD, userWB=False):
         """ given an image path, attempts to return a numpy array image object
         """
 
         try:  # use rawpy to convert raw to openCV
             with rawpy.imread(imgPath) as raw:
-                bgr = raw.postprocess(chromatic_aberration=(1, 1),
-                                      demosaic_algorithm=demosaic)
+                if userWB:
+                    r,g,b = userWB
+                    # R and B to Green channel
+                    wbScalers = [g / r,
+                                 1.0,
+                                 g / b,
+                                 1.0]
+
+                    bgr = raw.postprocess(chromatic_aberration=(1, 1),
+                                    gamma=(1, 1), no_auto_bright=True,
+                                    demosaic_algorithm=demosaic, user_wb=wbScalers)
+#                    bgr = raw.postprocess(chromatic_aberration=(1, 1),
+#                                      demosaic_algorithm=demosaic, gamma=(1,1),
+#                                      no_auto_bright=True, use_camera_wb=False,
+#                                      user_wb=wbScalers)
+                else:
+                    bgr = raw.postprocess(chromatic_aberration=(1, 1),
+                                          demosaic_algorithm=demosaic,
+                                          gamma=(1,1))
+
                 im = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)  # the OpenCV image
         # if it is not a raw format, just try and open it.
         except LibRawNonFatalError:
