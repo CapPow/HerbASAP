@@ -135,7 +135,7 @@ class ColorchipRead():
         pil_image = Image.fromarray(pil_image)
         return pil_image
 
-    def test_feature(self, im, stride=15, partition_size=125, buffer_size=20, high_precision=False):
+    def test_feature(self, im, stride=50, partition_size=125, buffer_size=20, high_precision=False):
         """
         Tests whether the given image (and its color chip) is compatible with the neural network. This function does not
         spit out values. Compatibility means that the neural network found a color-chip like object, but does not
