@@ -139,6 +139,36 @@ class ColorchipRead():
         pil_image = Image.fromarray(pil_image)
         return pil_image
 
+    def predict_color_chip_location(self, im, stride=50, partition_size=125, buffer_size=20, high_precision=False):
+        
+        im = self.ocv_to_pil(im)
+        image_width, image_height = im.size
+        possible_positions = []
+    
+        hists_rgb = []
+        hists_hsv = []
+        for r in range(-2, (image_height - partition_size) // stride + 2):
+            for c in range(-2, (image_width - partition_size) // stride + 2):
+                x1, y1 = c * stride, r * stride
+                x2, y2 = x1 + partition_size, y1 + partition_size
+                partitioned_im = im.crop((x1, y1, x2, y2))
+                possible_positions.append((x1, y1, x2, y2))
+                partitioned_im_hsv = partitioned_im.convert("HSV")
+    
+                hists_rgb.append(partitioned_im.histogram())
+                hists_hsv.append(partitioned_im_hsv.histogram())
+    
+        hists_rgb = np.array(hists_rgb).astype('float16') / 255
+        hists_hsv = np.array(hists_hsv).astype('float16') / 255
+        
+        print('\n\nmade it up to _predict_uncertainty_position\n\n')
+        position_prediction, position_uncertainty = self._predict_uncertainty_position([hists_rgb, hists_hsv],
+                                                                                       len([hists_rgb, hists_hsv]))
+        
+        print(position_uncertainty)
+        return position_prediction
+
+
     def test_feature(self, im, stride=50, partition_size=125, buffer_size=20, high_precision=False):
         """
         Tests whether the given image (and its color chip) is compatible with the neural network. This function does not

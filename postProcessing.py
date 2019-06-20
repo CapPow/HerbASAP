@@ -225,6 +225,16 @@ class appWindow(QMainWindow):
         print(self.bc_code)
         self.bc_working = False
 
+    def handle_cc_result(self, result):
+        self.bc_loc = result
+        print(result)
+
+    def alert_cc_finished(self):
+        """ called when the results are in from bcRead."""
+        print('cc detection finished')
+        #print(self.cc_loc)
+        #self.cc_working = False
+
     def white_balance_image(self, im, whiteR, whiteG, whiteB):
         """
         Given an image array, and RGB values for the lightest portion of a
@@ -351,6 +361,15 @@ class appWindow(QMainWindow):
             blur_worker.signals.finished.connect(self.alert_blur_finished)
             self.threadPool.start(blur_worker) # start blur_worker thread
 
+
+        if self.mainWindow.group_colorCheckerDetection:
+            # colorchecker functions
+            reduced_img = self.scale_img(im)
+            cc_worker = Worker(self.colorchipDetect.predict_color_chip_location, reduced_img)
+            cc_worker.signals.result.connect(self.handle_cc_result)
+            cc_worker.signals.finished.connect(self.alert_cc_finished)
+            self.threadPool.start(cc_worker)
+            
 
         #im_reduced = self.scale_img(im)
         # perform equipment corrections
