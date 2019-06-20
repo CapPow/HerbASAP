@@ -27,10 +27,11 @@ __status__ = "Alpha"
 __version__ = 'v0.0.1-alpha'
 
 import os
+import traceback
 import sys
 # UI libs
 from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMainWindow, QMessageBox
 from PyQt5.QtCore import (QSettings, Qt, QObject,
                           QRunnable, pyqtSignal,pyqtSlot,
                           QThreadPool)
@@ -157,6 +158,7 @@ class appWindow(QMainWindow):
         
         # assign applicable user settings for eqRead. 
         # this function is here, for ease of slot assignment in pyqt designer
+        self.reset_working_variables()
         self.updateEqSettings()
 
 #        self.versionCheck()
@@ -257,15 +259,15 @@ class appWindow(QMainWindow):
         """ a development assistant function, connected to a GUI button
         used to test various functions before complete GUI integration."""
 
-        imgPath, _ = QtWidgets.QFileDialog.getOpenFileName(
+        img_path, _ = QtWidgets.QFileDialog.getOpenFileName(
                 None, "Open Sample Image")
         # store working variables as class variables
-        self.imgPath = imgPath
+        self.img_path = img_path
         #  start a timer
         import time
         startTime = time.time()
         # open the file
-        im = self.openImageFile(imgPath)
+        im = self.openImageFile(img_path)
         cv2.imwrite('startedImg.jpg', im)
 
          # converting to greyscale
@@ -273,7 +275,8 @@ class appWindow(QMainWindow):
         
         if self.mainWindow.checkBox_blurDetection:
             # test for bluryness
-            blur_worker = Worker(self.blurDetect.blur_check, grey, self.doubleSpinBox_blurThreshold) # Any other args, kwargs are passed to the run function
+            blurThreshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
+            blur_worker = Worker(self.blurDetect.blur_check, grey, blurThreshold) # Any other args, kwargs are passed to the run function
             blur_worker.signals.result.connect(self.handle_blur_result)
             blur_worker.signals.finished.connect(self.alert_blur_finished)
             self.threadPool.start(blur_worker) # start blur_worker thread
@@ -286,7 +289,7 @@ class appWindow(QMainWindow):
             self.threadPool.start(bc_worker) # start blur_worker thread
 
         # perform equipment corrections
-        im = self.eqRead.lensCorrect(im, imgPath)
+        im = self.eqRead.lensCorrect(im, img_path)
 
         # hardcoded values are approx white RGB values from ccRead:
         # hardcoding like tihs is ~ to manual White balance.
