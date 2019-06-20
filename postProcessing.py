@@ -46,7 +46,7 @@ from ui.postProcessingUI import Ui_MainWindow
 from libs.bcRead import bcRead
 from libs.eqRead import eqRead
 from libs.blurDetect import blurDetect
-from libs.ccRead import ccRead
+#from libs.ccRead import ccRead
 
 class Worker_Signals(QObject):
     '''
@@ -153,7 +153,7 @@ class appWindow(QMainWindow):
 
         self.eqRead = eqRead(parent=self.mainWindow)
         
-        self.ccRead = ccRead(parent=self.mainWindow)
+        #self.ccRead = ccRead(parent=self.mainWindow)
         
         # assign applicable user settings for eqRead. 
         # this function is here, for ease of slot assignment in pyqt designer
@@ -238,6 +238,40 @@ class appWindow(QMainWindow):
         print('bc detection finished')
         print(self.bc_code)
 
+    def white_balance_image(self, im, whiteR, whiteG, whiteB):
+        """
+        Given an image array, and RGB values for the lightest portion of a
+        color standard, returns the white balanced image array.
+
+        :param im: An image array
+        :type im: ndarray
+        :param whiteR: the red pixel value for the lightest portion of the
+        color standard
+        :type whiteR: int
+        :param whiteG: the green pixel value for the lightest portion of the
+        color standard
+        :type whiteG: int
+        :param whiteB: the blue pixel value for the lightest portion of the
+        color standard
+        :type whiteB: int
+        """
+
+        lum = (whiteR + whiteG + whiteB)/3
+        # notice inverted BGR / RGB, somewhere this is not consistant
+        imgB = im[..., 0].copy()
+        imgG = im[..., 1].copy()
+        imgR = im[..., 2].copy()
+        imgR = imgR * lum / whiteR
+        imgG = imgG * lum / whiteG
+        imgB = imgB * lum / whiteB
+        # scale each channel
+        im[..., 0] = imgB
+        im[..., 1] = imgG
+        im[..., 2] = imgR
+        
+        return im
+        
+
     def testFunction(self):
         """ a development assistant function, connected to a GUI button
         used to test various functions before complete GUI integration."""
@@ -273,20 +307,7 @@ class appWindow(QMainWindow):
         whiteR = 168
         whiteG = 142
         whiteB = 91
-        lum = (whiteR + whiteG + whiteB)/3
-        # notice inverted BGR / RGB, somewhere this is not consistant
-        imgB = im[..., 0].copy()
-        imgG = im[..., 1].copy()
-        imgR = im[..., 2].copy()
-        imgR = imgR * lum / whiteR
-        imgG = imgG * lum / whiteG
-        imgB = imgB * lum / whiteB
-        # scale each channel
-        im[..., 0] = imgB
-        im[..., 1] = imgG
-        im[..., 2] = imgR
-        
-
+        im = self.white_balance_image(im, whiteR, whiteG, whiteB)
         # save output
         cv2.imwrite('alteredImg.jpg', im)
         # finish timer
