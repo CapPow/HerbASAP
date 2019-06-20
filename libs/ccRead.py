@@ -23,8 +23,14 @@
 # imports here
 import numpy as np
 
-from keras.models import load_model
-import keras.backend as K
+
+try:
+    from tensorflow.keras.models import load_model
+    from tensorflow.keras import backend as K
+except ImportError:
+    from keras.models import load_model
+    import keras.backend as K
+
 from PIL import Image
 
 
