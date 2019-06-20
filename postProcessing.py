@@ -42,12 +42,14 @@ import lensfunpy
 import piexif
 import rawpy
 from rawpy import LibRawNonFatalError
+from PIL import Image
 import cv2
 # internal libs
 from ui.postProcessingUI import Ui_MainWindow
 from libs.bcRead import bcRead
 from libs.eqRead import eqRead
 from libs.blurDetect import blurDetect
+from libs.ccRead import ColorchipRead
 #from libs.ccRead import ccRead
 
 class Worker_Signals(QObject):
@@ -121,7 +123,6 @@ class Worker(QRunnable):
         finally:
             self.signals.finished.emit()  # Done
 
-
 class appWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -152,6 +153,8 @@ class appWindow(QMainWindow):
         self.bcRead = bcRead(prefix, digits, parent=self.mainWindow)
 
         self.blurDetect = blurDetect(parent=self.mainWindow)
+
+        self.colorchipDetect = ColorchipRead(parent=self.mainWindow)
 
         self.eqRead = eqRead(parent=self.mainWindow)
         
@@ -239,7 +242,6 @@ class appWindow(QMainWindow):
         color standard
         :type whiteB: int
         """
-
         lum = (whiteR + whiteG + whiteB)/3
         # notice inverted BGR / RGB, somewhere this is not consistant
         imgB = im[..., 0].copy()
@@ -425,17 +427,18 @@ class appWindow(QMainWindow):
         try:
             im = self.openImageFile(imgPath)
             bcStatus = self.bcRead.testFeature(im)
-            #ccStatus = self.colorChecker.testFeature(im)
+            convert_for_colorchip = self.colorchipDetect.ocv_to_pil(im)
+            ccStatus = self.colorchipDetect.test_feature(convert_for_colorchip)
             eqStatus = self.eqRead.testFeature(imgPath)
         except Exception as e:
             # TODO add user notify for this error.
             print(e)
             bcStatus = False
             ccStatus = False
-            eqStatus = False 
+            eqStatus = False
         
         self.mainWindow.group_barcodeDetection.setEnabled(bcStatus)
-        #self.mainWindow.group_colorCheckerDetection.setEnabled(ccStatus)
+        self.mainWindow.group_colorCheckerDetection.setEnabled(ccStatus)
         self.mainWindow.group_equipmentDetection.setEnabled(eqStatus)
 
     def updateEqSettings(self):
