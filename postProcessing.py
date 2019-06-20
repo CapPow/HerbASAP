@@ -196,45 +196,26 @@ class appWindow(QMainWindow):
 #                        webbrowser.open(link,autoraise=1)
 #            self.settings.saveSettings()  # save the new version check date
 
-#
-#    def setMaxZoom(self):
-#        try:
-#            self.parent.updatePreview()
-#        except AttributeError:
-#            pass
-#        screenSize = (self.parent.geometry())
-#        screenX = screenSize.width()
-#        xMax = screenX * 0.6
-#        screenY = screenSize.height()
-#        yMax = screenY * 0.75
-#        #  resulting pdfs are 96dpi skip calling getPixmap twice, Assume 96
-#        #  96dpi / 25.4mm per inch = 3.780 dots per mm
-#        label_X = int(self.settingsWindow.value_X.value() * (3.780))
-#        label_Y = int(self.settingsWindow.value_Y.value() * (3.780))
-#        max_XZoom = xMax / label_X
-#        max_YZoom = yMax / label_Y
-#        max_Zoom = int(min(max_XZoom, max_YZoom) * 100)
-#        self.parent.w.value_zoomLevel.setMaximum(max_Zoom)
-#        currentZoom = int(self.parent.w.value_zoomLevel.value())
-#        if currentZoom > max_Zoom:
-#            valueToSet = (max_Zoom)
-#        else:
-#            valueToSet = currentZoom
-#        self.parent.w.value_zoomLevel.setValue(valueToSet)
-#        self.parent.w.label_zoomLevel.setText(f'{str(valueToSet).rjust(4," ")}%')  # update the label
-#        self.settings.setValue('value_zoomLevel', valueToSet)  # update settings
-
     def handle_blur_result(self, result):
         self.is_blurry = result
-    
+
     def alert_blur_finished(self):
-        print('blur detection finished')
-        print(self.is_blurry)
+        """ called when the results are in from blur detection. """
+        if self.is_blurry:
+            img_base_name = os.path.basename(self.img_path)
+            notice_title = 'Blurry Image Warning'
+            if self.bc_code:
+                notice_text = f'Warning, {self.bc_code} is blurry.'
+            else:
+                notice_text = f'Warning, {img_base_name} is blurry.'
+            detail_text = f'Blurry Image Path: {self.img_path}'
+            self.userNotice(notice_text, notice_title, detail_text)
 
     def handle_bc_result(self, result):
         self.bc_code = result
 
     def alert_bc_finished(self):
+        """ called when the results are in from bcRead."""
         print('bc detection finished')
         print(self.bc_code)
 
@@ -278,6 +259,8 @@ class appWindow(QMainWindow):
 
         imgPath, _ = QtWidgets.QFileDialog.getOpenFileName(
                 None, "Open Sample Image")
+        # store working variables as class variables
+        self.imgPath = imgPath
         #  start a timer
         import time
         startTime = time.time()
@@ -287,17 +270,20 @@ class appWindow(QMainWindow):
 
          # converting to greyscale
         grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-        # test for bluryness
         
-        blur_worker = Worker(self.blurDetect.blur_check, grey) # Any other args, kwargs are passed to the run function
-        blur_worker.signals.result.connect(self.handle_blur_result)
-        blur_worker.signals.finished.connect(self.alert_blur_finished)
-        self.threadPool.start(blur_worker) # start blur_worker thread
+        if self.mainWindow.checkBox_blurDetection:
+            # test for bluryness
+            blur_worker = Worker(self.blurDetect.blur_check, grey, self.doubleSpinBox_blurThreshold) # Any other args, kwargs are passed to the run function
+            blur_worker.signals.result.connect(self.handle_blur_result)
+            blur_worker.signals.finished.connect(self.alert_blur_finished)
+            self.threadPool.start(blur_worker) # start blur_worker thread
 
-        bc_worker = Worker(self.bcRead.decodeBC, grey) # Any other args, kwargs are passed to the run function
-        bc_worker.signals.result.connect(self.handle_bc_result)
-        bc_worker.signals.finished.connect(self.alert_bc_finished)
-        self.threadPool.start(bc_worker) # start blur_worker thread
+        if self.mainWindow.group_renameByBarcode:
+            # retrieve the barcode values from image
+            bc_worker = Worker(self.bcRead.decodeBC, grey) # Any other args, kwargs are passed to the run function
+            bc_worker.signals.result.connect(self.handle_bc_result)
+            bc_worker.signals.finished.connect(self.alert_bc_finished)
+            self.threadPool.start(bc_worker) # start blur_worker thread
 
         # perform equipment corrections
         im = self.eqRead.lensCorrect(im, imgPath)
@@ -314,32 +300,26 @@ class appWindow(QMainWindow):
         elapsedTime = round(time.time() - startTime, 3)
         # test total elapsed time so far with rotated and straight images.
         print(f'opening raw, testing blur status, reading barcode, equipment corrections and saving outputs required {elapsedTime} seconds')
+        
+    def reset_working_variables(self):
+        """
+        sets all class variables relevant to the current working image to None.
+        """
+        self.imgPath = None
+        self.bc_code = None
+        self.is_blurry = None
+        self.cc_location = None
+        self.cc_white_value = None
 
-    def openImageFile(self, imgPath, demosaic=rawpy.DemosaicAlgorithm.AHD, userWB=False):
+    def openImageFile(self, imgPath, demosaic=rawpy.DemosaicAlgorithm.AHD):
         """ given an image path, attempts to return a numpy array image object
         """
 
         try:  # use rawpy to convert raw to openCV
             with rawpy.imread(imgPath) as raw:
-                if userWB:
-                    r,g,b = userWB
-                    # R and B to Green channel
-                    wbScalers = [g / r,
-                                 1.0,
-                                 g / b,
-                                 1.0]
-
-                    bgr = raw.postprocess(chromatic_aberration=(1, 1),
-                                    gamma=(1, 1), no_auto_bright=True,
-                                    demosaic_algorithm=demosaic, user_wb=wbScalers)
-#                    bgr = raw.postprocess(chromatic_aberration=(1, 1),
-#                                      demosaic_algorithm=demosaic, gamma=(1,1),
-#                                      no_auto_bright=True, use_camera_wb=False,
-#                                      user_wb=wbScalers)
-                else:
-                    bgr = raw.postprocess(chromatic_aberration=(1, 1),
-                                          demosaic_algorithm=demosaic,
-                                          gamma=(1,1))
+                bgr = raw.postprocess(chromatic_aberration=(1, 1),
+                                      demosaic_algorithm=demosaic,
+                                      gamma=(1, 1))
 
                 im = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)  # the OpenCV image
         # if it is not a raw format, just try and open it.
@@ -399,7 +379,6 @@ class appWindow(QMainWindow):
         # skip everything if the group is not enabled.
         if not self.mainWindow.group_renameByBarcode.isEnabled():
             return
-        
         # recompile the regexPattern
         try:
             prefix = self.lineEdit_catalogNumberPrefix.text()
@@ -447,6 +426,40 @@ class appWindow(QMainWindow):
                 QtWidgets.QFileDialog.ShowDirsOnly)
         targetField.setText(targetDir)
 
+    def userAsk(self, text, title='', detailText=None):
+        """ a general user dialog with yes / cancel options"""
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Question)
+        msg.setText(text)
+        msg.setWindowTitle(title)
+        if detailText != None:
+            msg.setDetailedText(detailText)
+
+        msg.setDefaultButton(QMessageBox.No)
+        reply = msg.exec_()
+        if reply == QMessageBox.Yes:
+            return True
+        elif reply == QMessageBox.No:
+            return False
+        elif reply == QMessageBox.Cancel:
+            return False
+        elif reply == QMessageBox.Retry:
+            return True
+        else:
+            return "cancel"
+
+    def userNotice(self, text, title='', detailText = None):
+        """ a general user notice """
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Warning)
+        msg.setText(text)
+        if detailText != None:
+            msg.setDetailedText(detailText)
+        #msg.setInformativeText("This is additional information")
+        msg.setWindowTitle(title)
+        reply = msg.exec_()
+        return reply
+
     # Functions related to the saving and retrieval of preference settings
 
     def has(self, key):
@@ -455,14 +468,14 @@ class appWindow(QMainWindow):
     def setValue(self, key, value):
         return self.settings.setValue(key, value)
 
-    def get(self, key, altValue = None):
+    def get(self, key, altValue=None):
         result = self.settings.value(key, altValue)
         if result == 'true':
             result = True
         elif result == 'false':
             result = False
         return result
-    
+
     def populateQComboBoxSettings(self, obj, value):
         """ sets a QComboBox based on a string value. Presumed to be a more
         durable method. obj is the qComboBox object, and value is a string
@@ -538,6 +551,8 @@ class appWindow(QMainWindow):
         self.mainWindow.checkBox_chromaticAberrationCorrection.setCheckState(checkBox_chromaticAberrationCorrection)
         checkBox_metaDataApplication = self.convertCheckState(self.get('checkBox_metaDataApplication',''))
         self.mainWindow.checkBox_metaDataApplication.setCheckState(checkBox_metaDataApplication)
+        checkBox_blurDetection = self.convertCheckState(self.get('checkBox_blurDetection',''))
+        self.mainWindow.checkBox_blurDetection.setCheckState(checkBox_blurDetection)
 
         # QGroupbox (checkstate)
         #group_renameByBarcode = self.get('group_renameByBarcode','')
@@ -572,6 +587,8 @@ class appWindow(QMainWindow):
         # QDoubleSpinBox
         doubleSpinBox_focalDistance = float(self.get('doubleSpinBox_focalDistance', 25.5))
         self.mainWindow.doubleSpinBox_focalDistance.setValue(doubleSpinBox_focalDistance)
+        doubleSpinBox_blurThreshold = float(self.get('doubleSpinBox_blurThreshold', 0.08))
+        self.mainWindow.doubleSpinBox_blurThreshold.setValue(doubleSpinBox_blurThreshold)
 
         # slider
         #value_LogoScaling = int(self.get('value_LogoScaling', 100))
@@ -644,6 +661,8 @@ class appWindow(QMainWindow):
         self.settings.setValue('checkBox_chromaticAberrationCorrection', checkBox_chromaticAberrationCorrection)
         checkBox_metaDataApplication = self.mainWindow.checkBox_metaDataApplication.isChecked()
         self.settings.setValue('checkBox_metaDataApplication', checkBox_metaDataApplication)
+        checkBox_blurDetection = self.mainWindow.checkBox_blurDetection.isChecked()
+        self.settings.setValue('checkBox_blurDetection', checkBox_blurDetection)
 
         # QGroupbox (checkstate)
         group_renameByBarcode = self.mainWindow.group_renameByBarcode.isChecked()
@@ -677,6 +696,8 @@ class appWindow(QMainWindow):
         # QDoubleSpinBox
         doubleSpinBox_focalDistance = self.mainWindow.doubleSpinBox_focalDistance.value()
         self.settings.setValue('doubleSpinBox_focalDistance', doubleSpinBox_focalDistance)
+        doubleSpinBox_blurThreshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
+        self.settings.setValue('doubleSpinBox_blurThreshold', doubleSpinBox_blurThreshold)
         
         # slider
         #value_LogoScaling = self.mainWindow.value_LogoScaling.value()
