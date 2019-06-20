@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="f1346991-2a84-455a-b0c3-b6c99b8a644c" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/libs/ccRead.py" beforeDir="false" afterPath="$PROJECT_DIR$/libs/ccRead.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/postProcessing.py" beforeDir="false" afterPath="$PROJECT_DIR$/postProcessing.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -15,11 +16,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/libs/ccRead.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="137" column="40" selection-start-line="137" selection-start-column="40" selection-end-line="137" selection-end-column="40" />
-              <folding>
-                <element signature="e#982#1000#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="-1446">
+              <caret line="230" column="23" lean-forward="true" selection-start-line="230" selection-start-column="23" selection-end-line="230" selection-end-column="23" />
             </state>
           </provider>
         </entry>
@@ -27,8 +25,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/postProcessing.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="177">
-              <caret line="128" column="28" selection-start-line="128" selection-start-column="28" selection-end-line="128" selection-end-column="28" />
+            <state relative-caret-position="209">
+              <caret line="374" column="52" lean-forward="true" selection-start-line="374" selection-start-column="52" selection-end-line="374" selection-end-column="52" />
               <folding>
                 <element signature="e#1139#1148#0" expanded="true" />
               </folding>
@@ -37,9 +35,18 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/libs/eqRead.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="329">
+              <caret line="65" selection-start-line="65" selection-end-line="65" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$USER_HOME$/.PyCharm2019.1/system/python_stubs/826217819/PyQt5/QtWidgets/QFileDialog.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2533">
+            <state relative-caret-position="176">
               <caret line="153" column="8" selection-start-line="153" selection-start-column="8" selection-end-line="153" selection-end-column="8" />
             </state>
           </provider>
@@ -48,7 +55,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://D:/Anaconda3/envs/Shaw/Lib/site-packages/PIL/Image.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="44948">
+            <state relative-caret-position="244">
               <caret line="2649" selection-start-line="2649" selection-end-line="2649" />
             </state>
           </provider>
@@ -89,6 +96,14 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>in {base_name}</find>
+      <find>colorchip_pos</find>
+      <find>color_chip_</find>
+      <find>colorChecker</find>
+      <find>colorCheckerD</find>
+      <find>test</find>
+      <find>location</find>
+      <find>processImage</find>
+      <find>Worker</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -103,8 +118,8 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/postProcessing.py" />
         <option value="$PROJECT_DIR$/libs/ccRead.py" />
+        <option value="$PROJECT_DIR$/postProcessing.py" />
       </list>
     </option>
   </component>
@@ -260,7 +275,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="21366000" />
+    <option name="totallyTimeSpent" value="25292000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -299,25 +314,11 @@
     <option name="LAST_COMMIT_MESSAGE" value="Commit changes for finished initial working state. Framework of the &#10;ColorchipRead class is done, and should only need minimal changes in &#10;the future." />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/autoPostProcessing$postProcessing.coverage" NAME="postProcessing Coverage Results" MODIFIED="1561059250209" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/autoPostProcessing$ccRead.coverage" NAME="ccRead Coverage Results" MODIFIED="1561048229102" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/libs" />
+    <SUITE FILE_PATH="coverage/autoPostProcessing$postProcessing.coverage" NAME="postProcessing Coverage Results" MODIFIED="1561074583752" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/autoPostProcessing$ccRead.coverage" NAME="ccRead Coverage Results" MODIFIED="1561074275020" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/libs" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/test.jpg" />
-    <entry file="file://$USER_HOME$/.PyCharm2019.1/system/python_stubs/826217819/PyQt5/QtWidgets/QFileDialog.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2533">
-          <caret line="153" column="8" selection-start-line="153" selection-start-column="8" selection-end-line="153" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/Anaconda3/envs/Shaw/Lib/site-packages/PIL/Image.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="44948">
-          <caret line="2649" selection-start-line="2649" selection-end-line="2649" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/requirements.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="153">
@@ -342,20 +343,38 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/libs/eqRead.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="329">
+          <caret line="65" selection-start-line="65" selection-end-line="65" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharm2019.1/system/python_stubs/826217819/PyQt5/QtWidgets/QFileDialog.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="153" column="8" selection-start-line="153" selection-start-column="8" selection-end-line="153" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Anaconda3/envs/Shaw/Lib/site-packages/PIL/Image.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="244">
+          <caret line="2649" selection-start-line="2649" selection-end-line="2649" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/libs/ccRead.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="137" column="40" selection-start-line="137" selection-start-column="40" selection-end-line="137" selection-end-column="40" />
-          <folding>
-            <element signature="e#982#1000#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="-1446">
+          <caret line="230" column="23" lean-forward="true" selection-start-line="230" selection-start-column="23" selection-end-line="230" selection-end-column="23" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/postProcessing.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="177">
-          <caret line="128" column="28" selection-start-line="128" selection-start-column="28" selection-end-line="128" selection-end-column="28" />
+        <state relative-caret-position="209">
+          <caret line="374" column="52" lean-forward="true" selection-start-line="374" selection-start-column="52" selection-end-line="374" selection-end-column="52" />
           <folding>
             <element signature="e#1139#1148#0" expanded="true" />
           </folding>
