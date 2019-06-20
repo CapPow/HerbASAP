@@ -29,18 +29,19 @@ __version__ = 'v0.0.1-alpha'
 import os
 import traceback
 import sys
+import string
+import time
 # UI libs
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
 from PyQt5.QtCore import (QSettings, Qt, QObject,
                           QRunnable, pyqtSignal,pyqtSlot,
-                          QThreadPool)
+                          QThreadPool, QWaitCondition)
 # image libs
 import lensfunpy
 import piexif
 import rawpy
 from rawpy import LibRawNonFatalError
-#from PIL import Image
 import cv2
 # internal libs
 from ui.postProcessingUI import Ui_MainWindow
@@ -204,12 +205,11 @@ class appWindow(QMainWindow):
     def alert_blur_finished(self):
         """ called when the results are in from blur detection. """
         if self.is_blurry:
-            img_base_name = os.path.basename(self.img_path)
             notice_title = 'Blurry Image Warning'
             if self.bc_code:
                 notice_text = f'Warning, {self.bc_code} is blurry.'
             else:
-                notice_text = f'Warning, {img_base_name} is blurry.'
+                notice_text = f'Warning, {self.img_base_name} is blurry.'
             detail_text = f'Blurry Image Path: {self.img_path}'
             self.userNotice(notice_text, notice_title, detail_text)
 
@@ -220,6 +220,7 @@ class appWindow(QMainWindow):
         """ called when the results are in from bcRead."""
         print('bc detection finished')
         print(self.bc_code)
+        self.bc_working = False
 
     def white_balance_image(self, im, whiteR, whiteG, whiteB):
         """
@@ -272,23 +273,74 @@ class appWindow(QMainWindow):
         reduced_im = cv2.resize(im, (w, h), interpolation=cv2.INTER_AREA)
         return reduced_im
 
-    def testFunction(self):
-        """ a development assistant function, connected to a GUI button
-        used to test various functions before complete GUI integration."""
+    def save_output_images(self, im):
+        """
+        saves a processed cv2 image object to the appropriate formats and
+        locationsresulting.
+        """
+        # save output options
+        output_map = {self.mainWindow.group_keepUnalteredRaw:
+                [self.mainWindow.lineEdit_pathUnalteredRaw, self.file_ext],
+            self.mainWindow.group_saveProcessedJpg:
+                [self.mainWindow.lineEdit_pathProcessedJpg, '.jpg'],
+            self.mainWindow.group_saveProcessedTIFF:
+                [self.mainWindow.lineEdit_pathProcessedTIFF, '.tiff'],
+            self.mainWindow.group_saveProcessedPng:
+                [self.mainWindow.lineEdit_pathProcessedPng, '.png']}
+        # iterate over each option and if applicable, output that format.
+        for obj, file_details in output_map.items():
+            if obj.isChecked():
+                location, ext = file_details
+                location = location.text()
+                while self.bc_working:
+                    # surely there is a better method?
+                    time.sleep(.1)
+                    
+                if self.mainWindow.group_renameByBarcode.isChecked():
+                    proposed_names = self.bc_code
+                else:
+                    proposed_names = [self.base_file_name]
+                    
+                for bc in self.bc_code:
+                    fileQty = len(glob.glob(f'{location}//{bc}*{ext}'))
+                    if fileQty > 0:
+                        # if there is an alpha based suffix, use it
+                        if self.suffix_lookup:
+                            new_file_base_name = f'{bc}{self.suffix_lookup.get(fileQty)}'
+                        # otherwise check policy
+                        else:
+                            policy = self.mainWindow.comboBox_dupNamingPolicy.currentText()
+                            if policy == 'append Number with underscore':
+                                new_file_base_name = f'{bc}_{fileQty}'
+                            elif policy == 'OVERWRITE original image with newest':
+                                new_file_base_name = bc
+                    new_file_name = f'{location}//{new_file_base_name}{ext}'
+                    cv2.imwrite(new_file_name, im)
 
-        img_path, _ = QtWidgets.QFileDialog.getOpenFileName(
-                None, "Open Sample Image")
-        # store working variables as class variables
-        self.img_path = img_path
-        #  start a timer
-        import time
-        startTime = time.time()
-        # open the file
+        # reset the class variables for the next image.
+        self.reset_working_variables()
+        
+    def processImage(self, img_path):
+        """ 
+        given a path to an unprocessed image, performs the appropriate
+        processing steps.
+            
+        """
         im = self.openImageFile(img_path)
-        cv2.imwrite('startedImg.jpg', im)
+        self.img_path = img_path
+        self.file_name, self.file_ext = os.path.splitext(img_path)
+        self.base_file_name = os.path.basename(self.file_name)
+
         # converting to greyscale
         grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
 
+        if self.mainWindow.group_renameByBarcode:
+            # retrieve the barcode values from image
+            bc_worker = Worker(self.bcRead.decodeBC, grey) # Any other args, kwargs are passed to the run function
+            bc_worker.signals.result.connect(self.handle_bc_result)
+            bc_worker.signals.finished.connect(self.alert_bc_finished)
+            self.threadPool.start(bc_worker) # start blur_worker thread
+            
         if self.mainWindow.checkBox_blurDetection:
             # test for bluryness
             blurThreshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
@@ -297,12 +349,6 @@ class appWindow(QMainWindow):
             blur_worker.signals.finished.connect(self.alert_blur_finished)
             self.threadPool.start(blur_worker) # start blur_worker thread
 
-        if self.mainWindow.group_renameByBarcode:
-            # retrieve the barcode values from image
-            bc_worker = Worker(self.bcRead.decodeBC, grey) # Any other args, kwargs are passed to the run function
-            bc_worker.signals.result.connect(self.handle_bc_result)
-            bc_worker.signals.finished.connect(self.alert_bc_finished)
-            self.threadPool.start(bc_worker) # start blur_worker thread
 
         #im_reduced = self.scale_img(im)
         # perform equipment corrections
@@ -314,19 +360,35 @@ class appWindow(QMainWindow):
         whiteG = 142
         whiteB = 91
         im = self.white_balance_image(im, whiteR, whiteG, whiteB)
-        # save output
-        cv2.imwrite('alteredImg.jpg', im)
+
+
+    def testFunction(self):
+        """ a development assistant function, connected to a GUI button
+        used to test various functions before complete GUI integration."""
+
+        img_path, _ = QtWidgets.QFileDialog.getOpenFileName(
+                None, "Open Sample Image")
+        
+        import time
+        #  start a timer
+        startTime = time.time()
+        self.processImage(img_path)
         # finish timer
         elapsedTime = round(time.time() - startTime, 3)
         # test total elapsed time so far with rotated and straight images.
         print(f'opening raw, testing blur status, reading barcode, equipment corrections and saving outputs required {elapsedTime} seconds')
-        
+
     def reset_working_variables(self):
         """
         sets all class variables relevant to the current working image to None.
         """
         self.imgPath = None
+        self.file_name = None
+        self.file_ext = None
+        self.base_file_name = None
+        
         self.bc_code = None
+        self.bc_working = True
         self.is_blurry = None
         self.cc_location = None
         self.cc_white_value = None
@@ -419,13 +481,18 @@ class appWindow(QMainWindow):
         dupNamingPolicy = self.mainWindow.comboBox_dupNamingPolicy.currentText()
         if dupNamingPolicy == 'append LOWER case letter':
             dupPreviewEnd = 'a'
+            self.suffix_lookup = {n+1: ch for n, ch in enumerate(string.ascii_lowercase)}
         elif dupNamingPolicy == 'append UPPER case letter':
             dupPreviewEnd = 'A'
+            self.suffix_lookup = {n+1: ch for n, ch in enumerate(string.ascii_uppercase)}
         elif dupNamingPolicy == 'append Number with underscore':
             dupPreviewEnd = '1'
+            self.suffix_lookup = False
         elif dupNamingPolicy == 'OVERWRITE original image with newest':
             dupPreviewEnd = ''
+            self.suffix_lookup = False
         else:
+            self.suffix_lookup = False
             return
         dupPreviewText = f'{previewText}{dupPreviewEnd}'
         self.mainWindow.label_dupPreviewDisplay.setText(dupPreviewText) # set it
