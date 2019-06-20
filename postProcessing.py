@@ -253,7 +253,24 @@ class appWindow(QMainWindow):
         im[..., 2] = imgR
         
         return im
-        
+    
+    def scale_img(self, im):
+        """
+        accepts a cv2 image array, and scales it to 1875 x 1250. Useful to 
+        speed up processing.
+        """
+        # scaling appears worth the calculation time.
+        largeDim = 1875
+        smallDim = 1250
+        h, w = im.shape[0:2]
+        if w > h:
+            w = largeDim
+            h = smallDim
+        else:
+            w = smallDim
+            h = largeDim
+        reduced_im = cv2.resize(im, (w, h), interpolation=cv2.INTER_AREA)
+        return reduced_im
 
     def testFunction(self):
         """ a development assistant function, connected to a GUI button
@@ -269,10 +286,9 @@ class appWindow(QMainWindow):
         # open the file
         im = self.openImageFile(img_path)
         cv2.imwrite('startedImg.jpg', im)
-
-         # converting to greyscale
+        # converting to greyscale
         grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-        
+
         if self.mainWindow.checkBox_blurDetection:
             # test for bluryness
             blurThreshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
@@ -288,6 +304,7 @@ class appWindow(QMainWindow):
             bc_worker.signals.finished.connect(self.alert_bc_finished)
             self.threadPool.start(bc_worker) # start blur_worker thread
 
+        #im_reduced = self.scale_img(im)
         # perform equipment corrections
         im = self.eqRead.lensCorrect(im, img_path)
 

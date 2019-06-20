@@ -326,7 +326,7 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>-21</y>
+               <y>0</y>
                <width>646</width>
                <height>928</height>
               </rect>
@@ -513,6 +513,9 @@
                    <property name="text">
                     <string>Check images for blur</string>
                    </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
                   </widget>
                  </item>
                  <item row="0" column="4">
@@ -531,7 +534,7 @@
                  <item row="0" column="2">
                   <widget class="QLabel" name="label_13">
                    <property name="enabled">
-                    <bool>false</bool>
+                    <bool>true</bool>
                    </property>
                    <property name="text">
                     <string>Laplacian threshold</string>
@@ -544,19 +547,22 @@
                  <item row="0" column="3">
                   <widget class="QDoubleSpinBox" name="doubleSpinBox_blurThreshold">
                    <property name="enabled">
-                    <bool>false</bool>
+                    <bool>true</bool>
+                   </property>
+                   <property name="decimals">
+                    <number>3</number>
                    </property>
                    <property name="minimum">
-                    <double>0.010000000000000</double>
+                    <double>0.001000000000000</double>
                    </property>
                    <property name="maximum">
                     <double>9.990000000000000</double>
                    </property>
                    <property name="singleStep">
-                    <double>0.010000000000000</double>
+                    <double>0.001000000000000</double>
                    </property>
                    <property name="value">
-                    <double>0.080000000000000</double>
+                    <double>0.008000000000000</double>
                    </property>
                   </widget>
                  </item>
@@ -985,7 +991,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>470</x>
-     <y>147</y>
+     <y>168</y>
     </hint>
     <hint type="destinationlabel">
      <x>381</x>
@@ -1001,7 +1007,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>460</x>
-     <y>217</y>
+     <y>238</y>
     </hint>
     <hint type="destinationlabel">
      <x>503</x>
@@ -1017,7 +1023,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>417</x>
-     <y>394</y>
+     <y>415</y>
     </hint>
     <hint type="destinationlabel">
      <x>604</x>
@@ -1033,7 +1039,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>417</x>
-     <y>424</y>
+     <y>445</y>
     </hint>
     <hint type="destinationlabel">
      <x>255</x>
@@ -1049,7 +1055,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>85</x>
-     <y>369</y>
+     <y>390</y>
     </hint>
     <hint type="destinationlabel">
      <x>341</x>
@@ -1065,7 +1071,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>130</x>
-     <y>485</y>
+     <y>506</y>
     </hint>
     <hint type="destinationlabel">
      <x>158</x>
@@ -1081,7 +1087,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>192</x>
-     <y>589</y>
+     <y>610</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -1097,7 +1103,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>112</x>
-     <y>558</y>
+     <y>579</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1113,7 +1119,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>129</x>
-     <y>530</y>
+     <y>551</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -1129,7 +1135,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>109</x>
-     <y>652</y>
+     <y>673</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -1145,7 +1151,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>649</x>
-     <y>679</y>
+     <y>700</y>
     </hint>
     <hint type="destinationlabel">
      <x>698</x>
@@ -1449,7 +1455,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>377</x>
-     <y>146</y>
+     <y>167</y>
     </hint>
     <hint type="destinationlabel">
      <x>695</x>
@@ -1465,7 +1471,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>470</x>
-     <y>147</y>
+     <y>168</y>
     </hint>
     <hint type="destinationlabel">
      <x>697</x>
@@ -1481,7 +1487,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>470</x>
-     <y>216</y>
+     <y>237</y>
     </hint>
     <hint type="destinationlabel">
      <x>692</x>
@@ -1497,7 +1503,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>310</x>
-     <y>61</y>
+     <y>82</y>
     </hint>
     <hint type="destinationlabel">
      <x>696</x>
@@ -1513,7 +1519,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>125</x>
-     <y>121</y>
+     <y>142</y>
     </hint>
     <hint type="destinationlabel">
      <x>265</x>
@@ -1545,11 +1551,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>261</x>
-     <y>558</y>
+     <y>579</y>
     </hint>
     <hint type="destinationlabel">
      <x>487</x>
-     <y>556</y>
+     <y>577</y>
     </hint>
    </hints>
   </connection>
@@ -1561,11 +1567,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>159</x>
-     <y>558</y>
+     <y>579</y>
     </hint>
     <hint type="destinationlabel">
      <x>584</x>
-     <y>556</y>
+     <y>577</y>
     </hint>
    </hints>
   </connection>
@@ -1577,7 +1583,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>584</x>
-     <y>556</y>
+     <y>577</y>
     </hint>
     <hint type="destinationlabel">
      <x>697</x>
@@ -1593,7 +1599,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>584</x>
-     <y>556</y>
+     <y>577</y>
     </hint>
     <hint type="destinationlabel">
      <x>700</x>
@@ -1609,11 +1615,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>149</x>
-     <y>315</y>
+     <y>336</y>
     </hint>
     <hint type="destinationlabel">
      <x>479</x>
-     <y>312</y>
+     <y>333</y>
     </hint>
    </hints>
   </connection>
@@ -1625,7 +1631,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>105</x>
-     <y>315</y>
+     <y>336</y>
     </hint>
     <hint type="destinationlabel">
      <x>379</x>
@@ -1641,7 +1647,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>490</x>
-     <y>317</y>
+     <y>338</y>
     </hint>
     <hint type="destinationlabel">
      <x>698</x>
