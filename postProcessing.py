@@ -156,7 +156,6 @@ class appWindow(QMainWindow):
 
         # converting to greyscale
         grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-        rgb_image = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
         # test for bluryness
         blurStatus = self.blurDetect.blur_check(grey)
         # colorchipStatus = self.colorchipDetect.test_feature(rgb_image)
