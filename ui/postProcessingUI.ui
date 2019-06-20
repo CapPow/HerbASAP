@@ -326,9 +326,9 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>-163</y>
+               <y>0</y>
                <width>646</width>
-               <height>860</height>
+               <height>928</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -498,6 +498,86 @@
                     </item>
                    </layout>
                   </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QGroupBox" name="group_blurDetection">
+                <property name="title">
+                 <string>Blur detection</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_8">
+                 <item row="0" column="0">
+                  <widget class="QCheckBox" name="checkBox_blurDetection">
+                   <property name="text">
+                    <string>Check images for blur</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="4">
+                  <spacer name="horizontalSpacer_4">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QLabel" name="label_13">
+                   <property name="enabled">
+                    <bool>true</bool>
+                   </property>
+                   <property name="text">
+                    <string>Laplacian threshold</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="3">
+                  <widget class="QDoubleSpinBox" name="doubleSpinBox_blurThreshold">
+                   <property name="enabled">
+                    <bool>true</bool>
+                   </property>
+                   <property name="decimals">
+                    <number>3</number>
+                   </property>
+                   <property name="minimum">
+                    <double>0.001000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>9.990000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.001000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>0.008000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <spacer name="horizontalSpacer_6">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
                  </item>
                 </layout>
                </widget>
@@ -910,8 +990,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>431</x>
-     <y>22</y>
+     <x>470</x>
+     <y>168</y>
     </hint>
     <hint type="destinationlabel">
      <x>381</x>
@@ -926,8 +1006,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>268</x>
-     <y>70</y>
+     <x>460</x>
+     <y>238</y>
     </hint>
     <hint type="destinationlabel">
      <x>503</x>
@@ -942,8 +1022,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>356</x>
-     <y>191</y>
+     <x>417</x>
+     <y>415</y>
     </hint>
     <hint type="destinationlabel">
      <x>604</x>
@@ -958,8 +1038,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>312</x>
-     <y>234</y>
+     <x>417</x>
+     <y>445</y>
     </hint>
     <hint type="destinationlabel">
      <x>255</x>
@@ -974,8 +1054,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>56</x>
-     <y>172</y>
+     <x>85</x>
+     <y>390</y>
     </hint>
     <hint type="destinationlabel">
      <x>341</x>
@@ -990,8 +1070,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>101</x>
-     <y>269</y>
+     <x>130</x>
+     <y>506</y>
     </hint>
     <hint type="destinationlabel">
      <x>158</x>
@@ -1006,8 +1086,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>163</x>
-     <y>329</y>
+     <x>192</x>
+     <y>610</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -1022,8 +1102,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>83</x>
-     <y>356</y>
+     <x>112</x>
+     <y>579</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1038,8 +1118,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>100</x>
-     <y>396</y>
+     <x>129</x>
+     <y>551</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -1054,8 +1134,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>80</x>
-     <y>455</y>
+     <x>109</x>
+     <y>673</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -1070,8 +1150,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>612</x>
-     <y>502</y>
+     <x>649</x>
+     <y>700</y>
     </hint>
     <hint type="destinationlabel">
      <x>698</x>
@@ -1086,8 +1166,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>572</x>
-     <y>568</y>
+     <x>649</x>
+     <y>790</y>
     </hint>
     <hint type="destinationlabel">
      <x>699</x>
@@ -1102,8 +1182,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>585</x>
-     <y>621</y>
+     <x>649</x>
+     <y>846</y>
     </hint>
     <hint type="destinationlabel">
      <x>699</x>
@@ -1118,8 +1198,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>599</x>
-     <y>673</y>
+     <x>649</x>
+     <y>902</y>
     </hint>
     <hint type="destinationlabel">
      <x>697</x>
@@ -1134,8 +1214,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>606</x>
-     <y>724</y>
+     <x>649</x>
+     <y>958</y>
     </hint>
     <hint type="destinationlabel">
      <x>698</x>
@@ -1374,8 +1454,8 @@
    <slot>updateCatalogNumberPreviews()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>356</x>
-     <y>22</y>
+     <x>377</x>
+     <y>167</y>
     </hint>
     <hint type="destinationlabel">
      <x>695</x>
@@ -1390,8 +1470,8 @@
    <slot>updateCatalogNumberPreviews()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>445</x>
-     <y>18</y>
+     <x>470</x>
+     <y>168</y>
     </hint>
     <hint type="destinationlabel">
      <x>697</x>
@@ -1406,8 +1486,8 @@
    <slot>updateCatalogNumberPreviews()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>400</x>
-     <y>69</y>
+     <x>470</x>
+     <y>237</y>
     </hint>
     <hint type="destinationlabel">
      <x>692</x>
@@ -1422,8 +1502,8 @@
    <slot>testFeatureCompatability()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>281</x>
-     <y>-62</y>
+     <x>310</x>
+     <y>82</y>
     </hint>
     <hint type="destinationlabel">
      <x>696</x>
@@ -1438,8 +1518,8 @@
    <slot>updateCatalogNumberPreviews()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>96</x>
-     <y>-11</y>
+     <x>125</x>
+     <y>142</y>
     </hint>
     <hint type="destinationlabel">
      <x>265</x>
@@ -1470,12 +1550,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>232</x>
-     <y>360</y>
+     <x>261</x>
+     <y>579</y>
     </hint>
     <hint type="destinationlabel">
-     <x>470</x>
-     <y>361</y>
+     <x>487</x>
+     <y>577</y>
     </hint>
    </hints>
   </connection>
@@ -1486,12 +1566,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>130</x>
-     <y>359</y>
+     <x>159</x>
+     <y>579</y>
     </hint>
     <hint type="destinationlabel">
-     <x>546</x>
-     <y>366</y>
+     <x>584</x>
+     <y>577</y>
     </hint>
    </hints>
   </connection>
@@ -1502,8 +1582,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>527</x>
-     <y>353</y>
+     <x>584</x>
+     <y>577</y>
     </hint>
     <hint type="destinationlabel">
      <x>697</x>
@@ -1518,12 +1598,60 @@
    <slot>updateEqSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>510</x>
-     <y>354</y>
+     <x>584</x>
+     <y>577</y>
     </hint>
     <hint type="destinationlabel">
      <x>700</x>
      <y>418</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_blurDetection</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>doubleSpinBox_blurThreshold</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>149</x>
+     <y>336</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>479</x>
+     <y>333</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_blurDetection</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>label_13</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>105</x>
+     <y>336</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>379</x>
+     <y>323</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_blurThreshold</sender>
+   <signal>editingFinished()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>updateEqSettings()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>490</x>
+     <y>338</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>698</x>
+     <y>324</y>
     </hint>
    </hints>
   </connection>
