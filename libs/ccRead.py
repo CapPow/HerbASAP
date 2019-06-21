@@ -29,7 +29,7 @@ except ImportError:
     from keras.models import load_model
     import keras.backend as K
 
-from PIL import Image
+from PIL import Image, ImageCms
 import cv2
 
 
@@ -139,12 +139,21 @@ class ColorchipRead():
         pil_image = Image.fromarray(pil_image)
         return pil_image
 
-<<<<<<< Updated upstream
-=======
-    def predict_color_chip_location(self, im, stride=50, partition_size=125, buffer_size=20, high_precision=False):
-        
+    def process_colorchip(self, im, original_size, stride=50, partition_size=125, buffer_size=20, high_precision=False):
+        """
+        Processes a color chip using neural networks.
+        :param im:
+        :param original_size:
+        :param stride:
+        :param partition_size:
+        :param buffer_size:
+        :param high_precision:
+        :return: Returns both a tuple containing the location of the color chip in the format (x1, y1, x2, y2), as well
+        as a cropped image containing only the color chip
+        """
         im = self.ocv_to_pil(im)
         image_width, image_height = im.size
+        original_width, original_height = original_size
         possible_positions = []
 
         hists_rgb = []
@@ -219,15 +228,26 @@ class ColorchipRead():
 
         lowest_uncertainty = 1
         best_location = None
+        best_image = None
         for idx, prediction_value in enumerate(only_cc_probability_column):
             if prediction_value == max(only_cc_probability_column) and \
                     prediction_value > 0.9 and \
                     only_cc_uncertainty_column[idx] < lowest_uncertainty:
                 lowest_uncertainty = only_cc_uncertainty_column[idx]
                 best_location = list(most_certain_images.values())[idx]
+                best_image = im.crop(list(most_certain_images.values())[idx])
+
+        x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
+        prop_x1, prop_y1, prop_x2, prop_y2 = x1 / image_width, y1 / image_height, x2 / image_width, y2 / image_height
+
+        scaled_x1, scaled_y1, scaled_x2, scaled_y2 = prop_x1 * original_width, \
+                                                     prop_y1 * original_height, \
+                                                     prop_x2 * original_width, \
+                                                     prop_y2 * original_height
 
         try:
-            return best_location
+            print(x1, y1, x2, y2)
+            return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image
         except ValueError as e:
             print(f"ccRead had a value error: {e}")
             return None
@@ -241,7 +261,79 @@ class ColorchipRead():
             print(f"ccRead had a system error: {e}")
             return None
 
->>>>>>> Stashed changes
+    def predict_color_chip_quadrant(self, original_size, scaled_crop_location):
+        """
+        Returns the quadrant of the color chip location
+        :param original_size: Size of the original image, in the format (width, height)
+        :type original_size: tuple
+        :param scaled_crop_location: Tuple of the scaled location of the scaled colorchip crop location, in the format
+        (x1, y1, x2, y2)
+        :type scaled_crop_location: tuple
+        :return: Returns the quadrant where the color chip lies.
+        :rtype: int
+        """
+
+        original_width, original_height = original_size
+        x1, y1, x2, y2 = scaled_crop_location
+        half_width = original_width / 2
+        half_height = original_height / 2
+
+        if x1 < half_width and y1 < half_height:
+            return 1
+        elif x1 > half_width and y1 < half_height:
+            return 2
+        elif x1 > half_width and y1 > half_height:
+            return 3
+        elif x1 < half_width and y1 > half_height:
+            return 4
+        else:
+            return None
+
+    def predict_color_chip_whitevals(self, color_chip_image):
+        """
+        Takes the white values within the cropped CC image and averages them in RGB. The whitest values in the image is
+        determined in the L*a*b color space, wherein only lightness values higher than (max lightness value - 1) is
+        considered
+
+        Converting from RGB to LAB color space is not supported under PIL, but was done through a solution from:
+        https://gist.github.com/mrkn/28f95f95731a5a24e553
+        :param color_chip_image: The cropped color chip image.
+        :type color_chip_image: Image
+        :return: Returns a list of the averaged whitest values
+        :rtype: list
+        """
+        cci_array = np.array(color_chip_image)
+
+        srgb_profile = ImageCms.createProfile("sRGB")
+        lab_profile = ImageCms.createProfile("LAB")
+        rgb2lab_transform = ImageCms.buildTransformFromOpenProfiles(srgb_profile, lab_profile, "RGB", "LAB")
+        color_chip_image_lab = ImageCms.applyTransform(color_chip_image, rgb2lab_transform)
+
+        ccil_array = np.array(color_chip_image_lab)
+        width, height = ccil_array.shape[0], ccil_array.shape[1]
+
+        lightness_dict = {}
+        for row in range(width):
+            for column in range(height):
+                lightness = ccil_array[row][column][0]
+                lightness_dict[(row, column)] = lightness
+
+        max_lightness = max(list(lightness_dict.values()))
+        white_pixels_indices = []
+        for idx, lightness in enumerate(list(lightness_dict.values())):
+            if lightness > (max_lightness - 1):
+                white_pixels_indices.append(list(lightness_dict.keys())[idx])
+
+        white_pixels_rgbvals = []
+        for index in white_pixels_indices:
+            row, column = index[0], index[1]
+            white_pixels_rgbvals.append(cci_array[row][column])
+
+        white_pixels_nparray = np.array(white_pixels_rgbvals)
+        white_pixels_average = np.average(white_pixels_nparray, axis=0)
+
+        return list(white_pixels_average)
+
     def test_feature(self, im, stride=50, partition_size=125, buffer_size=20, high_precision=False):
         """
         Tests whether the given image (and its color chip) is compatible with the neural network. This function does not
