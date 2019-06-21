@@ -210,7 +210,7 @@ class appWindow(QMainWindow):
             if self.bc_code:
                 notice_text = f'Warning, {self.bc_code} is blurry.'
             else:
-                notice_text = f'Warning, {self.img_base_name} is blurry.'
+                notice_text = f'Warning, {self.base_file_name} is blurry.'
             detail_text = f'Blurry Image Path: {self.img_path}'
             self.userNotice(notice_text, notice_title, detail_text)
 
@@ -363,7 +363,7 @@ class appWindow(QMainWindow):
         whiteR = 168
         whiteG = 142
         whiteB = 91
-        # im = self.white_balance_image(im, whiteR, whiteG, whiteB)
+        im = self.white_balance_image(im, whiteR, whiteG, whiteB)
 
     def testFunction(self):
         """ a development assistant function, connected to a GUI button
