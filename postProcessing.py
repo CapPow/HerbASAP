@@ -222,6 +222,16 @@ class appWindow(QMainWindow):
         print('bc detection finished')
         print(self.bc_code)
         self.bc_working = False
+        
+    def handle_eq_result(self, result):
+        # this is the corrected image array
+        self.im = result
+        # should probably use this to store the updated image
+
+    def alert_eq_finished(self):
+        """ called when the results are in from eqRead."""
+        print('eq corrections finished')
+        self.eq_working = False    
 
     def white_balance_image(self, im, whiteR, whiteG, whiteB):
         """
@@ -339,7 +349,7 @@ class appWindow(QMainWindow):
             bc_worker = Worker(self.bcRead.decodeBC, grey) # Any other args, kwargs are passed to the run function
             bc_worker.signals.result.connect(self.handle_bc_result)
             bc_worker.signals.finished.connect(self.alert_bc_finished)
-            self.threadPool.start(bc_worker) # start blur_worker thread
+            self.threadPool.start(bc_worker) # start bc_worker thread
             
         if self.mainWindow.checkBox_blurDetection:
             # test for bluryness
@@ -349,6 +359,12 @@ class appWindow(QMainWindow):
             blur_worker.signals.finished.connect(self.alert_blur_finished)
             self.threadPool.start(blur_worker) # start blur_worker thread
         
+        # equipment corrections
+        eq_worker = Worker(self.eqRead.lensCorrect, im, img_path) # Any other args, kwargs are passed to the run function
+        eq_worker.signals.result.connect(self.handle_eq_result)
+        eq_worker.signals.finished.connect(self.alert_eq_finished)
+        self.threadPool.start(eq_worker) # start eq_worker thread
+
         if self.mainWindow.group_colorCheckerDetection:
             # colorchecker functions
             reduced_img = self.scale_img(im)
