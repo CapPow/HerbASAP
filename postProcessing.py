@@ -211,7 +211,7 @@ class appWindow(QMainWindow):
             if self.bc_code:
                 notice_text = f'Warning, {self.bc_code} is blurry.'
             else:
-                notice_text = f'Warning, {self.img_base_name} is blurry.'
+                notice_text = f'Warning, {self.base_file_name} is blurry.'
             detail_text = f'Blurry Image Path: {self.img_path}'
             self.userNotice(notice_text, notice_title, detail_text)
 
@@ -223,6 +223,16 @@ class appWindow(QMainWindow):
         print('bc detection finished')
         print(self.bc_code)
         self.bc_working = False
+        
+    def handle_eq_result(self, result):
+        # this is the corrected image array
+        self.im = result
+        # should probably use this to store the updated image
+
+    def alert_eq_finished(self):
+        """ called when the results are in from eqRead."""
+        print('eq corrections finished')
+        self.eq_working = False    
 
     def white_balance_image(self, im, whiteR, whiteG, whiteB):
         """
@@ -356,20 +366,26 @@ class appWindow(QMainWindow):
         # converting to greyscale
         grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
 
-        # if self.mainWindow.group_renameByBarcode:
-        #     # retrieve the barcode values from image
-        #     bc_worker = Worker(self.bcRead.decodeBC, grey) # Any other args, kwargs are passed to the run function
-        #     bc_worker.signals.result.connect(self.handle_bc_result)
-        #     bc_worker.signals.finished.connect(self.alert_bc_finished)
-        #     self.threadPool.start(bc_worker) # start blur_worker thread
-        #
-        # if self.mainWindow.checkBox_blurDetection:
-        #     # test for bluryness
-        #     blurThreshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
-        #     blur_worker = Worker(self.blurDetect.blur_check, grey, blurThreshold) # Any other args, kwargs are passed to the run function
-        #     blur_worker.signals.result.connect(self.handle_blur_result)
-        #     blur_worker.signals.finished.connect(self.alert_blur_finished)
-        #     self.threadPool.start(blur_worker) # start blur_worker thread
+        if self.mainWindow.group_renameByBarcode:
+            # retrieve the barcode values from image
+            bc_worker = Worker(self.bcRead.decodeBC, grey) # Any other args, kwargs are passed to the run function
+            bc_worker.signals.result.connect(self.handle_bc_result)
+            bc_worker.signals.finished.connect(self.alert_bc_finished)
+            self.threadPool.start(bc_worker) # start bc_worker thread
+            
+        if self.mainWindow.checkBox_blurDetection:
+            # test for bluryness
+            blurThreshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
+            blur_worker = Worker(self.blurDetect.blur_check, grey, blurThreshold) # Any other args, kwargs are passed to the run function
+            blur_worker.signals.result.connect(self.handle_blur_result)
+            blur_worker.signals.finished.connect(self.alert_blur_finished)
+            self.threadPool.start(blur_worker) # start blur_worker thread
+        
+        # equipment corrections
+        eq_worker = Worker(self.eqRead.lensCorrect, im, img_path) # Any other args, kwargs are passed to the run function
+        eq_worker.signals.result.connect(self.handle_eq_result)
+        eq_worker.signals.finished.connect(self.alert_eq_finished)
+        self.threadPool.start(eq_worker) # start eq_worker thread
 
         if self.mainWindow.group_colorCheckerDetection:
             # colorchecker functions
@@ -393,7 +409,7 @@ class appWindow(QMainWindow):
         whiteR = 168
         whiteG = 142
         whiteB = 91
-        # im = self.white_balance_image(im, whiteR, whiteG, whiteB)
+        im = self.white_balance_image(im, whiteR, whiteG, whiteB)
 
     def testFunction(self):
         """ a development assistant function, connected to a GUI button
