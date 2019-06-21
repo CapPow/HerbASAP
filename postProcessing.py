@@ -123,6 +123,7 @@ class Worker(QRunnable):
         finally:
             self.signals.finished.emit()  # Done
 
+
 class appWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -151,11 +152,8 @@ class appWindow(QMainWindow):
         prefix = self.mainWindow.lineEdit_catalogNumberPrefix.text()
         digits = int(self.mainWindow.spinBox_catalogDigits.value())
         self.bcRead = bcRead(prefix, digits, parent=self.mainWindow)
-
         self.blurDetect = blurDetect(parent=self.mainWindow)
-
         self.colorchipDetect = ColorchipRead(parent=self.mainWindow)
-
         self.eqRead = eqRead(parent=self.mainWindow)
         
         #self.ccRead = ccRead(parent=self.mainWindow)
@@ -224,16 +222,6 @@ class appWindow(QMainWindow):
         print('bc detection finished')
         print(self.bc_code)
         self.bc_working = False
-
-    def handle_cc_result(self, result):
-        self.bc_loc = result
-        print(result)
-
-    def alert_cc_finished(self):
-        """ called when the results are in from bcRead."""
-        print('cc detection finished')
-        #print(self.cc_loc)
-        #self.cc_working = False
 
     def white_balance_image(self, im, whiteR, whiteG, whiteB):
         """
@@ -360,28 +348,22 @@ class appWindow(QMainWindow):
             blur_worker.signals.result.connect(self.handle_blur_result)
             blur_worker.signals.finished.connect(self.alert_blur_finished)
             self.threadPool.start(blur_worker) # start blur_worker thread
-
-
+        
         if self.mainWindow.group_colorCheckerDetection:
             # colorchecker functions
             reduced_img = self.scale_img(im)
-            cc_worker = Worker(self.colorchipDetect.predict_color_chip_location, reduced_img)
-            cc_worker.signals.result.connect(self.handle_cc_result)
-            cc_worker.signals.finished.connect(self.alert_cc_finished)
-            self.threadPool.start(cc_worker)
-            
+            cc_position = self.colorchipDetect.predict_color_chip_location(reduced_img)
+            print(cc_position)
 
-        #im_reduced = self.scale_img(im)
         # perform equipment corrections
-        im = self.eqRead.lensCorrect(im, img_path)
+        # im = self.eqRead.lensCorrect(im, img_path)
 
         # hardcoded values are approx white RGB values from ccRead:
         # hardcoding like tihs is ~ to manual White balance.
         whiteR = 168
         whiteG = 142
         whiteB = 91
-        im = self.white_balance_image(im, whiteR, whiteG, whiteB)
-
+        # im = self.white_balance_image(im, whiteR, whiteG, whiteB)
 
     def testFunction(self):
         """ a development assistant function, connected to a GUI button
@@ -448,6 +430,7 @@ class appWindow(QMainWindow):
             bcStatus = self.bcRead.testFeature(im)
             convert_for_colorchip = self.colorchipDetect.ocv_to_pil(im)
             ccStatus = self.colorchipDetect.test_feature(convert_for_colorchip)
+            im_location = self.colorchipDetect.predict_color_chip_location(im)
             eqStatus = self.eqRead.testFeature(imgPath)
         except Exception as e:
             # TODO add user notify for this error.
