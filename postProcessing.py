@@ -31,6 +31,7 @@ import traceback
 import sys
 import string
 import time
+import glob
 # UI libs
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
@@ -283,6 +284,27 @@ class appWindow(QMainWindow):
         reduced_im = cv2.resize(im, (w, h), interpolation=cv2.INTER_AREA)
         return reduced_im
 
+    def scale_images_with_info(self, im, largest_dim=1875):
+        """
+        Function that scales images proportionally, and returns both the original image size as a tuple of image
+        dimensions, and the scaled down image.
+        :param im: Image to be scaled down.
+        :type im: cv2 Image
+        :param largest_dim: The largest dimension to be scaled down to.
+        :type largest_dim: int
+        :return: Returns both the original image dimensions as a tuple and the scaled image.
+        :rtype: tuple, cv2 Image
+        """
+        image_height, image_width = im.shape[0:2]
+
+        if image_width > image_height:
+            reduced_im = cv2.resize(im, (largest_dim, round((largest_dim / image_width) * image_height)),
+                                    interpolation=cv2.INTER_AREA)
+        else:
+            reduced_im = cv2.resize(im, (round((largest_dim / image_height) * image_width), largest_dim),
+                                   interpolation=cv2.INTER_AREA)
+        return (image_width, image_height), reduced_im
+
     def save_output_images(self, im):
         """
         saves a processed cv2 image object to the appropriate formats and
@@ -367,10 +389,18 @@ class appWindow(QMainWindow):
 
         if self.mainWindow.group_colorCheckerDetection:
             # colorchecker functions
-            reduced_img = self.scale_img(im)
-            cc_position = self.colorchipDetect.predict_color_chip_location(reduced_img)
-            print(cc_position)
+            original_size, reduced_img = self.scale_images_with_info(im)
+            # cc_worker = Worker(self.colorchipDetect.predict_color_chip_location, reduced_img)
+            # cc_worker.signals.result.connect(self.handle_cc_result)
+            # cc_worker.signals.finished.connect(self.alert_cc_finished)
+            # self.threadPool.start(cc_worker)
+            cc_position, cropped_cc = self.colorchipDetect.process_colorchip(reduced_img, original_size)
+            cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
+            cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
 
+            print(f"CC | Position: {cc_position}, Quadrant: {cc_quadrant} | AVG White: {cc_avg_white}")
+
+        #im_reduced = self.scale_img(im)
         # perform equipment corrections
         # im = self.eqRead.lensCorrect(im, img_path)
 
