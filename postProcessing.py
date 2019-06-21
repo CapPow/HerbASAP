@@ -395,7 +395,6 @@ class appWindow(QMainWindow):
         whiteB = 91
         # im = self.white_balance_image(im, whiteR, whiteG, whiteB)
 
-
     def testFunction(self):
         """ a development assistant function, connected to a GUI button
         used to test various functions before complete GUI integration."""

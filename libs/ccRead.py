@@ -155,7 +155,6 @@ class ColorchipRead():
         image_width, image_height = im.size
         original_width, original_height = original_size
         possible_positions = []
-
         hists_rgb = []
         hists_hsv = []
         for r in range(-2, (image_height - partition_size) // stride + 2):
@@ -165,7 +164,6 @@ class ColorchipRead():
                 partitioned_im = im.crop((x1, y1, x2, y2))
                 possible_positions.append((x1, y1, x2, y2))
                 partitioned_im_hsv = partitioned_im.convert("HSV")
-
                 hists_rgb.append(partitioned_im.histogram())
                 hists_hsv.append(partitioned_im_hsv.histogram())
 
