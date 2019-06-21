@@ -139,14 +139,11 @@ class ColorchipRead():
         pil_image = Image.fromarray(pil_image)
         return pil_image
 
-<<<<<<< Updated upstream
-=======
     def predict_color_chip_location(self, im, stride=50, partition_size=125, buffer_size=20, high_precision=False):
         
         im = self.ocv_to_pil(im)
         image_width, image_height = im.size
         possible_positions = []
-
         hists_rgb = []
         hists_hsv = []
         for r in range(-2, (image_height - partition_size) // stride + 2):
@@ -156,7 +153,6 @@ class ColorchipRead():
                 partitioned_im = im.crop((x1, y1, x2, y2))
                 possible_positions.append((x1, y1, x2, y2))
                 partitioned_im_hsv = partitioned_im.convert("HSV")
-
                 hists_rgb.append(partitioned_im.histogram())
                 hists_hsv.append(partitioned_im_hsv.histogram())
 
@@ -241,7 +237,6 @@ class ColorchipRead():
             print(f"ccRead had a system error: {e}")
             return None
 
->>>>>>> Stashed changes
     def test_feature(self, im, stride=50, partition_size=125, buffer_size=20, high_precision=False):
         """
         Tests whether the given image (and its color chip) is compatible with the neural network. This function does not

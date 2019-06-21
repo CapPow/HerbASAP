@@ -334,36 +334,27 @@ class appWindow(QMainWindow):
         # converting to greyscale
         grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
 
-        # if self.mainWindow.group_renameByBarcode:
-        #     # retrieve the barcode values from image
-        #     bc_worker = Worker(self.bcRead.decodeBC, grey) # Any other args, kwargs are passed to the run function
-        #     bc_worker.signals.result.connect(self.handle_bc_result)
-        #     bc_worker.signals.finished.connect(self.alert_bc_finished)
-        #     self.threadPool.start(bc_worker) # start blur_worker thread
-        #
-        # if self.mainWindow.checkBox_blurDetection:
-        #     # test for bluryness
-        #     blurThreshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
-        #     blur_worker = Worker(self.blurDetect.blur_check, grey, blurThreshold) # Any other args, kwargs are passed to the run function
-        #     blur_worker.signals.result.connect(self.handle_blur_result)
-        #     blur_worker.signals.finished.connect(self.alert_blur_finished)
-        #     self.threadPool.start(blur_worker) # start blur_worker thread
-
-
-<<<<<<< Updated upstream
-=======
+        if self.mainWindow.group_renameByBarcode:
+            # retrieve the barcode values from image
+            bc_worker = Worker(self.bcRead.decodeBC, grey) # Any other args, kwargs are passed to the run function
+            bc_worker.signals.result.connect(self.handle_bc_result)
+            bc_worker.signals.finished.connect(self.alert_bc_finished)
+            self.threadPool.start(bc_worker) # start blur_worker thread
+            
+        if self.mainWindow.checkBox_blurDetection:
+            # test for bluryness
+            blurThreshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
+            blur_worker = Worker(self.blurDetect.blur_check, grey, blurThreshold) # Any other args, kwargs are passed to the run function
+            blur_worker.signals.result.connect(self.handle_blur_result)
+            blur_worker.signals.finished.connect(self.alert_blur_finished)
+            self.threadPool.start(blur_worker) # start blur_worker thread
+        
         if self.mainWindow.group_colorCheckerDetection:
             # colorchecker functions
             reduced_img = self.scale_img(im)
-            # cc_worker = Worker(self.colorchipDetect.predict_color_chip_location, reduced_img)
-            # cc_worker.signals.result.connect(self.handle_cc_result)
-            # cc_worker.signals.finished.connect(self.alert_cc_finished)
-            # self.threadPool.start(cc_worker)
             cc_position = self.colorchipDetect.predict_color_chip_location(reduced_img)
             print(cc_position)
 
->>>>>>> Stashed changes
-        #im_reduced = self.scale_img(im)
         # perform equipment corrections
         # im = self.eqRead.lensCorrect(im, img_path)
 
@@ -373,7 +364,6 @@ class appWindow(QMainWindow):
         whiteG = 142
         whiteB = 91
         # im = self.white_balance_image(im, whiteR, whiteG, whiteB)
-
 
     def testFunction(self):
         """ a development assistant function, connected to a GUI button
