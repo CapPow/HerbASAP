@@ -363,6 +363,7 @@ class appWindow(QMainWindow):
             
         """
         im = self.openImageFile(img_path)
+        cv2.imwrite('input.jpg', im)
         self.img_path = img_path
         self.file_name, self.file_ext = os.path.splitext(img_path)
         self.base_file_name = os.path.basename(self.file_name)
@@ -443,8 +444,7 @@ class appWindow(QMainWindow):
         self.cc_white_value = None
 
     def openImageFile(self, imgPath,
-                      demosaic=rawpy.DemosaicAlgorithm.AHD,
-                      gamma_value=(2.2, 2.2)):
+                      demosaic=rawpy.DemosaicAlgorithm.AHD):
         """ given an image path, attempts to return a numpy array image object
         """
         usr_gamma = self.mainWindow.doubleSpinBox_gammaValue.value()
