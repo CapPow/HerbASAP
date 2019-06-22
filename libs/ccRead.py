@@ -406,15 +406,18 @@ class ColorchipRead():
         :rtype: bool
         """
 
-        loc, cropped_img = self.process_colorchip(im, original_size, stride,
-                                                  partition_size, buffer_size,
-                                                  high_precision)
-        if isinstance(loc, tuple):
+        cc_size = self.predict_colorchip_size(reduced_img)
+        if cc_size == 'big':
+            cc_position, cropped_cc = self.process_colorchip_big(im)
+        else:
+            cc_position, cropped_cc = self.process_colorchip_small(reduced_img, original_size)
+        
+        if isinstance(cc_position, tuple):
             status = True
         else:
             status = False
             
-        return status, cropped_img
+        return status, cropped_cc
 
 #    def test_feature(self, im, stride=50, partition_size=125, buffer_size=20, high_precision=False):
 #        """
