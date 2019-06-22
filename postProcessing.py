@@ -34,7 +34,7 @@ import time
 import glob
 # UI libs
 from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtWidgets import QMainWindow, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QMessageBox, QDialog
 from PyQt5.QtCore import (QSettings, Qt, QObject,
                           QRunnable, pyqtSignal,pyqtSlot,
                           QThreadPool, QWaitCondition)
@@ -45,8 +45,10 @@ import rawpy
 from rawpy import LibRawNonFatalError
 from PIL import Image
 import cv2
+import numpy as np
 # internal libs
 from ui.postProcessingUI import Ui_MainWindow
+from ui.imageDialog import Ui_Dialog
 from libs.bcRead import bcRead
 from libs.eqRead import eqRead
 from libs.blurDetect import blurDetect
@@ -125,6 +127,26 @@ class Worker(QRunnable):
             self.signals.finished.emit()  # Done
 
 
+class ImageDialog(QDialog):
+    def __init__(self, img_array_object):
+        super().__init__()
+        self.init_ui(img_array_object)
+
+    def init_ui(self, img_array_object):
+        mb = Ui_Dialog()
+        mb.setupUi(self)
+        width, height = img_array_object.size
+        bytesPerLine = 3 * width
+        qImg = QtGui.QImage(np.array(img_array_object), width, height, bytesPerLine, QtGui.QImage.Format_RGB888)
+        pixmap01 = QtGui.QPixmap.fromImage(qImg)
+        pixmap_image = QtGui.QPixmap(pixmap01)
+        mb.label_Image.setPixmap(pixmap_image)
+
+    def retranslateUi(self, Dialog):
+        _translate = QtCore.QCoreApplication.translate
+        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+
+
 class appWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -162,7 +184,7 @@ class appWindow(QMainWindow):
         # assign applicable user settings for eqRead. 
         # this function is here, for ease of slot assignment in pyqt designer
         self.reset_working_variables()
-        self.updateEqSettings()
+        #self.updateEqSettings()
 
 #        self.versionCheck()
 
@@ -253,36 +275,18 @@ class appWindow(QMainWindow):
         """
         lum = (whiteR + whiteG + whiteB)/3
         # notice inverted BGR / RGB, somewhere this is not consistant
-        imgB = im[..., 0].copy()
+        imgR = im[..., 0].copy()
         imgG = im[..., 1].copy()
-        imgR = im[..., 2].copy()
+        imgB = im[..., 2].copy()
         imgR = imgR * lum / whiteR
         imgG = imgG * lum / whiteG
         imgB = imgB * lum / whiteB
         # scale each channel
-        im[..., 0] = imgB
+        im[..., 0] = imgR
         im[..., 1] = imgG
-        im[..., 2] = imgR
+        im[..., 2] = imgB
         
         return im
-    
-    def scale_img(self, im):
-        """
-        accepts a cv2 image array, and scales it to 1875 x 1250. Useful to 
-        speed up processing.
-        """
-        # scaling appears worth the calculation time.
-        largeDim = 1875
-        smallDim = 1250
-        h, w = im.shape[0:2]
-        if w > h:
-            w = largeDim
-            h = smallDim
-        else:
-            w = smallDim
-            h = largeDim
-        reduced_im = cv2.resize(im, (w, h), interpolation=cv2.INTER_AREA)
-        return reduced_im
 
     def scale_images_with_info(self, im, largest_dim=1875):
         """
@@ -382,18 +386,17 @@ class appWindow(QMainWindow):
             self.threadPool.start(blur_worker) # start blur_worker thread
         
         # equipment corrections
-        eq_worker = Worker(self.eqRead.lensCorrect, im, img_path) # Any other args, kwargs are passed to the run function
-        eq_worker.signals.result.connect(self.handle_eq_result)
-        eq_worker.signals.finished.connect(self.alert_eq_finished)
-        self.threadPool.start(eq_worker) # start eq_worker thread
+        if self.mainWindow.checkBox_lensCorrection:        
+            cmDistance = self.mainWindow.doubleSpinBox_focalDistance.value()
+            mDistance = round(cmDistance / 100, 5)
+            eq_worker = Worker(self.eqRead.lensCorrect, im, img_path, mDistance) # Any other args, kwargs are passed to the run function
+            eq_worker.signals.result.connect(self.handle_eq_result)
+            eq_worker.signals.finished.connect(self.alert_eq_finished)
+            self.threadPool.start(eq_worker) # start eq_worker thread
 
         if self.mainWindow.group_colorCheckerDetection:
             # colorchecker functions
             original_size, reduced_img = self.scale_images_with_info(im)
-            # cc_worker = Worker(self.colorchipDetect.predict_color_chip_location, reduced_img)
-            # cc_worker.signals.result.connect(self.handle_cc_result)
-            # cc_worker.signals.finished.connect(self.alert_cc_finished)
-            # self.threadPool.start(cc_worker)
             cc_size = self.colorchipDetect.predict_colorchip_size(reduced_img)
             if cc_size == 'big':
                 cc_position, cropped_cc = self.colorchipDetect.process_colorchip_big(im)
@@ -401,19 +404,13 @@ class appWindow(QMainWindow):
                 cc_position, cropped_cc = self.colorchipDetect.process_colorchip_small(reduced_img, original_size)
             cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
             cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
-
-            print(f"CC | Position: {cc_position}, Quadrant: {cc_quadrant} | AVG White: {cc_avg_white}")
-
-        #im_reduced = self.scale_img(im)
-        # perform equipment corrections
-        # im = self.eqRead.lensCorrect(im, img_path)
-
-        # hardcoded values are approx white RGB values from ccRead:
-        # hardcoding like tihs is ~ to manual White balance.
-        whiteR = 168
-        whiteG = 142
-        whiteB = 91
-        im = self.white_balance_image(im, whiteR, whiteG, whiteB)
+            im = self.white_balance_image(im, *cc_avg_white)
+            print(cc_position)
+        
+        # temp save output for debugging       
+        cv2.imwrite('output.jpg', im)
+        
+        
 
     def testFunction(self):
         """ a development assistant function, connected to a GUI button
@@ -439,22 +436,24 @@ class appWindow(QMainWindow):
         self.file_name = None
         self.file_ext = None
         self.base_file_name = None
-        
         self.bc_code = None
         self.bc_working = True
         self.is_blurry = None
         self.cc_location = None
         self.cc_white_value = None
 
-    def openImageFile(self, imgPath, demosaic=rawpy.DemosaicAlgorithm.AHD):
+    def openImageFile(self, imgPath,
+                      demosaic=rawpy.DemosaicAlgorithm.AHD,
+                      gamma_value=(2.2, 2.2)):
         """ given an image path, attempts to return a numpy array image object
         """
-
+        usr_gamma = self.mainWindow.doubleSpinBox_gammaValue.value()
+        gamma_value = (usr_gamma, usr_gamma)
         try:  # use rawpy to convert raw to openCV
             with rawpy.imread(imgPath) as raw:
                 bgr = raw.postprocess(chromatic_aberration=(1, 1),
                                       demosaic_algorithm=demosaic,
-                                      gamma=(1, 1))
+                                      gamma=gamma_value)
 
                 im = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)  # the OpenCV image
         # if it is not a raw format, just try and open it.
@@ -474,40 +473,54 @@ class appWindow(QMainWindow):
         
         imgPath, _ = QtWidgets.QFileDialog.getOpenFileName(
                 None, "Open Sample Image", QtCore.QDir.homePath())
-
+        if imgPath == '':
+            return
         try:
             im = self.openImageFile(imgPath)
-            bcStatus = self.bcRead.testFeature(im)
-            convert_for_colorchip = self.colorchipDetect.ocv_to_pil(im)
-            ccStatus = self.colorchipDetect.test_feature(convert_for_colorchip)
-            im_location = self.colorchipDetect.predict_color_chip_location(im)
+            grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+            bcStatus = self.bcRead.testFeature(grey)
+            blurStatus = self.blurDetect.testFeature(grey)
+            original_size, reduced_img = self.scale_images_with_info(im)
+            ccStatus, cropped_img = self.colorchipDetect.test_feature(reduced_img, original_size)
+            if ccStatus:
+                mb = ImageDialog(cropped_img)
+                mb.exec()
+                if mb:
+                    ccStatus = True
+                else:
+                    ccStatus = False
             eqStatus = self.eqRead.testFeature(imgPath)
         except Exception as e:
             # TODO add user notify for this error.
             print(e)
             bcStatus = False
+            blurStatus = False
             ccStatus = False
             eqStatus = False
         
         self.mainWindow.group_barcodeDetection.setEnabled(bcStatus)
+        self.mainWindow.group_blurDetection.setEnabled(blurStatus)
         self.mainWindow.group_colorCheckerDetection.setEnabled(ccStatus)
+        self.mainWindow.group_verifyRotation.setEnabled(ccStatus)
+        self.mainWindow.checkBox_performWhiteBalance.setEnabled(ccStatus)
         self.mainWindow.group_equipmentDetection.setEnabled(eqStatus)
 
-    def updateEqSettings(self):
-        """ called when a change is made to any appropriate fields in 
-        equipment detection group. Updates the eqRead class' properties.
-        This avoids having to read from the UI each time a eqRead function is
-        called."""
-
-        cmDistance = self.mainWindow.doubleSpinBox_focalDistance.value()
-        mDistance = cmDistance / 100
-        # set focal distance for distortion correction
-        self.eqRead.mDistance = mDistance
-
-        # set preferences for equipment detection group processes
-        self.eqRead.vignettingCorrection = self.mainWindow.checkBox_vignettingCorrection.isChecked()
-        self.eqRead.distortionCorrection = self.mainWindow.checkBox_distortionCorrection.isChecked()
-        self.eqRead.chromaticAberrationCorrection = self.mainWindow.checkBox_chromaticAberrationCorrection.isChecked()
+#    def updateEqSettings(self):
+#        """ called when a change is made to any appropriate fields in 
+#        equipment detection group. Updates the eqRead class' properties.
+#        This avoids having to read from the UI each time a eqRead function is
+#        called."""
+#
+#        cmDistance = self.mainWindow.doubleSpinBox_focalDistance.value()
+#        mDistance = cmDistance / 100
+#        # set focal distance for distortion correction
+#        self.eqRead.mDistance = mDistance
+#
+#        # set preferences for equipment detection group processes
+#        self.eqRead.vignettingCorrection = self.mainWindow.checkBox_vignettingCorrection.isChecked()
+#        self.eqRead.distortionCorrection = self.mainWindow.checkBox_distortionCorrection.isChecked()
+#        self.eqRead.checkBox_lensCorrection
+#        self.eqRead.chromaticAberrationCorrection = self.mainWindow.checkBox_chromaticAberrationCorrection.isChecked()
 
     def updateCatalogNumberPreviews(self):
         """ called when a change is made to any of the appropriate fields in 
@@ -685,12 +698,14 @@ class appWindow(QMainWindow):
         # note: the fallback value of '' will trigger an unchecked condition in self.convertCheckState()
         checkBox_performWhiteBalance = self.convertCheckState(self.get('checkBox_performWhiteBalance',''))
         self.mainWindow.checkBox_performWhiteBalance.setCheckState(checkBox_performWhiteBalance)
-        checkBox_vignettingCorrection = self.convertCheckState(self.get('checkBox_vignettingCorrection',''))
-        self.mainWindow.checkBox_vignettingCorrection.setCheckState(checkBox_vignettingCorrection)
-        checkBox_distortionCorrection = self.convertCheckState(self.get('checkBox_distortionCorrection',''))
-        self.mainWindow.checkBox_distortionCorrection.setCheckState(checkBox_distortionCorrection)
-        checkBox_chromaticAberrationCorrection = self.convertCheckState(self.get('checkBox_chromaticAberrationCorrection',''))
-        self.mainWindow.checkBox_chromaticAberrationCorrection.setCheckState(checkBox_chromaticAberrationCorrection)
+        #checkBox_vignettingCorrection = self.convertCheckState(self.get('checkBox_vignettingCorrection',''))
+        #self.mainWindow.checkBox_vignettingCorrection.setCheckState(checkBox_vignettingCorrection)
+        #checkBox_distortionCorrection = self.convertCheckState(self.get('checkBox_distortionCorrection',''))
+        #self.mainWindow.checkBox_distortionCorrection.setCheckState(checkBox_distortionCorrection)
+        #checkBox_chromaticAberrationCorrection = self.convertCheckState(self.get('checkBox_chromaticAberrationCorrection',''))
+        #self.mainWindow.checkBox_chromaticAberrationCorrection.setCheckState(checkBox_chromaticAberrationCorrection)
+        checkBox_lensCorrection = self.convertCheckState(self.get('checkBox_lensCorrection',''))
+        self.mainWindow.checkBox_lensCorrection.setCheckState(checkBox_lensCorrection)
         checkBox_metaDataApplication = self.convertCheckState(self.get('checkBox_metaDataApplication',''))
         self.mainWindow.checkBox_metaDataApplication.setCheckState(checkBox_metaDataApplication)
         checkBox_blurDetection = self.convertCheckState(self.get('checkBox_blurDetection',''))
@@ -731,6 +746,8 @@ class appWindow(QMainWindow):
         self.mainWindow.doubleSpinBox_focalDistance.setValue(doubleSpinBox_focalDistance)
         doubleSpinBox_blurThreshold = float(self.get('doubleSpinBox_blurThreshold', 0.08))
         self.mainWindow.doubleSpinBox_blurThreshold.setValue(doubleSpinBox_blurThreshold)
+        doubleSpinBox_gammaValue = float(self.get('doubleSpinBox_gammaValue', 2.20))
+        self.mainWindow.doubleSpinBox_gammaValue.setValue(doubleSpinBox_gammaValue)
 
         # slider
         #value_LogoScaling = int(self.get('value_LogoScaling', 100))
@@ -795,12 +812,14 @@ class appWindow(QMainWindow):
         # QCheckBox
         checkBox_performWhiteBalance = self.mainWindow.checkBox_performWhiteBalance.isChecked()
         self.settings.setValue('checkBox_performWhiteBalance', checkBox_performWhiteBalance)
-        checkBox_vignettingCorrection = self.mainWindow.checkBox_vignettingCorrection.isChecked()
-        self.settings.setValue('checkBox_vignettingCorrection', checkBox_vignettingCorrection)
-        checkBox_distortionCorrection = self.mainWindow.checkBox_distortionCorrection.isChecked()
-        self.settings.setValue('checkBox_distortionCorrection', checkBox_distortionCorrection)
-        checkBox_chromaticAberrationCorrection = self.mainWindow.checkBox_chromaticAberrationCorrection.isChecked()
-        self.settings.setValue('checkBox_chromaticAberrationCorrection', checkBox_chromaticAberrationCorrection)
+        #checkBox_vignettingCorrection = self.mainWindow.checkBox_vignettingCorrection.isChecked()
+        #self.settings.setValue('checkBox_vignettingCorrection', checkBox_vignettingCorrection)
+        #checkBox_distortionCorrection = self.mainWindow.checkBox_distortionCorrection.isChecked()
+        #self.settings.setValue('checkBox_distortionCorrection', checkBox_distortionCorrection)
+        #checkBox_chromaticAberrationCorrection = self.mainWindow.checkBox_chromaticAberrationCorrection.isChecked()
+        #self.settings.setValue('checkBox_chromaticAberrationCorrection', checkBox_chromaticAberrationCorrection)
+        checkBox_lensCorrection = self.mainWindow.checkBox_lensCorrection.isChecked()
+        self.settings.setValue('checkBox_lensCorrection', checkBox_lensCorrection)
         checkBox_metaDataApplication = self.mainWindow.checkBox_metaDataApplication.isChecked()
         self.settings.setValue('checkBox_metaDataApplication', checkBox_metaDataApplication)
         checkBox_blurDetection = self.mainWindow.checkBox_blurDetection.isChecked()
@@ -840,6 +859,8 @@ class appWindow(QMainWindow):
         self.settings.setValue('doubleSpinBox_focalDistance', doubleSpinBox_focalDistance)
         doubleSpinBox_blurThreshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
         self.settings.setValue('doubleSpinBox_blurThreshold', doubleSpinBox_blurThreshold)
+        doubleSpinBox_gammaValue = self.mainWindow.doubleSpinBox_gammaValue.value()
+        self.settings.setValue('doubleSpinBox_gammaValue', doubleSpinBox_gammaValue)
         
         # slider
         #value_LogoScaling = self.mainWindow.value_LogoScaling.value()

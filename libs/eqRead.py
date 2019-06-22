@@ -78,7 +78,7 @@ class eqRead():
         return result
     
     #def transPlantMetaData
-    def lensCorrect(self, im, imgPath):
+    def lensCorrect(self, im, imgPath, focalDistance=0.255):
         """ Attempts to perform lens corrections using origional image metadata.
             im = an opened image object,
             imgPath = the origional file object (for metadata extraction)"""
@@ -94,6 +94,7 @@ class eqRead():
         # is lensfunpy.LensCalibTCA useful here?
         mod.initialize(equip['focalLength'],
                        equip['apertureValue'],
+                       focalDistance,
                        flags=lensfunpy.ModifyFlags.ALL)
         # generate pixel map
         undist_coords = mod.apply_subpixel_geometry_distortion()        

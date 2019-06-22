@@ -32,7 +32,6 @@ except ImportError:
 from PIL import Image, ImageCms
 import cv2
 
-
 class ColorchipRead():
     def __init__(self, parent=None, *args):
         super(ColorchipRead, self).__init__()
@@ -299,16 +298,16 @@ class ColorchipRead():
             return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image
         except ValueError as e:
             print(f"ccRead had a value error: {e}")
-            return None
+            return None, None
         except AttributeError as e:
             print(f"ccRead had an attribute error: {e}")
-            return None
+            return None, None
         except IndexError as e:
             print(f"ccRead had an index error: {e}")
-            return None
+            return None, None
         except SystemError as e:
             print(f"ccRead had a system error: {e}")
-            return None
+            return None, None
 
     def predict_color_chip_quadrant(self, original_size, scaled_crop_location):
         """
@@ -383,7 +382,7 @@ class ColorchipRead():
 
         return list(white_pixels_average)
 
-    def test_feature(self, im, stride=50, partition_size=125, buffer_size=20, high_precision=False):
+    def test_feature(self, im, original_size, stride=50, partition_size=125, buffer_size=20, high_precision=False):
         """
         Tests whether the given image (and its color chip) is compatible with the neural network. This function does not
         spit out values. Compatibility means that the neural network found a color-chip like object, but does not
@@ -407,100 +406,134 @@ class ColorchipRead():
         :rtype: bool
         """
 
-        image_width, image_height = im.size
-        possible_positions = []
-
-        hists_rgb = []
-        hists_hsv = []
-        for r in range(-2, (image_height - partition_size) // stride + 2):
-            for c in range(-2, (image_width - partition_size) // stride + 2):
-                x1, y1 = c * stride, r * stride
-                x2, y2 = x1 + partition_size, y1 + partition_size
-                partitioned_im = im.crop((x1, y1, x2, y2))
-                possible_positions.append((x1, y1, x2, y2))
-                partitioned_im_hsv = partitioned_im.convert("HSV")
-
-                hists_rgb.append(partitioned_im.histogram())
-                hists_hsv.append(partitioned_im_hsv.histogram())
-
-        hists_rgb = np.array(hists_rgb).astype('float16') / 255
-        hists_hsv = np.array(hists_hsv).astype('float16') / 255
-
-        position_prediction, position_uncertainty = self._predict_uncertainty_position([hists_rgb, hists_hsv],
-                                                                                       len([hists_rgb, hists_hsv]))
-
-        only_cc_position_uncertainty = position_uncertainty[0][:, 1]
-        only_cc_position_prediction = position_prediction[0][:, 1]
-
-        most_certain_images = {}
-
-        for idx, prediction_value in enumerate(only_cc_position_prediction):
-            if len(list(most_certain_images)) >= buffer_size:
-                del most_certain_images[max(most_certain_images.keys())]
-
-            if prediction_value > 0.98:
-                most_certain_images[only_cc_position_uncertainty[idx]] = possible_positions[idx]
-
-        only_cc_uncertainty_column = []
-        only_cc_probability_column = []
-        highest_prob_images = []
-        if not high_precision:
-            for position in list(most_certain_images.values()):
-                highest_prob_images.append(np.array(im.crop(position)))
-
-            highest_prob_images_pred = np.array(highest_prob_images)
-            discriminator_prediction, discriminator_uncertainty = self._predict_uncertainty_discriminator(
-                highest_prob_images_pred,
-                len(highest_prob_images_pred))
-
-            try:
-                only_cc_uncertainty_column = discriminator_uncertainty[0][:, 1]
-                only_cc_probability_column = discriminator_prediction[0][:, 1]
-            except IndexError:
-                print("Discriminator could not find best image.")
+        loc, cropped_img = self.process_colorchip(im, original_size, stride,
+                                                  partition_size, buffer_size,
+                                                  high_precision)
+        if isinstance(loc, tuple):
+            status = True
         else:
-            highest_prob_rgb_hists = []
-            highest_prob_hsv_hists = []
-            for position in list(most_certain_images.values()):
-                h_image = im.crop(position)
-                highest_prob_rgb_hists.append(h_image.histogram())
-                highest_prob_hsv_hists.append(h_image.histogram())
-                highest_prob_images.append(np.array(h_image))
+            status = False
+            
+        return status, cropped_img
 
-            highest_prob_images_pred = np.array(highest_prob_images)
-            discriminator_prediction, discriminator_uncertainty = self._predict_uncertainty_hp_discriminator(
-                [highest_prob_rgb_hists,
-                 highest_prob_hsv_hists,
-                 highest_prob_images_pred],
-                len(highest_prob_rgb_hists))
-
-            try:
-                only_cc_uncertainty_column = discriminator_uncertainty[0][:, 1]
-                only_cc_probability_column = discriminator_prediction[0][:, 1]
-            except IndexError:
-                print("Discriminator could not find best image.")
-
-        lowest_uncertainty = 1
-        best_image = None
-        for idx, prediction_value in enumerate(only_cc_probability_column):
-            if prediction_value == max(only_cc_probability_column) and \
-                    prediction_value > 0.9 and \
-                    only_cc_uncertainty_column[idx] < lowest_uncertainty:
-                lowest_uncertainty = only_cc_uncertainty_column[idx]
-                best_image = Image.fromarray(highest_prob_images[idx])
-
-        try:
-            best_image.show()
-            return True
-        except ValueError as e:
-            print(f"ccRead had a value error: {e}")
-            return False
-        except AttributeError as e:
-            print(f"ccRead had an attribute error: {e}")
-            return False
-        except IndexError as e:
-            print(f"ccRead had an index error: {e}")
-            return False
-        except SystemError as e:
-            print(f"ccRead had a system error: {e}")
-            return False
+#    def test_feature(self, im, stride=50, partition_size=125, buffer_size=20, high_precision=False):
+#        """
+#        Tests whether the given image (and its color chip) is compatible with the neural network. This function does not
+#        spit out values. Compatibility means that the neural network found a color-chip like object, but does not
+#        ensure that the object found is truly a color chip.
+#
+#        :param im: Image to be tested. Must be in PIL format.
+#        :type im: Image
+#        :param stride: The amount of pixels that the partition window will move.
+#        :type stride: int
+#        :param partition_size: The size of the partition window.
+#        :type partition_size: int
+#        :param buffer_size: The amount of images the region proposal network will keep for the discriminator. In
+#        general, the higher the number of this buffer size, the more likely that the true color chip will reside in the
+#        buffer. However, this also decreases (linearly) how many images can be processed within a given time.
+#        :type buffer_size: int
+#        :param high_precision: Boolean to control whether or not to use the high precision discriminator model. The
+#        high precision is slightly less accurate in terms of centering the color chip, but should have less false
+#        positives. It is also slower than the regular discriminator model.
+#        :return: Returns true if the neural networks are able to detect a color chip within an image. Returns false if
+#        it cannot find a color chip.
+#        :rtype: bool
+#        """
+#
+#        image_width, image_height = im.size
+#        possible_positions = []
+#
+#        hists_rgb = []
+#        hists_hsv = []
+#        for r in range(-2, (image_height - partition_size) // stride + 2):
+#            for c in range(-2, (image_width - partition_size) // stride + 2):
+#                x1, y1 = c * stride, r * stride
+#                x2, y2 = x1 + partition_size, y1 + partition_size
+#                partitioned_im = im.crop((x1, y1, x2, y2))
+#                possible_positions.append((x1, y1, x2, y2))
+#                partitioned_im_hsv = partitioned_im.convert("HSV")
+#
+#                hists_rgb.append(partitioned_im.histogram())
+#                hists_hsv.append(partitioned_im_hsv.histogram())
+#
+#        hists_rgb = np.array(hists_rgb).astype('float16') / 255
+#        hists_hsv = np.array(hists_hsv).astype('float16') / 255
+#
+#        position_prediction, position_uncertainty = self._predict_uncertainty_position([hists_rgb, hists_hsv],
+#                                                                                       len([hists_rgb, hists_hsv]))
+#
+#        only_cc_position_uncertainty = position_uncertainty[0][:, 1]
+#        only_cc_position_prediction = position_prediction[0][:, 1]
+#
+#        most_certain_images = {}
+#
+#        for idx, prediction_value in enumerate(only_cc_position_prediction):
+#            if len(list(most_certain_images)) >= buffer_size:
+#                del most_certain_images[max(most_certain_images.keys())]
+#
+#            if prediction_value > 0.98:
+#                most_certain_images[only_cc_position_uncertainty[idx]] = possible_positions[idx]
+#
+#        only_cc_uncertainty_column = []
+#        only_cc_probability_column = []
+#        highest_prob_images = []
+#        if not high_precision:
+#            for position in list(most_certain_images.values()):
+#                highest_prob_images.append(np.array(im.crop(position)))
+#
+#            highest_prob_images_pred = np.array(highest_prob_images)
+#            discriminator_prediction, discriminator_uncertainty = self._predict_uncertainty_discriminator(
+#                highest_prob_images_pred,
+#                len(highest_prob_images_pred))
+#
+#            try:
+#                only_cc_uncertainty_column = discriminator_uncertainty[0][:, 1]
+#                only_cc_probability_column = discriminator_prediction[0][:, 1]
+#            except IndexError:
+#                print("Discriminator could not find best image.")
+#        else:
+#            highest_prob_rgb_hists = []
+#            highest_prob_hsv_hists = []
+#            for position in list(most_certain_images.values()):
+#                h_image = im.crop(position)
+#                highest_prob_rgb_hists.append(h_image.histogram())
+#                highest_prob_hsv_hists.append(h_image.histogram())
+#                highest_prob_images.append(np.array(h_image))
+#
+#            highest_prob_images_pred = np.array(highest_prob_images)
+#            discriminator_prediction, discriminator_uncertainty = self._predict_uncertainty_hp_discriminator(
+#                [highest_prob_rgb_hists,
+#                 highest_prob_hsv_hists,
+#                 highest_prob_images_pred],
+#                len(highest_prob_rgb_hists))
+#
+#            try:
+#                only_cc_uncertainty_column = discriminator_uncertainty[0][:, 1]
+#                only_cc_probability_column = discriminator_prediction[0][:, 1]
+#            except IndexError:
+#                print("Discriminator could not find best image.")
+#
+#        lowest_uncertainty = 1
+#        best_image = None
+#        for idx, prediction_value in enumerate(only_cc_probability_column):
+#            if prediction_value == max(only_cc_probability_column) and \
+#                    prediction_value > 0.9 and \
+#                    only_cc_uncertainty_column[idx] < lowest_uncertainty:
+#                lowest_uncertainty = only_cc_uncertainty_column[idx]
+#                best_image = Image.fromarray(highest_prob_images[idx])
+#
+#        try:
+#            best_image.show()
+#            return True
+#        except ValueError as e:
+#            print(f"ccRead had a value error: {e}")
+#            return False
+#        except AttributeError as e:
+#            print(f"ccRead had an attribute error: {e}")
+#            return False
+#        except IndexError as e:
+#            print(f"ccRead had an index error: {e}")
+#            return False
+#        except SystemError as e:
+#            print(f"ccRead had a system error: {e}")
+#            return False
