@@ -39,6 +39,8 @@ class ColorchipRead():
         self.position_model = load_model("libs/models/mlp_proposal.hdf5")
         self.discriminator_model = load_model("libs/models/discriminator.hdf5")
         self.high_precision_model = load_model("libs/models/highprecision_discriminator.hdf5")
+        self.size_det_model = load_model("libs/models/mlp_sizedet.hdf5")
+        self.large_colorchip_regressor_model = load_model("libs/models/lcc_regressor.hdf5")
         # self.size_model = load_model("models/size_model.hdf5")
 
         self.position_function = K.function(
@@ -138,7 +140,56 @@ class ColorchipRead():
         pil_image = Image.fromarray(pil_image)
         return pil_image
 
-    def process_colorchip(self, im, original_size, stride=50, partition_size=125, buffer_size=20, high_precision=False):
+    def predict_colorchip_size(self, im):
+        """
+        Predicts the size of the color chip through color histograms and a dense neural network. This is essential for
+        knowing the correct neural network model to use for determining the color chip values.
+        :param im: The image to be predicted on.
+        :type im: OCV Image
+        :return: Returns 'big' for big colorchips, and 'small' for small colorchips.
+        :rtype: str
+        """
+        im = self.ocv_to_pil(im)
+        im_hsv = im.convert("HSV")
+        hist_rgb = im.histogram()
+        hist_hsv = im_hsv.histogram()
+
+        X_rgb = np.array(hist_rgb) / 8196
+        X_hsv = np.array(hist_hsv) / 8196
+
+        size_det_result = self.size_det_model.predict([[X_rgb], [X_hsv]])[0]
+        if size_det_result[0] > size_det_result[1]:
+            return 'big'
+        else:
+            return 'small'
+
+    def process_colorchip_big(self, im):
+        """
+        Processes big color chips using neural networks
+        :param im: The image to be processed.
+        :type im: OCV Image
+        :return: TBD
+        """
+        im = self.ocv_to_pil(im)
+        original_image_width, original_image_height = im.size
+
+        resized_im = im.resize((256, 256))
+        im_np = np.array(resized_im) / 255
+
+        crop_vals = self.large_colorchip_regressor_model.predict(np.array([im_np]))[0]
+        prop_crop_vals = np.array(crop_vals) / 256
+        prop_x1, prop_y1, prop_x2, prop_y2 = prop_crop_vals[0], prop_crop_vals[1], prop_crop_vals[2], prop_crop_vals[3]
+        scaled_x1, scaled_x2 = prop_x1 * original_image_width, prop_x2 * original_image_width
+        scaled_y1, scaled_y2 = prop_y1 * original_image_height, prop_x2 * original_image_height
+
+        cropped_im = im.crop((scaled_x1, scaled_y1, scaled_x2, scaled_y2))
+
+        try:
+            return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), cropped_im
+        except SystemError as e:
+            print(f"System error: {e}")
+
+    def process_colorchip_small(self, im, original_size, stride=50, partition_size=125, buffer_size=20, high_precision=False):
         """
         Processes a color chip using neural networks.
         :param im:

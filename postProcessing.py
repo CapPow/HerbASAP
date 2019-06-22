@@ -397,22 +397,17 @@ class appWindow(QMainWindow):
         if self.mainWindow.group_colorCheckerDetection:
             # colorchecker functions
             original_size, reduced_img = self.scale_images_with_info(im)
-            cc_position, cropped_cc = self.colorchipDetect.process_colorchip(reduced_img, original_size)
+            cc_size = self.colorchipDetect.predict_colorchip_size(reduced_img)
+            if cc_size == 'big':
+                cc_position, cropped_cc = self.colorchipDetect.process_colorchip_big(im)
+            else:
+                cc_position, cropped_cc = self.colorchipDetect.process_colorchip_small(reduced_img, original_size)
             cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
             cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
             im = self.white_balance_image(im, *cc_avg_white)
             print(cc_position)
-
-        #im_reduced = self.scale_img(im)
-        # perform equipment corrections
-        # im = self.eqRead.lensCorrect(im, img_path)
-
-        # hardcoded values are approx white RGB values from ccRead:
-        # hardcoding like tihs is ~ to manual White balance.
-        #whiteR = 168
-        #whiteG = 142
-        #whiteB = 91
         
+        # temp save output for debugging       
         cv2.imwrite('output.jpg', im)
         
         
