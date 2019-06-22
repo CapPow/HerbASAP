@@ -189,7 +189,7 @@ class ColorchipRead():
         except SystemError as e:
             print(f"System error: {e}")
 
-    def process_colorchip_small(self, im, original_size, stride=50, partition_size=125, buffer_size=20, high_precision=False):
+    def process_colorchip_small(self, im, original_size, stride=50, partition_size=125, buffer_size=20, high_precision=True):
         """
         Processes a color chip using neural networks.
         :param im:
@@ -406,11 +406,11 @@ class ColorchipRead():
         :rtype: bool
         """
 
-        cc_size = self.predict_colorchip_size(reduced_img)
+        cc_size = self.predict_colorchip_size(im)
         if cc_size == 'big':
             cc_position, cropped_cc = self.process_colorchip_big(im)
         else:
-            cc_position, cropped_cc = self.process_colorchip_small(reduced_img, original_size)
+            cc_position, cropped_cc = self.process_colorchip_small(im, original_size)
         
         if isinstance(cc_position, tuple):
             status = True
