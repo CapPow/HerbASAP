@@ -53,6 +53,9 @@ from libs.bcRead import bcRead
 from libs.eqRead import eqRead
 from libs.blurDetect import blurDetect
 from libs.ccRead import ColorchipRead
+from libs.folderMonitor import Folder_Watcher
+from libs.folderMonitor import Save_Output_Handler
+
 #from libs.ccRead import ccRead
 
 class Worker_Signals(QObject):
@@ -152,10 +155,11 @@ class appWindow(QMainWindow):
         super().__init__()
         self.init_ui()
 
+
     def init_ui(self):
         self.mainWindow = Ui_MainWindow()
         self.mainWindow.setupUi(self)
-        
+                
         # set up a threadpool
         self.threadPool = QThreadPool(self)
         # determine & assign a safe quantity of threads 75% of resources
@@ -169,9 +173,14 @@ class appWindow(QMainWindow):
         self.settings.setFallbacksEnabled(False)    # File only, no fallback to registry.
         # populate the settings based on the previous preferences
         self.populateSettings()
+        # initalize the folder_watcher using current user inputs
+        self.setup_Folder_Watcher()
+        
+        # initalize the Save_Output_Handler using current user inputs
+        self.setup_Output_Handler()
+        
         # fill in the previews
         self.updateCatalogNumberPreviews()
-        
         prefix = self.mainWindow.lineEdit_catalogNumberPrefix.text()
         digits = int(self.mainWindow.spinBox_catalogDigits.value())
         self.bcRead = bcRead(prefix, digits, parent=self.mainWindow)
@@ -222,6 +231,62 @@ class appWindow(QMainWindow):
 #                        #  instead display a the new release
 #                        webbrowser.open(link,autoraise=1)
 #            self.settings.saveSettings()  # save the new version check date
+    
+    def setup_Output_Handler(self):
+        """
+        initiates self.save_output_handler with user inputs.
+        """
+        # output_map is dict structured as:
+        # { ui object (checkbox) : (location, extension)}
+        group_keepUnalteredRaw = self.mainWindow.group_keepUnalteredRaw.isChecked()
+        lineEdit_pathUnalteredRaw = self.mainWindow.lineEdit_pathUnalteredRaw.text()
+        
+        group_saveProcessedJpg = self.mainWindow.group_saveProcessedJpg.isChecked()
+        lineEdit_pathProcessedJpg = self.mainWindow.lineEdit_pathProcessedJpg.text()
+        
+        group_saveProcessedTIFF = self.mainWindow.group_saveProcessedTIFF.isChecked()
+        lineEdit_pathProcessedTIFF = self.mainWindow.lineEdit_pathProcessedTIFF.text()
+        
+        group_saveProcessedPng = self.mainWindow.group_saveProcessedPng.isChecked()
+        lineEdit_pathProcessedPng = self.mainWindow.lineEdit_pathProcessedPng.text()
+
+        output_map = {group_keepUnalteredRaw: (lineEdit_pathUnalteredRaw, None),
+                      group_saveProcessedJpg: (lineEdit_pathProcessedJpg, '.jpg'),
+                      group_saveProcessedTIFF: (lineEdit_pathProcessedTIFF, '.tiff'),
+                      group_saveProcessedPng: (lineEdit_pathProcessedPng, '.png')
+                      }
+        
+        dupNamingPolicy = self.mainWindow.comboBox_dupNamingPolicy.currentText()
+
+        self.save_output_handler = Save_Output_Handler(output_map, dupNamingPolicy)
+
+    def setup_Folder_Watcher(self, raw_image_patterns = None):
+        """
+        initiates self.foldeR_watcher with user inputs.
+        """
+        if not raw_image_patterns:
+            raw_image_patterns = ['*.cr2', '*.CR2',
+                                  '*.tiff', '*.TIFF',
+                                  '*.nef', '*.NEF',
+                                  '*.orf', '*.ORF']
+
+        lineEdit_inputPath = self.mainWindow.lineEdit_inputPath.text()
+        self.folder_watcher = Folder_Watcher(lineEdit_inputPath, raw_image_patterns)
+
+    def alert_saving_output_finished(self):
+        """
+        probably won't be used or useful saved here for consistency with other
+        worker threads.
+        """
+        print('saving output images finished')
+
+    def alert_new_unprocessed_image(self, img_path):
+        """
+        connected to the worker.signals.result signal, recieves an image_path
+        for an unprocessed raw formatted image and passes it to the 
+        processImage() function.
+        """
+        self.processImage(int_path)
 
     def handle_blur_result(self, result):
         self.is_blurry = result
@@ -314,47 +379,7 @@ class appWindow(QMainWindow):
         saves a processed cv2 image object to the appropriate formats and
         locationsresulting.
         """
-        # save output options
-        output_map = {self.mainWindow.group_keepUnalteredRaw:
-                [self.mainWindow.lineEdit_pathUnalteredRaw, self.file_ext],
-            self.mainWindow.group_saveProcessedJpg:
-                [self.mainWindow.lineEdit_pathProcessedJpg, '.jpg'],
-            self.mainWindow.group_saveProcessedTIFF:
-                [self.mainWindow.lineEdit_pathProcessedTIFF, '.tiff'],
-            self.mainWindow.group_saveProcessedPng:
-                [self.mainWindow.lineEdit_pathProcessedPng, '.png']}
-        # iterate over each option and if applicable, output that format.
-        for obj, file_details in output_map.items():
-            if obj.isChecked():
-                location, ext = file_details
-                location = location.text()
-                while self.bc_working:
-                    # surely there is a better method?
-                    time.sleep(.1)
-                    
-                if self.mainWindow.group_renameByBarcode.isChecked():
-                    proposed_names = self.bc_code
-                else:
-                    proposed_names = [self.base_file_name]
-                    
-                for bc in self.bc_code:
-                    fileQty = len(glob.glob(f'{location}//{bc}*{ext}'))
-                    if fileQty > 0:
-                        # if there is an alpha based suffix, use it
-                        if self.suffix_lookup:
-                            new_file_base_name = f'{bc}{self.suffix_lookup.get(fileQty)}'
-                        # otherwise check policy
-                        else:
-                            policy = self.mainWindow.comboBox_dupNamingPolicy.currentText()
-                            if policy == 'append Number with underscore':
-                                new_file_base_name = f'{bc}_{fileQty}'
-                            elif policy == 'OVERWRITE original image with newest':
-                                new_file_base_name = bc
-                    new_file_name = f'{location}//{new_file_base_name}{ext}'
-                    cv2.imwrite(new_file_name, im)
 
-        # reset the class variables for the next image.
-        self.reset_working_variables()
         
     def processImage(self, img_path):
         """ 
@@ -412,6 +437,7 @@ class appWindow(QMainWindow):
         cv2.imwrite('output.jpg', im)
         
         
+        self.reset_working_variables()
 
     def testFunction(self):
         """ a development assistant function, connected to a GUI button
@@ -871,6 +897,10 @@ class appWindow(QMainWindow):
         #self.settings.setValue('value_DarkTheme', value_DarkTheme)
         #value_LightTheme = self.mainWindow.value_LightTheme.isChecked()
         #self.settings.setValue('value_LightTheme', value_LightTheme)
+        
+        # cleanup, after changes are made, should re-initalize some classes
+        self.setup_Folder_Watcher()
+        self.setup_Output_Handler()
 
 app = QtWidgets.QApplication(sys.argv)
 w = appWindow()
