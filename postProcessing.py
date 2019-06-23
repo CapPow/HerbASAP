@@ -436,9 +436,11 @@ class appWindow(QMainWindow):
 
         try:  # use rawpy to convert raw to openCV
             with rawpy.imread(imgPath) as raw:
-                bgr = raw.postprocess(chromatic_aberration=(1, 1),
+                bgr = raw.postprocess(
+                                      chromatic_aberration=(1, 1),
                                       demosaic_algorithm=demosaic,
-                                      gamma=(1, 1))
+                                      gamma=(1, 1)
+                )
 
                 im = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)  # the OpenCV image
         # if it is not a raw format, just try and open it.

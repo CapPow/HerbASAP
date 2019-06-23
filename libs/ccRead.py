@@ -190,7 +190,7 @@ class ColorchipRead():
         except SystemError as e:
             print(f"System error: {e}")
 
-    def process_colorchip_small(self, im, original_size, stride=50, partition_size=125, buffer_size=20, high_precision=False):
+    def process_colorchip_small(self, im, original_size, stride=25, partition_size=125, buffer_size=20, high_precision=False):
         """
         Processes a color chip using neural networks.
         :param im:
@@ -203,6 +203,7 @@ class ColorchipRead():
         as a cropped image containing only the color chip
         """
         im = self.ocv_to_pil(im)
+        im.show()
         image_width, image_height = im.size
         original_width, original_height = original_size
         possible_positions = []
@@ -229,12 +230,16 @@ class ColorchipRead():
 
         most_certain_images = {}
 
-        for idx, prediction_value in enumerate(only_cc_position_prediction):
-            if len(list(most_certain_images)) >= buffer_size:
-                del most_certain_images[max(most_certain_images.keys())]
+        position_prediction_floor = max(only_cc_position_prediction)
+        while len(list(most_certain_images)) < 10:
+            for idx, prediction_value in enumerate(only_cc_position_prediction):
+                if len(list(most_certain_images)) >= buffer_size:
+                    del most_certain_images[max(most_certain_images.keys())]
 
-            if prediction_value > 0.98:
-                most_certain_images[only_cc_position_uncertainty[idx]] = possible_positions[idx]
+                if prediction_value > position_prediction_floor:
+                    most_certain_images[only_cc_position_uncertainty[idx]] = possible_positions[idx]
+
+            position_prediction_floor -= 0.01
 
         only_cc_uncertainty_column = []
         only_cc_probability_column = []
@@ -278,13 +283,16 @@ class ColorchipRead():
         lowest_uncertainty = 1
         best_location = None
         best_image = None
-        for idx, prediction_value in enumerate(only_cc_probability_column):
-            if prediction_value == max(only_cc_probability_column) and \
-                    prediction_value > 0.9 and \
-                    only_cc_uncertainty_column[idx] < lowest_uncertainty:
-                lowest_uncertainty = only_cc_uncertainty_column[idx]
-                best_location = list(most_certain_images.values())[idx]
-                best_image = im.crop(list(most_certain_images.values())[idx])
+
+        max_discriminator_pred = max(only_cc_probability_column)
+        if max_discriminator_pred > 0:
+            for idx, prediction_value in enumerate(only_cc_probability_column):
+                if prediction_value == max(only_cc_probability_column) and \
+                        prediction_value > max_discriminator_pred - 0.05 and \
+                        only_cc_uncertainty_column[idx] < lowest_uncertainty:
+                    lowest_uncertainty = only_cc_uncertainty_column[idx]
+                    best_location = list(most_certain_images.values())[idx]
+                    best_image = im.crop(list(most_certain_images.values())[idx])
 
         x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
         prop_x1, prop_y1, prop_x2, prop_y2 = x1 / image_width, y1 / image_height, x2 / image_width, y2 / image_height
@@ -296,6 +304,7 @@ class ColorchipRead():
 
         try:
             print(x1, y1, x2, y2)
+            best_image.show()
             return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image
         except ValueError as e:
             print(f"ccRead had a value error: {e}")
