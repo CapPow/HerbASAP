@@ -137,13 +137,9 @@ class ColorchipRead():
         :return:
         """
 
-        start = time.time()
         pil_image = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
         pil_image = np.array(pil_image)
         pil_image = Image.fromarray(pil_image)
-
-        end = time.time()
-        print((end - start))
         return pil_image
 
     def predict_colorchip_size(self, im):
@@ -155,8 +151,14 @@ class ColorchipRead():
         :return: Returns 'big' for big colorchips, and 'small' for small colorchips.
         :rtype: str
         """
+
+        start = time.time()
         im = self.ocv_to_pil(im)
         im_hsv = im.convert("HSV")
+
+        # im = im.resize((256, 256))
+        # im_hsv = im_hsv.resize((256, 256))
+
         hist_rgb = im.histogram()
         hist_hsv = im_hsv.histogram()
 
@@ -164,6 +166,9 @@ class ColorchipRead():
         X_hsv = np.array(hist_hsv) / 8196
 
         size_det_result = self.size_det_model.predict([[X_rgb], [X_hsv]])[0]
+
+        end = time.time()
+        print(f"Predict color chip size took: {end - start} seconds.")
         if size_det_result[0] > size_det_result[1]:
             return 'big'
         else:
@@ -207,8 +212,9 @@ class ColorchipRead():
         :return: Returns both a tuple containing the location of the color chip in the format (x1, y1, x2, y2), as well
         as a cropped image containing only the color chip
         """
+
         im = self.ocv_to_pil(im)
-        im.show()
+        start = time.time()
         image_width, image_height = im.size
         original_width, original_height = original_size
         possible_positions = []
@@ -236,7 +242,7 @@ class ColorchipRead():
         most_certain_images = {}
 
         position_prediction_floor = max(only_cc_position_prediction)
-        while len(list(most_certain_images)) < 10:
+        while len(list(most_certain_images)) < 3:
             for idx, prediction_value in enumerate(only_cc_position_prediction):
                 if len(list(most_certain_images)) >= buffer_size:
                     del most_certain_images[max(most_certain_images.keys())]
@@ -307,8 +313,9 @@ class ColorchipRead():
                                                      prop_x2 * original_width, \
                                                      prop_y2 * original_height
 
+        end = time.time()
         try:
-            print(x1, y1, x2, y2)
+            print(f"Color chip cropping took: {end - start} seconds.")
             best_image.show()
             return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image
         except ValueError as e:
