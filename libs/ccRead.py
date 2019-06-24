@@ -194,6 +194,7 @@ class ColorchipRead():
         im_np = np.array(resized_im) / 255
 
         crop_vals = self.large_colorchip_regressor_model.predict(np.array([im_np]))[0]
+
         prop_crop_vals = np.array(crop_vals) / 256
         prop_x1, prop_y1, prop_x2, prop_y2 = prop_crop_vals[0], prop_crop_vals[1], prop_crop_vals[2], prop_crop_vals[3]
         scaled_x1, scaled_x2 = prop_x1 * original_image_width, prop_x2 * original_image_width
@@ -258,10 +259,10 @@ class ColorchipRead():
             most_certain_images[only_cc_position_uncertainty[position_prediction_dict[prediction]]] = \
                 possible_positions[position_prediction_dict[prediction]]
 
-        # only_cc_uncertainty_column = []
-        # only_cc_probability_column = []
+        only_cc_uncertainty_column = []
+        only_cc_probability_column = []
 
-        discriminator_pred_dict = {}
+        # discriminator_pred_dict = {}
         highest_prob_images = []
         if not high_precision:
 
@@ -274,9 +275,9 @@ class ColorchipRead():
                 len(highest_prob_images_pred))
 
             try:
-                discriminator_pred_dict = dict(zip(discriminator_prediction[0][:, 1], [i for i in range(buffer_size)]))
-                # only_cc_uncertainty_column = discriminator_uncertainty[0][:, 1]
-                # only_cc_probability_column = discriminator_prediction[0][:, 1]
+                # discriminator_pred_dict = dict(zip(discriminator_prediction[0][:, 1], [i for i in range(buffer_size)]))
+                only_cc_uncertainty_column = discriminator_uncertainty[0][:, 1]
+                only_cc_probability_column = discriminator_prediction[0][:, 1]
             except IndexError:
                 print("Discriminator could not find best image.")
 
@@ -296,25 +297,29 @@ class ColorchipRead():
                  highest_prob_images_pred],
                 len(highest_prob_rgb_hists))
 
-            # try:
-            #     only_cc_uncertainty_column = discriminator_uncertainty[0][:, 1]
-            #     only_cc_probability_column = discriminator_prediction[0][:, 1]
-            # except IndexError:
-            #     print("Discriminator could not find best image.")
+            try:
+                only_cc_uncertainty_column = discriminator_uncertainty[0][:, 1]
+                only_cc_probability_column = discriminator_prediction[0][:, 1]
+            except IndexError:
+                print("Discriminator could not find best image.")
 
-        # max_discriminator_pred = max(only_cc_probability_column)
-        # if max_discriminator_pred > 0.5:
-        #     for idx, prediction_value in enumerate(only_cc_probability_column):
-        #         if prediction_value > max_discriminator_pred - 0.05 and \
-        #                 only_cc_uncertainty_column[idx] < lowest_uncertainty:
-        #             lowest_uncertainty = only_cc_uncertainty_column[idx]
-        #             best_location = list(most_certain_images.values())[idx]
-        #             best_image = im.crop(list(most_certain_images.values())[idx])
+        lowest_uncertainty = 1
+        best_image = None
+        best_location = None
 
-        sorted_prediction = sorted(discriminator_pred_dict, reverse=True)
-        best_index = discriminator_pred_dict[sorted_prediction[0]]
-        best_location = list(most_certain_images.values())[best_index]
-        best_image = im.crop(list(most_certain_images.values())[best_index])
+        max_discriminator_pred = max(only_cc_probability_column)
+        if max_discriminator_pred > 0.5:
+            for idx, prediction_value in enumerate(only_cc_probability_column):
+                if prediction_value > max_discriminator_pred - 0.05 and \
+                        only_cc_uncertainty_column[idx] < lowest_uncertainty:
+                    lowest_uncertainty = only_cc_uncertainty_column[idx]
+                    best_location = list(most_certain_images.values())[idx]
+                    best_image = im.crop(list(most_certain_images.values())[idx])
+
+        # sorted_prediction = sorted(discriminator_pred_dict, reverse=True)
+        # best_index = discriminator_pred_dict[sorted_prediction[0]]
+        # best_location = list(most_certain_images.values())[best_index]
+        # best_image = im.crop(list(most_certain_images.values())[best_index])
 
         x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
         prop_x1, prop_y1, prop_x2, prop_y2 = x1 / image_width, y1 / image_height, x2 / image_width, y2 / image_height
