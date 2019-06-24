@@ -36,6 +36,7 @@ import os
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+print(f"Force using CPU")
 
 
 
@@ -221,15 +222,15 @@ class ColorchipRead():
         """
 
         im = self.ocv_to_pil(im)
-        im_hsv = im.convert("HSV")
         start = time.time()
+        im_hsv = im.convert("HSV")
         image_width, image_height = im.size
         original_width, original_height = original_size
         possible_positions = []
         hists_rgb = []
         hists_hsv = []
-        for r in range(-2, (image_height - partition_size) // stride + 2):
-            for c in range(-2, (image_width - partition_size) // stride + 2):
+        for r in range(-1, (image_height - partition_size) // stride + 1):
+            for c in range(-1, (image_width - partition_size) // stride + 1):
                 x1, y1 = c * stride, r * stride
                 x2, y2 = x1 + partition_size, y1 + partition_size
                 partitioned_im = im.crop((x1, y1, x2, y2))
@@ -308,13 +309,13 @@ class ColorchipRead():
         best_location = None
 
         max_discriminator_pred = max(only_cc_probability_column)
-        if max_discriminator_pred > 0.5:
+        if max_discriminator_pred > 0:
             for idx, prediction_value in enumerate(only_cc_probability_column):
                 if prediction_value > max_discriminator_pred - 0.05 and \
                         only_cc_uncertainty_column[idx] < lowest_uncertainty:
                     lowest_uncertainty = only_cc_uncertainty_column[idx]
                     best_location = list(most_certain_images.values())[idx]
-                    best_image = im.crop(list(most_certain_images.values())[idx])
+                    best_image = im.crop(tuple(best_location))
 
         # sorted_prediction = sorted(discriminator_pred_dict, reverse=True)
         # best_index = discriminator_pred_dict[sorted_prediction[0]]
