@@ -220,6 +220,7 @@ class ColorchipRead():
         """
 
         im = self.ocv_to_pil(im)
+        im_hsv = im.convert("HSV")
         start = time.time()
         image_width, image_height = im.size
         original_width, original_height = original_size
@@ -232,7 +233,7 @@ class ColorchipRead():
                 x2, y2 = x1 + partition_size, y1 + partition_size
                 partitioned_im = im.crop((x1, y1, x2, y2))
                 possible_positions.append((x1, y1, x2, y2))
-                partitioned_im_hsv = partitioned_im.convert("HSV")
+                partitioned_im_hsv = im_hsv.crop((x1, y1, x2, y2))
                 hists_rgb.append(partitioned_im.histogram())
                 hists_hsv.append(partitioned_im_hsv.histogram())
 
@@ -257,8 +258,8 @@ class ColorchipRead():
             most_certain_images[only_cc_position_uncertainty[position_prediction_dict[prediction]]] = \
                 possible_positions[position_prediction_dict[prediction]]
 
-        only_cc_uncertainty_column = []
-        only_cc_probability_column = []
+        # only_cc_uncertainty_column = []
+        # only_cc_probability_column = []
 
         discriminator_pred_dict = {}
         highest_prob_images = []
