@@ -31,7 +31,7 @@ except ImportError:
 
 from PIL import Image, ImageCms
 import cv2
-
+import time
 
 class ColorchipRead():
     def __init__(self, parent=None, *args):
@@ -136,9 +136,14 @@ class ColorchipRead():
         :type im:
         :return:
         """
+
+        start = time.time()
         pil_image = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
         pil_image = np.array(pil_image)
         pil_image = Image.fromarray(pil_image)
+
+        end = time.time()
+        print((end - start))
         return pil_image
 
     def predict_colorchip_size(self, im):
