@@ -374,11 +374,11 @@ class appWindow(QMainWindow):
         if self.mainWindow.group_colorCheckerDetection:
             # colorchecker functions
             original_size, reduced_img = self.scale_images_with_info(im)
-            # cc_worker = Worker(self.colorchipDetect.predict_color_chip_location, reduced_img)
-            # cc_worker.signals.result.connect(self.handle_cc_result)
-            # cc_worker.signals.finished.connect(self.alert_cc_finished)
-            # self.threadPool.start(cc_worker)
-            cc_size = self.colorchipDetect.predict_colorchip_size(reduced_img)
+
+            # Potentially removed due to overhead:
+            # cc_size = self.colorchipDetect.predict_colorchip_size(reduced_img)
+
+            cc_size = "small"
             if cc_size == 'big':
                 cc_position, cropped_cc = self.colorchipDetect.process_colorchip_big(im)
             else:
