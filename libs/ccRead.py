@@ -32,6 +32,12 @@ except ImportError:
 from PIL import Image, ImageCms
 import cv2
 import time
+import os
+
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
+
 
 class ColorchipRead():
     def __init__(self, parent=None, *args):
@@ -230,8 +236,8 @@ class ColorchipRead():
                 hists_rgb.append(partitioned_im.histogram())
                 hists_hsv.append(partitioned_im_hsv.histogram())
 
-        hists_rgb = np.array(hists_rgb).astype('float16') / 255
-        hists_hsv = np.array(hists_hsv).astype('float16') / 255
+        hists_rgb = np.array(hists_rgb) / 255
+        hists_hsv = np.array(hists_hsv) / 255
 
         position_prediction, position_uncertainty = self._predict_uncertainty_position([hists_rgb, hists_hsv],
                                                                                        len([hists_rgb, hists_hsv]))
@@ -289,15 +295,11 @@ class ColorchipRead():
                  highest_prob_images_pred],
                 len(highest_prob_rgb_hists))
 
-            try:
-                only_cc_uncertainty_column = discriminator_uncertainty[0][:, 1]
-                only_cc_probability_column = discriminator_prediction[0][:, 1]
-            except IndexError:
-                print("Discriminator could not find best image.")
-
-        lowest_uncertainty = 1
-        best_location = None
-        best_image = None
+            # try:
+            #     only_cc_uncertainty_column = discriminator_uncertainty[0][:, 1]
+            #     only_cc_probability_column = discriminator_prediction[0][:, 1]
+            # except IndexError:
+            #     print("Discriminator could not find best image.")
 
         # max_discriminator_pred = max(only_cc_probability_column)
         # if max_discriminator_pred > 0.5:
@@ -324,7 +326,6 @@ class ColorchipRead():
         end = time.time()
         try:
             print(f"Color chip cropping took: {end - start} seconds.")
-            best_image.show()
             return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image
         except ValueError as e:
             print(f"ccRead had a value error: {e}")
