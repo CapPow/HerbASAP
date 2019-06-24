@@ -21,13 +21,14 @@
 
 """
 # imports here
+import string
 import glob
 #import piexif
 
 from watchdog.events import PatternMatchingEventHandler
 from watchdog.observers import Observer
-
 from PyQt5 import QtCore
+import cv2
 
 
 class New_Image_Emitter(QtCore.QObject):
@@ -47,14 +48,15 @@ class Event_Handler(PatternMatchingEventHandler):
     def on_any_event(self, event):
         if event.is_directory:
             return None
-        elif event.event_type == 'created':
-            # take action when file is created
-            img_path = event.src_path
-            self._emitter.new_image_signal.emit(img_path)
-            print(f'{event.src_path} file was created')
+        #elif event.event_type == 'created':
+        #    # take action when file is created
+        #    img_path = event.src_path
+        #    self._emitter.new_image_signal.emit(img_path)
+        #    print(f'{event.src_path} file was created')
         elif event.event_type == 'modified':
             # take action when a file is modified
             print(f'{event.src_path} file was modified')
+            img_path = event.src_path
             self._emitter.new_image_signal.emit(img_path)
 
 
@@ -62,7 +64,6 @@ class Folder_Watcher:
     def __init__(self, input_folder_path=None, raw_image_patterns=None):
         self.watch_dir = input_folder_path
         self.emitter = New_Image_Emitter()
-        self.new_image_emitter = New_Image_Emitter()
         self.observer = Observer()
         self.event_handler = Event_Handler(
                 emitter=self.emitter,
@@ -73,6 +74,7 @@ class Folder_Watcher:
     def run(self):
         self.observer.schedule(self.event_handler, self.watch_dir)
         self.observer.start()
+        #self.observer.join()
 
 
 class Save_Output_Handler:
@@ -86,9 +88,9 @@ class Save_Output_Handler:
         # given an int (count of how many files have exact matching names,
         # returns an appropriate file name suffix)
         if dupNamingPolicy == 'append LOWER case letter':
-            self.suffix_lookup = lambda x: x.get({n+1: ch for n, ch in enumerate(string.ascii_lowercase)})
+            self.suffix_lookup = lambda x: {n+1: ch for n, ch in enumerate(string.ascii_lowercase)}.get(x)
         elif dupNamingPolicy == 'append UPPER case letter':
-            self.suffix_lookup = lambda x: x.get({n+1: ch for n, ch in enumerate(string.ascii_uppercase)})
+            self.suffix_lookup = lambda x: {n+1: ch for n, ch in enumerate(string.ascii_uppercase)}.get(x)
         elif dupNamingPolicy == 'append Number with underscore':
             self.suffix_lookup = lambda x: f'_{x}'
         elif dupNamingPolicy == 'OVERWRITE original image with newest':
@@ -111,19 +113,19 @@ class Save_Output_Handler:
         """
         output_map = self.output_map
         for obj, file_details in output_map.items():
-            if obj.isChecked():
+            if obj:
                 location, ext = file_details
                 if not ext:
                     # TODO use os.path ext split methodology instead of weak String splitting.
                     ext = f'.{str(orig_img_path).split(".")[-1]}'
-                location = location.text()
-
                 for bc in im_base_names:
                     fileQty = len(glob.glob(f'{location}//{bc}*{ext}'))
                     if fileQty > 0:
                         new_file_suffix = self.suffix_lookup(fileQty)
                         new_file_base_name = f'{bc}{new_file_suffix}'
-                    new_file_name = f'{location}//{new_file_base_name}{ext}'
+                        new_file_name = f'{location}//{new_file_base_name}{ext}'
+                    else:
+                        new_file_name = f'{location}//{bc}{ext}'
                     # TODO add in the metadata handling code
                     # piexif's transplant function may be useful if the exif is dumped in
                     # the saving process.

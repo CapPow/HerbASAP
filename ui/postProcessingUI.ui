@@ -18,7 +18,7 @@
     <item row="0" column="1">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <property name="usesScrollButtons">
        <bool>true</bool>
@@ -326,9 +326,9 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>-294</y>
+               <y>-152</y>
                <width>646</width>
-               <height>942</height>
+               <height>1005</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -594,14 +594,43 @@
                  <bool>false</bool>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_4">
-                 <item row="1" column="0">
-                  <widget class="QCheckBox" name="checkBox_performWhiteBalance">
-                   <property name="text">
-                    <string>Perform white balance using color checker</string>
+                 <item row="0" column="0">
+                  <widget class="QGroupBox" name="groupBox_colorCheckerSize">
+                   <property name="title">
+                    <string>Color checker size</string>
                    </property>
+                   <layout class="QGridLayout" name="gridLayout_17">
+                    <item row="0" column="1">
+                     <widget class="QRadioButton" name="radioButton_colorCheckerLarge">
+                      <property name="text">
+                       <string>Large</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QRadioButton" name="radioButton_colorCheckerSmall">
+                      <property name="text">
+                       <string>Small</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="2">
+                     <spacer name="horizontalSpacer_9">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>40</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
                   </widget>
                  </item>
-                 <item row="0" column="0">
+                 <item row="2" column="0">
                   <widget class="QGroupBox" name="group_verifyRotation">
                    <property name="title">
                     <string>Verify image rotation using color checker position</string>
@@ -691,6 +720,13 @@
                      </widget>
                     </item>
                    </layout>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QCheckBox" name="checkBox_performWhiteBalance">
+                   <property name="text">
+                    <string>Perform white balance using color checker</string>
+                   </property>
                   </widget>
                  </item>
                 </layout>
@@ -1022,7 +1058,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>470</x>
-     <y>168</y>
+     <y>41</y>
     </hint>
     <hint type="destinationlabel">
      <x>381</x>
@@ -1037,8 +1073,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>460</x>
-     <y>238</y>
+     <x>470</x>
+     <y>94</y>
     </hint>
     <hint type="destinationlabel">
      <x>503</x>
@@ -1054,7 +1090,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>417</x>
-     <y>415</y>
+     <y>376</y>
     </hint>
     <hint type="destinationlabel">
      <x>604</x>
@@ -1070,7 +1106,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>417</x>
-     <y>445</y>
+     <y>406</y>
     </hint>
     <hint type="destinationlabel">
      <x>255</x>
@@ -1101,8 +1137,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>130</x>
-     <y>506</y>
+     <x>159</x>
+     <y>444</y>
     </hint>
     <hint type="destinationlabel">
      <x>158</x>
@@ -1117,8 +1153,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>129</x>
-     <y>551</y>
+     <x>158</x>
+     <y>510</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -1133,8 +1169,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>109</x>
-     <y>673</y>
+     <x>138</x>
+     <y>645</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -1166,7 +1202,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>649</x>
-     <y>790</y>
+     <y>763</y>
     </hint>
     <hint type="destinationlabel">
      <x>699</x>
@@ -1182,7 +1218,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>649</x>
-     <y>846</y>
+     <y>819</y>
     </hint>
     <hint type="destinationlabel">
      <x>699</x>
@@ -1198,7 +1234,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>649</x>
-     <y>902</y>
+     <y>875</y>
     </hint>
     <hint type="destinationlabel">
      <x>697</x>
@@ -1214,7 +1250,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>649</x>
-     <y>958</y>
+     <y>931</y>
     </hint>
     <hint type="destinationlabel">
      <x>698</x>
@@ -1309,8 +1345,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>127</x>
-     <y>249</y>
+     <x>199</x>
+     <y>246</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -1325,8 +1361,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>159</x>
-     <y>352</y>
+     <x>231</x>
+     <y>338</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1341,8 +1377,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>125</x>
-     <y>456</y>
+     <x>197</x>
+     <y>430</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -1357,8 +1393,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>123</x>
-     <y>545</y>
+     <x>195</x>
+     <y>522</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -1373,8 +1409,8 @@
    <slot>setFolderPath()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>628</x>
-     <y>145</y>
+     <x>600</x>
+     <y>154</y>
     </hint>
     <hint type="destinationlabel">
      <x>696</x>
@@ -1389,8 +1425,8 @@
    <slot>setFolderPath()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>633</x>
-     <y>247</y>
+     <x>600</x>
+     <y>246</y>
     </hint>
     <hint type="destinationlabel">
      <x>693</x>
@@ -1405,8 +1441,8 @@
    <slot>setFolderPath()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>643</x>
-     <y>353</y>
+     <x>600</x>
+     <y>338</y>
     </hint>
     <hint type="destinationlabel">
      <x>694</x>
@@ -1421,8 +1457,8 @@
    <slot>setFolderPath()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>631</x>
-     <y>450</y>
+     <x>600</x>
+     <y>430</y>
     </hint>
     <hint type="destinationlabel">
      <x>696</x>
@@ -1437,8 +1473,8 @@
    <slot>setFolderPath()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>636</x>
-     <y>552</y>
+     <x>600</x>
+     <y>522</y>
     </hint>
     <hint type="destinationlabel">
      <x>697</x>
@@ -1454,7 +1490,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>377</x>
-     <y>167</y>
+     <y>42</y>
     </hint>
     <hint type="destinationlabel">
      <x>695</x>
@@ -1470,7 +1506,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>470</x>
-     <y>168</y>
+     <y>41</y>
     </hint>
     <hint type="destinationlabel">
      <x>697</x>
@@ -1486,7 +1522,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>470</x>
-     <y>237</y>
+     <y>94</y>
     </hint>
     <hint type="destinationlabel">
      <x>692</x>
@@ -1502,7 +1538,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>310</x>
-     <y>82</y>
+     <y>-43</y>
     </hint>
     <hint type="destinationlabel">
      <x>696</x>
@@ -1517,8 +1553,8 @@
    <slot>updateCatalogNumberPreviews()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>125</x>
-     <y>142</y>
+     <x>154</x>
+     <y>77</y>
     </hint>
     <hint type="destinationlabel">
      <x>265</x>
@@ -1533,8 +1569,8 @@
    <slot>testFunction()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>571</x>
-     <y>538</y>
+     <x>101</x>
+     <y>75</y>
     </hint>
     <hint type="destinationlabel">
      <x>694</x>
@@ -1549,8 +1585,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>584</x>
-     <y>577</y>
+     <x>543</x>
+     <y>513</y>
     </hint>
     <hint type="destinationlabel">
      <x>697</x>
@@ -1565,12 +1601,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>149</x>
-     <y>336</y>
+     <x>178</x>
+     <y>192</y>
     </hint>
     <hint type="destinationlabel">
-     <x>479</x>
-     <y>333</y>
+     <x>521</x>
+     <y>195</y>
     </hint>
    </hints>
   </connection>
@@ -1581,12 +1617,44 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>105</x>
-     <y>336</y>
+     <x>134</x>
+     <y>192</y>
     </hint>
     <hint type="destinationlabel">
-     <x>379</x>
-     <y>323</y>
+     <x>449</x>
+     <y>195</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton_colorCheckerLarge</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>saveSettings()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>133</x>
+     <y>275</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2</x>
+     <y>263</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton_colorCheckerSmall</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>saveSettings()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>89</x>
+     <y>301</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>307</y>
     </hint>
    </hints>
   </connection>

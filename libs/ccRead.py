@@ -189,7 +189,7 @@ class ColorchipRead():
         except SystemError as e:
             print(f"System error: {e}")
 
-    def process_colorchip_small(self, im, original_size, stride=50, partition_size=125, buffer_size=20, high_precision=True):
+    def process_colorchip_small(self, im, original_size, stride=50, partition_size=125, buffer_size=20, high_precision=False):
         """
         Processes a color chip using neural networks.
         :param im:

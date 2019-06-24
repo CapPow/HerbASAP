@@ -55,6 +55,7 @@ from libs.blurDetect import blurDetect
 from libs.ccRead import ColorchipRead
 from libs.folderMonitor import Folder_Watcher
 from libs.folderMonitor import Save_Output_Handler
+from libs.folderMonitor import New_Image_Emitter
 
 #from libs.ccRead import ccRead
 
@@ -82,6 +83,7 @@ class Worker_Signals(QObject):
     error = pyqtSignal(tuple)
     result = pyqtSignal(object)
     progress = pyqtSignal(int)
+    new_image_signal = pyqtSignal(object)
 
 class Worker(QRunnable):
     '''
@@ -173,6 +175,9 @@ class appWindow(QMainWindow):
         self.settings.setFallbacksEnabled(False)    # File only, no fallback to registry.
         # populate the settings based on the previous preferences
         self.populateSettings()
+        
+        self.New_Image_Emitter = New_Image_Emitter()
+        
         # initalize the folder_watcher using current user inputs
         self.setup_Folder_Watcher()
         
@@ -186,8 +191,9 @@ class appWindow(QMainWindow):
         self.bcRead = bcRead(prefix, digits, parent=self.mainWindow)
         self.blurDetect = blurDetect(parent=self.mainWindow)
         self.colorchipDetect = ColorchipRead(parent=self.mainWindow)
+        # set up the cc_size
+        self.setup_cc_size()
         self.eqRead = eqRead(parent=self.mainWindow)
-        
         #self.ccRead = ccRead(parent=self.mainWindow)
         
         # assign applicable user settings for eqRead. 
@@ -231,6 +237,16 @@ class appWindow(QMainWindow):
 #                        #  instead display a the new release
 #                        webbrowser.open(link,autoraise=1)
 #            self.settings.saveSettings()  # save the new version check date
+
+    def setup_cc_size(self):
+        """
+        initiates the self.cc_size. Avoids an if/then statement everytime
+        processImage() is called.
+        """
+        if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
+            self.cc_size = 'small'
+        else:
+            self.cc_size = 'large'
     
     def setup_Output_Handler(self):
         """
@@ -259,6 +275,7 @@ class appWindow(QMainWindow):
         dupNamingPolicy = self.mainWindow.comboBox_dupNamingPolicy.currentText()
 
         self.save_output_handler = Save_Output_Handler(output_map, dupNamingPolicy)
+        self.save_output_handler.save_output_images
 
     def setup_Folder_Watcher(self, raw_image_patterns = None):
         """
@@ -272,6 +289,8 @@ class appWindow(QMainWindow):
 
         lineEdit_inputPath = self.mainWindow.lineEdit_inputPath.text()
         self.folder_watcher = Folder_Watcher(lineEdit_inputPath, raw_image_patterns)
+        self.folder_watcher.emitter.new_image_signal.connect(self.processImage)
+        self.mainWindow.pushButton_beginMonitoring.clicked.connect(self.folder_watcher.run)
 
     def alert_saving_output_finished(self):
         """
@@ -309,6 +328,9 @@ class appWindow(QMainWindow):
         """ called when the results are in from bcRead."""
         print('bc detection finished')
         print(self.bc_code)
+        self.save_output_handler.save_output_images(self.im, self.img_path,
+                                                    self.bc_code)
+        
         self.bc_working = False
         
     def handle_eq_result(self, result):
@@ -374,19 +396,13 @@ class appWindow(QMainWindow):
                                    interpolation=cv2.INTER_AREA)
         return (image_width, image_height), reduced_im
 
-    def save_output_images(self, im):
-        """
-        saves a processed cv2 image object to the appropriate formats and
-        locationsresulting.
-        """
-
-        
     def processImage(self, img_path):
         """ 
         given a path to an unprocessed image, performs the appropriate
         processing steps.
             
         """
+        # freeze the observer threads from calling processImage() multiple  times.
         im = self.openImageFile(img_path)
         cv2.imwrite('input.jpg', im)
         self.img_path = img_path
@@ -423,18 +439,20 @@ class appWindow(QMainWindow):
         if self.mainWindow.group_colorCheckerDetection:
             # colorchecker functions
             original_size, reduced_img = self.scale_images_with_info(im)
-            cc_size = self.colorchipDetect.predict_colorchip_size(reduced_img)
-            if cc_size == 'big':
-                cc_position, cropped_cc = self.colorchipDetect.process_colorchip_big(im)
-            else:
+            if self.cc_size == 'small':
                 cc_position, cropped_cc = self.colorchipDetect.process_colorchip_small(reduced_img, original_size)
+            else:
+                cc_position, cropped_cc = self.colorchipDetect.process_colorchip_big(im)
             cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
             cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
             im = self.white_balance_image(im, *cc_avg_white)
+            self.im = im
             print(cc_position)
         
+        # wait on bcWorker
+        self.im = im
+        #self.save_output_handler.save_output_images(im, img_path, im_base_names, meta_data=None)
         # temp save output for debugging       
-        cv2.imwrite('output.jpg', im)
         
         
         self.reset_working_variables()
@@ -459,11 +477,12 @@ class appWindow(QMainWindow):
         """
         sets all class variables relevant to the current working image to None.
         """
-        self.imgPath = None
         self.file_name = None
         self.file_ext = None
         self.base_file_name = None
         self.bc_code = None
+        self.im = None
+        self.img_path = None
         self.bc_working = True
         self.is_blurry = None
         self.cc_location = None
@@ -529,6 +548,7 @@ class appWindow(QMainWindow):
         self.mainWindow.group_colorCheckerDetection.setEnabled(ccStatus)
         self.mainWindow.group_verifyRotation.setEnabled(ccStatus)
         self.mainWindow.checkBox_performWhiteBalance.setEnabled(ccStatus)
+        self.mainWindow.groupBox_colorCheckerSize.setEnabled(ccStatus)
         self.mainWindow.group_equipmentDetection.setEnabled(eqStatus)
 
 #    def updateEqSettings(self):
@@ -785,7 +805,12 @@ class appWindow(QMainWindow):
         #self.settings.value_DarkTheme.setChecked(value_DarkTheme)
         #value_LightTheme = self.get('value_LightTheme', True)
         #self.settings.value_LightTheme.setChecked(value_LightTheme)
-
+        radioButton_colorCheckerSmall = self.get('radioButton_colorCheckerSmall', True)
+        self.mainWindow.radioButton_colorCheckerSmall.setChecked(radioButton_colorCheckerSmall)
+        radioButton_colorCheckerLarge = self.get('radioButton_colorCheckerLarge', False)
+        self.mainWindow.radioButton_colorCheckerLarge.setChecked(radioButton_colorCheckerLarge)
+        
+        
         # clean up
         # allow signals again
         [x.blockSignals(False) for x in children]
@@ -897,10 +922,19 @@ class appWindow(QMainWindow):
         #self.settings.setValue('value_DarkTheme', value_DarkTheme)
         #value_LightTheme = self.mainWindow.value_LightTheme.isChecked()
         #self.settings.setValue('value_LightTheme', value_LightTheme)
+        radioButton_colorCheckerLarge = self.mainWindow.radioButton_colorCheckerLarge.isChecked()
+        self.settings.setValue('radioButton_colorCheckerLarge', radioButton_colorCheckerLarge)
+        radioButton_colorCheckerSmall = self.mainWindow.radioButton_colorCheckerSmall.isChecked()
+        self.settings.setValue('radioButton_colorCheckerSmall', radioButton_colorCheckerSmall)
+        
+        
+        
+        
         
         # cleanup, after changes are made, should re-initalize some classes
         self.setup_Folder_Watcher()
         self.setup_Output_Handler()
+        self.setup_cc_size()
 
 app = QtWidgets.QApplication(sys.argv)
 w = appWindow()
