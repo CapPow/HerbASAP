@@ -191,8 +191,6 @@ class appWindow(QMainWindow):
         self.bcRead = bcRead(prefix, digits, parent=self.mainWindow)
         self.blurDetect = blurDetect(parent=self.mainWindow)
         self.colorchipDetect = ColorchipRead(parent=self.mainWindow)
-        # set up the cc_size
-        self.setup_cc_size()
         self.eqRead = eqRead(parent=self.mainWindow)
         #self.ccRead = ccRead(parent=self.mainWindow)
         
@@ -392,8 +390,15 @@ class appWindow(QMainWindow):
         processing steps.
             
         """
-        # freeze the observer threads from calling processImage() multiple  times.
-        im = self.openImageFile(img_path)
+        try:
+            im = self.openImageFile(img_path)
+        except LibRawFatalError:
+            text= 'Corrupted or incompatible image file.'
+            title='Error opening file'
+            detailText = f'LibRawFatalError opening: {img_path}\nUsually this indicates a corrupted input image file.'
+            self.userNotice(text, title, detailText)
+            return None
+        # debugging, save 'raw-ish' version of jpg before processing
         cv2.imwrite('input.jpg', im)
         self.img_path = img_path
         self.file_name, self.file_ext = os.path.splitext(img_path)
@@ -494,6 +499,8 @@ class appWindow(QMainWindow):
         # if it is not a raw format, just try and open it.
         except LibRawNonFatalError:
             im = cv2.imread(imgPath)
+        except LibRawFatalError:
+            raise
         return im
 
     def testFeatureCompatability(self):
@@ -916,11 +923,6 @@ class appWindow(QMainWindow):
         self.settings.setValue('radioButton_colorCheckerLarge', radioButton_colorCheckerLarge)
         radioButton_colorCheckerSmall = self.mainWindow.radioButton_colorCheckerSmall.isChecked()
         self.settings.setValue('radioButton_colorCheckerSmall', radioButton_colorCheckerSmall)
-        
-        
-        
-        
-        
         # cleanup, after changes are made, should re-initalize some classes
         self.setup_Folder_Watcher()
         self.setup_Output_Handler()
