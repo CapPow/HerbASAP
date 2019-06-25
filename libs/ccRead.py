@@ -34,9 +34,9 @@ import cv2
 import time
 import os
 
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-print(f"[INFO] Forcing use of CPU for neural network prediction (TensorFlow)")
+# os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+# print(f"[INFO] Forcing use of CPU for neural network prediction (TensorFlow)")
 
 
 class ColorchipRead:
@@ -62,6 +62,9 @@ class ColorchipRead:
                                                                  self.high_precision_model.layers[0].input,
                                                                  K.learning_phase()],
                                                                 [self.high_precision_model.layers[-1].output])
+
+        for idx, layer in enumerate(self.high_precision_model.layers):
+            print(f"Layer {idx} | {layer}")
 
         init_im = cv2.imread("libs/models/init/init.jpg")
         print("[INFO] Initializing neural networks")
@@ -120,7 +123,10 @@ class ColorchipRead:
     def _predict_uncertainty_hp_discriminator(self, x, n_iter=10):
         """
         Predicts with uncertainty the probability that the given partition contains a color chip using the mean and
-        variance. This uses the high precision model, which is more robust against false positives.
+        variance. This uses the high precision model, which is more robust against false positives if
+
+        Note: Currently, this model performs very poorly (relative to the normal discriminator model) against images
+        with drastic white balance shift.
 
         :param x: A list that contains both the RGB histogram and the HSV histogram of a given partition. Format of the
         list should be [rgb_histogram, hsv_histogram]
@@ -169,9 +175,6 @@ class ColorchipRead:
         im = self.ocv_to_pil(im)
         im_hsv = im.convert("HSV")
 
-        # im = im.resize((256, 256))
-        # im_hsv = im_hsv.resize((256, 256))
-
         hist_rgb = im.histogram()
         hist_hsv = im_hsv.histogram()
 
@@ -214,7 +217,7 @@ class ColorchipRead:
         except SystemError as e:
             print(f"System error: {e}")
 
-    def process_colorchip_small(self, im, original_size, stride=25, partition_size=125, buffer_size=10, high_precision=False):
+    def process_colorchip_small(self, im, original_size, stride=25, partition_size=125, buffer_size=10, over_crop=2, high_precision=False):
         """
         Processes a color chip using neural networks.
         :param im:
@@ -235,8 +238,8 @@ class ColorchipRead:
         possible_positions = []
         hists_rgb = []
         hists_hsv = []
-        for r in range(-1, (image_height - partition_size) // stride + 1):
-            for c in range(-1, (image_width - partition_size) // stride + 1):
+        for r in range(-over_crop, (image_height - partition_size) // stride + over_crop):
+            for c in range(-over_crop, (image_width - partition_size) // stride + over_crop):
                 x1, y1 = c * stride, r * stride
                 x2, y2 = x1 + partition_size, y1 + partition_size
                 partitioned_im = im.crop((x1, y1, x2, y2))
@@ -289,15 +292,19 @@ class ColorchipRead:
                 print("Discriminator could not find best image.")
 
         else:
+            print("Using high precision discriminator")
             highest_prob_rgb_hists = []
             highest_prob_hsv_hists = []
             for position in list(most_certain_images.values()):
                 h_image = im.crop(position)
+                h_image_hsv = im_hsv.crop(position)
                 highest_prob_rgb_hists.append(h_image.histogram())
-                highest_prob_hsv_hists.append(h_image.histogram())
+                highest_prob_hsv_hists.append(h_image_hsv.histogram())
                 highest_prob_images.append(np.array(h_image))
 
             highest_prob_images_pred = np.array(highest_prob_images)
+            highest_prob_rgb_hists = np.array(highest_prob_rgb_hists)
+            highest_prob_hsv_hists = np.array(highest_prob_hsv_hists)
             discriminator_prediction, discriminator_uncertainty = self._predict_uncertainty_hp_discriminator(
                 [highest_prob_rgb_hists,
                  highest_prob_hsv_hists,
@@ -338,6 +345,7 @@ class ColorchipRead:
 
         end = time.time()
         try:
+            best_image.show()
             print(f"Color chip cropping took: {end - start} seconds.")
             return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image
         except ValueError as e:
@@ -511,6 +519,8 @@ class ColorchipRead:
                 highest_prob_images.append(np.array(h_image))
 
             highest_prob_images_pred = np.array(highest_prob_images)
+            highest_prob_rgb_hists = np.array(highest_prob_rgb_hists)
+            highest_prob_hsv_hists = np.array(highest_prob_hsv_hists)
             discriminator_prediction, discriminator_uncertainty = self._predict_uncertainty_hp_discriminator(
                 [highest_prob_rgb_hists,
                  highest_prob_hsv_hists,
