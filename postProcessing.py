@@ -42,7 +42,7 @@ from PyQt5.QtCore import (QSettings, Qt, QObject,
 import lensfunpy
 import piexif
 import rawpy
-from rawpy import LibRawNonFatalError
+from rawpy import LibRawNonFatalError, LibRawFatalError
 from PIL import Image
 import cv2
 import numpy as np
@@ -237,16 +237,6 @@ class appWindow(QMainWindow):
 #                        #  instead display a the new release
 #                        webbrowser.open(link,autoraise=1)
 #            self.settings.saveSettings()  # save the new version check date
-
-    def setup_cc_size(self):
-        """
-        initiates the self.cc_size. Avoids an if/then statement everytime
-        processImage() is called.
-        """
-        if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
-            self.cc_size = 'small'
-        else:
-            self.cc_size = 'large'
     
     def setup_Output_Handler(self):
         """
@@ -439,7 +429,7 @@ class appWindow(QMainWindow):
         if self.mainWindow.group_colorCheckerDetection:
             # colorchecker functions
             original_size, reduced_img = self.scale_images_with_info(im)
-            if self.cc_size == 'small':
+            if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
                 cc_position, cropped_cc = self.colorchipDetect.process_colorchip_small(reduced_img, original_size)
             else:
                 cc_position, cropped_cc = self.colorchipDetect.process_colorchip_big(im)
@@ -934,7 +924,6 @@ class appWindow(QMainWindow):
         # cleanup, after changes are made, should re-initalize some classes
         self.setup_Folder_Watcher()
         self.setup_Output_Handler()
-        self.setup_cc_size()
 
 app = QtWidgets.QApplication(sys.argv)
 w = appWindow()
