@@ -36,20 +36,19 @@ import os
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-print(f"Force using CPU")
+print(f"[INFO] Forcing use of CPU for neural network prediction (TensorFlow)")
 
 
-
-class ColorchipRead():
+class ColorchipRead:
     def __init__(self, parent=None, *args):
         super(ColorchipRead, self).__init__()
         self.parent = parent
         self.position_model = load_model("libs/models/mlp_proposal.hdf5")
         self.discriminator_model = load_model("libs/models/discriminator.hdf5")
         self.high_precision_model = load_model("libs/models/highprecision_discriminator.hdf5")
-        self.size_det_model = load_model("libs/models/mlp_sizedet.hdf5")
+        self.size_det_model = load_model("libs/models/size_model.hdf5")
         self.large_colorchip_regressor_model = load_model("libs/models/lcc_regressor.hdf5")
-        # self.size_model = load_model("models/size_model.hdf5")
+        self.size_model = load_model("libs/models/size_model.hdf5")
 
         self.position_function = K.function(
             [self.position_model.layers[0].input, self.position_model.layers[1].input, K.learning_phase()],
@@ -63,6 +62,13 @@ class ColorchipRead():
                                                                  self.high_precision_model.layers[0].input,
                                                                  K.learning_phase()],
                                                                 [self.high_precision_model.layers[-1].output])
+
+        init_im = cv2.imread("libs/models/init/init.jpg")
+        print("[INFO] Initializing neural networks")
+        self.predict_colorchip_size(init_im)
+        self.process_colorchip_big(init_im)
+        self.process_colorchip_small(init_im, (1250, 1875))
+        print("[INFO] Finished initializing neural networks")
 
     def _predict_uncertainty_position(self, x, n_iter=10):
         """
@@ -149,37 +155,37 @@ class ColorchipRead():
         pil_image = Image.fromarray(pil_image)
         return pil_image
 
-    # def predict_colorchip_size(self, im):
-    #     """
-    #     Predicts the size of the color chip through color histograms and a dense neural network. This is essential for
-    #     knowing the correct neural network model to use for determining the color chip values.
-    #     :param im: The image to be predicted on.
-    #     :type im: OCV Image
-    #     :return: Returns 'big' for big colorchips, and 'small' for small colorchips.
-    #     :rtype: str
-    #     """
-    #
-    #     start = time.time()
-    #     im = self.ocv_to_pil(im)
-    #     im_hsv = im.convert("HSV")
-    #
-    #     # im = im.resize((256, 256))
-    #     # im_hsv = im_hsv.resize((256, 256))
-    #
-    #     hist_rgb = im.histogram()
-    #     hist_hsv = im_hsv.histogram()
-    #
-    #     X_rgb = np.array(hist_rgb) / 8196
-    #     X_hsv = np.array(hist_hsv) / 8196
-    #
-    #     size_det_result = self.size_det_model.predict([[X_rgb], [X_hsv]])[0]
-    #
-    #     end = time.time()
-    #     print(f"Predict color chip size took: {end - start} seconds.")
-    #     if size_det_result[0] > size_det_result[1]:
-    #         return 'big'
-    #     else:
-    #         return 'small'
+    def predict_colorchip_size(self, im):
+        """
+        Predicts the size of the color chip through color histograms and a dense neural network. This is essential for
+        knowing the correct neural network model to use for determining the color chip values.
+        :param im: The image to be predicted on.
+        :type im: OCV Image
+        :return: Returns 'big' for big colorchips, and 'small' for small colorchips.
+        :rtype: str
+        """
+
+        start = time.time()
+        im = self.ocv_to_pil(im)
+        im_hsv = im.convert("HSV")
+
+        # im = im.resize((256, 256))
+        # im_hsv = im_hsv.resize((256, 256))
+
+        hist_rgb = im.histogram()
+        hist_hsv = im_hsv.histogram()
+
+        X_rgb = np.array(hist_rgb) / 8196
+        X_hsv = np.array(hist_hsv) / 8196
+
+        size_det_result = self.size_det_model.predict([[X_rgb], [X_hsv]])[0]
+
+        end = time.time()
+        print(f"Predict color chip size took: {end - start} seconds.")
+        if size_det_result[0] > size_det_result[1]:
+            return 'big'
+        else:
+            return 'small'
 
     def process_colorchip_big(self, im):
         """

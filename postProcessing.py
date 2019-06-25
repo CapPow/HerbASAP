@@ -376,9 +376,9 @@ class appWindow(QMainWindow):
             original_size, reduced_img = self.scale_images_with_info(im)
 
             # Potentially removed due to overhead:
-            # cc_size = self.colorchipDetect.predict_colorchip_size(reduced_img)
+            cc_size = self.colorchipDetect.predict_colorchip_size(reduced_img)
 
-            cc_size = "small"
+            # cc_size = "small"
             if cc_size == 'big':
                 cc_position, cropped_cc = self.colorchipDetect.process_colorchip_big(im)
             else:
