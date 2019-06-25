@@ -22,6 +22,7 @@
 """
 # imports here
 import string
+from os import path
 import glob
 #import piexif
 
@@ -40,32 +41,49 @@ class Event_Handler(PatternMatchingEventHandler):
     Watchdog based Class to handle when new files are detected in the monitored
     folder.
     """
-    def __init__(self, *args, emitter=None, **kwargs):
+    def __init__(self, parent, *args, emitter=None, **kwargs):
         super(Event_Handler, self).__init__(*args, **kwargs)
         PatternMatchingEventHandler.__init__(self, *args, **kwargs)
         self._emitter = emitter
+        self.parent = parent
 
     def on_any_event(self, event):
-        if event.is_directory:
-            return None
+        
+        img_path = event.src_path
         #elif event.event_type == 'created':
         #    # take action when file is created
         #    img_path = event.src_path
         #    self._emitter.new_image_signal.emit(img_path)
         #    print(f'{event.src_path} file was created')
-        elif event.event_type == 'modified':
+        if event.event_type == 'modified':
             # take action when a file is modified
-            print(f'{event.src_path} file was modified')
-            img_path = event.src_path
-            self._emitter.new_image_signal.emit(img_path)
+            # verify the 'new' image is new
+            if img_path not in self.parent.existing_files:
+                print(f'{event.src_path} file was modified')
+                self._emitter.new_image_signal.emit(img_path)
+                # record the image as 'known'
+                self.parent.existing_files.append(img_path)
+        elif event.event_type in ['deleted', 'moved']:
+            # if the user removes the file from a monitored directory...
+            self.parent.existing_files.remove(img_path)
+        elif event.is_directory:
+            return None
 
 
 class Folder_Watcher:
     def __init__(self, input_folder_path=None, raw_image_patterns=None):
         self.watch_dir = input_folder_path
+        # identify currently present files        
+        self.existing_files = []
+        for files in raw_image_patterns:
+            globPattern = path.join(input_folder_path, files)
+            print(globPattern)
+            self.existing_files.extend(glob.glob(globPattern))
+        print(self.existing_files)
         self.emitter = New_Image_Emitter()
         self.observer = Observer()
         self.event_handler = Event_Handler(
+                parent=self,
                 emitter=self.emitter,
                 patterns=raw_image_patterns,
                 ignore_patterns=['*.tmp'],
