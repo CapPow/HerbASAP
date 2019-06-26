@@ -34,9 +34,9 @@ import cv2
 import time
 import os
 
-# os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-# print(f"[INFO] Forcing use of CPU for neural network prediction (TensorFlow)")
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+print(f"[INFO] Forcing use of CPU for neural network prediction (TensorFlow)")
 
 
 class ColorchipRead:
@@ -217,7 +217,7 @@ class ColorchipRead:
         except SystemError as e:
             print(f"System error: {e}")
 
-    def process_colorchip_small(self, im, original_size, stride=25, partition_size=125, buffer_size=10, over_crop=2, high_precision=False):
+    def process_colorchip_small(self, im, original_size, stride=25, partition_size=125, buffer_size=20, over_crop=2, high_precision=False):
         """
         Processes a color chip using neural networks.
         :param im:
@@ -330,6 +330,7 @@ class ColorchipRead:
                     best_location = list(most_certain_images.values())[idx]
                     best_image = im.crop(tuple(best_location))
 
+        # Use if high multithreading -- performs poorly on low threads.
         # sorted_prediction = sorted(discriminator_pred_dict, reverse=True)
         # best_index = discriminator_pred_dict[sorted_prediction[0]]
         # best_location = list(most_certain_images.values())[best_index]
@@ -345,7 +346,6 @@ class ColorchipRead:
 
         end = time.time()
         try:
-            best_image.show()
             print(f"Color chip cropping took: {end - start} seconds.")
             return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image
         except ValueError as e:

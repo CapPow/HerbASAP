@@ -382,7 +382,7 @@ class appWindow(QMainWindow):
             if cc_size == 'big':
                 cc_position, cropped_cc = self.colorchipDetect.process_colorchip_big(im)
             else:
-                cc_position, cropped_cc = self.colorchipDetect.process_colorchip_small(reduced_img, original_size, high_precision=True)
+                cc_position, cropped_cc = self.colorchipDetect.process_colorchip_small(reduced_img, original_size)
             cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
             cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
 
