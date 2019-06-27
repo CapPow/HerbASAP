@@ -434,6 +434,11 @@ class appWindow(QMainWindow):
         if self.mainWindow.group_colorCheckerDetection:
             # colorchecker functions
             original_size, reduced_img = self.scale_images_with_info(im)
+#            cc_size = self.colorchipDetect.predict_colorchip_size(reduced_img)
+#            if cc_size == 'big':
+#                cc_position, cropped_cc = self.colorchipDetect.process_colorchip_big(im)
+#            else:
+#                cc_position, cropped_cc = self.colorchipDetect.process_colorchip_small(reduced_img, original_size)
             if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
                 cc_position, cropped_cc = self.colorchipDetect.process_colorchip_small(reduced_img, original_size)
             else:
@@ -442,7 +447,7 @@ class appWindow(QMainWindow):
             cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
             im = self.white_balance_image(im, *cc_avg_white)
             self.im = im
-            print(cc_position)
+            print(f"CC | Position: {cc_position}, Quadrant: {cc_quadrant} | AVG White: {cc_avg_white}")
         
         # wait on bcWorker
         self.im = im
