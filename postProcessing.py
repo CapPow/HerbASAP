@@ -394,7 +394,8 @@ class appWindow(QMainWindow):
             self.userNotice(text, title, detailText)
             return None
         # debugging, save 'raw-ish' version of jpg before processing
-        cv2.imwrite('input.jpg', im)
+        for_cv2_im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
+        cv2.imwrite('input.jpg', for_cv2_im)
         self.img_path = img_path
         self.file_name, self.file_ext = os.path.splitext(img_path)
         self.base_file_name = os.path.basename(self.file_name)
@@ -442,7 +443,8 @@ class appWindow(QMainWindow):
                 cc_position, cropped_cc = self.colorchipDetect.process_colorchip_small(reduced_img, original_size)
             else:
                 cc_position, cropped_cc = self.colorchipDetect.process_colorchip_big(im)
-            cv2.imwrite('cc.jpg', np.array(cropped_cc))
+            for_cv2_im_cc = cv2.cvtColor(np.array(cropped_cc), cv2.COLOR_RGB2BGR)
+            cv2.imwrite('cc.jpg', for_cv2_im_cc)
             self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
             self.cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
             #im = self.white_balance_image(im, *cc_avg_white)
@@ -547,14 +549,14 @@ class appWindow(QMainWindow):
         gamma_value = (usr_gamma, usr_gamma)
         try:  # use rawpy to convert raw to openCV
             with rawpy.imread(imgPath) as raw:
-                bgr = raw.postprocess(chromatic_aberration=(1, 1),
+                im = raw.postprocess(chromatic_aberration=(1, 1),
                                       demosaic_algorithm=demosaic,
                                       gamma=gamma_value)
 
-                im = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)  # the OpenCV image
         # if it is not a raw format, just try and open it.
         except LibRawNonFatalError:
-            im = cv2.imread(imgPath)
+            bgr = cv2.imread(imgPath)
+            im = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
         except LibRawFatalError:
             raise
         return im

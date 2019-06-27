@@ -153,8 +153,7 @@ class ColorchipRead:
         :return:
         """
 
-        pil_image = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
-        pil_image = np.array(pil_image)
+        pil_image = np.array(im)
         pil_image = Image.fromarray(pil_image)
         return pil_image
 
