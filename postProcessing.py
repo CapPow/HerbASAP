@@ -108,7 +108,7 @@ class Worker(QRunnable):
         self.fn = fn
         self.args = args
         self.kwargs = kwargs
-        self.signals = Worker_Signals()    
+        self.signals = Worker_Signals()
 
         # Add the callback to our kwargs
         #self.kwargs['progress_callback'] = self.signals.progress        
@@ -163,12 +163,11 @@ class appWindow(QMainWindow):
         self.mainWindow.setupUi(self)
                 
         # set up a threadpool
-        self.threadPool = QThreadPool(self)
+        self.threadPool = QThreadPool().globalInstance()
         # determine & assign a safe quantity of threads 75% of resources
         maxThreads = int(self.threadPool.maxThreadCount() * .75)
         self.threadPool.setMaxThreadCount(maxThreads)
         print(f"Multithreading with maximum {self.threadPool.maxThreadCount()} threads")
-        
         # initiate the persistant settings
         # todo update this when name is decided on
         self.settings = QSettings('AYUP', 'AYUP')        
@@ -193,7 +192,7 @@ class appWindow(QMainWindow):
         self.colorchipDetect = ColorchipRead(parent=self.mainWindow)
         self.eqRead = eqRead(parent=self.mainWindow)
         #self.ccRead = ccRead(parent=self.mainWindow)
-        
+
         # assign applicable user settings for eqRead. 
         # this function is here, for ease of slot assignment in pyqt designer
         self.reset_working_variables()
@@ -308,6 +307,7 @@ class appWindow(QMainWindow):
                 notice_text = f'Warning, {self.base_file_name} is blurry.'
             detail_text = f'Blurry Image Path: {self.img_path}'
             self.userNotice(notice_text, notice_title, detail_text)
+        self.blur_working = False
 
     def handle_bc_result(self, result):
         self.bc_code = result
@@ -316,9 +316,6 @@ class appWindow(QMainWindow):
         """ called when the results are in from bcRead."""
         print('bc detection finished')
         print(self.bc_code)
-        self.save_output_handler.save_output_images(self.im, self.img_path,
-                                                    self.bc_code)
-        
         self.bc_working = False
         
     def handle_eq_result(self, result):
@@ -409,6 +406,7 @@ class appWindow(QMainWindow):
 
         if self.mainWindow.group_renameByBarcode:
             # retrieve the barcode values from image
+            self.bc_working = True
             bc_worker = Worker(self.bcRead.decodeBC, grey) # Any other args, kwargs are passed to the run function
             bc_worker.signals.result.connect(self.handle_bc_result)
             bc_worker.signals.finished.connect(self.alert_bc_finished)
@@ -416,6 +414,7 @@ class appWindow(QMainWindow):
             
         if self.mainWindow.checkBox_blurDetection:
             # test for bluryness
+            self.blur_working = True
             blurThreshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
             blur_worker = Worker(self.blurDetect.blur_check, grey, blurThreshold) # Any other args, kwargs are passed to the run function
             blur_worker.signals.result.connect(self.handle_blur_result)
@@ -423,7 +422,8 @@ class appWindow(QMainWindow):
             self.threadPool.start(blur_worker) # start blur_worker thread
         
         # equipment corrections
-        if self.mainWindow.checkBox_lensCorrection:        
+        if self.mainWindow.checkBox_lensCorrection:
+            self.eq_working = True
             cmDistance = self.mainWindow.doubleSpinBox_focalDistance.value()
             mDistance = round(cmDistance / 100, 5)
             eq_worker = Worker(self.eqRead.lensCorrect, im, img_path, mDistance) # Any other args, kwargs are passed to the run function
@@ -433,6 +433,7 @@ class appWindow(QMainWindow):
 
         if self.mainWindow.group_colorCheckerDetection:
             # colorchecker functions
+            self.cc_working = True
             original_size, reduced_img = self.scale_images_with_info(im)
 #            cc_size = self.colorchipDetect.predict_colorchip_size(reduced_img)
 #            if cc_size == 'big':
@@ -443,19 +444,51 @@ class appWindow(QMainWindow):
                 cc_position, cropped_cc = self.colorchipDetect.process_colorchip_small(reduced_img, original_size)
             else:
                 cc_position, cropped_cc = self.colorchipDetect.process_colorchip_big(im)
-            cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
-            cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
-            im = self.white_balance_image(im, *cc_avg_white)
-            self.im = im
-            print(f"CC | Position: {cc_position}, Quadrant: {cc_quadrant} | AVG White: {cc_avg_white}")
+            self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
+            self.cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
+            #im = self.white_balance_image(im, *cc_avg_white)
+            #self.im = im
+            print(f"CC | Position: {cc_position}, Quadrant: {self.cc_quadrant} | AVG White: {self.cc_avg_white}")
+            self.cc_working = False
         
         # wait on bcWorker
-        self.im = im
+        save_worker = Worker(self.save_when_finished)
+        #save_worker.signals.result.connect(self.handle_eq_result)
+        save_worker.signals.finished.connect(self.save_finished)
+        self.threadPool.start(save_worker) # start eq_worker thread
+
         #self.save_output_handler.save_output_images(im, img_path, im_base_names, meta_data=None)
         # temp save output for debugging       
-        
-        
+
+    def save_finished(self):
+        print(f'saveing {self.img_path} has finished.')
         self.reset_working_variables()
+        
+    def save_when_finished(self):
+        """
+        combines async results and saves final output.
+        """
+        possible_working_threads = [self.bc_working, 
+                                    self.eq_working,
+                                    self.blur_working,
+                                    self.cc_working]
+
+        while any([self.bc_working, 
+                   self.eq_working,
+                   self.blur_working,
+                   self.cc_working]):
+
+            possible_working_threads = [self.bc_working, 
+                            self.eq_working,
+                            self.blur_working,
+                            self.cc_working]
+            time.sleep(.2)
+        im = self.im
+        im = self.white_balance_image(im, *self.cc_avg_white)
+        # reminder to address the quadrant checker here
+        print(f'cc quadrant is in : {self.cc_quadrant}')
+        self.save_output_handler.save_output_images(im, self.img_path,
+                                                    self.bc_code)
 
     def testFunction(self):
         """ a development assistant function, connected to a GUI button
@@ -483,10 +516,14 @@ class appWindow(QMainWindow):
         self.bc_code = None
         self.im = None
         self.img_path = None
-        self.bc_working = True
         self.is_blurry = None
-        self.cc_location = None
-        self.cc_white_value = None
+        
+        self.bc_working = False
+        self.eq_working = False
+        self.blur_working = False
+        self.cc_working = False
+        self.cc_quadrant  = None
+        self.cc_avg_white = None
 
     def openImageFile(self, imgPath,
                       demosaic=rawpy.DemosaicAlgorithm.AHD):
