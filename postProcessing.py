@@ -444,10 +444,12 @@ class appWindow(QMainWindow):
                 cc_position, cropped_cc = self.colorchipDetect.process_colorchip_small(reduced_img, original_size)
             else:
                 cc_position, cropped_cc = self.colorchipDetect.process_colorchip_big(im)
+            cv2.imwrite('cc.jpg', np.array(cropped_cc))
             self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
             self.cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
             #im = self.white_balance_image(im, *cc_avg_white)
             #self.im = im
+            
             print(f"CC | Position: {cc_position}, Quadrant: {self.cc_quadrant} | AVG White: {self.cc_avg_white}")
             self.cc_working = False
         
@@ -468,11 +470,6 @@ class appWindow(QMainWindow):
         """
         combines async results and saves final output.
         """
-        possible_working_threads = [self.bc_working, 
-                                    self.eq_working,
-                                    self.blur_working,
-                                    self.cc_working]
-
         while any([self.bc_working, 
                    self.eq_working,
                    self.blur_working,
@@ -486,9 +483,31 @@ class appWindow(QMainWindow):
         im = self.im
         im = self.white_balance_image(im, *self.cc_avg_white)
         # reminder to address the quadrant checker here
-        print(f'cc quadrant is in : {self.cc_quadrant}')
+        if self.mainWindow.group_verifyRotation.isChecked():
+            print(f'cc quadrant is in : {self.cc_quadrant}')
+            user_def_loc = self.mainWindow.comboBox_colorCheckerPosition.currentText()
+            quad_map = ['Upper right',
+                        'Lower right',
+                        'Lower left',
+                        'Upper left']
+            user_def_quad = quad_map.index(user_def_loc) + 1
+            print(f'user wants: {user_def_quad}')
+            # cc_quadrant starts at first, 
+            im = self.orient_image(im, self.cc_quadrant, user_def_quad)
+            
         self.save_output_handler.save_output_images(im, self.img_path,
                                                     self.bc_code)
+
+    def orient_image(self, im, picker_quadrant, desired_quadrant):
+        ''' 
+        corrects image rotation using the position of the color picker.
+        picker_quadrant = the known quadrant of a color picker location, 
+        desired_quadrant = the position the color picker should be in.
+        '''
+        rotation_qty = (desired_quadrant - picker_quadrant)
+        print(rotation_qty)
+        im = np.rot90(im, rotation_qty)
+        return im
 
     def testFunction(self):
         """ a development assistant function, connected to a GUI button
@@ -746,8 +765,6 @@ class appWindow(QMainWindow):
         [x.blockSignals(True) for x in children]
 
         # QComboBox
-        comboBox_imageOrientation = self.get('comboBox_imageOrientation', 'Portrait')
-        self.populateQComboBoxSettings( self.mainWindow.comboBox_imageOrientation, comboBox_imageOrientation)
         comboBox_colorCheckerPosition = self.get('comboBox_colorCheckerPosition', 'Upper right')
         self.populateQComboBoxSettings( self.mainWindow.comboBox_colorCheckerPosition, comboBox_colorCheckerPosition)
         comboBox_dupNamingPolicy = self.get('comboBox_dupNamingPolicy', 'append LOWER case letter')
@@ -808,15 +825,17 @@ class appWindow(QMainWindow):
         self.mainWindow.group_saveProcessedTIFF.setChecked(group_saveProcessedTIFF)
         group_saveProcessedPng = self.get('group_saveProcessedPng',False)
         self.mainWindow.group_saveProcessedPng.setChecked(group_saveProcessedPng)
+        group_verifyRotation_checkstate = self.get('group_verifyRotation_checkstate', False)
+        self.mainWindow.group_verifyRotation .setChecked(group_verifyRotation_checkstate)
         
         # QGroupbox (enablestate)
-        group_barcodeDetection = self.convertEnabledState(self.get('group_barcodeDetection',''))
+        group_barcodeDetection = self.convertEnabledState(self.get('group_barcodeDetection',False))
         self.mainWindow.group_barcodeDetection.setEnabled(group_barcodeDetection)
-        group_colorCheckerDetection = self.convertEnabledState(self.get('group_colorCheckerDetection',''))
+        group_colorCheckerDetection = self.convertEnabledState(self.get('group_colorCheckerDetection',False))
         self.mainWindow.group_colorCheckerDetection.setEnabled(group_colorCheckerDetection)
-        group_verifyRotation = self.convertEnabledState(self.get('group_verifyRotation',''))
+        group_verifyRotation = self.convertEnabledState(self.get('group_verifyRotation',False))
         self.mainWindow.group_verifyRotation.setEnabled(group_verifyRotation)
-        group_equipmentDetection = self.convertEnabledState(self.get('group_equipmentDetection',''))
+        group_equipmentDetection = self.convertEnabledState(self.get('group_equipmentDetection',False))
         self.mainWindow.group_equipmentDetection.setEnabled(group_equipmentDetection)
         # metaDataApplication should always be an option
         #group_metaDataApplication = self.convertEnabledState(self.get('group_metaDataApplication','true'))
@@ -868,8 +887,6 @@ class appWindow(QMainWindow):
 #        self.setValue('date_versionCheck', date_versionCheck)
 
         # QComboBox
-        comboBox_imageOrientation = self.mainWindow.comboBox_imageOrientation.currentText()
-        self.settings.setValue('comboBox_imageOrientation', comboBox_imageOrientation)
         comboBox_colorCheckerPosition = self.mainWindow.comboBox_colorCheckerPosition.currentText()
         self.settings.setValue('comboBox_colorCheckerPosition', comboBox_colorCheckerPosition)
         
@@ -926,6 +943,8 @@ class appWindow(QMainWindow):
         self.settings.setValue('group_saveProcessedJpg',group_saveProcessedJpg)
         group_saveProcessedPng = self.mainWindow.group_saveProcessedPng.isChecked()
         self.settings.setValue('group_saveProcessedPng',group_saveProcessedPng)
+        group_verifyRotation_checkstate = self.mainWindow.group_verifyRotation.isChecked()
+        self.settings.setValue('group_verifyRotation_checkstate', group_verifyRotation_checkstate)
 
         # QGroupbox (enablestate)
         group_barcodeDetection = self.mainWindow.group_barcodeDetection.isEnabled()

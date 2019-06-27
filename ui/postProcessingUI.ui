@@ -18,7 +18,7 @@
     <item row="0" column="1">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <property name="usesScrollButtons">
        <bool>true</bool>
@@ -326,9 +326,9 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>-152</y>
+               <y>0</y>
                <width>646</width>
-               <height>1005</height>
+               <height>975</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -642,13 +642,6 @@
                     <bool>false</bool>
                    </property>
                    <layout class="QGridLayout" name="gridLayout_5">
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="label_colorCheckerPosition">
-                      <property name="text">
-                       <string>Color checker Position</string>
-                      </property>
-                     </widget>
-                    </item>
                     <item row="0" column="2">
                      <spacer name="horizontalSpacer_2">
                       <property name="orientation">
@@ -662,7 +655,7 @@
                       </property>
                      </spacer>
                     </item>
-                    <item row="1" column="1">
+                    <item row="0" column="1">
                      <widget class="QComboBox" name="comboBox_colorCheckerPosition">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
@@ -692,30 +685,10 @@
                       </item>
                      </widget>
                     </item>
-                    <item row="0" column="1">
-                     <widget class="QComboBox" name="comboBox_imageOrientation">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <item>
-                       <property name="text">
-                        <string>Portrait</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Landscape</string>
-                       </property>
-                      </item>
-                     </widget>
-                    </item>
                     <item row="0" column="0">
-                     <widget class="QLabel" name="label_imageOrientation">
+                     <widget class="QLabel" name="label_colorCheckerPosition">
                       <property name="text">
-                       <string>Image orientation</string>
+                       <string>Color checker Position</string>
                       </property>
                      </widget>
                     </item>
@@ -1034,8 +1007,6 @@
   <tabstop>spinBox_catalogDigits</tabstop>
   <tabstop>group_colorCheckerDetection</tabstop>
   <tabstop>group_verifyRotation</tabstop>
-  <tabstop>comboBox_imageOrientation</tabstop>
-  <tabstop>comboBox_colorCheckerPosition</tabstop>
   <tabstop>checkBox_performWhiteBalance</tabstop>
   <tabstop>group_equipmentDetection</tabstop>
   <tabstop>group_metaDataApplication</tabstop>
@@ -1079,22 +1050,6 @@
     <hint type="destinationlabel">
      <x>503</x>
      <y>29</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>comboBox_imageOrientation</sender>
-   <signal>currentTextChanged(QString)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>417</x>
-     <y>376</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>604</x>
-     <y>27</y>
     </hint>
    </hints>
   </connection>
