@@ -379,13 +379,13 @@ class ColorchipRead:
         half_height = original_height / 2
 
         if x1 < half_width and y1 < half_height:
-            return 1
-        elif x1 > half_width and y1 < half_height:
-            return 2
-        elif x1 > half_width and y1 > half_height:
-            return 3
-        elif x1 < half_width and y1 > half_height:
             return 4
+        elif x1 > half_width and y1 < half_height:
+            return 1
+        elif x1 > half_width and y1 > half_height:
+            return 2
+        elif x1 < half_width and y1 > half_height:
+            return 3
         else:
             return None
 

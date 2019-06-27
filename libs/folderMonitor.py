@@ -54,7 +54,6 @@ class Event_Handler(PatternMatchingEventHandler):
         #    # take action when file is created
         #    img_path = event.src_path
         #    self._emitter.new_image_signal.emit(img_path)
-        #    print(f'{event.src_path} file was created')
         if event.event_type == 'modified':
             # take action when a file is modified
             # verify the 'new' image is new
@@ -77,9 +76,7 @@ class Folder_Watcher:
         self.existing_files = []
         for files in raw_image_patterns:
             globPattern = path.join(input_folder_path, files)
-            print(globPattern)
             self.existing_files.extend(glob.glob(globPattern))
-        print(self.existing_files)
         self.emitter = New_Image_Emitter()
         self.observer = Observer()
         self.event_handler = Event_Handler(
