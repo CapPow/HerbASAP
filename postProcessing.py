@@ -243,26 +243,24 @@ class appWindow(QMainWindow):
         # { ui object (checkbox) : (location, extension)}
         group_keepUnalteredRaw = self.mainWindow.group_keepUnalteredRaw.isChecked()
         lineEdit_pathUnalteredRaw = self.mainWindow.lineEdit_pathUnalteredRaw.text()
-        
+
         group_saveProcessedJpg = self.mainWindow.group_saveProcessedJpg.isChecked()
         lineEdit_pathProcessedJpg = self.mainWindow.lineEdit_pathProcessedJpg.text()
-        
+
         group_saveProcessedTIFF = self.mainWindow.group_saveProcessedTIFF.isChecked()
         lineEdit_pathProcessedTIFF = self.mainWindow.lineEdit_pathProcessedTIFF.text()
-        
+
         group_saveProcessedPng = self.mainWindow.group_saveProcessedPng.isChecked()
         lineEdit_pathProcessedPng = self.mainWindow.lineEdit_pathProcessedPng.text()
 
         output_map = {group_keepUnalteredRaw: (lineEdit_pathUnalteredRaw, None),
                       group_saveProcessedJpg: (lineEdit_pathProcessedJpg, '.jpg'),
                       group_saveProcessedTIFF: (lineEdit_pathProcessedTIFF, '.tiff'),
-                      group_saveProcessedPng: (lineEdit_pathProcessedPng, '.png')
-                      }
-        
+                      group_saveProcessedPng: (lineEdit_pathProcessedPng, '.png')}
+        print(output_map)
         dupNamingPolicy = self.mainWindow.comboBox_dupNamingPolicy.currentText()
 
         self.save_output_handler = Save_Output_Handler(output_map, dupNamingPolicy)
-        self.save_output_handler.save_output_images
 
     def setup_Folder_Watcher(self, raw_image_patterns = None):
         """
@@ -484,14 +482,12 @@ class appWindow(QMainWindow):
         im = self.white_balance_image(im, *self.cc_avg_white)
         # reminder to address the quadrant checker here
         if self.mainWindow.group_verifyRotation.isChecked():
-            print(f'cc quadrant is in : {self.cc_quadrant}')
             user_def_loc = self.mainWindow.comboBox_colorCheckerPosition.currentText()
             quad_map = ['Upper right',
                         'Lower right',
                         'Lower left',
                         'Upper left']
             user_def_quad = quad_map.index(user_def_loc) + 1
-            print(f'user wants: {user_def_quad}')
             # cc_quadrant starts at first, 
             im = self.orient_image(im, self.cc_quadrant, user_def_quad)
             
@@ -504,8 +500,7 @@ class appWindow(QMainWindow):
         picker_quadrant = the known quadrant of a color picker location, 
         desired_quadrant = the position the color picker should be in.
         '''
-        rotation_qty = (desired_quadrant - picker_quadrant)
-        print(rotation_qty)
+        rotation_qty = (picker_quadrant - desired_quadrant)
         im = np.rot90(im, rotation_qty)
         return im
 

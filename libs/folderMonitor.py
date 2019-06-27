@@ -113,6 +113,8 @@ class Save_Output_Handler:
         else:
             self.suffix_lookup = False
         
+        print(self.output_map)
+        
     def save_output_images(self, im, orig_img_path, im_base_names, meta_data=None):
         """
         Function that saves processed images to the appropriate format and
@@ -127,6 +129,7 @@ class Save_Output_Handler:
         :type meta_data: dict
         """
         output_map = self.output_map
+        print(output_map)
         for obj, file_details in output_map.items():
             if obj:
                 location, ext = file_details
