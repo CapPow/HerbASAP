@@ -63,9 +63,6 @@ class ColorchipRead:
                                                                  K.learning_phase()],
                                                                 [self.high_precision_model.layers[-1].output])
 
-        for idx, layer in enumerate(self.high_precision_model.layers):
-            print(f"Layer {idx} | {layer}")
-
         init_im = cv2.imread("libs/models/init/init.jpg")
         print("[INFO] Initializing neural networks")
         self.predict_colorchip_size(init_im)
@@ -158,7 +155,6 @@ class ColorchipRead:
 
         pil_image = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
         pil_image = np.array(pil_image)
-        #pil_image = np.array(im)
         pil_image = Image.fromarray(pil_image)
         return pil_image
 
@@ -262,10 +258,6 @@ class ColorchipRead:
         position_prediction_dict = dict(zip(only_cc_position_prediction,
                                             [i for i in range(len(only_cc_position_prediction))]))
 
-        # position_prediction_dict = {}
-        # for idx, prediction in enumerate(only_cc_position_prediction):
-        #     position_prediction_dict[prediction] = idx
-
         for prediction in sorted(position_prediction_dict)[-buffer_size:]:
             most_certain_images[only_cc_position_uncertainty[position_prediction_dict[prediction]]] = \
                 possible_positions[position_prediction_dict[prediction]]
@@ -273,7 +265,6 @@ class ColorchipRead:
         only_cc_uncertainty_column = []
         only_cc_probability_column = []
 
-        # discriminator_pred_dict = {}
         highest_prob_images = []
         if not high_precision:
 
@@ -286,7 +277,6 @@ class ColorchipRead:
                 len(highest_prob_images_pred))
 
             try:
-                # discriminator_pred_dict = dict(zip(discriminator_prediction[0][:, 1], [i for i in range(buffer_size)]))
                 only_cc_uncertainty_column = discriminator_uncertainty[0][:, 1]
                 only_cc_probability_column = discriminator_prediction[0][:, 1]
             except IndexError:
@@ -330,12 +320,6 @@ class ColorchipRead:
                     lowest_uncertainty = only_cc_uncertainty_column[idx]
                     best_location = list(most_certain_images.values())[idx]
                     best_image = im.crop(tuple(best_location))
-
-        # Use if high multithreading -- performs poorly on low threads.
-        # sorted_prediction = sorted(discriminator_pred_dict, reverse=True)
-        # best_index = discriminator_pred_dict[sorted_prediction[0]]
-        # best_location = list(most_certain_images.values())[best_index]
-        # best_image = im.crop(list(most_certain_images.values())[best_index])
 
         x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
         prop_x1, prop_y1, prop_x2, prop_y2 = x1 / image_width, y1 / image_height, x2 / image_width, y2 / image_height

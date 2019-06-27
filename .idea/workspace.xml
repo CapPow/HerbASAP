@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="f1346991-2a84-455a-b0c3-b6c99b8a644c" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/libs/ccRead.py" beforeDir="false" afterPath="$PROJECT_DIR$/libs/ccRead.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/postProcessing.py" beforeDir="false" afterPath="$PROJECT_DIR$/postProcessing.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -13,19 +12,19 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/libs/ccRead.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="97">
-              <caret line="177" column="42" lean-forward="true" selection-start-line="177" selection-start-column="42" selection-end-line="177" selection-end-column="42" />
+            <state relative-caret-position="476">
+              <caret line="331" column="25" lean-forward="true" selection-start-line="331" selection-start-column="25" selection-end-line="331" selection-end-column="25" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/postProcessing.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="209">
+            <state relative-caret-position="5207">
               <caret line="380" column="62" selection-start-line="380" selection-start-column="62" selection-end-line="380" selection-end-column="62" />
               <folding>
                 <element signature="e#1139#1148#0" expanded="true" />
@@ -37,8 +36,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://D:/Anaconda3/envs/Shaw/Lib/site-packages/tensorflow/python/keras/engine/training_utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="338">
-              <caret line="371" column="60" selection-start-line="371" selection-start-column="60" selection-end-line="372" />
+            <state relative-caret-position="5763">
+              <caret line="371" column="41" selection-start-line="371" selection-start-column="41" selection-end-line="372" />
             </state>
           </provider>
         </entry>
@@ -46,7 +45,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/libs/eqRead.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="329">
+            <state relative-caret-position="1037">
               <caret line="65" selection-start-line="65" selection-end-line="65" />
             </state>
           </provider>
@@ -266,6 +265,7 @@
       <workItem from="1561036375700" duration="10665000" />
       <workItem from="1561051046660" duration="1734000" />
       <workItem from="1561127414959" duration="2934000" />
+      <workItem from="1561641533492" duration="96000" />
     </task>
     <task id="LOCAL-00001" summary="Included initial documentation of functions. Cleaning up of code and pushing redundant variables into init.">
       <created>1560971677868</created>
@@ -285,13 +285,13 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="28226000" />
+    <option name="totallyTimeSpent" value="28322000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" weight="0.3522976" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.15938166" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -329,6 +329,20 @@
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/test.jpg" />
+    <entry file="file://D:/Anaconda3/envs/Shaw/Lib/site-packages/tensorflow/python/keras/engine/training_utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5763">
+          <caret line="371" column="41" selection-start-line="371" selection-start-column="41" selection-end-line="372" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libs/eqRead.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1037">
+          <caret line="65" selection-start-line="65" selection-end-line="65" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$USER_HOME$/.PyCharm2019.1/system/python_stubs/826217819/PyQt5/QtWidgets/QFileDialog.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2533">
@@ -367,34 +381,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/libs/eqRead.py">
+    <entry file="file://$PROJECT_DIR$/postProcessing.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="329">
-          <caret line="65" selection-start-line="65" selection-end-line="65" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/Anaconda3/envs/Shaw/Lib/site-packages/tensorflow/python/keras/engine/training_utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="338">
-          <caret line="371" column="60" selection-start-line="371" selection-start-column="60" selection-end-line="372" />
+        <state relative-caret-position="5207">
+          <caret line="380" column="62" selection-start-line="380" selection-start-column="62" selection-end-line="380" selection-end-column="62" />
+          <folding>
+            <element signature="e#1139#1148#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/libs/ccRead.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="97">
-          <caret line="177" column="42" lean-forward="true" selection-start-line="177" selection-start-column="42" selection-end-line="177" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/postProcessing.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="209">
-          <caret line="380" column="62" selection-start-line="380" selection-start-column="62" selection-end-line="380" selection-end-column="62" />
-          <folding>
-            <element signature="e#1139#1148#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="476">
+          <caret line="331" column="25" lean-forward="true" selection-start-line="331" selection-start-column="25" selection-end-line="331" selection-end-column="25" />
         </state>
       </provider>
     </entry>
