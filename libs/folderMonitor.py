@@ -23,6 +23,7 @@
 # imports here
 import string
 from os import path
+from shutil import move as shutil_move
 import glob
 #import piexif
 
@@ -130,12 +131,13 @@ class Save_Output_Handler:
         """
         output_map = self.output_map
         print(output_map)
-        for obj, file_details in output_map.items():
+        for obj, location, ext in output_map:
             if obj:
-                location, ext = file_details
+                to_rename = False
+                # flag for when the file should be moved instead of cv2 written
                 if not ext:
-                    # TODO use os.path ext split methodology instead of weak String splitting.
-                    ext = f'.{str(orig_img_path).split(".")[-1]}'
+                    ext = path.splitext(orig_img_path)[-1]
+                    to_rename = True
                 for bc in im_base_names:
                     fileQty = len(glob.glob(f'{location}//{bc}*{ext}'))
                     if fileQty > 0:
@@ -150,5 +152,8 @@ class Save_Output_Handler:
                     # See https://piexif.readthedocs.io/en/latest/functions.html#transplant
                     # also, add in this program's name  and version  to proper tag for processing documentation
                     # save outputs
-                    cv2.imwrite(new_file_name, im)
+                    if to_rename:
+                        shutil_move(orig_img_path, new_file_name)
+                    else:
+                        cv2.imwrite(new_file_name, cv2.cvtColor(im, cv2.COLOR_RGB2BGR))
 

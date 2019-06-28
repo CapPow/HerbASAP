@@ -253,10 +253,10 @@ class appWindow(QMainWindow):
         group_saveProcessedPng = self.mainWindow.group_saveProcessedPng.isChecked()
         lineEdit_pathProcessedPng = self.mainWindow.lineEdit_pathProcessedPng.text()
 
-        output_map = {group_keepUnalteredRaw: (lineEdit_pathUnalteredRaw, None),
-                      group_saveProcessedJpg: (lineEdit_pathProcessedJpg, '.jpg'),
-                      group_saveProcessedTIFF: (lineEdit_pathProcessedTIFF, '.tiff'),
-                      group_saveProcessedPng: (lineEdit_pathProcessedPng, '.png')}
+        output_map = [(group_keepUnalteredRaw, lineEdit_pathUnalteredRaw, None),
+                      (group_saveProcessedJpg, lineEdit_pathProcessedJpg, '.jpg'),
+                      (group_saveProcessedTIFF, lineEdit_pathProcessedTIFF, '.tiff'),
+                      (group_saveProcessedPng, lineEdit_pathProcessedPng, '.png')]
         print(output_map)
         dupNamingPolicy = self.mainWindow.comboBox_dupNamingPolicy.currentText()
 
@@ -447,9 +447,6 @@ class appWindow(QMainWindow):
             cv2.imwrite('cc.jpg', for_cv2_im_cc)
             self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
             self.cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
-            #im = self.white_balance_image(im, *cc_avg_white)
-            #self.im = im
-            
             print(f"CC | Position: {cc_position}, Quadrant: {self.cc_quadrant} | AVG White: {self.cc_avg_white}")
             self.cc_working = False
         
@@ -502,8 +499,15 @@ class appWindow(QMainWindow):
         picker_quadrant = the known quadrant of a color picker location, 
         desired_quadrant = the position the color picker should be in.
         '''
-        rotation_qty = (picker_quadrant - desired_quadrant)
-        im = np.rot90(im, rotation_qty)
+        try:
+            rotation_qty = (picker_quadrant - desired_quadrant)
+            im = np.rot90(im, rotation_qty)
+        except TypeError:
+            # alert the user of an issue
+            msg_text = 'Could not infer color checker location'
+            title_text = 'Error finding color checker'
+            detail_text = f'TypeError retrieving quadrant from {self.img_path}'
+            self.userNotice(msg_text, title_text, detail_text)
         return im
 
     def testFunction(self):
