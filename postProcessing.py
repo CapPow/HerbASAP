@@ -49,7 +49,7 @@ from libs.folderMonitor import Folder_Watcher
 from libs.folderMonitor import Save_Output_Handler
 from libs.folderMonitor import New_Image_Emitter
 
-from boss_worker import (Boss, BCWorkerData, BlurWorkerData, EQWorkerData,
+from libs.boss_worker import (Boss, BCWorkerData, BlurWorkerData, EQWorkerData,
                          Job, BossSignalData, WorkerSignalData, WorkerErrorData)
 
 
@@ -191,7 +191,6 @@ class appWindow(QMainWindow):
                       (group_saveProcessedJpg, lineEdit_pathProcessedJpg, '.jpg'),
                       (group_saveProcessedTIFF, lineEdit_pathProcessedTIFF, '.tiff'),
                       (group_saveProcessedPng, lineEdit_pathProcessedPng, '.png')]
-        print(output_map)
         dupNamingPolicy = self.mainWindow.comboBox_dupNamingPolicy.currentText()
 
         self.save_output_handler = Save_Output_Handler(output_map, dupNamingPolicy)

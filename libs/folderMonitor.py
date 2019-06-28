@@ -113,9 +113,7 @@ class Save_Output_Handler:
             self.suffix_lookup = lambda x: ''
         else:
             self.suffix_lookup = False
-        
-        print(self.output_map)
-        
+
     def save_output_images(self, im, orig_img_path, im_base_names, meta_data=None):
         """
         Function that saves processed images to the appropriate format and
