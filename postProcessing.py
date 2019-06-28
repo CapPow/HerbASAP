@@ -49,7 +49,7 @@ from libs.folderMonitor import Folder_Watcher
 from libs.folderMonitor import Save_Output_Handler
 from libs.folderMonitor import New_Image_Emitter
 
-from boss_worker import (Boss, BCWorkerData, BlurWorkerData, EQWorkerData,
+from libs.boss_worker import (Boss, BCWorkerData, BlurWorkerData, EQWorkerData,
                          Job, BossSignalData, WorkerSignalData, WorkerErrorData)
 
 
@@ -191,7 +191,6 @@ class appWindow(QMainWindow):
                       (group_saveProcessedJpg, lineEdit_pathProcessedJpg, '.jpg'),
                       (group_saveProcessedTIFF, lineEdit_pathProcessedTIFF, '.tiff'),
                       (group_saveProcessedPng, lineEdit_pathProcessedPng, '.png')]
-        print(output_map)
         dupNamingPolicy = self.mainWindow.comboBox_dupNamingPolicy.currentText()
 
         self.save_output_handler = Save_Output_Handler(output_map, dupNamingPolicy)
@@ -378,8 +377,8 @@ class appWindow(QMainWindow):
             self.userNotice(text, title, detail_text)
             return None
         # debugging, save 'raw-ish' version of jpg before processing
-        for_cv2_im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
-        cv2.imwrite('input.jpg', for_cv2_im)
+        #for_cv2_im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
+        #cv2.imwrite('input.jpg', for_cv2_im)
         self.img_path = img_path
         self.file_name, self.file_ext = os.path.splitext(img_path)
         self.base_file_name = os.path.basename(self.file_name)
@@ -421,8 +420,8 @@ class appWindow(QMainWindow):
                 cc_position, cropped_cc = self.colorchipDetect.process_colorchip_small(reduced_img, original_size)
             else:
                 cc_position, cropped_cc = self.colorchipDetect.process_colorchip_big(im)
-            for_cv2_im_cc = cv2.cvtColor(np.array(cropped_cc), cv2.COLOR_RGB2BGR)
-            cv2.imwrite('cc.jpg', for_cv2_im_cc)
+            #for_cv2_im_cc = cv2.cvtColor(np.array(cropped_cc), cv2.COLOR_RGB2BGR)
+            #cv2.imwrite('cc.jpg', for_cv2_im_cc)
             self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
             self.cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
             print(f"CC | Position: {cc_position}, Quadrant: {self.cc_quadrant} | AVG White: {self.cc_avg_white}")
@@ -432,10 +431,8 @@ class appWindow(QMainWindow):
         waiting on bcWorker happens in Boss thread
         ! - unsure if sending the function to connect to the signal will work, probably not
         """
-
         save_job = Job('save_worker', None, self.save_when_finished)
         self.boss_thread.request_job(save_job)
-
         # self.save_output_handler.save_output_images(im, img_path, im_base_names, meta_data=None)
         # temp save output for debugging
 

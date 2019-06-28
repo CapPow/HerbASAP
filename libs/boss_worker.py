@@ -83,6 +83,8 @@ class Boss(QThread):
         # self.args = args
         # self.kwargs = kwargs
         self.signals = BossSignals()
+        maxThreads = int(self.__thread_pool.maxThreadCount() * .75)
+        self.__thread_pool.setMaxThreadCount(maxThreads)
 
     def request_job(self, job):
         """
@@ -110,8 +112,9 @@ class Boss(QThread):
                         issues
                 """
                 if job.job_name == 'save_worker':
-                    if (not self.__is_eq_worker_running and not self.__is_blur_worker_running
-                            and not self.__is_bc_worker_running):
+                    if not any([self.__is_eq_worker_running,
+                                self.__is_blur_worker_running,
+                                self.__is_bc_worker_running]):
                         self.__spawn_thread(job)
                     else:
                         self.__job_queue.append(job)
