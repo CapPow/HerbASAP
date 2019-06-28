@@ -431,10 +431,8 @@ class appWindow(QMainWindow):
         waiting on bcWorker happens in Boss thread
         ! - unsure if sending the function to connect to the signal will work, probably not
         """
-        print('here')
         save_job = Job('save_worker', None, self.save_when_finished)
         self.boss_thread.request_job(save_job)
-        print('here also')
         # self.save_output_handler.save_output_images(im, img_path, im_base_names, meta_data=None)
         # temp save output for debugging
 
