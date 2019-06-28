@@ -128,7 +128,6 @@ class Save_Output_Handler:
         :type meta_data: dict
         """
         output_map = self.output_map
-        print(output_map)
         for obj, location, ext in output_map:
             if obj:
                 to_rename = False
