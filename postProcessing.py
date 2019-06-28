@@ -27,23 +27,15 @@ __status__ = "Alpha"
 __version__ = 'v0.0.1-alpha'
 
 import os
-import traceback
 import sys
 import string
-import time
-import glob
 # UI libs
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QDialog
-from PyQt5.QtCore import (QSettings, Qt, QObject,
-                          QRunnable, pyqtSignal,pyqtSlot,
-                          QThreadPool, QWaitCondition)
+from PyQt5.QtCore import (QSettings, Qt, QObject, QThreadPool)
 # image libs
-import lensfunpy
-import piexif
 import rawpy
 from rawpy import LibRawNonFatalError, LibRawFatalError
-from PIL import Image
 import cv2
 import numpy as np
 # internal libs
@@ -56,9 +48,9 @@ from libs.ccRead import ColorchipRead
 from libs.folderMonitor import Folder_Watcher
 from libs.folderMonitor import Save_Output_Handler
 from libs.folderMonitor import New_Image_Emitter
-# from libs.ccRead import ccRead
 
-from boss_worker import Boss, BossSignals, BCWorkerData, BlurWorkerData, EQWorkerData, Job
+from boss_worker import (Boss, BCWorkerData, BlurWorkerData, EQWorkerData,
+                         Job, BossSignalData, WorkerSignalData, WorkerErrorData)
 
 
 class ImageDialog(QDialog):
@@ -127,7 +119,14 @@ class appWindow(QMainWindow):
         # self.updateEqSettings()
 
         # create boss thread, it starts itself and is running the __boss_function
-        self.boss_thread = Boss()
+        self.boss_thread = Boss(self.threadPool)
+        # setup Boss's signals
+        self.boss_thread.signals.boss_started.connect(self.handle_boss_started)
+        self.boss_thread.signals.boss_closed.connect(self.handle_boss_finished)
+        self.boss_thread.signals.job_started.connect(self.handle_job_started)
+        self.boss_thread.signals.job_finished.connect(self.handle_job_finished)
+        self.boss_thread.signals.job_result.connect(self.handle_job_result)
+        self.boss_thread.signals.job_error.connect(self.handle_job_error)
         # start the boss thread's "event loop"
         # https://doc.qt.io/qt-5/qthread.html#start
         self.boss_thread.start()
@@ -260,6 +259,56 @@ class appWindow(QMainWindow):
         """ called when the results are in from eqRead."""
         print('eq corrections finished')
         self.eq_working = False
+
+    # boss signal handlers
+    def handle_boss_started(self, boss_signal_data):
+        if boss_signal_data is not None and boss_signal_data is BossSignalData:
+            if boss_signal_data.signal_data is str:
+                print(boss_signal_data.signal_data)
+
+    def handle_boss_finished(self, boss_signal_data):
+        if boss_signal_data is not None and boss_signal_data is BossSignalData:
+            if boss_signal_data.signal_data is str:
+                print(boss_signal_data.signal_data)
+
+    def handle_job_started(self, boss_signal_data):
+        if boss_signal_data is not None and boss_signal_data is BossSignalData:
+            if boss_signal_data.signal_data is WorkerSignalData:
+                worker_signal_data = boss_signal_data.signal_data
+                print(worker_signal_data.worker_name)
+                print(worker_signal_data.worker_signal_data)
+
+    def handle_job_finished(self, boss_signal_data):
+        if boss_signal_data is not None and boss_signal_data is BossSignalData:
+            if boss_signal_data.signal_data is WorkerSignalData:
+                worker_signal_data = boss_signal_data.signal_data
+                print(worker_signal_data.worker_name)
+                print(worker_signal_data.worker_signal_data)
+
+    def handle_job_result(self, boss_signal_data):
+        if boss_signal_data is not None and boss_signal_data is BossSignalData:
+            if boss_signal_data.signal_data is WorkerSignalData:
+                worker_signal_data = boss_signal_data.signal_data
+                if worker_signal_data.worker_name == 'bc_worker':
+                    self.handle_bc_result(worker_signal_data.signal_data)
+                elif worker_signal_data.worker_name == 'blur_worker':
+                    self.handle_blur_result(worker_signal_data.signal_data)
+                elif worker_signal_data.worker_name == 'eq_worker':
+                    self.handle_eq_result(worker_signal_data.signal_data)
+                elif worker_signal_data.worker_name == 'save_worker':
+                    pass  # ???
+
+    def handle_job_error(self, boss_signal_data):
+        if boss_signal_data is not None and boss_signal_data is BossSignalData:
+            if boss_signal_data.signal_data is WorkerSignalData:
+                worker_signal_data = boss_signal_data.signal_data
+                print(f'error in worker: {worker_signal_data.worker_name}')
+                if worker_signal_data.signal_data is WorkerErrorData:
+                    worker_error_data = worker_signal_data.signal_data
+                    print('error data:')
+                    print(f'exception type: {str(worker_error_data.exctype)}')
+                    print(f'value: {str(worker_error_data.value)}')
+                    print(f'formatted exception: {str(worker_error_data.format_exc)}')
 
     def white_balance_image(self, im, whiteR, whiteG, whiteB):
         """
