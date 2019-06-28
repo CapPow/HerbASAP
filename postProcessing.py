@@ -15,8 +15,8 @@
 
 """
 
-    AYUP (as of yet unnamed program) performs post processing steps on raw 
-    format images of natural history specimens. Specifically designed for 
+    AYUP (as of yet unnamed program) performs post processing steps on raw
+    format images of natural history specimens. Specifically designed for
     Herbarium sheet images.
 
 """
@@ -27,23 +27,15 @@ __status__ = "Alpha"
 __version__ = 'v0.0.1-alpha'
 
 import os
-import traceback
 import sys
 import string
-import time
-import glob
 # UI libs
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QDialog
-from PyQt5.QtCore import (QSettings, Qt, QObject,
-                          QRunnable, pyqtSignal,pyqtSlot,
-                          QThreadPool, QWaitCondition)
+from PyQt5.QtCore import (QSettings, Qt, QObject, QThreadPool)
 # image libs
-import lensfunpy
-import piexif
 import rawpy
 from rawpy import LibRawNonFatalError, LibRawFatalError
-from PIL import Image
 import cv2
 import numpy as np
 # internal libs
@@ -57,79 +49,8 @@ from libs.folderMonitor import Folder_Watcher
 from libs.folderMonitor import Save_Output_Handler
 from libs.folderMonitor import New_Image_Emitter
 
-#from libs.ccRead import ccRead
-
-class Worker_Signals(QObject):
-    '''
-    Defines the signals available from a running worker thread.
-    see: https://www.learnpyqt.com/courses/concurrent-execution/multithreading-pyqt-applications-qthreadpool/
-
-    Supported signals are:
-
-    finished
-        No data
-    
-    error
-        `tuple` (exctype, value, traceback.format_exc() )
-    
-    result
-        `object` data returned from processing, anything
-
-    progress
-        `int` indicating % progress 
-
-    '''
-    finished = pyqtSignal()
-    error = pyqtSignal(tuple)
-    result = pyqtSignal(object)
-    progress = pyqtSignal(int)
-    new_image_signal = pyqtSignal(object)
-
-class Worker(QRunnable):
-    '''
-    Worker thread
-
-    Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
-    
-    see: https://www.learnpyqt.com/courses/concurrent-execution/multithreading-pyqt-applications-qthreadpool/
-
-    :param callback: The function callback to run on this worker thread. Supplied args and 
-                     kwargs will be passed through to the runner.
-    :type callback: function
-    :param args: Arguments to pass to the callback function
-    :param kwargs: Keywords to pass to the callback function
-
-    '''
-
-    def __init__(self, fn, *args, **kwargs):
-        super(Worker, self).__init__()
-
-        # Store constructor arguments (re-used for processing)
-        self.fn = fn
-        self.args = args
-        self.kwargs = kwargs
-        self.signals = Worker_Signals()
-
-        # Add the callback to our kwargs
-        #self.kwargs['progress_callback'] = self.signals.progress        
-
-    @pyqtSlot()
-    def run(self):
-        '''
-        Initialise the runner function with passed args, kwargs.
-        '''
-        
-        # Retrieve args/kwargs here; and fire processing using them
-        try:
-            result = self.fn(*self.args, **self.kwargs)
-        except:
-            traceback.print_exc()
-            exctype, value = sys.exc_info()[:2]
-            self.signals.error.emit((exctype, value, traceback.format_exc()))
-        else:
-            self.signals.result.emit(result)  # Return the result of the processing
-        finally:
-            self.signals.finished.emit()  # Done
+from boss_worker import (Boss, BCWorkerData, BlurWorkerData, EQWorkerData,
+                         Job, BossSignalData, WorkerSignalData, WorkerErrorData)
 
 
 class ImageDialog(QDialog):
@@ -157,11 +78,10 @@ class appWindow(QMainWindow):
         super().__init__()
         self.init_ui()
 
-
     def init_ui(self):
         self.mainWindow = Ui_MainWindow()
         self.mainWindow.setupUi(self)
-                
+
         # set up a threadpool
         self.threadPool = QThreadPool().globalInstance()
         # determine & assign a safe quantity of threads 75% of resources
@@ -170,19 +90,19 @@ class appWindow(QMainWindow):
         print(f"Multithreading with maximum {self.threadPool.maxThreadCount()} threads")
         # initiate the persistant settings
         # todo update this when name is decided on
-        self.settings = QSettings('AYUP', 'AYUP')        
+        self.settings = QSettings('AYUP', 'AYUP')
         self.settings.setFallbacksEnabled(False)    # File only, no fallback to registry.
         # populate the settings based on the previous preferences
         self.populateSettings()
-        
+
         self.New_Image_Emitter = New_Image_Emitter()
-        
+
         # initalize the folder_watcher using current user inputs
         self.setup_Folder_Watcher()
-        
+
         # initalize the Save_Output_Handler using current user inputs
         self.setup_Output_Handler()
-        
+
         # fill in the previews
         self.updateCatalogNumberPreviews()
         prefix = self.mainWindow.lineEdit_catalogNumberPrefix.text()
@@ -191,16 +111,30 @@ class appWindow(QMainWindow):
         self.blurDetect = blurDetect(parent=self.mainWindow)
         self.colorchipDetect = ColorchipRead(parent=self.mainWindow)
         self.eqRead = eqRead(parent=self.mainWindow)
-        #self.ccRead = ccRead(parent=self.mainWindow)
+        # self.ccRead = ccRead(parent=self.mainWindow)
 
-        # assign applicable user settings for eqRead. 
+        # assign applicable user settings for eqRead.
         # this function is here, for ease of slot assignment in pyqt designer
         self.reset_working_variables()
-        #self.updateEqSettings()
+        # self.updateEqSettings()
 
-#        self.versionCheck()
+        # create boss thread, it starts itself and is running the __boss_function
+        self.boss_thread = Boss(self.threadPool)
+        # setup Boss's signals
+        self.boss_thread.signals.boss_started.connect(self.handle_boss_started)
+        self.boss_thread.signals.boss_closed.connect(self.handle_boss_finished)
+        self.boss_thread.signals.job_started.connect(self.handle_job_started)
+        self.boss_thread.signals.job_finished.connect(self.handle_job_finished)
+        self.boss_thread.signals.job_result.connect(self.handle_job_result)
+        self.boss_thread.signals.job_error.connect(self.handle_job_error)
+        # start the boss thread's "event loop"
+        # https://doc.qt.io/qt-5/qthread.html#start
+        self.boss_thread.start()
+        print('boss thread started')
 
-#   when saving: quality="keep" the original quality is preserved 
+#       self.versionCheck()
+
+#   when saving: quality="keep" the original quality is preserved
 #   The optimize=True "attempts to losslessly reduce image size
 
 #    def versionCheck(self):
@@ -234,7 +168,7 @@ class appWindow(QMainWindow):
 #                        #  instead display a the new release
 #                        webbrowser.open(link,autoraise=1)
 #            self.settings.saveSettings()  # save the new version check date
-    
+
     def setup_Output_Handler(self):
         """
         initiates self.save_output_handler with user inputs.
@@ -262,7 +196,7 @@ class appWindow(QMainWindow):
 
         self.save_output_handler = Save_Output_Handler(output_map, dupNamingPolicy)
 
-    def setup_Folder_Watcher(self, raw_image_patterns = None):
+    def setup_Folder_Watcher(self, raw_image_patterns=None):
         """
         initiates self.foldeR_watcher with user inputs.
         """
@@ -287,10 +221,10 @@ class appWindow(QMainWindow):
     def alert_new_unprocessed_image(self, img_path):
         """
         connected to the worker.signals.result signal, recieves an image_path
-        for an unprocessed raw formatted image and passes it to the 
+        for an unprocessed raw formatted image and passes it to the
         processImage() function.
         """
-        self.processImage(int_path)
+        self.processImage(img_path)
 
     def handle_blur_result(self, result):
         self.is_blurry = result
@@ -315,7 +249,7 @@ class appWindow(QMainWindow):
         print('bc detection finished')
         print(self.bc_code)
         self.bc_working = False
-        
+
     def handle_eq_result(self, result):
         # this is the corrected image array
         self.im = result
@@ -324,7 +258,57 @@ class appWindow(QMainWindow):
     def alert_eq_finished(self):
         """ called when the results are in from eqRead."""
         print('eq corrections finished')
-        self.eq_working = False    
+        self.eq_working = False
+
+    # boss signal handlers
+    def handle_boss_started(self, boss_signal_data):
+        if boss_signal_data is not None and boss_signal_data is BossSignalData:
+            if boss_signal_data.signal_data is str:
+                print(boss_signal_data.signal_data)
+
+    def handle_boss_finished(self, boss_signal_data):
+        if boss_signal_data is not None and boss_signal_data is BossSignalData:
+            if boss_signal_data.signal_data is str:
+                print(boss_signal_data.signal_data)
+
+    def handle_job_started(self, boss_signal_data):
+        if boss_signal_data is not None and boss_signal_data is BossSignalData:
+            if boss_signal_data.signal_data is WorkerSignalData:
+                worker_signal_data = boss_signal_data.signal_data
+                print(worker_signal_data.worker_name)
+                print(worker_signal_data.worker_signal_data)
+
+    def handle_job_finished(self, boss_signal_data):
+        if boss_signal_data is not None and boss_signal_data is BossSignalData:
+            if boss_signal_data.signal_data is WorkerSignalData:
+                worker_signal_data = boss_signal_data.signal_data
+                print(worker_signal_data.worker_name)
+                print(worker_signal_data.worker_signal_data)
+
+    def handle_job_result(self, boss_signal_data):
+        if boss_signal_data is not None and boss_signal_data is BossSignalData:
+            if boss_signal_data.signal_data is WorkerSignalData:
+                worker_signal_data = boss_signal_data.signal_data
+                if worker_signal_data.worker_name == 'bc_worker':
+                    self.handle_bc_result(worker_signal_data.signal_data)
+                elif worker_signal_data.worker_name == 'blur_worker':
+                    self.handle_blur_result(worker_signal_data.signal_data)
+                elif worker_signal_data.worker_name == 'eq_worker':
+                    self.handle_eq_result(worker_signal_data.signal_data)
+                elif worker_signal_data.worker_name == 'save_worker':
+                    pass  # ???
+
+    def handle_job_error(self, boss_signal_data):
+        if boss_signal_data is not None and boss_signal_data is BossSignalData:
+            if boss_signal_data.signal_data is WorkerSignalData:
+                worker_signal_data = boss_signal_data.signal_data
+                print(f'error in worker: {worker_signal_data.worker_name}')
+                if worker_signal_data.signal_data is WorkerErrorData:
+                    worker_error_data = worker_signal_data.signal_data
+                    print('error data:')
+                    print(f'exception type: {str(worker_error_data.exctype)}')
+                    print(f'value: {str(worker_error_data.value)}')
+                    print(f'formatted exception: {str(worker_error_data.format_exc)}')
 
     def white_balance_image(self, im, whiteR, whiteG, whiteB):
         """
@@ -355,7 +339,7 @@ class appWindow(QMainWindow):
         im[..., 0] = imgR
         im[..., 1] = imgG
         im[..., 2] = imgB
-        
+
         return im
 
     def scale_images_with_info(self, im, largest_dim=1875):
@@ -376,22 +360,22 @@ class appWindow(QMainWindow):
                                     interpolation=cv2.INTER_AREA)
         else:
             reduced_im = cv2.resize(im, (round((largest_dim / image_height) * image_width), largest_dim),
-                                   interpolation=cv2.INTER_AREA)
+                                    interpolation=cv2.INTER_AREA)
         return (image_width, image_height), reduced_im
 
     def processImage(self, img_path):
-        """ 
+        """
         given a path to an unprocessed image, performs the appropriate
         processing steps.
-            
         """
+        print('in processImage for img_path: ' + str(img_path))
         try:
             im = self.openImageFile(img_path)
         except LibRawFatalError:
-            text= 'Corrupted or incompatible image file.'
-            title='Error opening file'
-            detailText = f'LibRawFatalError opening: {img_path}\nUsually this indicates a corrupted input image file.'
-            self.userNotice(text, title, detailText)
+            text = 'Corrupted or incompatible image file.'
+            title = 'Error opening file'
+            detail_text = f'LibRawFatalError opening: {img_path}\nUsually this indicates a corrupted input image file.'
+            self.userNotice(text, title, detail_text)
             return None
         # debugging, save 'raw-ish' version of jpg before processing
         for_cv2_im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
@@ -405,30 +389,24 @@ class appWindow(QMainWindow):
 
         if self.mainWindow.group_renameByBarcode:
             # retrieve the barcode values from image
-            self.bc_working = True
-            bc_worker = Worker(self.bcRead.decodeBC, grey) # Any other args, kwargs are passed to the run function
-            bc_worker.signals.result.connect(self.handle_bc_result)
-            bc_worker.signals.finished.connect(self.alert_bc_finished)
-            self.threadPool.start(bc_worker) # start bc_worker thread
-            
+            bc_worker_data = BCWorkerData(grey)
+            bc_job = Job('bc_worker', bc_worker_data, self.bcRead.decodeBC)
+            self.boss_thread.request_job(bc_job)
+
         if self.mainWindow.checkBox_blurDetection:
             # test for bluryness
-            self.blur_working = True
-            blurThreshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
-            blur_worker = Worker(self.blurDetect.blur_check, grey, blurThreshold) # Any other args, kwargs are passed to the run function
-            blur_worker.signals.result.connect(self.handle_blur_result)
-            blur_worker.signals.finished.connect(self.alert_blur_finished)
-            self.threadPool.start(blur_worker) # start blur_worker thread
-        
-        # equipment corrections
+            blue_threshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
+            blur_worker_data = BlurWorkerData(grey, blue_threshold)
+            blur_job = Job('blur_worker', blur_worker_data, self.blurDetect.blur_check)
+            self.boss_thread.request_job(blur_job)
+
         if self.mainWindow.checkBox_lensCorrection:
-            self.eq_working = True
-            cmDistance = self.mainWindow.doubleSpinBox_focalDistance.value()
-            mDistance = round(cmDistance / 100, 5)
-            eq_worker = Worker(self.eqRead.lensCorrect, im, img_path, mDistance) # Any other args, kwargs are passed to the run function
-            eq_worker.signals.result.connect(self.handle_eq_result)
-            eq_worker.signals.finished.connect(self.alert_eq_finished)
-            self.threadPool.start(eq_worker) # start eq_worker thread
+            # equipment corrections
+            cm_distance = self.mainWindow.doubleSpinBox_focalDistance.value()
+            m_distance = round(cm_distance / 100, 5)
+            eq_worker_data = EQWorkerData(im, img_path, m_distance)
+            eq_job = Job('eq_worker', eq_worker_data, self.eqRead.lensCorrect)
+            self.boss_thread.request_job(eq_job)
 
         if self.mainWindow.group_colorCheckerDetection:
             # colorchecker functions
@@ -449,34 +427,26 @@ class appWindow(QMainWindow):
             self.cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
             print(f"CC | Position: {cc_position}, Quadrant: {self.cc_quadrant} | AVG White: {self.cc_avg_white}")
             self.cc_working = False
-        
-        # wait on bcWorker
-        save_worker = Worker(self.save_when_finished)
-        #save_worker.signals.result.connect(self.handle_eq_result)
-        save_worker.signals.finished.connect(self.save_finished)
-        self.threadPool.start(save_worker) # start eq_worker thread
 
-        #self.save_output_handler.save_output_images(im, img_path, im_base_names, meta_data=None)
-        # temp save output for debugging       
+        """
+        waiting on bcWorker happens in Boss thread
+        ! - unsure if sending the function to connect to the signal will work, probably not
+        """
+
+        save_job = Job('save_worker', None, self.save_when_finished)
+        self.boss_thread.request_job(save_job)
+
+        # self.save_output_handler.save_output_images(im, img_path, im_base_names, meta_data=None)
+        # temp save output for debugging
 
     def save_finished(self):
-        print(f'saveing {self.img_path} has finished.')
+        print(f'saving {self.img_path} has finished.')
         self.reset_working_variables()
-        
+
     def save_when_finished(self):
         """
         combines async results and saves final output.
         """
-        while any([self.bc_working, 
-                   self.eq_working,
-                   self.blur_working,
-                   self.cc_working]):
-
-            possible_working_threads = [self.bc_working, 
-                            self.eq_working,
-                            self.blur_working,
-                            self.cc_working]
-            time.sleep(.2)
         im = self.im
         im = self.white_balance_image(im, *self.cc_avg_white)
         # reminder to address the quadrant checker here
@@ -487,16 +457,16 @@ class appWindow(QMainWindow):
                         'Lower left',
                         'Upper left']
             user_def_quad = quad_map.index(user_def_loc) + 1
-            # cc_quadrant starts at first, 
+            # cc_quadrant starts at first,
             im = self.orient_image(im, self.cc_quadrant, user_def_quad)
-            
+
         self.save_output_handler.save_output_images(im, self.img_path,
                                                     self.bc_code)
 
     def orient_image(self, im, picker_quadrant, desired_quadrant):
-        ''' 
+        '''
         corrects image rotation using the position of the color picker.
-        picker_quadrant = the known quadrant of a color picker location, 
+        picker_quadrant = the known quadrant of a color picker location,
         desired_quadrant = the position the color picker should be in.
         '''
         try:
@@ -516,7 +486,7 @@ class appWindow(QMainWindow):
 
         img_path, _ = QtWidgets.QFileDialog.getOpenFileName(
                 None, "Open Sample Image")
-        
+
         import time
         #  start a timer
         startTime = time.time()
@@ -537,7 +507,7 @@ class appWindow(QMainWindow):
         self.im = None
         self.img_path = None
         self.is_blurry = None
-        
+
         self.bc_working = False
         self.eq_working = False
         self.blur_working = False
@@ -567,14 +537,14 @@ class appWindow(QMainWindow):
 
     def testFeatureCompatability(self):
         """ called by the "pushButton_selectTestImage."
-            
+
             given image path input from the user, calls testFeature() for
-            each process class. Enabling passing groups, while disabling 
+            each process class. Enabling passing groups, while disabling
             failing groups.
-            
-            Ideally, the user will select an example image from their 
+
+            Ideally, the user will select an example image from their
             imaging setup and the available features will become available."""
-        
+
         imgPath, _ = QtWidgets.QFileDialog.getOpenFileName(
                 None, "Open Sample Image", QtCore.QDir.homePath())
         if imgPath == '':
@@ -601,7 +571,7 @@ class appWindow(QMainWindow):
             blurStatus = False
             ccStatus = False
             eqStatus = False
-        
+
         self.mainWindow.group_barcodeDetection.setEnabled(bcStatus)
         self.mainWindow.group_blurDetection.setEnabled(blurStatus)
         self.mainWindow.group_colorCheckerDetection.setEnabled(ccStatus)
@@ -611,7 +581,7 @@ class appWindow(QMainWindow):
         self.mainWindow.group_equipmentDetection.setEnabled(eqStatus)
 
 #    def updateEqSettings(self):
-#        """ called when a change is made to any appropriate fields in 
+#        """ called when a change is made to any appropriate fields in
 #        equipment detection group. Updates the eqRead class' properties.
 #        This avoids having to read from the UI each time a eqRead function is
 #        called."""
@@ -628,7 +598,7 @@ class appWindow(QMainWindow):
 #        self.eqRead.chromaticAberrationCorrection = self.mainWindow.checkBox_chromaticAberrationCorrection.isChecked()
 
     def updateCatalogNumberPreviews(self):
-        """ called when a change is made to any of the appropriate fields in 
+        """ called when a change is made to any of the appropriate fields in
         barcode detection group. Updates the example preview labels"""
 
         # skip everything if the group is not enabled.
@@ -642,7 +612,7 @@ class appWindow(QMainWindow):
         except AttributeError:
             # bcRead may not have been imported yet
             pass
-        
+
         # update bc pattern preview
         prefix = self.mainWindow.lineEdit_catalogNumberPrefix.text()
         digits = int(self.mainWindow.spinBox_catalogDigits.value())
@@ -749,7 +719,7 @@ class appWindow(QMainWindow):
             return Qt.Unchecked
         else:
             return Qt.Checked
-    
+
     def convertEnabledState(self, stringState):
         """ given a string either "true" or "false" returns the bool"""
         if str(stringState).lower() != 'true':
@@ -828,7 +798,7 @@ class appWindow(QMainWindow):
         self.mainWindow.group_saveProcessedPng.setChecked(group_saveProcessedPng)
         group_verifyRotation_checkstate = self.get('group_verifyRotation_checkstate', False)
         self.mainWindow.group_verifyRotation .setChecked(group_verifyRotation_checkstate)
-        
+
         # QGroupbox (enablestate)
         group_barcodeDetection = self.convertEnabledState(self.get('group_barcodeDetection',False))
         self.mainWindow.group_barcodeDetection.setEnabled(group_barcodeDetection)
@@ -845,7 +815,7 @@ class appWindow(QMainWindow):
         # QSpinBox
         spinBox_catalogDigits = int(self.get('spinBox_catalogDigits', 6))
         self.mainWindow.spinBox_catalogDigits.setValue(spinBox_catalogDigits)
-        
+
         # QDoubleSpinBox
         doubleSpinBox_focalDistance = float(self.get('doubleSpinBox_focalDistance', 25.5))
         self.mainWindow.doubleSpinBox_focalDistance.setValue(doubleSpinBox_focalDistance)
@@ -868,8 +838,8 @@ class appWindow(QMainWindow):
         self.mainWindow.radioButton_colorCheckerSmall.setChecked(radioButton_colorCheckerSmall)
         radioButton_colorCheckerLarge = self.get('radioButton_colorCheckerLarge', False)
         self.mainWindow.radioButton_colorCheckerLarge.setChecked(radioButton_colorCheckerLarge)
-        
-        
+
+
         # clean up
         # allow signals again
         [x.blockSignals(False) for x in children]
@@ -890,7 +860,7 @@ class appWindow(QMainWindow):
         # QComboBox
         comboBox_colorCheckerPosition = self.mainWindow.comboBox_colorCheckerPosition.currentText()
         self.settings.setValue('comboBox_colorCheckerPosition', comboBox_colorCheckerPosition)
-        
+
         # QLineEdit
         lineEdit_catalogNumberPrefix = self.mainWindow.lineEdit_catalogNumberPrefix.text()
         self.settings.setValue('lineEdit_catalogNumberPrefix', lineEdit_catalogNumberPrefix)
@@ -905,7 +875,7 @@ class appWindow(QMainWindow):
         lineEdit_pathProcessedPng = self.mainWindow.lineEdit_pathProcessedPng.text()
         self.settings.setValue('lineEdit_pathProcessedPng', lineEdit_pathProcessedPng)
 
-        # QPlainTextEdit        
+        # QPlainTextEdit
         plainTextEdit_collectionName = self.mainWindow.plainTextEdit_collectionName.toPlainText()
         self.settings.setValue('plainTextEdit_collectionName', plainTextEdit_collectionName)
         plainTextEdit_collectionURL = self.mainWindow.plainTextEdit_collectionURL.toPlainText()
@@ -963,7 +933,7 @@ class appWindow(QMainWindow):
         # QSpinBox
         spinBox_catalogDigits = self.mainWindow.spinBox_catalogDigits.value()
         self.settings.setValue('spinBox_catalogDigits', spinBox_catalogDigits)
-        
+
         # QDoubleSpinBox
         doubleSpinBox_focalDistance = self.mainWindow.doubleSpinBox_focalDistance.value()
         self.settings.setValue('doubleSpinBox_focalDistance', doubleSpinBox_focalDistance)
@@ -971,7 +941,7 @@ class appWindow(QMainWindow):
         self.settings.setValue('doubleSpinBox_blurThreshold', doubleSpinBox_blurThreshold)
         doubleSpinBox_gammaValue = self.mainWindow.doubleSpinBox_gammaValue.value()
         self.settings.setValue('doubleSpinBox_gammaValue', doubleSpinBox_gammaValue)
-        
+
         # slider
         #value_LogoScaling = self.mainWindow.value_LogoScaling.value()
         #self.settings.setValue('value_LogoScaling', value_LogoScaling)
