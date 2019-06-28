@@ -49,25 +49,26 @@ class Event_Handler(PatternMatchingEventHandler):
         self.parent = parent
 
     def on_any_event(self, event):
-        
+        event_type = event.event_type
         img_path = event.src_path
-        #elif event.event_type == 'created':
-        #    # take action when file is created
-        #    img_path = event.src_path
-        #    self._emitter.new_image_signal.emit(img_path)
-        if event.event_type == 'modified':
-            # take action when a file is modified
-            # verify the 'new' image is new
+        if event_type in ['created'
+                          'renamed',
+                          'modified',
+                          'moved']:
+
+            if event_type in ['renamed',
+                              'moved']:
+                img_path = event.dest_path
             if img_path not in self.parent.existing_files:
                 print(f'{event.src_path} file was modified')
-                self._emitter.new_image_signal.emit(img_path)
-                # record the image as 'known'
+                # update the list of known files
                 self.parent.existing_files.append(img_path)
+                self._emitter.new_image_signal.emit(img_path)
         elif event.event_type in ['deleted', 'moved']:
-            # if the user removes the file from a monitored directory...
+        # if the user removes the file from a monitored directory...
             self.parent.existing_files.remove(img_path)
-        elif event.is_directory:
-            return None
+        else:
+            pass
 
 
 class Folder_Watcher:
