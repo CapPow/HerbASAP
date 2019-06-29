@@ -154,3 +154,5 @@ class Save_Output_Handler:
                     else:
                         cv2.imwrite(new_file_name, cv2.cvtColor(im, cv2.COLOR_RGB2BGR))
 
+        # Temporary fix: Paste into line 160 in folderMonitor.py:
+        cv2.imwrite(f"your_filename_here.jpg", cv2.cvtColor(im, cv2.COLOR_RGB2BGR))
