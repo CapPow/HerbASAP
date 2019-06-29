@@ -154,4 +154,3 @@ class Save_Output_Handler:
                         shutil_move(orig_img_path, new_file_name)
                     else:
                         cv2.imwrite(new_file_name, cv2.cvtColor(im, cv2.COLOR_RGB2BGR))
-

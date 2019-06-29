@@ -261,32 +261,32 @@ class appWindow(QMainWindow):
 
     # boss signal handlers
     def handle_boss_started(self, boss_signal_data):
-        if boss_signal_data is not None and boss_signal_data is BossSignalData:
+        if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
             if boss_signal_data.signal_data is str:
                 print(boss_signal_data.signal_data)
 
     def handle_boss_finished(self, boss_signal_data):
-        if boss_signal_data is not None and boss_signal_data is BossSignalData:
+        if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
             if boss_signal_data.signal_data is str:
                 print(boss_signal_data.signal_data)
 
     def handle_job_started(self, boss_signal_data):
-        if boss_signal_data is not None and boss_signal_data is BossSignalData:
-            if boss_signal_data.signal_data is WorkerSignalData:
+        if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
+            if isinstance(boss_signal_data.signal_data, WorkerSignalData):
                 worker_signal_data = boss_signal_data.signal_data
-                print(worker_signal_data.worker_name)
-                print(worker_signal_data.worker_signal_data)
+                # print(worker_signal_data.worker_name)
+                print(worker_signal_data.signal_data)
 
     def handle_job_finished(self, boss_signal_data):
-        if boss_signal_data is not None and boss_signal_data is BossSignalData:
-            if boss_signal_data.signal_data is WorkerSignalData:
+        if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
+            if isinstance(boss_signal_data.signal_data, WorkerSignalData):
                 worker_signal_data = boss_signal_data.signal_data
-                print(worker_signal_data.worker_name)
-                print(worker_signal_data.worker_signal_data)
+                # print(worker_signal_data.worker_name)
+                print(worker_signal_data.signal_data)
 
     def handle_job_result(self, boss_signal_data):
-        if boss_signal_data is not None and boss_signal_data is BossSignalData:
-            if boss_signal_data.signal_data is WorkerSignalData:
+        if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
+            if isinstance(boss_signal_data.signal_data, WorkerSignalData):
                 worker_signal_data = boss_signal_data.signal_data
                 if worker_signal_data.worker_name == 'bc_worker':
                     self.handle_bc_result(worker_signal_data.signal_data)
@@ -298,8 +298,8 @@ class appWindow(QMainWindow):
                     pass  # ???
 
     def handle_job_error(self, boss_signal_data):
-        if boss_signal_data is not None and boss_signal_data is BossSignalData:
-            if boss_signal_data.signal_data is WorkerSignalData:
+        if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
+            if isinstance(boss_signal_data.signal_data, WorkerSignalData):
                 worker_signal_data = boss_signal_data.signal_data
                 print(f'error in worker: {worker_signal_data.worker_name}')
                 if worker_signal_data.signal_data is WorkerErrorData:
@@ -429,8 +429,9 @@ class appWindow(QMainWindow):
 
         """
         waiting on bcWorker happens in Boss thread
-        ! - unsure if sending the function to connect to the signal will work, probably not
         """
+        # Temporary fix: Set self.im = im arbitrarily in postProcessing.py line 435.
+        self.im = im
         save_job = Job('save_worker', None, self.save_when_finished)
         self.boss_thread.request_job(save_job)
         # self.save_output_handler.save_output_images(im, img_path, im_base_names, meta_data=None)
