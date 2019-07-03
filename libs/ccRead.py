@@ -64,6 +64,7 @@ class ColorchipRead:
                                                                 [self.high_precision_model.layers[-1].output])
 
         init_im = cv2.imread("libs/models/init/init.jpg")
+        init_im = cv2.cvtColor(init_im, cv2.COLOR_BGR2RGB)
         print("[INFO] Initializing neural networks")
         self.predict_colorchip_size(init_im)
         self.process_colorchip_big(init_im)
@@ -213,7 +214,7 @@ class ColorchipRead:
         except SystemError as e:
             print(f"System error: {e}")
 
-    def process_colorchip_small(self, im, original_size, stride=25, partition_size=125, buffer_size=20, over_crop=2, high_precision=False):
+    def process_colorchip_small(self, im, original_size, stride=20, partition_size=125, buffer_size=10, over_crop=0, high_precision=False):
         """
         Processes a color chip using neural networks.
         :param im:
