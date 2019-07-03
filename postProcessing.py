@@ -173,8 +173,7 @@ class appWindow(QMainWindow):
         """
         initiates self.save_output_handler with user inputs.
         """
-        # output_map is dict structured as:
-        # { ui object (checkbox) : (location, extension)}
+
         group_keepUnalteredRaw = self.mainWindow.group_keepUnalteredRaw.isChecked()
         lineEdit_pathUnalteredRaw = self.mainWindow.lineEdit_pathUnalteredRaw.text()
 
@@ -289,6 +288,8 @@ class appWindow(QMainWindow):
             if isinstance(boss_signal_data.signal_data, WorkerSignalData):
                 worker_signal_data = boss_signal_data.signal_data
                 if worker_signal_data.worker_name == 'bc_worker':
+                    print('bc_worker result signal')
+                    print(worker_signal_data.signal_data)
                     self.handle_bc_result(worker_signal_data.signal_data)
                 elif worker_signal_data.worker_name == 'blur_worker':
                     self.handle_blur_result(worker_signal_data.signal_data)
@@ -313,7 +314,7 @@ class appWindow(QMainWindow):
         """
         Given an image array, and RGB values for the lightest portion of a
         color standard, returns the white balanced image array.
-
+        
         :param im: An image array
         :type im: ndarray
         :param whiteR: the red pixel value for the lightest portion of the
@@ -325,9 +326,12 @@ class appWindow(QMainWindow):
         :param whiteB: the blue pixel value for the lightest portion of the
         color standard
         :type whiteB: int
+        
+        see: https://stackoverflow.com/questions/54470148/white-balance-a-photo-from-a-known-point
         """
-        lum = (whiteR + whiteG + whiteB)/3
-        # notice inverted BGR / RGB, somewhere this is not consistant
+        
+        #lum = (whiteR + whiteG + whiteB)/3
+        lum = (whiteR *0.2126 + whiteG *0.7152 + whiteB *0.0722)
         imgR = im[..., 0].copy()
         imgG = im[..., 1].copy()
         imgB = im[..., 2].copy()
@@ -377,7 +381,7 @@ class appWindow(QMainWindow):
             self.userNotice(text, title, detail_text)
             return None
         # debugging, save 'raw-ish' version of jpg before processing
-        #for_cv2_im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
+        for_cv2_im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
         #cv2.imwrite('input.jpg', for_cv2_im)
         self.img_path = img_path
         self.file_name, self.file_ext = os.path.splitext(img_path)
@@ -385,7 +389,7 @@ class appWindow(QMainWindow):
 
         # converting to greyscale
         original_size, reduced_img = self.scale_images_with_info(im)
-        grey = cv2.cvtColor(reduced_img, cv2.COLOR_BGR2GRAY)
+        grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
 
         if self.mainWindow.group_renameByBarcode:
             # retrieve the barcode values from image
@@ -437,6 +441,7 @@ class appWindow(QMainWindow):
         self.boss_thread.request_job(save_job)
         # self.save_output_handler.save_output_images(im, img_path, im_base_names, meta_data=None)
         # temp save output for debugging
+        
 
     def save_finished(self):
         print(f'saving {self.img_path} has finished.')
@@ -491,9 +496,6 @@ class appWindow(QMainWindow):
         startTime = time.time()
         self.processImage(img_path)
         # finish timer
-        elapsedTime = round(time.time() - startTime, 3)
-        # test total elapsed time so far with rotated and straight images.
-        print(f'opening raw, testing blur status, reading barcode, equipment corrections and saving outputs required {elapsedTime} seconds')
 
     def reset_working_variables(self):
         """
@@ -524,7 +526,8 @@ class appWindow(QMainWindow):
             with rawpy.imread(imgPath) as raw:
                 im = raw.postprocess(chromatic_aberration=(1, 1),
                                       demosaic_algorithm=demosaic,
-                                      gamma=gamma_value)
+                                      gamma=gamma_value,
+                                      output_color=rawpy.ColorSpace.raw)
 
         # if it is not a raw format, just try and open it.
         except LibRawNonFatalError:
@@ -564,7 +567,8 @@ class appWindow(QMainWindow):
             print('blurStatus returned exception:')
             print(e)
         try:
-            
+            # NOTE This currently checks radio button for large / small
+            # If the size determiner becomes 
             if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
                 cc_size = 'small'
             else:
