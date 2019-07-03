@@ -630,9 +630,9 @@ class ColorchipRead:
 
         cc_size = self.predict_colorchip_size(im)
         if cc_size == 'big':
-            cc_position, cropped_cc = self.process_colorchip_big(im, original_size)
+            cc_position, cropped_cc = self.process_colorchip_big(im)
         else:
-            cc_position, cropped_cc = self.process_colorchip_small(reduced_img, original_size, stride, partition_size, buffer_size, over_crop, high_precision)
+            cc_position, cropped_cc = self.process_colorchip_small(im, original_size, stride, partition_size, buffer_size, over_crop, high_precision)
         
         print(cc_position)
         if isinstance(cc_position, tuple):

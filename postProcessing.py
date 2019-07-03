@@ -548,13 +548,25 @@ class appWindow(QMainWindow):
                 None, "Open Sample Image", QtCore.QDir.homePath())
         if imgPath == '':
             return
+        im = self.openImageFile(imgPath)
+        original_size, reduced_img = self.scale_images_with_info(im)
+        grey = cv2.cvtColor(reduced_img, cv2.COLOR_BGR2GRAY)
         try:
-            im = self.openImageFile(imgPath)
-            grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
             bcStatus = self.bcRead.testFeature(grey)
+        except Exception as e:
+            bcStatus = False
+            print('bcRead returned exception:')
+            print(e)
+        try:
             blurStatus = self.blurDetect.testFeature(grey)
-            original_size, reduced_img = self.scale_images_with_info(im)
+        except Exception as e:
+            blurStatus = False
+            print('blurStatus returned exception:')
+            print(e)
+        try:
             ccStatus, cropped_img = self.colorchipDetect.test_feature(reduced_img, original_size)
+            # if the status was true, use the image dialog box to ask the
+            # user if it properly detected the color chip.
             if ccStatus:
                 mb = ImageDialog(cropped_img)
                 mb.exec()
@@ -562,14 +574,16 @@ class appWindow(QMainWindow):
                     ccStatus = True
                 else:
                     ccStatus = False
+        except Exception as e:
+            ccStatus = False
+            print('ccStatus returned exception:')
+            print(e)
+        try:                
             eqStatus = self.eqRead.testFeature(imgPath)
         except Exception as e:
-            # TODO add user notify for this error.
-            print(e)
-            bcStatus = False
-            blurStatus = False
-            ccStatus = False
             eqStatus = False
+            print('eqStatus returned exception:')
+            print(e)
 
         self.mainWindow.group_barcodeDetection.setEnabled(bcStatus)
         self.mainWindow.group_blurDetection.setEnabled(blurStatus)
