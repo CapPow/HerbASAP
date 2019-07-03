@@ -564,7 +564,12 @@ class appWindow(QMainWindow):
             print('blurStatus returned exception:')
             print(e)
         try:
-            ccStatus, cropped_img = self.colorchipDetect.test_feature(reduced_img, original_size)
+            
+            if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
+                cc_size = 'small'
+            else:
+                cc_size = 'big'
+            ccStatus, cropped_img = self.colorchipDetect.test_feature(reduced_img, original_size, cc_size)
             # if the status was true, use the image dialog box to ask the
             # user if it properly detected the color chip.
             if ccStatus:
