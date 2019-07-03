@@ -101,7 +101,6 @@ class bcRead():
         Returns (list): a list of matched barcode value(s) found in the image.
             If return_details = True, then returns a list of dictionaries.
         """
-
         # the complete output from pyzbar which matches checkPattern
         bcRawData = [x for x in decode(img) if self.checkPattern(x)]
         # if no results are found, start the using the rotation_list
@@ -127,7 +126,6 @@ class bcRead():
             # filter out non-matching strings
             bcData = [x.data.decode("utf-8") for x in bcRawData]
             # a list of matched barcodes found in bcRawData
-
         return bcData
 
     def rotateImg(self, img, angle):

@@ -384,7 +384,8 @@ class appWindow(QMainWindow):
         self.base_file_name = os.path.basename(self.file_name)
 
         # converting to greyscale
-        grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+        original_size, reduced_img = self.scale_images_with_info(im)
+        grey = cv2.cvtColor(reduced_img, cv2.COLOR_BGR2GRAY)
 
         if self.mainWindow.group_renameByBarcode:
             # retrieve the barcode values from image
@@ -410,7 +411,7 @@ class appWindow(QMainWindow):
         if self.mainWindow.group_colorCheckerDetection:
             # colorchecker functions
             self.cc_working = True
-            original_size, reduced_img = self.scale_images_with_info(im)
+
 #            cc_size = self.colorchipDetect.predict_colorchip_size(reduced_img)
 #            if cc_size == 'big':
 #                cc_position, cropped_cc = self.colorchipDetect.process_colorchip_big(im)
