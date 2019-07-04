@@ -29,6 +29,7 @@ import glob
 
 from watchdog.events import PatternMatchingEventHandler
 from watchdog.observers import Observer
+from watchdog.observers.api import EventQueue
 from PyQt5 import QtCore
 import cv2
 
@@ -47,6 +48,7 @@ class Event_Handler(PatternMatchingEventHandler):
         PatternMatchingEventHandler.__init__(self, *args, **kwargs)
         self._emitter = emitter
         self.parent = parent
+        self.queue = EventQueue()
 
     def on_any_event(self, event):
         event_type = event.event_type
@@ -64,7 +66,7 @@ class Event_Handler(PatternMatchingEventHandler):
                 # update the list of known files
                 self.parent.existing_files.append(img_path)
                 self._emitter.new_image_signal.emit(img_path)
-                
+
         elif event.event_type in ['deleted', 'moved']:
         # if the user removes the file from a monitored directory...
             self.parent.existing_files.remove(img_path)

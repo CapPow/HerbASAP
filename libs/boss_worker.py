@@ -292,7 +292,7 @@ class Worker(QRunnable):
         except Exception as e:
             # traceback.print_exc()
             exctype, value = sys.exc_info()[:2]
-            worker_error_data = WorkerErrorData(e, exctype, value, traceback.format_exc())
+            worker_error_data = WorkerErrorData(e, value, traceback.format_exc())
             error_data = WorkerSignalData(self.worker_name, worker_error_data)
             self.signals.error.emit(error_data)
         else:
