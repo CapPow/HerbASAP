@@ -26,6 +26,7 @@ __email__ = "calebadampowell@gmail.com"
 __status__ = "Alpha"
 __version__ = 'v0.0.1-alpha'
 
+import time
 import os
 import sys
 import string
@@ -48,7 +49,6 @@ from libs.ccRead import ColorchipRead
 from libs.folderMonitor import Folder_Watcher
 from libs.folderMonitor import Save_Output_Handler
 from libs.folderMonitor import New_Image_Emitter
-
 from libs.boss_worker import (Boss, BCWorkerData, BlurWorkerData, EQWorkerData,
                          Job, BossSignalData, WorkerSignalData, WorkerErrorData)
 
@@ -79,6 +79,13 @@ class Image_Complete_Emitter(QtCore.QObject):
     completed = QtCore.pyqtSignal()
 
 
+class Timer_Emitter(QtCore.QObject):
+    """
+    used to alert start and stop for entire processing time
+    """
+    timerStart = QtCore.pyqtSignal()
+    timerStop = QtCore.pyqtSignal()
+
 class appWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -102,6 +109,7 @@ class appWindow(QMainWindow):
         self.populateSettings()
 
         self.New_Image_Emitter = New_Image_Emitter()
+        
         # initalize the folder_watcher using current user inputs
         self.setup_Folder_Watcher()
         # initalize the Save_Output_Handler using current user inputs
@@ -109,6 +117,11 @@ class appWindow(QMainWindow):
         self.image_queue = []
         self.Image_Complete_Emitter = Image_Complete_Emitter()
         self.Image_Complete_Emitter.completed.connect(self.process_from_queue)
+        # using signals to start/stop timers
+        self.Timer_Emitter = Timer_Emitter()
+        self.Timer_Emitter.timerStart.connect(self.start_timer)
+        self.Timer_Emitter.timerStop.connect(self.stop_timer)
+        self.timer_start = time.time()
         # fill in the previews
         self.updateCatalogNumberPreviews()
         prefix = self.mainWindow.lineEdit_catalogNumberPrefix.text()
@@ -174,6 +187,14 @@ class appWindow(QMainWindow):
 #                        #  instead display a the new release
 #                        webbrowser.open(link,autoraise=1)
 #            self.settings.saveSettings()  # save the new version check date
+
+    def start_timer(self):
+        self.timer_start = time.time()
+
+    def stop_timer(self):
+        end_time = time.time()
+        run_time = end_time - self.timer_start
+        print(f'Elapsed runtime: {run_time}')
 
     def setup_Folder_Watcher(self, raw_image_patterns=None):
         """
@@ -409,6 +430,7 @@ class appWindow(QMainWindow):
         given a path to an unprocessed image, performs the appropriate
         processing steps.
         """
+        self.Timer_Emitter.timerStart.emit()
         try:
             im = self.openImageFile(img_path)
         except LibRawFatalError:
@@ -494,6 +516,7 @@ class appWindow(QMainWindow):
         # inform the app when image processing is complete
         self.processing_image = False
         self.Image_Complete_Emitter.completed.emit()
+        self.Timer_Emitter.timerStop.emit()
 
     def orient_image(self, im, picker_quadrant, desired_quadrant):
         '''

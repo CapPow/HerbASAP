@@ -75,13 +75,13 @@ class ColorchipRead:
                                                                  K.learning_phase()],
                                                                 [self.high_precision_model.layers[-1].output])
 
-        init_im = np.zeros((250, 250, 3)).astype('uint8')
-        init_im = Image.fromarray(init_im)
-        print("[INFO] Initializing neural networks")
-        self.predict_colorchip_size(init_im)
-        self.process_colorchip_big(init_im)
-        self.process_colorchip_small(init_im, (250, 250))
-        print("[INFO] Finished initializing neural networks")
+#        init_im = np.zeros((250, 250, 3)).astype('uint8')
+#        init_im = Image.fromarray(init_im)
+#        print("[INFO] Initializing neural networks")
+#        self.predict_colorchip_size(init_im)
+#        self.process_colorchip_big(init_im)
+#        self.process_colorchip_small(init_im, (250, 250))
+#        print("[INFO] Finished initializing neural networks")
 
     def _predict_uncertainty_position(self, x, n_iter=10):
         """
