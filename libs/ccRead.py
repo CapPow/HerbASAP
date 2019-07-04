@@ -22,20 +22,32 @@
 """
 # imports here
 import numpy as np
+import os
+
 try:
-    from tensorflow.keras.models import load_model
-    from tensorflow.keras import backend as K
-except ImportError:
+    import plaidml.keras
+    plaidml.keras.install_backend()
+
     from keras.models import load_model
     import keras.backend as K
+except ImportError:
+    try:
+        from tensorflow.keras.models import load_model
+        from tensorflow.keras import backend as K
+    except ImportError:
+        from keras.models import load_model
+        import keras.backend as K
+    finally:
+        os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+        os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 from PIL import Image, ImageCms
 import cv2
 import time
 import os
 
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+# os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 print(f"[INFO] Forcing use of CPU for neural network prediction (TensorFlow)")
 
 
@@ -63,12 +75,12 @@ class ColorchipRead:
                                                                  K.learning_phase()],
                                                                 [self.high_precision_model.layers[-1].output])
 
-        init_im = cv2.imread("libs/models/init/init.jpg")
-        init_im = cv2.cvtColor(init_im, cv2.COLOR_BGR2RGB)
+        init_im = np.zeros((250, 250, 3)).astype('uint8')
+        init_im = Image.fromarray(init_im)
         print("[INFO] Initializing neural networks")
         self.predict_colorchip_size(init_im)
         self.process_colorchip_big(init_im)
-        self.process_colorchip_small(init_im, (1250, 1875))
+        self.process_colorchip_small(init_im, (250, 250))
         print("[INFO] Finished initializing neural networks")
 
     def _predict_uncertainty_position(self, x, n_iter=10):

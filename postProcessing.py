@@ -319,7 +319,6 @@ class appWindow(QMainWindow):
         """
         
         #lum = (whiteR + whiteG + whiteB)/3
-        orig_img_dim = im.shape[:-1]
         lum = (whiteR *0.2126 + whiteG *0.7152 + whiteB *0.0722)
         imgR = im[..., 0].copy()
         imgG = im[..., 1].copy()
@@ -327,10 +326,6 @@ class appWindow(QMainWindow):
 
         if style == "clip":
             try:
-                # imgR = np.ravel(imgR)
-                # imgG = np.ravel(imgG)
-                # imgB = np.ravel(imgB)
-
                 imgR = imgR * lum / whiteR
                 imgR = np.where(imgR > 255, 255, imgR)
                 imgR = np.where(imgR < 0, 0, imgR)
@@ -340,10 +335,6 @@ class appWindow(QMainWindow):
                 imgB = imgB * lum / whiteB
                 imgB = np.where(imgB > 255, 255, imgB)
                 imgB = np.where(imgB < 0, 0, imgB)
-
-                # imgR = np.reshape(imgR, orig_img_dim)
-                # imgG = np.reshape(imgG, orig_img_dim)
-                # imgB = np.reshape(imgB, orig_img_dim)
             except Exception as e:
                 print(e)
         elif style == "scale":
