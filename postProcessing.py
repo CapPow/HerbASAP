@@ -229,7 +229,6 @@ class appWindow(QMainWindow):
                 notice_text = f'Warning, {self.base_file_name} is blurry.'
             detail_text = f'Blurry Image Path: {self.img_path}'
             self.userNotice(notice_text, notice_title, detail_text)
-        self.blur_working = False
 
     def handle_bc_result(self, result):
         self.bc_code = result
@@ -237,7 +236,6 @@ class appWindow(QMainWindow):
     def alert_bc_finished(self):
         """ called when the results are in from bcRead."""
         print('bc detection finished')
-        self.bc_working = False
 
     def handle_eq_result(self, result):
         # this is the corrected image array
@@ -247,7 +245,6 @@ class appWindow(QMainWindow):
     def alert_eq_finished(self):
         """ called when the results are in from eqRead."""
         print('eq corrections finished')
-        self.eq_working = False
 
     # boss signal handlers
     def handle_boss_started(self, boss_signal_data):
@@ -371,7 +368,6 @@ class appWindow(QMainWindow):
         """
         attempts to process an image in self.image_queue
         """
-        print('tried to process from queue')
         if not self.processing_image:
             # if processing is not ongoing reset_working_variables
             self.reset_working_variables()
@@ -383,18 +379,11 @@ class appWindow(QMainWindow):
         """
         sets all class variables relevant to the current working image to None.
         """
-        self.file_name = None
-        self.file_ext = None
         self.base_file_name = None
         self.bc_code = None
         self.im = None
         self.img_path = None
-        self.is_blurry = None
-
-        self.bc_working = False
-        self.eq_working = False
-        self.blur_working = False
-        self.cc_working = False
+        self.is_blurry = None  # could be helpful for 'line item warnings'
         self.cc_quadrant = None
         self.cc_avg_white = None
         self.processing_image = False
@@ -405,22 +394,26 @@ class appWindow(QMainWindow):
         given a path to an unprocessed image, performs the appropriate
         processing steps.
         """
-        self.processing_image = True
-        print('in processImage for img_path: ' + str(img_path))
         try:
             im = self.openImageFile(img_path)
         except LibRawFatalError:
+            # empty path passed
+            if img_path == '':
+                return
             text = 'Corrupted or incompatible image file.'
             title = 'Error opening file'
             detail_text = f'LibRawFatalError opening: {img_path}\nUsually this indicates a corrupted input image file.'
             self.userNotice(text, title, detail_text)
-            return None
+            return
+        
+        self.processing_image = True
+        print(f'processing: {img_path}')
         # debugging, save 'raw-ish' version of jpg before processing
         for_cv2_im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
         #cv2.imwrite('input.jpg', for_cv2_im)
         self.img_path = img_path
-        self.file_name, self.file_ext = os.path.splitext(img_path)
-        self.base_file_name = os.path.basename(self.file_name)
+        file_name, file_ext = os.path.splitext(img_path)
+        self.base_file_name = os.path.basename(file_name)
 
         # converting to greyscale
         original_size, reduced_img = self.scale_images_with_info(im)
@@ -449,8 +442,6 @@ class appWindow(QMainWindow):
 
         if self.mainWindow.group_colorCheckerDetection:
             # colorchecker functions
-            self.cc_working = True
-
 #            cc_size = self.colorchipDetect.predict_colorchip_size(reduced_img)
 #            if cc_size == 'big':
 #                cc_position, cropped_cc = self.colorchipDetect.process_colorchip_big(im)
@@ -465,13 +456,9 @@ class appWindow(QMainWindow):
             self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
             self.cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
             print(f"CC | Position: {cc_position}, Quadrant: {self.cc_quadrant} | AVG White: {self.cc_avg_white}")
-            self.cc_working = False
-
         """
         waiting on bcWorker happens in Boss thread
         """
-        # Temporary fix: Set self.im = im arbitrarily in postProcessing.py line 435.
-        self.im = im
         save_job = Job('save_worker', None, self.save_when_finished)
         self.boss_thread.request_job(save_job)
 
@@ -483,6 +470,7 @@ class appWindow(QMainWindow):
         combines async results and saves final output.
         """
         im = self.im
+        print(self.cc_avg_white)
         im = self.white_balance_image(im, *self.cc_avg_white)
         # reminder to address the quadrant checker here
         if self.mainWindow.group_verifyRotation.isChecked():
@@ -617,23 +605,6 @@ class appWindow(QMainWindow):
         self.mainWindow.checkBox_performWhiteBalance.setEnabled(ccStatus)
         self.mainWindow.groupBox_colorCheckerSize.setEnabled(ccStatus)
         self.mainWindow.group_equipmentDetection.setEnabled(eqStatus)
-
-#    def updateEqSettings(self):
-#        """ called when a change is made to any appropriate fields in
-#        equipment detection group. Updates the eqRead class' properties.
-#        This avoids having to read from the UI each time a eqRead function is
-#        called."""
-#
-#        cmDistance = self.mainWindow.doubleSpinBox_focalDistance.value()
-#        mDistance = cmDistance / 100
-#        # set focal distance for distortion correction
-#        self.eqRead.mDistance = mDistance
-#
-#        # set preferences for equipment detection group processes
-#        self.eqRead.vignettingCorrection = self.mainWindow.checkBox_vignettingCorrection.isChecked()
-#        self.eqRead.distortionCorrection = self.mainWindow.checkBox_distortionCorrection.isChecked()
-#        self.eqRead.checkBox_lensCorrection
-#        self.eqRead.chromaticAberrationCorrection = self.mainWindow.checkBox_chromaticAberrationCorrection.isChecked()
 
     def updateCatalogNumberPreviews(self):
         """ called when a change is made to any of the appropriate fields in
