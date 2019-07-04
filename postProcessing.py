@@ -72,8 +72,11 @@ class ImageDialog(QDialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
 
-class Processing_Image_Emitter(QtCore.QObject):
-    done_processing_signal = QtCore.pyqtSignal()
+class Image_Complete_Emitter(QtCore.QObject):
+    """
+    used to alert when image processing is complete
+    """
+    completed = QtCore.pyqtSignal()
 
 
 class appWindow(QMainWindow):
@@ -99,14 +102,13 @@ class appWindow(QMainWindow):
         self.populateSettings()
 
         self.New_Image_Emitter = New_Image_Emitter()
-        self.Processing_Image_Emitter = Processing_Image_Emitter()
-
         # initalize the folder_watcher using current user inputs
         self.setup_Folder_Watcher()
-
         # initalize the Save_Output_Handler using current user inputs
         self.setup_Output_Handler()
-
+        self.image_queue = []
+        self.Image_Complete_Emitter = Image_Complete_Emitter()
+        self.Image_Complete_Emitter.completed.connect(self.process_from_queue)
         # fill in the previews
         self.updateCatalogNumberPreviews()
         prefix = self.mainWindow.lineEdit_catalogNumberPrefix.text()
@@ -173,6 +175,22 @@ class appWindow(QMainWindow):
 #                        webbrowser.open(link,autoraise=1)
 #            self.settings.saveSettings()  # save the new version check date
 
+    def setup_Folder_Watcher(self, raw_image_patterns=None):
+        """
+        initiates self.foldeR_watcher with user inputs.
+        """
+        if not raw_image_patterns:
+            raw_image_patterns = ['*.tmp', '*.TMP',
+                                  '*.cr2', '*.CR2',
+                                  '*.tiff', '*.TIFF',
+                                  '*.nef', '*.NEF',
+                                  '*.orf', '*.ORF']
+
+        lineEdit_inputPath = self.mainWindow.lineEdit_inputPath.text()
+        self.folder_watcher = Folder_Watcher(lineEdit_inputPath, raw_image_patterns)
+        self.folder_watcher.emitter.new_image_signal.connect(self.queue_image)
+        self.mainWindow.pushButton_beginMonitoring.clicked.connect(self.folder_watcher.run)
+        
     def setup_Output_Handler(self):
         """
         initiates self.save_output_handler with user inputs.
@@ -197,21 +215,6 @@ class appWindow(QMainWindow):
         dupNamingPolicy = self.mainWindow.comboBox_dupNamingPolicy.currentText()
 
         self.save_output_handler = Save_Output_Handler(output_map, dupNamingPolicy)
-
-    def setup_Folder_Watcher(self, raw_image_patterns=None):
-        """
-        initiates self.foldeR_watcher with user inputs.
-        """
-        if not raw_image_patterns:
-            raw_image_patterns = ['*.cr2', '*.CR2',
-                                  '*.tiff', '*.TIFF',
-                                  '*.nef', '*.NEF',
-                                  '*.orf', '*.ORF']
-
-        lineEdit_inputPath = self.mainWindow.lineEdit_inputPath.text()
-        self.folder_watcher = Folder_Watcher(lineEdit_inputPath, raw_image_patterns)
-        self.folder_watcher.emitter.new_image_signal.connect(self.processImage)
-        self.mainWindow.pushButton_beginMonitoring.clicked.connect(self.folder_watcher.run)
 
     def handle_blur_result(self, result):
         self.is_blurry = result
@@ -289,6 +292,8 @@ class appWindow(QMainWindow):
             if isinstance(boss_signal_data.signal_data, WorkerSignalData):
                 worker_signal_data = boss_signal_data.signal_data
                 print(f'error in worker: {worker_signal_data.worker_name}')
+                print(f'caught exception: {worker_signal_data.signal_data.exception}')
+                print(f'error type: {worker_signal_data.signal_data.exctype}')
                 if worker_signal_data.signal_data is WorkerErrorData:
                     worker_error_data = worker_signal_data.signal_data
                     print('error data:')
@@ -352,15 +357,54 @@ class appWindow(QMainWindow):
                                     interpolation=cv2.INTER_AREA)
         return (image_width, image_height), reduced_im
 
+    def queue_image(self, imgPath):
+        """
+        adds an image path to self.image_queue. Called when a new image is
+        queued for processing. After adding the item it also attempts to
+        process_from_queue. If self.processing_image == False it starts the
+        process.
+        """
+        self.image_queue.append(imgPath)
+        self.process_from_queue()
+
+    def process_from_queue(self):
+        """
+        attempts to process an image in self.image_queue
+        """
+        print('tried to process from queue')
+        if not self.processing_image:
+            # if processing is not ongoing reset_working_variables
+            self.reset_working_variables()
+            if len(self.image_queue) > 0:
+                to_process = self.image_queue.pop(0)
+                self.processImage(to_process)
+
+    def reset_working_variables(self):
+        """
+        sets all class variables relevant to the current working image to None.
+        """
+        self.file_name = None
+        self.file_ext = None
+        self.base_file_name = None
+        self.bc_code = None
+        self.im = None
+        self.img_path = None
+        self.is_blurry = None
+
+        self.bc_working = False
+        self.eq_working = False
+        self.blur_working = False
+        self.cc_working = False
+        self.cc_quadrant = None
+        self.cc_avg_white = None
+        self.processing_image = False
+        print('working variables reset')
+
     def processImage(self, img_path):
         """
         given a path to an unprocessed image, performs the appropriate
         processing steps.
         """
-        if self.processing_image:
-            wait_event = QEventLoop()
-            self.Processing_Image_Emitter.done_processing_signal.connect(wait_event.quit)
-            wait_event.exec()
         self.processing_image = True
         print('in processImage for img_path: ' + str(img_path))
         try:
@@ -430,13 +474,9 @@ class appWindow(QMainWindow):
         self.im = im
         save_job = Job('save_worker', None, self.save_when_finished)
         self.boss_thread.request_job(save_job)
-        # self.save_output_handler.save_output_images(im, img_path, im_base_names, meta_data=None)
-        # temp save output for debugging
-        
 
     def save_finished(self):
         print(f'saving {self.img_path} has finished.')
-        self.reset_working_variables()
 
     def save_when_finished(self):
         """
@@ -457,7 +497,9 @@ class appWindow(QMainWindow):
 
         self.save_output_handler.save_output_images(im, self.img_path,
                                                     self.bc_code)
-        self.reset_working_variables()
+        # inform the app when image processing is complete
+        self.processing_image = False
+        self.Image_Complete_Emitter.completed.emit()
 
     def orient_image(self, im, picker_quadrant, desired_quadrant):
         '''
@@ -486,30 +528,9 @@ class appWindow(QMainWindow):
         import time
         #  start a timer
         startTime = time.time()
-        self.processImage(img_path)
+        self.queue_image(img_path)
+        #self.processImage(img_path)
         # finish timer
-
-    def reset_working_variables(self):
-        """
-        sets all class variables relevant to the current working image to None.
-        """
-        self.file_name = None
-        self.file_ext = None
-        self.base_file_name = None
-        self.bc_code = None
-        self.im = None
-        self.img_path = None
-        self.is_blurry = None
-
-        self.bc_working = False
-        self.eq_working = False
-        self.blur_working = False
-        self.cc_working = False
-        self.cc_quadrant = None
-        self.cc_avg_white = None
-
-        self.processing_image = False
-        self.Processing_Image_Emitter.done_processing_signal.emit()
 
     def openImageFile(self, imgPath,
                       demosaic=rawpy.DemosaicAlgorithm.AHD):
