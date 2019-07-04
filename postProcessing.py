@@ -32,7 +32,7 @@ import string
 # UI libs
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QDialog
-from PyQt5.QtCore import (QSettings, Qt, QObject, QThreadPool)
+from PyQt5.QtCore import (QSettings, Qt, QObject, QThreadPool, QEventLoop)
 # image libs
 import rawpy
 from rawpy import LibRawNonFatalError, LibRawFatalError
@@ -72,6 +72,9 @@ class ImageDialog(QDialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
 
+class Processing_Image_Emitter(QtCore.QObject):
+    done_processing_signal = QtCore.pyqtSignal()
+
 
 class appWindow(QMainWindow):
     def __init__(self):
@@ -85,7 +88,7 @@ class appWindow(QMainWindow):
         # set up a threadpool
         self.threadPool = QThreadPool().globalInstance()
         # determine & assign a safe quantity of threads 75% of resources
-        maxThreads = int(self.threadPool.maxThreadCount() * .75)
+        maxThreads = max([1, int(self.threadPool.maxThreadCount() * .75)])
         self.threadPool.setMaxThreadCount(maxThreads)
         print(f"Multithreading with maximum {self.threadPool.maxThreadCount()} threads")
         # initiate the persistant settings
@@ -96,6 +99,7 @@ class appWindow(QMainWindow):
         self.populateSettings()
 
         self.New_Image_Emitter = New_Image_Emitter()
+        self.Processing_Image_Emitter = Processing_Image_Emitter()
 
         # initalize the folder_watcher using current user inputs
         self.setup_Folder_Watcher()
@@ -209,21 +213,6 @@ class appWindow(QMainWindow):
         self.folder_watcher.emitter.new_image_signal.connect(self.processImage)
         self.mainWindow.pushButton_beginMonitoring.clicked.connect(self.folder_watcher.run)
 
-    def alert_saving_output_finished(self):
-        """
-        probably won't be used or useful saved here for consistency with other
-        worker threads.
-        """
-        print('saving output images finished')
-
-    def alert_new_unprocessed_image(self, img_path):
-        """
-        connected to the worker.signals.result signal, recieves an image_path
-        for an unprocessed raw formatted image and passes it to the
-        processImage() function.
-        """
-        self.processImage(img_path)
-
     def handle_blur_result(self, result):
         self.is_blurry = result
 
@@ -245,7 +234,6 @@ class appWindow(QMainWindow):
     def alert_bc_finished(self):
         """ called when the results are in from bcRead."""
         print('bc detection finished')
-        print(self.bc_code)
         self.bc_working = False
 
     def handle_eq_result(self, result):
@@ -288,8 +276,6 @@ class appWindow(QMainWindow):
             if isinstance(boss_signal_data.signal_data, WorkerSignalData):
                 worker_signal_data = boss_signal_data.signal_data
                 if worker_signal_data.worker_name == 'bc_worker':
-                    print('bc_worker result signal')
-                    print(worker_signal_data.signal_data)
                     self.handle_bc_result(worker_signal_data.signal_data)
                 elif worker_signal_data.worker_name == 'blur_worker':
                     self.handle_blur_result(worker_signal_data.signal_data)
@@ -371,6 +357,11 @@ class appWindow(QMainWindow):
         given a path to an unprocessed image, performs the appropriate
         processing steps.
         """
+        if self.processing_image:
+            wait_event = QEventLoop()
+            self.Processing_Image_Emitter.done_processing_signal.connect(wait_event.quit)
+            wait_event.exec()
+        self.processing_image = True
         print('in processImage for img_path: ' + str(img_path))
         try:
             im = self.openImageFile(img_path)
@@ -399,8 +390,8 @@ class appWindow(QMainWindow):
 
         if self.mainWindow.checkBox_blurDetection:
             # test for bluryness
-            blue_threshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
-            blur_worker_data = BlurWorkerData(grey, blue_threshold)
+            blur_threshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
+            blur_worker_data = BlurWorkerData(grey, blur_threshold)
             blur_job = Job('blur_worker', blur_worker_data, self.blurDetect.blur_check)
             self.boss_thread.request_job(blur_job)
 
@@ -466,6 +457,7 @@ class appWindow(QMainWindow):
 
         self.save_output_handler.save_output_images(im, self.img_path,
                                                     self.bc_code)
+        self.reset_working_variables()
 
     def orient_image(self, im, picker_quadrant, desired_quadrant):
         '''
@@ -513,8 +505,11 @@ class appWindow(QMainWindow):
         self.eq_working = False
         self.blur_working = False
         self.cc_working = False
-        self.cc_quadrant  = None
+        self.cc_quadrant = None
         self.cc_avg_white = None
+
+        self.processing_image = False
+        self.Processing_Image_Emitter.done_processing_signal.emit()
 
     def openImageFile(self, imgPath,
                       demosaic=rawpy.DemosaicAlgorithm.AHD):
