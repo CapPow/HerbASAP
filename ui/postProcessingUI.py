@@ -429,7 +429,7 @@ class Ui_MainWindow(object):
         self.label_3.setBuddy(self.label_3)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(1)
         self.spinBox_catalogDigits.editingFinished.connect(MainWindow.saveSettings)
         self.comboBox_dupNamingPolicy.currentIndexChanged['QString'].connect(MainWindow.saveSettings)
         self.comboBox_colorCheckerPosition.currentTextChanged['QString'].connect(MainWindow.saveSettings)
@@ -508,7 +508,7 @@ class Ui_MainWindow(object):
         self.label_3.setText(_translate("MainWindow", "Input folder path (the location to monitor for newly captured photos)"))
         self.label_6.setText(_translate("MainWindow", "Folder"))
         self.pushButton_inputPath.setText(_translate("MainWindow", "Browse"))
-        self.group_keepUnalteredRaw.setTitle(_translate("MainWindow", "Keep unaltered original images"))
+        self.group_keepUnalteredRaw.setTitle(_translate("MainWindow", "Move unaltered original images after processing"))
         self.label_4.setText(_translate("MainWindow", "Destination folder path (the location to save unprocessed archive format images)"))
         self.label_7.setText(_translate("MainWindow", "Folder"))
         self.pushButton_pathUnalteredRaw.setText(_translate("MainWindow", "Browse"))

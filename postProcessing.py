@@ -457,23 +457,15 @@ class appWindow(QMainWindow):
 
         if self.mainWindow.group_colorCheckerDetection:
             # colorchecker functions
-#            cc_size = self.colorchipDetect.predict_colorchip_size(reduced_img)
-#            if cc_size == 'big':
-#                cc_position, cropped_cc = self.colorchipDetect.process_colorchip_big(im)
-#            else:
-#                cc_position, cropped_cc = self.colorchipDetect.process_colorchip_small(reduced_img, original_size)
             if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
                 cc_position, cropped_cc = self.colorchipDetect.process_colorchip_small(reduced_img, original_size)
             else:
                 cc_position, cropped_cc = self.colorchipDetect.process_colorchip_big(im)
-            #for_cv2_im_cc = cv2.cvtColor(np.array(cropped_cc), cv2.COLOR_RGB2BGR)
-            #cv2.imwrite('cc.jpg', for_cv2_im_cc)
             self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
             self.cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
             print(f"CC | Position: {cc_position}, Quadrant: {self.cc_quadrant} | AVG White: {self.cc_avg_white}")
-        """
-        waiting on bcWorker happens in Boss thread
-        """
+
+        # waiting on all workers before saveing happens in Boss thread
         save_job = Job('save_worker', None, self.save_when_finished)
         self.boss_thread.request_job(save_job)
 
@@ -497,10 +489,6 @@ class appWindow(QMainWindow):
             user_def_quad = quad_map.index(user_def_loc) + 1
             # cc_quadrant starts at first,
             im = self.orient_image(im, self.cc_quadrant, user_def_quad)
-
-        nim = self.colorchipDetect.ocv_to_pil(im)
-        nim.show()
-
         self.save_output_handler.save_output_images(im, self.img_path,
                                                     self.bc_code)
         # inform the app when image processing is complete
