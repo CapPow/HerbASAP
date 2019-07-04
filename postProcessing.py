@@ -296,7 +296,7 @@ class appWindow(QMainWindow):
                     print(f'value: {str(worker_error_data.value)}')
                     print(f'formatted exception: {str(worker_error_data.format_exc)}')
 
-    def white_balance_image(self, im, whiteR, whiteG, whiteB):
+    def white_balance_image(self, im, whiteR, whiteG, whiteB, style="clip"):
         """
         Given an image array, and RGB values for the lightest portion of a
         color standard, returns the white balanced image array.
@@ -317,14 +317,38 @@ class appWindow(QMainWindow):
         """
         
         #lum = (whiteR + whiteG + whiteB)/3
+        orig_img_dim = im.shape[:-1]
         lum = (whiteR *0.2126 + whiteG *0.7152 + whiteB *0.0722)
         imgR = im[..., 0].copy()
         imgG = im[..., 1].copy()
         imgB = im[..., 2].copy()
-        imgR = imgR * lum / whiteR
-        imgG = imgG * lum / whiteG
-        imgB = imgB * lum / whiteB
-        # scale each channel
+
+        if style == "clip":
+            try:
+                # imgR = np.ravel(imgR)
+                # imgG = np.ravel(imgG)
+                # imgB = np.ravel(imgB)
+
+                imgR = imgR * lum / whiteR
+                imgR = np.where(imgR > 255, 255, imgR)
+                imgR = np.where(imgR < 0, 0, imgR)
+                imgG = imgG * lum / whiteG
+                imgG = np.where(imgG > 255, 255, imgG)
+                imgG = np.where(imgG < 0, 0, imgG)
+                imgB = imgB * lum / whiteB
+                imgB = np.where(imgB > 255, 255, imgB)
+                imgB = np.where(imgB < 0, 0, imgB)
+
+                # imgR = np.reshape(imgR, orig_img_dim)
+                # imgG = np.reshape(imgG, orig_img_dim)
+                # imgB = np.reshape(imgB, orig_img_dim)
+            except Exception as e:
+                print(e)
+        elif style == "scale":
+            pass
+        else:
+            raise NotImplementedError("This white balancing style does not exist")
+
         im[..., 0] = imgR
         im[..., 1] = imgG
         im[..., 2] = imgB
@@ -454,6 +478,9 @@ class appWindow(QMainWindow):
             user_def_quad = quad_map.index(user_def_loc) + 1
             # cc_quadrant starts at first,
             im = self.orient_image(im, self.cc_quadrant, user_def_quad)
+
+        nim = self.colorchipDetect.ocv_to_pil(im)
+        nim.show()
 
         self.save_output_handler.save_output_images(im, self.img_path,
                                                     self.bc_code)
