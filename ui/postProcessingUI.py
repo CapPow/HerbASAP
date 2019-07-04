@@ -429,7 +429,7 @@ class Ui_MainWindow(object):
         self.label_3.setBuddy(self.label_3)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         self.spinBox_catalogDigits.editingFinished.connect(MainWindow.saveSettings)
         self.comboBox_dupNamingPolicy.currentIndexChanged['QString'].connect(MainWindow.saveSettings)
         self.comboBox_colorCheckerPosition.currentTextChanged['QString'].connect(MainWindow.saveSettings)

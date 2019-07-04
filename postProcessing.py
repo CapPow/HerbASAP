@@ -256,7 +256,7 @@ class appWindow(QMainWindow):
 
     def alert_bc_finished(self):
         """ called when the results are in from bcRead."""
-        print('bc detection finished')
+        #print('bc detection finished')
 
     def handle_eq_result(self, result):
         # this is the corrected image array
@@ -265,32 +265,36 @@ class appWindow(QMainWindow):
 
     def alert_eq_finished(self):
         """ called when the results are in from eqRead."""
-        print('eq corrections finished')
+        #print('eq corrections finished')
 
     # boss signal handlers
     def handle_boss_started(self, boss_signal_data):
-        if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
-            if boss_signal_data.signal_data is str:
-                print(boss_signal_data.signal_data)
+        pass
+        #if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
+            #if boss_signal_data.signal_data is str:
+                #print(boss_signal_data.signal_data)
 
     def handle_boss_finished(self, boss_signal_data):
-        if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
-            if boss_signal_data.signal_data is str:
-                print(boss_signal_data.signal_data)
+        pass
+        #if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
+            #if boss_signal_data.signal_data is str:
+                #print(boss_signal_data.signal_data)
 
     def handle_job_started(self, boss_signal_data):
-        if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
-            if isinstance(boss_signal_data.signal_data, WorkerSignalData):
-                worker_signal_data = boss_signal_data.signal_data
+        pass
+        #if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
+            #if isinstance(boss_signal_data.signal_data, WorkerSignalData):
+                #worker_signal_data = boss_signal_data.signal_data
                 # print(worker_signal_data.worker_name)
-                print(worker_signal_data.signal_data)
+                #print(worker_signal_data.signal_data)
 
     def handle_job_finished(self, boss_signal_data):
-        if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
-            if isinstance(boss_signal_data.signal_data, WorkerSignalData):
-                worker_signal_data = boss_signal_data.signal_data
+        pass
+        #if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
+            #if isinstance(boss_signal_data.signal_data, WorkerSignalData):
+                #worker_signal_data = boss_signal_data.signal_data
                 # print(worker_signal_data.worker_name)
-                print(worker_signal_data.signal_data)
+                #print(worker_signal_data.signal_data)
 
     def handle_job_result(self, boss_signal_data):
         if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
@@ -423,7 +427,6 @@ class appWindow(QMainWindow):
         self.cc_quadrant = None
         self.cc_avg_white = None
         self.processing_image = False
-        print('working variables reset')
 
     def processImage(self, img_path):
         """
@@ -442,7 +445,7 @@ class appWindow(QMainWindow):
             detail_text = f'LibRawFatalError opening: {img_path}\nUsually this indicates a corrupted input image file.'
             self.userNotice(text, title, detail_text)
             return
-        
+
         self.processing_image = True
         print(f'processing: {img_path}')
         # debugging, save 'raw-ish' version of jpg before processing
@@ -456,36 +459,41 @@ class appWindow(QMainWindow):
         original_size, reduced_img = self.scale_images_with_info(im)
         grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
 
-        if self.mainWindow.group_renameByBarcode:
+        if self.mainWindow.group_renameByBarcode.isChecked():
             # retrieve the barcode values from image
             bc_worker_data = BCWorkerData(grey)
             bc_job = Job('bc_worker', bc_worker_data, self.bcRead.decodeBC)
             self.boss_thread.request_job(bc_job)
 
-        if self.mainWindow.checkBox_blurDetection:
+        if self.mainWindow.checkBox_blurDetection.isChecked():
             # test for bluryness
             blur_threshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
             blur_worker_data = BlurWorkerData(grey, blur_threshold)
             blur_job = Job('blur_worker', blur_worker_data, self.blurDetect.blur_check)
             self.boss_thread.request_job(blur_job)
 
-        if self.mainWindow.checkBox_lensCorrection:
+        if self.mainWindow.checkBox_lensCorrection.isChecked():
             # equipment corrections
             cm_distance = self.mainWindow.doubleSpinBox_focalDistance.value()
             m_distance = round(cm_distance / 100, 5)
             eq_worker_data = EQWorkerData(im, img_path, m_distance)
             eq_job = Job('eq_worker', eq_worker_data, self.eqRead.lensCorrect)
             self.boss_thread.request_job(eq_job)
+            # equipment corrections should set self.im
+        else:
+            self.im = im
 
         if self.mainWindow.group_colorCheckerDetection:
             # colorchecker functions
             if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
-                cc_position, cropped_cc = self.colorchipDetect.process_colorchip_small(reduced_img, original_size)
+                #cc_position, cropped_cc = self.colorchipDetect.process_colorchip_small(reduced_img, original_size)
+                cc_position, cropped_cc = self.colorchipDetect.process_colorchip_small(reduced_img, original_size, stride_style='quick')
             else:
                 cc_position, cropped_cc = self.colorchipDetect.process_colorchip_big(im)
             self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
             self.cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
-            print(f"CC | Position: {cc_position}, Quadrant: {self.cc_quadrant} | AVG White: {self.cc_avg_white}")
+            #print(f"CC | Position: {cc_position}, Quadrant: {self.cc_quadrant} | AVG White: {self.cc_avg_white}")
+            print(f"CC | Quadrant: {self.cc_quadrant} | AVG White: {self.cc_avg_white}")
 
         # waiting on all workers before saveing happens in Boss thread
         save_job = Job('save_worker', None, self.save_when_finished)
@@ -499,7 +507,6 @@ class appWindow(QMainWindow):
         combines async results and saves final output.
         """
         im = self.im
-        print(self.cc_avg_white)
         im = self.white_balance_image(im, *self.cc_avg_white)
         # reminder to address the quadrant checker here
         if self.mainWindow.group_verifyRotation.isChecked():
@@ -542,12 +549,7 @@ class appWindow(QMainWindow):
         img_path, _ = QtWidgets.QFileDialog.getOpenFileName(
                 None, "Open Sample Image")
 
-        import time
-        #  start a timer
-        startTime = time.time()
         self.queue_image(img_path)
-        #self.processImage(img_path)
-        # finish timer
 
     def openImageFile(self, imgPath,
                       demosaic=rawpy.DemosaicAlgorithm.AHD):
