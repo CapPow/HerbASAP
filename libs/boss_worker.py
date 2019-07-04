@@ -3,7 +3,9 @@
 # blur_worker
 # eq_worker
 # save_worker
-from PyQt5.QtCore import (QObject, QRunnable, pyqtSignal, pyqtSlot, QThread)
+from PyQt5.QtCore import (QObject, QRunnable, pyqtSignal, pyqtSlot, QThread,
+                          QEventLoop)
+from PyQt5.QtWidgets import QApplication
 import traceback
 import sys
 
@@ -65,6 +67,7 @@ class BossSignals(QObject):
     job_error = pyqtSignal(BossSignalData)
     job_result = pyqtSignal(BossSignalData)
     job_progress = pyqtSignal(BossSignalData)
+    clear_to_save = pyqtSignal()
 
 
 class Boss(QThread):
@@ -83,46 +86,37 @@ class Boss(QThread):
         # self.args = args
         # self.kwargs = kwargs
         self.signals = BossSignals()
-        maxThreads = int(self.__thread_pool.maxThreadCount() * .75)
-        self.__thread_pool.setMaxThreadCount(maxThreads)
 
     def request_job(self, job):
         """
 
         """
-        self.__job_queue.append(job)  # append job to queue (now last element)
+        #self.__job_queue.append(job)  # append job to queue (now last element)
+        self.__spawn_thread(job)
 
-    def run(self):
-        """
-
-        """
-        boss_started_data = BossSignalData(False, 'boss thread has started')
-        self.signals.boss_started.emit(boss_started_data)
-        while self.__should_run:
-            if len(self.__job_queue) > 0:
-                print('job_queue len is: ' + str(len(self.__job_queue)))
-                job = self.__job_queue.pop(0)  # pop first element
-                """
-                    if the job is save_worker, then we will append it to the end of the queue
-                    otherwise, the job is OK to run
-                    1. if job is save_worker, we want to wait to schedule it until other threads complete
-                        a. all threads complete == all __is_$_running are False
-                    ! - ensure this doesn't overfill memory, not sure how Python will deal with popping / appending
-                        big elements onto the queue. if the job data is re-created each time we may have memory
-                        issues
-                """
-                if job.job_name == 'save_worker':
-                    if not any([self.__is_eq_worker_running,
-                                self.__is_blur_worker_running,
-                                self.__is_bc_worker_running]):
-                        self.__spawn_thread(job)
-                    else:
-                        self.__job_queue.append(job)
-                else:
-                    self.__spawn_thread(job)
-            else:
-                pass
-            self.sleep(self.__sleep_time)  # https://doc.qt.io/qt-5/qthread.html#sleep
+#    def run(self):
+#        """
+#        see: https://doc.qt.io/archives/qq/qq27-responsive-guis.html#waitinginalocaleventloop
+#        """
+#        boss_started_data = BossSignalData(False, 'boss thread has started')
+#        self.signals.boss_started.emit(boss_started_data)
+#        while self.__should_run:
+#            if len(self.__job_queue) > 0:
+#                print('job_queue len is: ' + str(len(self.__job_queue)))
+#                job = self.__job_queue.pop(0)  # pop first element
+#                """
+#                    if the job is save_worker, then we will append it to the end of the queue
+#                    otherwise, the job is OK to run
+#                    1. if job is save_worker, we want to wait to schedule it until other threads complete
+#                        a. all threads complete == all __is_$_running are False
+#                    ! - ensure this doesn't overfill memory, not sure how Python will deal with popping / appending
+#                        big elements onto the queue. if the job data is re-created each time we may have memory
+#                        issues
+#                """
+#                self.__spawn_thread(job)
+#            else:
+#                pass
+#            #self.sleep(self.__sleep_time)  # https://doc.qt.io/qt-5/qthread.html#sleep
 
     def __spawn_thread(self, job):
         """
@@ -157,6 +151,10 @@ class Boss(QThread):
             self.__thread_pool.start(eq_worker)  # start eq_worker thread
         # in this case, job_data should be None
         elif job.job_name == 'save_worker' and job.job_data is None and job.job_function is not None:
+            # wait until 'clear_to_save' signal
+            wait_event = QEventLoop()
+            self.signals.clear_to_save.connect(wait_event.quit)       
+            wait_event.exec()
             save_worker = Worker(job.job_function)
             save_worker.set_worker_name('save_worker')
             save_worker.signals.started.connect(self.worker_started_handler)
@@ -188,6 +186,7 @@ class Boss(QThread):
         """
         job_started_data = BossSignalData(True, worker_signal_data)
         self.signals.job_started.emit(job_started_data)
+        QApplication.processEvents()
 
     def worker_finished_handler(self, worker_signal_data):
         """
@@ -201,7 +200,12 @@ class Boss(QThread):
         elif worker_signal_data.worker_name == 'eq_worker':
             self.__is_eq_worker_running = False
         self.signals.job_finished.emit(job_finished_data)
-
+        # check if any other workers in operation. If not, 'get the lights'
+        if not any([self.__is_eq_worker_running,
+                    self.__is_blur_worker_running,
+                    self.__is_bc_worker_running]):
+            self.signals.clear_to_save.emit()
+        
     def worker_error_handler(self, worker_signal_data):
         """
             single handler for all finished signals to be routed through
