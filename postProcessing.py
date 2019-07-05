@@ -523,10 +523,10 @@ class appWindow(QMainWindow):
         im = self.im
         cropped_cc = self.cropped_cc
         print(type(cropped_cc))
-        im = self.white_balance_image(im, cropped_cc, style='retinex')
+        im = self.white_balance_image(im, cropped_cc, style='clip')
 
-        nim = self.colorchipDetect.ocv_to_pil(im)
-        nim.show()
+        #nim = self.colorchipDetect.ocv_to_pil(im)
+        #nim.show()
         # reminder to address the quadrant checker here
         if self.mainWindow.group_verifyRotation.isChecked():
             user_def_loc = self.mainWindow.comboBox_colorCheckerPosition.currentText()
