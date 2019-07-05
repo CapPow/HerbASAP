@@ -319,34 +319,24 @@ class appWindow(QMainWindow):
                     print(f'value: {str(worker_error_data.value)}')
                     print(f'formatted exception: {str(worker_error_data.format_exc)}')
 
-    def white_balance_image(self, im, whiteR, whiteG, whiteB, style="clip"):
+    def white_balance_image(self, im, color_chip_im, style="clip"):
         """
-        Given an image array, and RGB values for the lightest portion of a
-        color standard, returns the white balanced image array.
-        
-        :param im: An image array
-        :type im: ndarray
-        :param whiteR: the red pixel value for the lightest portion of the
-        color standard
-        :type whiteR: int
-        :param whiteG: the green pixel value for the lightest portion of the
-        color standard
-        :type whiteG: int
-        :param whiteB: the blue pixel value for the lightest portion of the
-        color standard
-        :type whiteB: int
-        
-        see: https://stackoverflow.com/questions/54470148/white-balance-a-photo-from-a-known-point
+
+        :param im:
+        :param color_chip_im:
+        :param style:
+        :return:
         """
-        
         #lum = (whiteR + whiteG + whiteB)/3
-        lum = (whiteR *0.2126 + whiteG *0.7152 + whiteB *0.0722)
-        imgR = im[..., 0].copy()
-        imgG = im[..., 1].copy()
-        imgB = im[..., 2].copy()
 
         if style == "clip":
             try:
+                whiteR, whiteG, whiteB = self.colorchipDetect.predict_color_chip_whitevals(color_chip_im)
+                lum = (whiteR * 0.2126 + whiteG * 0.7152 + whiteB * 0.0722)
+                imgR = im[..., 0].copy()
+                imgG = im[..., 1].copy()
+                imgB = im[..., 2].copy()
+
                 imgR = imgR * lum / whiteR
                 imgR = np.where(imgR > 255, 255, imgR)
                 imgR = np.where(imgR < 0, 0, imgR)
@@ -356,16 +346,40 @@ class appWindow(QMainWindow):
                 imgB = imgB * lum / whiteB
                 imgB = np.where(imgB > 255, 255, imgB)
                 imgB = np.where(imgB < 0, 0, imgB)
+
+                im[..., 0] = imgR
+                im[..., 1] = imgG
+                im[..., 2] = imgB
             except Exception as e:
-                print(e)
-        elif style == "scale":
-            pass
+                print(f"[ERROR] Error in {style} style white balancing: {e}")
+        elif style == "retinex":
+            # raise NotImplementedError("Retinex style white balancing has not been implemented yet.")
+            # Code modified from a literal Japanese god here: https://gist.github.com/shunsukeaihara/4603234
+            try:
+                print(type(im))
+                print(type(color_chip_im))
+                im = im.transpose(2, 0, 1).astype(np.uint32)
+                nimg = color_chip_im.transpose(2, 0, 1).astype(np.uint32)
+                sum_r = np.sum(nimg[0])
+                sum_r2 = np.sum(nimg[0] ** 2)
+                max_r = nimg[0].max()
+                max_r2 = max_r ** 2
+                sum_g = np.sum(nimg[1])
+                max_g = nimg[1].max()
+                coefficient = np.linalg.solve(np.array([[sum_r2, sum_r], [max_r2, max_r]]),
+                                              np.array([sum_g, max_g]))
+                im[0] = np.minimum((im[0] ** 2) * coefficient[0] + im[0] * coefficient[1], 255)
+                sum_b = np.sum(nimg[1])
+                sum_b2 = np.sum(nimg[1] ** 2)
+                max_b = nimg[1].max()
+                max_b2 = max_r ** 2
+                coefficient = np.linalg.solve(np.array([[sum_b2, sum_b], [max_b2, max_b]]),
+                                              np.array([sum_g, max_g]))
+                im[1] = np.minimum((im[1] ** 2) * coefficient[0] + im[1] * coefficient[1], 255)
+            except Exception as e:
+                print(f"[ERROR] Error in {style} style white balancing: {e}")
         else:
             raise NotImplementedError("This white balancing style does not exist")
-
-        im[..., 0] = imgR
-        im[..., 1] = imgG
-        im[..., 2] = imgB
 
         return im
 
@@ -421,7 +435,7 @@ class appWindow(QMainWindow):
         self.img_path = None
         self.is_blurry = None  # could be helpful for 'line item warnings'
         self.cc_quadrant = None
-        self.cc_avg_white = None
+        self.cropped_cc = None
         self.processing_image = False
         print('working variables reset')
 
@@ -484,8 +498,9 @@ class appWindow(QMainWindow):
             else:
                 cc_position, cropped_cc = self.colorchipDetect.process_colorchip_big(im)
             self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
-            self.cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
-            print(f"CC | Position: {cc_position}, Quadrant: {self.cc_quadrant} | AVG White: {self.cc_avg_white}")
+            # self.cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
+            self.cropped_cc = cropped_cc
+            print(f"CC | Position: {cc_position}, Quadrant: {self.cc_quadrant}")
 
         # waiting on all workers before saveing happens in Boss thread
         save_job = Job('save_worker', None, self.save_when_finished)
@@ -499,8 +514,12 @@ class appWindow(QMainWindow):
         combines async results and saves final output.
         """
         im = self.im
-        print(self.cc_avg_white)
-        im = self.white_balance_image(im, *self.cc_avg_white)
+        cropped_cc = self.cropped_cc
+        print(type(cropped_cc))
+        im = self.white_balance_image(im, cropped_cc, style='retinex')
+
+        nim = self.colorchipDetect.ocv_to_pil(im)
+        nim.show()
         # reminder to address the quadrant checker here
         if self.mainWindow.group_verifyRotation.isChecked():
             user_def_loc = self.mainWindow.comboBox_colorCheckerPosition.currentText()

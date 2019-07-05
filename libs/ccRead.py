@@ -226,7 +226,6 @@ class ColorchipRead:
         except SystemError as e:
             print(f"System error: {e}")
 
-
     def process_colorchip_small(self, im, original_size, stride_style='quick', stride=20, partition_size=125, buffer_size=10, over_crop=0, high_precision=False):
         """
 
