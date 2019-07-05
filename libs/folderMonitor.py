@@ -42,48 +42,58 @@ class Event_Handler(PatternMatchingEventHandler):
     Watchdog based Class to handle when new files are detected in the monitored
     folder.
     """
-    def __init__(self, parent, *args, emitter=None, **kwargs):
+    def __init__(self, parent, watch_dir, emitter=None, *args, **kwargs):
         super(Event_Handler, self).__init__(*args, **kwargs)
         PatternMatchingEventHandler.__init__(self, *args, **kwargs)
         self._emitter = emitter
         self.parent = parent
+        self.watch_dir = watch_dir
+        self.last_item = None
+        self._emitEvents = ['created', 'renamed', 'modified', 'moved']
+        self._removeEvents = ['deleted', 'moved']
 
     def on_any_event(self, event):
+        """
+        attempts to handle the event based on the event type and destination
+        """
         event_type = event.event_type
         img_path = event.src_path
-        if event_type in ['created'
-                          'renamed',
-                          'modified',
-                          'moved']:
-
-            if event_type in ['renamed',
-                              'moved']:
-                img_path = event.dest_path
-            if img_path not in self.parent.existing_files:
-                print(f'{event.src_path} file was modified')
-                # update the list of known files
-                self.parent.existing_files.append(img_path)
-                self._emitter.new_image_signal.emit(img_path)
-                
-        elif event.event_type in ['deleted', 'moved']:
-        # if the user removes the file from a monitored directory...
-            self.parent.existing_files.remove(img_path)
-        else:
+        # be sure the destination path is the focus
+        if event_type in ['renamed', 'moved']:
+            img_path = event.dest_path
+        # if it is leaving the self.watch_dir, set self.last_item = None
+        if (path.dirname(img_path) != self.watch_dir) or event.event_type in self._removeEvents:
+            # if a file is moved out out self.watch_dir:
+            #self.parent.existing_files.remove(img_path)
+            if img_path == self.last_item:
+                self.last_item = None
             pass
+        # if the event is an emit event and has not been seen emit it.
+        if (event_type in self._emitEvents) and (img_path != self.last_item):
+        #(img_path not in self.parent.existing_files):
+            # update the list of known files
+            #self.parent.existing_files.append(img_path)
+            self._emitter.new_image_signal.emit(img_path)
+        # remember this was the last object seen.
+        self.last_item = img_path
+        return
 
 
 class Folder_Watcher:
     def __init__(self, input_folder_path=None, raw_image_patterns=None):
         self.watch_dir = input_folder_path
         # identify currently present files        
-        self.existing_files = []
-        for files in raw_image_patterns:
-            globPattern = path.join(input_folder_path, files)
-            self.existing_files.extend(glob.glob(globPattern))
+        
+        #self.existing_files = []
+        #for files in raw_image_patterns:
+        #    globPattern = path.join(input_folder_path, files)
+        #    self.existing_files.extend(glob.glob(globPattern))
+        
         self.emitter = New_Image_Emitter()
-        self.observer = Observer(timeout=0.1)
+        self.observer = Observer(timeout=0.2)
         self.event_handler = Event_Handler(
                 parent=self,
+                watch_dir=self.watch_dir,
                 emitter=self.emitter,
                 patterns=raw_image_patterns,
                 ignore_directories=True)

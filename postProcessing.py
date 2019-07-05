@@ -109,7 +109,7 @@ class appWindow(QMainWindow):
         self.populateSettings()
 
         self.New_Image_Emitter = New_Image_Emitter()
-        
+
         # initalize the folder_watcher using current user inputs
         self.setup_Folder_Watcher()
         # initalize the Save_Output_Handler using current user inputs
@@ -211,7 +211,7 @@ class appWindow(QMainWindow):
         self.folder_watcher = Folder_Watcher(lineEdit_inputPath, raw_image_patterns)
         self.folder_watcher.emitter.new_image_signal.connect(self.queue_image)
         self.mainWindow.pushButton_beginMonitoring.clicked.connect(self.folder_watcher.run)
-        
+
     def setup_Output_Handler(self):
         """
         initiates self.save_output_handler with user inputs.
@@ -256,7 +256,7 @@ class appWindow(QMainWindow):
 
     def alert_bc_finished(self):
         """ called when the results are in from bcRead."""
-        print('bc detection finished')
+        #print('bc detection finished')
 
     def handle_eq_result(self, result):
         # this is the corrected image array
@@ -265,32 +265,36 @@ class appWindow(QMainWindow):
 
     def alert_eq_finished(self):
         """ called when the results are in from eqRead."""
-        print('eq corrections finished')
+        #print('eq corrections finished')
 
     # boss signal handlers
     def handle_boss_started(self, boss_signal_data):
-        if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
-            if boss_signal_data.signal_data is str:
-                print(boss_signal_data.signal_data)
+        pass
+        #if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
+            #if boss_signal_data.signal_data is str:
+                #print(boss_signal_data.signal_data)
 
     def handle_boss_finished(self, boss_signal_data):
-        if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
-            if boss_signal_data.signal_data is str:
-                print(boss_signal_data.signal_data)
+        pass
+        #if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
+            #if boss_signal_data.signal_data is str:
+                #print(boss_signal_data.signal_data)
 
     def handle_job_started(self, boss_signal_data):
-        if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
-            if isinstance(boss_signal_data.signal_data, WorkerSignalData):
-                worker_signal_data = boss_signal_data.signal_data
+        pass
+        #if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
+            #if isinstance(boss_signal_data.signal_data, WorkerSignalData):
+                #worker_signal_data = boss_signal_data.signal_data
                 # print(worker_signal_data.worker_name)
-                print(worker_signal_data.signal_data)
+                #print(worker_signal_data.signal_data)
 
     def handle_job_finished(self, boss_signal_data):
-        if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
-            if isinstance(boss_signal_data.signal_data, WorkerSignalData):
-                worker_signal_data = boss_signal_data.signal_data
+        pass
+        #if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
+            #if isinstance(boss_signal_data.signal_data, WorkerSignalData):
+                #worker_signal_data = boss_signal_data.signal_data
                 # print(worker_signal_data.worker_name)
-                print(worker_signal_data.signal_data)
+                #print(worker_signal_data.signal_data)
 
     def handle_job_result(self, boss_signal_data):
         if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
@@ -437,7 +441,6 @@ class appWindow(QMainWindow):
         self.cc_quadrant = None
         self.cropped_cc = None
         self.processing_image = False
-        print('working variables reset')
 
     def processImage(self, img_path):
         """
@@ -456,11 +459,11 @@ class appWindow(QMainWindow):
             detail_text = f'LibRawFatalError opening: {img_path}\nUsually this indicates a corrupted input image file.'
             self.userNotice(text, title, detail_text)
             return
-        
+
         self.processing_image = True
         print(f'processing: {img_path}')
         # debugging, save 'raw-ish' version of jpg before processing
-        for_cv2_im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
+        #for_cv2_im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
         #cv2.imwrite('input.jpg', for_cv2_im)
         self.img_path = img_path
         file_name, file_ext = os.path.splitext(img_path)
@@ -470,31 +473,35 @@ class appWindow(QMainWindow):
         original_size, reduced_img = self.scale_images_with_info(im)
         grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
 
-        if self.mainWindow.group_renameByBarcode:
+        if self.mainWindow.group_renameByBarcode.isChecked():
             # retrieve the barcode values from image
             bc_worker_data = BCWorkerData(grey)
             bc_job = Job('bc_worker', bc_worker_data, self.bcRead.decodeBC)
             self.boss_thread.request_job(bc_job)
 
-        if self.mainWindow.checkBox_blurDetection:
+        if self.mainWindow.checkBox_blurDetection.isChecked():
             # test for bluryness
             blur_threshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
             blur_worker_data = BlurWorkerData(grey, blur_threshold)
             blur_job = Job('blur_worker', blur_worker_data, self.blurDetect.blur_check)
             self.boss_thread.request_job(blur_job)
 
-        if self.mainWindow.checkBox_lensCorrection:
+        if self.mainWindow.checkBox_lensCorrection.isChecked():
             # equipment corrections
             cm_distance = self.mainWindow.doubleSpinBox_focalDistance.value()
             m_distance = round(cm_distance / 100, 5)
             eq_worker_data = EQWorkerData(im, img_path, m_distance)
             eq_job = Job('eq_worker', eq_worker_data, self.eqRead.lensCorrect)
             self.boss_thread.request_job(eq_job)
+            # equipment corrections should set self.im
+        else:
+            self.im = im
 
         if self.mainWindow.group_colorCheckerDetection:
             # colorchecker functions
             if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
-                cc_position, cropped_cc = self.colorchipDetect.process_colorchip_small(reduced_img, original_size)
+                #cc_position, cropped_cc = self.colorchipDetect.process_colorchip_small(reduced_img, original_size)
+                cc_position, cropped_cc = self.colorchipDetect.process_colorchip_small(reduced_img, original_size, stride_style='quick')
             else:
                 cc_position, cropped_cc = self.colorchipDetect.process_colorchip_big(im)
             self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
@@ -561,12 +568,7 @@ class appWindow(QMainWindow):
         img_path, _ = QtWidgets.QFileDialog.getOpenFileName(
                 None, "Open Sample Image")
 
-        import time
-        #  start a timer
-        startTime = time.time()
         self.queue_image(img_path)
-        #self.processImage(img_path)
-        # finish timer
 
     def openImageFile(self, imgPath,
                       demosaic=rawpy.DemosaicAlgorithm.AHD):
@@ -620,7 +622,7 @@ class appWindow(QMainWindow):
             print(e)
         try:
             # NOTE This currently checks radio button for large / small
-            # If the size determiner becomes 
+            # If the size determiner becomes
             if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
                 cc_size = 'small'
             else:
@@ -639,7 +641,7 @@ class appWindow(QMainWindow):
             ccStatus = False
             print('ccStatus returned exception:')
             print(e)
-        try:                
+        try:
             eqStatus = self.eqRead.testFeature(imgPath)
         except Exception as e:
             eqStatus = False
