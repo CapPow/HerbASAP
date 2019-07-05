@@ -298,15 +298,16 @@ class ColorchipRead:
         :param high_precision:
         :return:
         """
-
-        partitions = self.extract_patches(im,
-                                          (partition_size, partition_size,3),
-                                          stride)
-        #pim = self.ocv_to_pil(partitions[0][0][0])
-        #pim.show()
-        #print(partitions[1].shape)
-
         im = self.ocv_to_pil(im)
+        im_hsv = im.convert("HSV")
+
+
+
+        # pim = self.ocv_to_pil(partitions[0])
+        # pim.show()
+        # print(partitions[1].shape)
+
+
         start = time.time()
         im_hsv = im.convert("HSV")
         image_width, image_height = im.size
@@ -314,34 +315,35 @@ class ColorchipRead:
         possible_positions = []
         hists_rgb = []
         hists_hsv = []
-        
 
         if stride_style == 'whole':
-            # for r in range(-over_crop, (image_height - partition_size) // stride + over_crop):
-            #     for c in range(-over_crop, (image_width - partition_size) // stride + over_crop):
-            #         x1, y1 = c * stride, r * stride
-            #         x2, y2 = x1 + partition_size, y1 + partition_size
-            #         partitioned_im = im.crop((x1, y1, x2, y2))
-            #         possible_positions.append((x1, y1, x2, y2))
+            nstart = time.time()
+            im = np.array(im)
+            im_hsv = np.array(im_hsv)
+            partitions = self.extract_patches(im,
+                                              (partition_size, partition_size, 3),
+                                              stride)
+            partitions_hsv = self.extract_patches(im_hsv,
+                                                  (partition_size, partition_size, 3),
+                                                  stride)
+            partitions = np.reshape(partitions, (-1, 125, 125, 3))
+            partitions_hsv = np.reshape(partitions_hsv, (-1, 125, 125, 3))
+            for r in range(-over_crop, (image_height - partition_size) // stride + over_crop):
+                for c in range(-over_crop, (image_width - partition_size) // stride + over_crop):
+                    x1, y1 = c * stride, r * stride
+                    x2, y2 = x1 + partition_size, y1 + partition_size
+                    possible_positions.append((x1, y1, x2, y2))
             #         partitioned_im_hsv = im_hsv.crop((x1, y1, x2, y2))
             #         hists_rgb.append(partitioned_im.histogram())
             #         hists_hsv.append(partitioned_im_hsv.histogram())
 
-            indexer = np.arange(125)[None, :, None] + 25 * np.arange(125)[:, None, None]
-            ims = np.array(im)
-            ims = ims.flatten()
-            ims_partitions = ims[indexer]
-            ims_partitions = ims_partitions.astype('uint8')
+            for index in range(len(partitions)):
+                partitioned_im = Image.fromarray(partitions[index])
+                partitioned_im_hsv = Image.fromarray(partitions_hsv[index])
+                hists_rgb.append(partitioned_im.histogram())
+                hists_hsv.append(partitioned_im_hsv.histogram())
 
-            ims_hsv = np.array(im_hsv)
-            ims_hsv = ims_hsv.flatten()
-            ims_hsv_partitions = ims_hsv[indexer]
-            ims_hsv_partitions = ims_hsv_partitions.astype('uint8')
-            for partition in range(len(ims_partitions)):
-                image = Image.fromarray(ims_partitions[partition])
-                image_hsv = Image.fromarray(ims_hsv_partitions[partition])
-                hists_rgb.append(image.histogram())
-                hists_hsv.append(image_hsv.histogram())
+            print(f"New striding took {time.time() - nstart}")
 
         elif stride_style == 'quick':
             for c in range(-over_crop, (image_width - partition_size) // stride + over_crop):
