@@ -250,15 +250,33 @@ class ColorchipRead:
         hists_hsv = []
 
         if stride_style == 'whole':
-            for r in range(-over_crop, (image_height - partition_size) // stride + over_crop):
-                for c in range(-over_crop, (image_width - partition_size) // stride + over_crop):
-                    x1, y1 = c * stride, r * stride
-                    x2, y2 = x1 + partition_size, y1 + partition_size
-                    partitioned_im = im.crop((x1, y1, x2, y2))
-                    possible_positions.append((x1, y1, x2, y2))
-                    partitioned_im_hsv = im_hsv.crop((x1, y1, x2, y2))
-                    hists_rgb.append(partitioned_im.histogram())
-                    hists_hsv.append(partitioned_im_hsv.histogram())
+            # for r in range(-over_crop, (image_height - partition_size) // stride + over_crop):
+            #     for c in range(-over_crop, (image_width - partition_size) // stride + over_crop):
+            #         x1, y1 = c * stride, r * stride
+            #         x2, y2 = x1 + partition_size, y1 + partition_size
+            #         partitioned_im = im.crop((x1, y1, x2, y2))
+            #         possible_positions.append((x1, y1, x2, y2))
+            #         partitioned_im_hsv = im_hsv.crop((x1, y1, x2, y2))
+            #         hists_rgb.append(partitioned_im.histogram())
+            #         hists_hsv.append(partitioned_im_hsv.histogram())
+
+            indexer = np.arange(125)[None, :, None] + 25 * np.arange(125)[:, None, None]
+            ims = np.array(im)
+            ims = ims.flatten()
+            ims_partitions = ims[indexer]
+            ims_partitions = ims_partitions.astype('uint8')
+
+            ims_hsv = np.array(im_hsv)
+            ims_hsv = ims_hsv.flatten()
+            ims_hsv_partitions = ims_hsv[indexer]
+            ims_hsv_partitions = ims_hsv_partitions.astype('uint8')
+            for partition in range(len(ims_partitions)):
+                image = Image.fromarray(ims_partitions[partition])
+                image_hsv = Image.fromarray(ims_hsv_partitions[partition])
+                hists_rgb.append(image.histogram())
+                hists_hsv.append(image_hsv.histogram())
+
+
         elif stride_style == 'quick':
             for c in range(-over_crop, (image_width - partition_size) // stride + over_crop):
                 x1, y1 = c * stride, 0
@@ -395,7 +413,7 @@ class ColorchipRead:
 
         end = time.time()
         try:
-            #best_image.show()
+            best_image.show()
             print(f"Color chip cropping took: {end - start} seconds.")
             return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image
         except ValueError as e:

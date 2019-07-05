@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="f1346991-2a84-455a-b0c3-b6c99b8a644c" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/libs/ccRead.py" beforeDir="false" afterPath="$PROJECT_DIR$/libs/ccRead.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/postProcessing.py" beforeDir="false" afterPath="$PROJECT_DIR$/postProcessing.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,8 +15,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/libs/ccRead.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="284">
-              <caret line="443" column="65" selection-start-line="443" selection-start-column="63" selection-end-line="443" selection-end-column="65" />
+            <state relative-caret-position="1996">
+              <caret line="269" column="39" lean-forward="true" selection-start-line="269" selection-start-column="39" selection-end-line="269" selection-end-column="39" />
               <folding>
                 <element signature="e#982#1000#0" expanded="true" />
               </folding>
@@ -26,9 +25,18 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/Anaconda3/envs/Shaw/Lib/site-packages/plaidml/library.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="212">
+              <caret line="135" lean-forward="true" selection-start-line="135" selection-end-line="135" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$USER_HOME$/Anaconda3/envs/Shaw/Lib/site-packages/PIL/Image.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
+            <state relative-caret-position="15759">
               <caret line="2499" column="4" selection-start-line="2499" selection-start-column="4" selection-end-line="2499" selection-end-column="4" />
             </state>
           </provider>
@@ -37,8 +45,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/postProcessing.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-590">
-              <caret line="364" column="37" lean-forward="true" selection-start-line="364" selection-start-column="37" selection-end-line="364" selection-end-column="37" />
+            <state relative-caret-position="59">
+              <caret line="503" column="134" selection-start-line="503" selection-start-column="134" selection-end-line="503" selection-end-column="134" />
               <folding>
                 <element signature="e#1137#1148#0" expanded="true" />
               </folding>
@@ -60,18 +68,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="418">
               <caret line="230" column="8" selection-start-line="230" selection-start-column="8" selection-end-line="230" selection-end-column="8" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/libs/bcRead.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="51">
-              <caret line="3" column="16" selection-start-line="3" selection-start-column="16" selection-end-line="3" selection-end-column="16" />
-              <folding>
-                <element signature="e#967#976#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -291,7 +287,7 @@
       <workItem from="1561674059143" duration="974000" />
       <workItem from="1562158650256" duration="4323000" />
       <workItem from="1562265327864" duration="1541000" />
-      <workItem from="1562274387425" duration="4069000" />
+      <workItem from="1562274387425" duration="6900000" />
     </task>
     <task id="LOCAL-00001" summary="Included initial documentation of functions. Cleaning up of code and pushing redundant variables into init.">
       <created>1560971677868</created>
@@ -311,7 +307,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="39229000" />
+    <option name="totallyTimeSpent" value="42060000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1207" height="807" extended-state="6" />
@@ -322,7 +318,7 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32936078" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32448378" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32448378" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39970502" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -350,8 +346,8 @@
     <option name="LAST_COMMIT_MESSAGE" value="Commit changes for finished initial working state. Framework of the &#10;ColorchipRead class is done, and should only need minimal changes in &#10;the future." />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/autoPostProcessing$ccRead.coverage" NAME="ccRead Coverage Results" MODIFIED="1561152559014" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/libs" />
-    <SUITE FILE_PATH="coverage/autoPostProcessing$postProcessing.coverage" NAME="postProcessing Coverage Results" MODIFIED="1562334418030" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/autoPostProcessing$ccRead.coverage" NAME="ccRead Coverage Results" MODIFIED="1562336854444" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/libs" />
+    <SUITE FILE_PATH="coverage/autoPostProcessing$postProcessing.coverage" NAME="postProcessing Coverage Results" MODIFIED="1562337107133" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/test.jpg" />
@@ -403,23 +399,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2019.1/system/python_stubs/-1574278667/PyQt5/QtWidgets/QDialog.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="418">
-          <caret line="230" column="8" selection-start-line="230" selection-start-column="8" selection-end-line="230" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/libs/ccRead.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="284">
-          <caret line="443" column="65" selection-start-line="443" selection-start-column="63" selection-end-line="443" selection-end-column="65" />
-          <folding>
-            <element signature="e#982#1000#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/.PyCharm2019.1/system/python_stubs/-1574278667/PyQt5/QtWidgets/QMainWindow.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-5894">
@@ -429,15 +408,39 @@
     </entry>
     <entry file="file://$USER_HOME$/Anaconda3/envs/Shaw/Lib/site-packages/PIL/Image.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
+        <state relative-caret-position="15759">
           <caret line="2499" column="4" selection-start-line="2499" selection-start-column="4" selection-end-line="2499" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/envs/Shaw/Lib/site-packages/plaidml/library.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="212">
+          <caret line="135" lean-forward="true" selection-start-line="135" selection-end-line="135" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharm2019.1/system/python_stubs/-1574278667/PyQt5/QtWidgets/QDialog.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="418">
+          <caret line="230" column="8" selection-start-line="230" selection-start-column="8" selection-end-line="230" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libs/ccRead.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1996">
+          <caret line="269" column="39" lean-forward="true" selection-start-line="269" selection-start-column="39" selection-end-line="269" selection-end-column="39" />
+          <folding>
+            <element signature="e#982#1000#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/postProcessing.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-590">
-          <caret line="364" column="37" lean-forward="true" selection-start-line="364" selection-start-column="37" selection-end-line="364" selection-end-column="37" />
+        <state relative-caret-position="59">
+          <caret line="503" column="134" selection-start-line="503" selection-start-column="134" selection-end-line="503" selection-end-column="134" />
           <folding>
             <element signature="e#1137#1148#0" expanded="true" />
           </folding>
