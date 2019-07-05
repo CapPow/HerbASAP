@@ -26,6 +26,10 @@ from pyzbar.pyzbar import decode
 import numpy as np
 import cv2
 
+from math import cos as math_cos
+from math import sin as math_sin
+from math import radians
+
 
 class bcRead():
     """A barcode reader class
@@ -49,7 +53,7 @@ class bcRead():
     """
 
     def __init__(self, prefix=".*", digits="*", 
-                 rotation_list=[9,15,18], parent=None, *args):
+                 rotation_list=[9,25,18], parent=None, *args):
         super(bcRead, self).__init__()
         self.parent = parent
         self.compileRegexPattern(prefix, digits)
@@ -104,22 +108,28 @@ class bcRead():
         # the complete output from pyzbar which matches checkPattern
         bcRawData = [x for x in decode(img) if self.checkPattern(x)]
         # if no results are found, start the using the rotation_list
+        rot_deg = 0  # in case we don't rotate but want the 
+        rev_mat = None  # variable to hold the reverse matrix
         if len(bcRawData) < 1:
             for deg in self.rotation_list:
-                #print(deg) # useful to see how frequently this happens
-                img = self.rotateImg(img, deg)
-                bcRawData = [x for x in decode(img) if self.checkPattern(x)]
+                rot_deg += deg
+                rotated_img, rev_mat = self.rotateImg(img, rot_deg)
+                bcRawData = [x for x in decode(rotated_img) if self.checkPattern(x)]
                 if len(bcRawData) > 0:
                     break
-
+        #for_cv2_im = cv2.cvtColor(rotated_img, cv2.COLOR_RGB2BGR)
+        #cv2.imwrite('rotated_img.jpg', for_cv2_im)
         if return_details:
             bcData = []
             for result in bcRawData:
                 bcValue = result.data.decode("utf-8")
                 bcBox = result.rect
+                max_dim = max([bcBox.width, bcBox.height])
+                center = self.det_bc_center(bcBox, rev_mat)
                 bcType = result.type
                 resultDict = {'value':bcValue,
-                              'bbox':bcBox,
+                              'center':center,
+                              'max_dim':max_dim,
                               'type':bcType}
                 bcData.append(resultDict)
         else:
@@ -133,21 +143,53 @@ class bcRead():
             without cropping the corners.
         """
         # see: https://stackoverflow.com/questions/48479656/how-can-i-rotate-an-ndarray-image-properly
+        # https://www.pyimagesearch.com/2017/01/02/rotate-images-correctly-with-opencv-and-python/
 
         (height, width) = img.shape[:2]
         (cent_x, cent_y) = (width // 2, height // 2)
-    
         mat = cv2.getRotationMatrix2D((cent_x, cent_y), -angle, 1.0)
         cos = np.abs(mat[0, 0])
         sin = np.abs(mat[0, 1])
-    
         n_width = int((height * sin) + (width * cos))
         n_height = int((height * cos) + (width * sin))
-    
         mat[0, 2] += (n_width / 2) - cent_x
         mat[1, 2] += (n_height / 2) - cent_y
+        
+        rotated_img = cv2.warpAffine(img, mat, (n_width, n_height))
+        
+        # now calculate the reverse matrix
+        (r_height, r_width) = rotated_img.shape[:2]
+        (cent_x, cent_y) = (r_width // 2, r_height // 2) 
+        rev_mat = cv2.getRotationMatrix2D((cent_x, cent_y), angle, 1.0)
+        rev_mat[0, 2] += (width / 2) - cent_x
+        rev_mat[1, 2] += (height / 2) - cent_y
+
+        return (rotated_img, rev_mat)
     
-        return cv2.warpAffine(img, mat, (n_width, n_height))
+    def det_bc_center(self, rect, rev_mat):
+        """
+        Used to determine the center point of a rotation corrected bounding box
+        
+        :param rect: a pyzbar rectangle array structured as: 
+            (left, top, width, height)
+        :type rect: Rect, array
+        :param angle: the angle of rotation applied to the initial image.
+        :type angle: int
+        :param rotated_shape: a tuple containing the rotated image's
+            (height, width) .
+        :type rotated_shape: tuple
+        :return: Returns the center point of the barcode before rotation.
+        :rtype: tuple, (x, y)
+        
+        """
+        px = rect.left + (rect.width/2)
+        py = rect.top + (rect.height/2)
+        if not isinstance(rev_mat, np.ndarray):
+            # no rotation, so current centerpoint is correct centerpoint
+            return (int(px), int(py))
+        # otherwise convert current centerpoint using reverse matrix
+        nx, ny = rev_mat.dot(np.array((px, py) + (1,))).astype(int)
+        return (nx, ny)
 
     def testFeature(self, img):
         """Returns bool condition, if this module functions on a test input."""

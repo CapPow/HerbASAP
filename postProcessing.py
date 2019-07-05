@@ -449,7 +449,7 @@ class appWindow(QMainWindow):
         self.processing_image = True
         print(f'processing: {img_path}')
         # debugging, save 'raw-ish' version of jpg before processing
-        for_cv2_im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
+        #for_cv2_im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
         #cv2.imwrite('input.jpg', for_cv2_im)
         self.img_path = img_path
         file_name, file_ext = os.path.splitext(img_path)
