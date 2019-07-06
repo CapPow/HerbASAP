@@ -332,6 +332,9 @@ class appWindow(QMainWindow):
         :return:
         """
         #lum = (whiteR + whiteG + whiteB)/3
+        color_chip_im.show()
+        np_im = np.array(im)
+        np_color_chip_im = np.array(color_chip_im)
 
         if style == "clip":
             try:
@@ -360,10 +363,9 @@ class appWindow(QMainWindow):
             # raise NotImplementedError("Retinex style white balancing has not been implemented yet.")
             # Code modified from a literal Japanese god here: https://gist.github.com/shunsukeaihara/4603234
             try:
-                print(type(im))
-                print(type(color_chip_im))
-                im = im.transpose(2, 0, 1).astype(np.uint32)
-                nimg = color_chip_im.transpose(2, 0, 1).astype(np.uint32)
+                pass
+                im = np_im.transpose(2, 0, 1).astype(np.uint32)
+                nimg = np_color_chip_im.transpose(2, 0, 1).astype(np.uint32)
                 sum_r = np.sum(nimg[0])
                 sum_r2 = np.sum(nimg[0] ** 2)
                 max_r = nimg[0].max()
@@ -383,9 +385,9 @@ class appWindow(QMainWindow):
             except Exception as e:
                 print(f"[ERROR] Error in {style} style white balancing: {e}")
         elif style == 'max_white':
-            color_chip_im = color_chip_im.transpose(2, 0, 1)
+            color_chip_im = np_color_chip_im.transpose(2, 0, 1)
             color_chip_im = color_chip_im.astype(np.int32)
-            im = im.transpose(2, 0, 1)
+            im = np_im.transpose(2, 0, 1)
             im = im.astype(np.int32)
 
             im[0] = np.minimum(im[0] * (255 / float(color_chip_im[0].max())), 255)
@@ -396,9 +398,9 @@ class appWindow(QMainWindow):
             avg_white = self.colorchipDetect.predict_color_chip_whitevals(color_chip_im)
             brightest = np.array(avg_white).max()
 
-            color_chip_im = color_chip_im.transpose(2, 0, 1)
+            color_chip_im = np_color_chip_im.transpose(2, 0, 1)
             color_chip_im = color_chip_im.astype(np.int32)
-            im = im.transpose(2, 0, 1)
+            im = np_im.transpose(2, 0, 1)
             im = im.astype(np.int32)
 
             im[0] = np.minimum(im[0] * (brightest / float(color_chip_im[0].max())), 255)
@@ -545,11 +547,19 @@ class appWindow(QMainWindow):
         """
         im = self.im
         cropped_cc = self.cropped_cc
-        print(type(cropped_cc))
-        im = self.white_balance_image(im, cropped_cc, style='avg_white')
 
+        im = self.white_balance_image(im, cropped_cc, style='avg_white')
         nim = self.colorchipDetect.ocv_to_pil(im)
-        nim.show()
+        nim.save("avgwhite.png")
+
+        im = self.white_balance_image(im, cropped_cc, style='max_white')
+        nim = self.colorchipDetect.ocv_to_pil(im)
+        nim.save("maxwhite.png")
+
+        im = self.white_balance_image(im, cropped_cc, style='retinex')
+        nim = self.colorchipDetect.ocv_to_pil(im)
+        nim.save("retinex.png")
+
         # reminder to address the quadrant checker here
         if self.mainWindow.group_verifyRotation.isChecked():
             user_def_loc = self.mainWindow.comboBox_colorCheckerPosition.currentText()

@@ -462,6 +462,11 @@ class ColorchipRead:
         best_image = None
         best_location = None
 
+        # for i in range(buffer_size):
+        #     if only_cc_probability_column[i] == float('inf'): # Catching inf prediction, which is not permissible.
+        #         only_cc_probability_column[i] = 0
+        #         only_cc_uncertainty_column[i] = 1
+
         max_discriminator_pred = max(only_cc_probability_column)
         if max_discriminator_pred > 0:
             for idx, prediction_value in enumerate(only_cc_probability_column):
@@ -481,7 +486,7 @@ class ColorchipRead:
 
         end = time.time()
         try:
-            best_image.show()
+            # best_image.show()
             print(f"Color chip cropping took: {end - start} seconds.")
             return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image
         except ValueError as e:
