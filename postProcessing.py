@@ -382,6 +382,29 @@ class appWindow(QMainWindow):
                 im[1] = np.minimum((im[1] ** 2) * coefficient[0] + im[1] * coefficient[1], 255)
             except Exception as e:
                 print(f"[ERROR] Error in {style} style white balancing: {e}")
+        elif style == 'max_white':
+            color_chip_im = color_chip_im.transpose(2, 0, 1)
+            color_chip_im = color_chip_im.astype(np.int32)
+            im = im.transpose(2, 0, 1)
+            im = im.astype(np.int32)
+
+            im[0] = np.minimum(im[0] * (255 / float(color_chip_im[0].max())), 255)
+            im[1] = np.minimum(im[1] * (255 / float(color_chip_im[1].max())), 255)
+            im[2] = np.minimum(im[2] * (255 / float(color_chip_im[2].max())), 255)
+            return im.transpose(1, 2, 0).astype(np.uint8)
+        elif style == 'avg_white':
+            avg_white = self.colorchipDetect.predict_color_chip_whitevals(color_chip_im)
+            brightest = np.array(avg_white).max()
+
+            color_chip_im = color_chip_im.transpose(2, 0, 1)
+            color_chip_im = color_chip_im.astype(np.int32)
+            im = im.transpose(2, 0, 1)
+            im = im.astype(np.int32)
+
+            im[0] = np.minimum(im[0] * (brightest / float(color_chip_im[0].max())), 255)
+            im[1] = np.minimum(im[1] * (brightest / float(color_chip_im[1].max())), 255)
+            im[2] = np.minimum(im[2] * (brightest / float(color_chip_im[2].max())), 255)
+            return im.transpose(1, 2, 0).astype(np.uint8)
         else:
             raise NotImplementedError("This white balancing style does not exist")
 
@@ -523,10 +546,10 @@ class appWindow(QMainWindow):
         im = self.im
         cropped_cc = self.cropped_cc
         print(type(cropped_cc))
-        im = self.white_balance_image(im, cropped_cc, style='clip')
+        im = self.white_balance_image(im, cropped_cc, style='avg_white')
 
-        #nim = self.colorchipDetect.ocv_to_pil(im)
-        #nim.show()
+        nim = self.colorchipDetect.ocv_to_pil(im)
+        nim.show()
         # reminder to address the quadrant checker here
         if self.mainWindow.group_verifyRotation.isChecked():
             user_def_loc = self.mainWindow.comboBox_colorCheckerPosition.currentText()
