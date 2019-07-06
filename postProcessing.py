@@ -331,8 +331,8 @@ class appWindow(QMainWindow):
         :param style:
         :return:
         """
-        #lum = (whiteR + whiteG + whiteB)/3
-        color_chip_im.show()
+        # lum = (whiteR + whiteG + whiteB) / 3
+
         np_im = np.array(im)
         np_color_chip_im = np.array(color_chip_im)
 
@@ -360,30 +360,27 @@ class appWindow(QMainWindow):
             except Exception as e:
                 print(f"[ERROR] Error in {style} style white balancing: {e}")
         elif style == "retinex":
-            # raise NotImplementedError("Retinex style white balancing has not been implemented yet.")
             # Code modified from a literal Japanese god here: https://gist.github.com/shunsukeaihara/4603234
-            try:
-                pass
-                im = np_im.transpose(2, 0, 1).astype(np.uint32)
-                nimg = np_color_chip_im.transpose(2, 0, 1).astype(np.uint32)
-                sum_r = np.sum(nimg[0])
-                sum_r2 = np.sum(nimg[0] ** 2)
-                max_r = nimg[0].max()
-                max_r2 = max_r ** 2
-                sum_g = np.sum(nimg[1])
-                max_g = nimg[1].max()
-                coefficient = np.linalg.solve(np.array([[sum_r2, sum_r], [max_r2, max_r]]),
-                                              np.array([sum_g, max_g]))
-                im[0] = np.minimum((im[0] ** 2) * coefficient[0] + im[0] * coefficient[1], 255)
-                sum_b = np.sum(nimg[1])
-                sum_b2 = np.sum(nimg[1] ** 2)
-                max_b = nimg[1].max()
-                max_b2 = max_r ** 2
-                coefficient = np.linalg.solve(np.array([[sum_b2, sum_b], [max_b2, max_b]]),
-                                              np.array([sum_g, max_g]))
-                im[1] = np.minimum((im[1] ** 2) * coefficient[0] + im[1] * coefficient[1], 255)
-            except Exception as e:
-                print(f"[ERROR] Error in {style} style white balancing: {e}")
+            nimg = np_color_chip_im.transpose(2, 0, 1).astype(np.uint32)
+            orig_image = np_im.transpose(2, 0, 1).astype(np.uint32)
+
+            sum_r = np.sum(nimg[0])
+            sum_r2 = np.sum(nimg[0] ** 2)
+            max_r = nimg[0].max()
+            max_r2 = max_r ** 2
+            sum_g = np.sum(nimg[1])
+            max_g = nimg[1].max()
+            coefficient = np.linalg.solve(np.array([[sum_r2, sum_r], [max_r2, max_r]]),
+                                          np.array([sum_g, max_g]))
+            orig_image[0] = np.minimum((orig_image[0] ** 2) * coefficient[0] + orig_image[0] * coefficient[1], 255)
+            sum_b = np.sum(nimg[1])
+            sum_b2 = np.sum(nimg[1] ** 2)
+            max_b = nimg[1].max()
+            max_b2 = max_r ** 2
+            coefficient = np.linalg.solve(np.array([[sum_b2, sum_b], [max_b2, max_b]]), np.array([sum_g, max_g]))
+            orig_image[1] = np.minimum((orig_image[1] ** 2) * coefficient[0] + orig_image[1] * coefficient[1], 255)
+            return orig_image.transpose(1, 2, 0).astype(np.uint8)
+        
         elif style == 'max_white':
             color_chip_im = np_color_chip_im.transpose(2, 0, 1)
             color_chip_im = color_chip_im.astype(np.int32)
@@ -547,14 +544,6 @@ class appWindow(QMainWindow):
         """
         im = self.im
         cropped_cc = self.cropped_cc
-
-        im = self.white_balance_image(im, cropped_cc, style='avg_white')
-        nim = self.colorchipDetect.ocv_to_pil(im)
-        nim.save("avgwhite.png")
-
-        im = self.white_balance_image(im, cropped_cc, style='max_white')
-        nim = self.colorchipDetect.ocv_to_pil(im)
-        nim.save("maxwhite.png")
 
         im = self.white_balance_image(im, cropped_cc, style='retinex')
         nim = self.colorchipDetect.ocv_to_pil(im)
