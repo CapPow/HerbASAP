@@ -545,9 +545,17 @@ class appWindow(QMainWindow):
         im = self.im
         cropped_cc = self.cropped_cc
 
-        im = self.white_balance_image(im, cropped_cc, style='retinex')
-        nim = self.colorchipDetect.ocv_to_pil(im)
-        nim.save("retinex.png")
+        im1 = self.white_balance_image(im, cropped_cc, style='retinex')
+        nim = self.colorchipDetect.ocv_to_pil(im1)
+        nim.save("retinex.jpg")
+        
+        im1 = self.white_balance_image(im, cropped_cc, style='avg_white')
+        nim = self.colorchipDetect.ocv_to_pil(im1)
+        nim.save("av_w.jpg")
+        
+        im1 = self.white_balance_image(im, cropped_cc, style='max_white')
+        nim = self.colorchipDetect.ocv_to_pil(im1)
+        nim.save("ma_w.jpg")
 
         # reminder to address the quadrant checker here
         if self.mainWindow.group_verifyRotation.isChecked():
@@ -559,8 +567,13 @@ class appWindow(QMainWindow):
             user_def_quad = quad_map.index(user_def_loc) + 1
             # cc_quadrant starts at first,
             im = self.orient_image(im, self.cc_quadrant, user_def_quad)
+        
+        if self.bc_code:
+            names = self.bc_code
+        else:
+            names = [self.base_file_name]
         self.save_output_handler.save_output_images(im, self.img_path,
-                                                    self.bc_code)
+                                                    names)
         # inform the app when image processing is complete
         self.processing_image = False
         self.Image_Complete_Emitter.completed.emit()

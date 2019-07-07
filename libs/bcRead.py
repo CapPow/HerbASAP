@@ -110,13 +110,18 @@ class bcRead():
         # if no results are found, start the using the rotation_list
         rot_deg = 0  # in case we don't rotate but want the 
         rev_mat = None  # variable to hold the reverse matrix
-        if len(bcRawData) < 1:
+        len_bc = len(bcRawData)
+        if len_bc < 1:
             for deg in self.rotation_list:
                 rot_deg += deg
-                rotated_img, rev_mat = self.rotateImg(img, rot_deg)
+                rotated_img, rev_mat = self.rotateImg(img, rot_deg, return_details)
                 bcRawData = [x for x in decode(rotated_img) if self.checkPattern(x)]
-                if len(bcRawData) > 0:
+                len_bc = len(bcRawData)
+                if len_bc > 0:
                     break
+            # if we hit the end of the rotation_list with no results return None
+            else:
+                return None
         #for_cv2_im = cv2.cvtColor(rotated_img, cv2.COLOR_RGB2BGR)
         #cv2.imwrite('rotated_img.jpg', for_cv2_im)
         if return_details:
@@ -136,11 +141,14 @@ class bcRead():
             # filter out non-matching strings
             bcData = [x.data.decode("utf-8") for x in bcRawData]
             # a list of matched barcodes found in bcRawData
+        
         return bcData
 
-    def rotateImg(self, img, angle):
-        """ given a np array image object (img), and an angle rotates the img
-            without cropping the corners.
+    def rotateImg(self, img, angle, reversible=False):
+        """ 
+        given a np array image object (img), and an angle rotates the img
+        without cropping the corners. If reversable == True, calculate the
+        reversible matrix
         """
         # see: https://stackoverflow.com/questions/48479656/how-can-i-rotate-an-ndarray-image-properly
         # https://www.pyimagesearch.com/2017/01/02/rotate-images-correctly-with-opencv-and-python/
