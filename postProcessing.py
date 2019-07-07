@@ -285,7 +285,7 @@ class appWindow(QMainWindow):
                         ext = orig_im_ext
                     fileQty = len(glob.glob(f'{path}//{bc}*{ext}'))
                     if fileQty > 0:
-                        new_file_suffix = self.suffix_lookup[fileQty]
+                        new_file_suffix = self.suffix_lookup(fileQty)
                         new_file_base_name = f'{bc}{new_file_suffix}'
                         new_file_name = f'{path}//{new_file_base_name}{ext}'
                     else:
@@ -803,22 +803,8 @@ class appWindow(QMainWindow):
         previewText = f'{prefix}{startingNum}'  # assemble the preview string.
         self.mainWindow.label_previewDisplay.setText(previewText) # set it
         # update dup naming preview
-        dupNamingPolicy = self.mainWindow.comboBox_dupNamingPolicy.currentText()
-        if dupNamingPolicy == 'append LOWER case letter':
-            dupPreviewEnd = 'a'
-            self.suffix_lookup = {n+1: ch for n, ch in enumerate(string.ascii_lowercase)}
-        elif dupNamingPolicy == 'append UPPER case letter':
-            dupPreviewEnd = 'A'
-            self.suffix_lookup = {n+1: ch for n, ch in enumerate(string.ascii_uppercase)}
-        elif dupNamingPolicy == 'append Number with underscore':
-            dupPreviewEnd = '1'
-            self.suffix_lookup = False
-        elif dupNamingPolicy == 'OVERWRITE original image with newest':
-            dupPreviewEnd = ''
-            self.suffix_lookup = False
-        else:
-            self.suffix_lookup = False
-            return
+        self.setup_Output_Handler()
+        dupPreviewEnd = self.suffix_lookup(1)
         dupPreviewText = f'{previewText}{dupPreviewEnd}'
         self.mainWindow.label_dupPreviewDisplay.setText(dupPreviewText) # set it
 
