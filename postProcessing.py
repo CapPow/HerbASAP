@@ -305,14 +305,14 @@ class appWindow(QMainWindow):
                         #cv2.imwrite(new_file_name,im)
 
     def handle_blur_result(self, result):
-        self.is_blurry = result
+        self.is_blurry = result['isblurry']
         if self.is_blurry:
             notice_title = 'Blurry Image Warning'
             if self.bc_code:
                 notice_text = f'Warning, {self.bc_code} is blurry.'
             else:
-                notice_text = f'Warning, {self.base_file_name} is blurry.'
-            detail_text = f'Blurry Image Path: {self.img_path}'
+                notice_text = f'Warning, {self.img_path} is blurry.'
+            detail_text = f'laplacian={result["laplacian"]}\nnormalized laplacian={result["lapNorm"]}\nimg variance ={result["imVar"]}\n {self.base_file_name}'
             self.userNotice(notice_text, notice_title, detail_text)
 
     def handle_pp_result(self, result):
@@ -328,11 +328,16 @@ class appWindow(QMainWindow):
 
     def handle_save_result(self, result):
         """ called when the the save_worker finishes up """
-        # inform the app when image processing is complete
-        self.processing_image = False
-        # these are happening too soon
-        self.Timer_Emitter.timerStop.emit()
-        self.Image_Complete_Emitter.completed.emit()
+        # tick off the finished save job
+        self.save_jobs_running -= 1
+        print(self.save_jobs_running)
+        # if we're down to 0 then wrap up
+        if self.save_jobs_running < 1:
+            # inform the app when image processing is complete
+            self.processing_image = False
+            # these are happening too soon
+            self.Timer_Emitter.timerStop.emit()
+            self.Image_Complete_Emitter.completed.emit()
 
     def alert_blur_finished(self):
         """ called when the results are in from blur detection. """
@@ -372,7 +377,12 @@ class appWindow(QMainWindow):
                 #print(boss_signal_data.signal_data)
 
     def handle_job_started(self, boss_signal_data):
-        pass
+        if isinstance(boss_signal_data.signal_data, WorkerSignalData):
+                worker_signal_data = boss_signal_data.signal_data
+                if worker_signal_data.worker_name == 'save_worker':
+                    self.save_jobs_running += 1
+                    print(self.save_jobs_running)
+                    # if save_worker started, tick up the counter
         #if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
             #if isinstance(boss_signal_data.signal_data, WorkerSignalData):
                 #worker_signal_data = boss_signal_data.signal_data
@@ -556,6 +566,7 @@ class appWindow(QMainWindow):
         self.is_blurry = None  # could be helpful for 'line item warnings'
         self.cc_quadrant = None
         self.cropped_cc = None
+        self.save_jobs_running = 0
         self.processing_image = False
 
     def processImage(self, img_path):
@@ -596,7 +607,7 @@ class appWindow(QMainWindow):
         if self.mainWindow.checkBox_blurDetection.isChecked():
             # test for bluryness
             blur_threshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
-            blur_worker_data = BlurWorkerData(grey, blur_threshold)
+            blur_worker_data = BlurWorkerData(grey, blur_threshold, True)
             blur_job = Job('blur_worker', blur_worker_data, self.blurDetect.blur_check)
             self.boss_thread.request_job(blur_job)
 

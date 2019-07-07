@@ -32,9 +32,10 @@ class BlurWorkerData:
     """
         object that represents the data needed to run a blur_worker
     """
-    def __init__(self, grey_image, blur_threshold):
+    def __init__(self, grey_image, blur_threshold, return_details):
         self.grey_image = grey_image
         self.blur_threshold = blur_threshold
+        self.return_details = return_details
 
 
 class EQWorkerData:
@@ -108,7 +109,7 @@ class Boss(QThread):
             self.__thread_pool.start(bc_worker)  # start bc_worker thread
         elif job.job_name == 'blur_worker' and job.job_data is not None and job.job_function is not None:
             self.__is_blur_worker_running = True
-            blur_worker = Worker(job.job_function, job.job_data.grey_image, job.job_data.blur_threshold)
+            blur_worker = Worker(job.job_function, job.job_data.grey_image, job.job_data.blur_threshold, job.job_data.return_details)
             blur_worker.set_worker_name('blur_worker')
             blur_worker.signals.started.connect(self.worker_started_handler)
             blur_worker.signals.error.connect(self.worker_error_handler)
@@ -268,7 +269,6 @@ class Worker(QRunnable):
         """
         Initialise the runner function with passed args, kwargs.
         """
-
         # Retrieve args/kwargs here; and fire processing using them
         try:
             result = self.fn(*self.args, **self.kwargs)
