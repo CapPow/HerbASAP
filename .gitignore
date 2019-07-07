@@ -6,7 +6,7 @@ __pycache__/
 libs/__pycache__/
 ui/__pycache__/
 *.pyc
-*.xml
+
 
 # local environment directory
 env/
