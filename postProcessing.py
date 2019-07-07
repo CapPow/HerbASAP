@@ -232,10 +232,11 @@ class appWindow(QMainWindow):
         group_saveProcessedPng = self.mainWindow.group_saveProcessedPng.isChecked()
         lineEdit_pathProcessedPng = self.mainWindow.lineEdit_pathProcessedPng.text()
         # each value is a tuple containing (bool if checked, path, extension)
-        self.output_map = {'.raw':(group_keepUnalteredRaw, lineEdit_pathUnalteredRaw),
-                      '.jpg':(group_saveProcessedJpg, lineEdit_pathProcessedJpg),
-                      '.tif':(group_saveProcessedTIFF, lineEdit_pathProcessedTIFF),
-                      '.png':(group_saveProcessedPng, lineEdit_pathProcessedPng)}
+        self.output_map = {
+                '.tif': (group_saveProcessedTIFF, lineEdit_pathProcessedTIFF),
+                '.png': (group_saveProcessedPng, lineEdit_pathProcessedPng),
+                '.jpg': (group_saveProcessedJpg, lineEdit_pathProcessedJpg),
+                '.raw': (group_keepUnalteredRaw, lineEdit_pathUnalteredRaw)}
         dupNamingPolicy = self.mainWindow.comboBox_dupNamingPolicy.currentText()
 
         # establish self.suffix_lookup according to dupNamingPolicy
@@ -272,37 +273,41 @@ class appWindow(QMainWindow):
         """
         im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
         output_map = self.output_map
-        # todo pass these off to boss_worker 
+        # todo pass these off to boss_worker
         # for each bc_value or file name passed in
         for bc in im_base_names:
-            # for each appropriate extension in output_map
-            for ext in ['.tif', '.png', '.jpg', '.raw']:
-                # unpack the value tuple
-                to_save, path = output_map[ext]
-                if to_save:
-                    # not sure of slick way to avoid checking ext twice
-                    if ext == '.raw':
-                        ext = orig_im_ext
-                    fileQty = len(glob.glob(f'{path}//{bc}*{ext}'))
-                    if fileQty > 0:
-                        new_file_suffix = self.suffix_lookup(fileQty)
-                        new_file_base_name = f'{bc}{new_file_suffix}'
-                        new_file_name = f'{path}//{new_file_base_name}{ext}'
-                    else:
-                        new_file_name = f'{path}//{bc}{ext}'
-                    if ext == orig_im_ext:
-                        # if it is a raw move just perform it
-                        try:
-                            shutil_move(orig_img_path, new_file_name)
-                        except FileNotFoundError:
-                            # condition when multiple bcs try to move > once.
-                            pass
-                    else:
-                        # if it a cv2 save function pass it to boss_worker
-                        save_worker_data = SaveWorkerData(new_file_name, im)
-                        save_job = Job('save_worker', save_worker_data, cv2.imwrite)
-                        self.boss_thread.request_job(save_job)
-                        #cv2.imwrite(new_file_name,im)
+            # breakout output_map into a list of tuples containing (ext, path)
+            # '.raw': (group_keepUnalteredRaw, lineEdit_pathUnalteredRaw)
+            to_save = [(x,y[1]) for x, y in output_map.items() if y[0]]
+            # store how many save_jobs are expected to global variable
+            self.working_save_jobs = len(to_save)
+            #  '.jpg':(group_saveProcessedJpg, lineEdit_pathProcessedJpg),
+            for ext, path in to_save:
+                # not sure of slick way to avoid checking ext twice
+                if ext == '.raw':
+                    ext = orig_im_ext
+                fileQty = len(glob.glob(f'{path}//{bc}*{ext}'))
+                if fileQty > 0:
+                    new_file_suffix = self.suffix_lookup(fileQty)
+                    new_file_base_name = f'{bc}{new_file_suffix}'
+                    new_file_name = f'{path}//{new_file_base_name}{ext}'
+                else:
+                    new_file_name = f'{path}//{bc}{ext}'
+                if ext == orig_im_ext:
+                    # if it is a raw move just perform it
+                    try:
+                        shutil_move(orig_img_path, new_file_name)
+                    except FileNotFoundError:
+                        # condition when multiple bcs try to move > once.
+                        pass
+                    #  treat this process as if it was passed to boss_worker
+                    self.handle_save_result('')
+                else:
+                    # if it a cv2 save function pass it to boss_worker
+                    save_worker_data = SaveWorkerData(new_file_name, im)
+                    save_job = Job('save_worker', save_worker_data, cv2.imwrite)
+                    self.boss_thread.request_job(save_job)
+                    #cv2.imwrite(new_file_name,im)
 
     def handle_blur_result(self, result):
         self.is_blurry = result['isblurry']
@@ -316,28 +321,24 @@ class appWindow(QMainWindow):
             self.userNotice(notice_text, notice_title, detail_text)
 
     def handle_pp_result(self, result):
-        im = self.im
-        
         # if no bc_code was found or checking for it is turned off
         if self.bc_code:
             names = self.bc_code
         else: # name based on base_file_name
             names = [self.base_file_name]
-
-        self.save_output_images(im, names, self.img_path, self.ext)
+        self.save_output_images(self.im, names, self.img_path, self.ext)
 
     def handle_save_result(self, result):
         """ called when the the save_worker finishes up """
-        # tick off the finished save job
-        self.save_jobs_running -= 1
-        print(self.save_jobs_running)
+        # tick off one working_save_job 
+        self.working_save_jobs -= 1
         # if we're down to 0 then wrap up
-        if self.save_jobs_running < 1:
+        if self.working_save_jobs < 1:
             # inform the app when image processing is complete
             self.processing_image = False
             # these are happening too soon
-            self.Timer_Emitter.timerStop.emit()
             self.Image_Complete_Emitter.completed.emit()
+            self.Timer_Emitter.timerStop.emit()
 
     def alert_blur_finished(self):
         """ called when the results are in from blur detection. """
@@ -377,12 +378,7 @@ class appWindow(QMainWindow):
                 #print(boss_signal_data.signal_data)
 
     def handle_job_started(self, boss_signal_data):
-        if isinstance(boss_signal_data.signal_data, WorkerSignalData):
-                worker_signal_data = boss_signal_data.signal_data
-                if worker_signal_data.worker_name == 'save_worker':
-                    self.save_jobs_running += 1
-                    print(self.save_jobs_running)
-                    # if save_worker started, tick up the counter
+        pass
         #if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
             #if isinstance(boss_signal_data.signal_data, WorkerSignalData):
                 #worker_signal_data = boss_signal_data.signal_data
@@ -391,7 +387,7 @@ class appWindow(QMainWindow):
 
     def handle_job_finished(self, boss_signal_data):
         pass
-        #        if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
+#            if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
 #            if isinstance(boss_signal_data.signal_data, WorkerSignalData):
 #                worker_signal_data = boss_signal_data.signal_data
 #                print(worker_signal_data.worker_name)
@@ -566,7 +562,7 @@ class appWindow(QMainWindow):
         self.is_blurry = None  # could be helpful for 'line item warnings'
         self.cc_quadrant = None
         self.cropped_cc = None
-        self.save_jobs_running = 0
+        self.working_save_jobs = 0
         self.processing_image = False
 
     def processImage(self, img_path):
@@ -649,7 +645,6 @@ class appWindow(QMainWindow):
         """
         im = self.im
         cropped_cc = self.cropped_cc
-
         # white balance params or styles will probably be a UI element.
         if self.mainWindow.checkBox_performWhiteBalance.isChecked():
             im = self.white_balance_image(im, cropped_cc, style='avg_white')
