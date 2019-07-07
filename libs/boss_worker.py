@@ -46,6 +46,13 @@ class EQWorkerData:
         self.img_path = img_path
         self.mDistance = m_distance
 
+class SaveWorkerData:
+    """
+        object that represents the data needed to run a save_worker
+    """
+    def __init__(self, new_file_name, im):
+        self.im = im
+        self.new_file_name = new_file_name
 
 class BossSignalData:
     """
@@ -130,16 +137,15 @@ class Boss(QThread):
             pp_worker.signals.result.connect(self.worker_result_handler)
             pp_worker.signals.finished.connect(self.worker_finished_handler)
             self.__thread_pool.start(pp_worker)  # start pp_worker thread
-            #save image jobs, this'll probably be hard drive rate limited
-#        elif job.job_name == 'eq_worker' and job.job_data is not None and job.job_function is not None:
-#            self.__is_eq_worker_running = True
-#            eq_worker = Worker(job.job_function, job.job_data.im, job.job_data.img_path, job.job_data.mDistance)
-#            eq_worker.set_worker_name('eq_worker')
-#            eq_worker.signals.started.connect(self.worker_started_handler)
-#            eq_worker.signals.error.connect(self.worker_error_handler)
-#            eq_worker.signals.result.connect(self.worker_result_handler)
-#            eq_worker.signals.finished.connect(self.worker_finished_handler)
-#            self.__thread_pool.start(eq_worker)  # start eq_worker thread
+            # save image jobs, this'll probably be hard drive rate limited
+        elif job.job_name == 'save_worker' and job.job_data is not None and job.job_function is not None:
+            save_worker = Worker(job.job_function, job.job_data.new_file_name, job.job_data.im)
+            save_worker.set_worker_name('save_worker')
+            save_worker.signals.started.connect(self.worker_started_handler)
+            save_worker.signals.error.connect(self.worker_error_handler)
+            save_worker.signals.result.connect(self.worker_result_handler)
+            save_worker.signals.finished.connect(self.worker_finished_handler)
+            self.__thread_pool.start(save_worker)  # start eq_worker thread
         else:
             print('no my son')
 

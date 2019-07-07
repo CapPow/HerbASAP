@@ -31,6 +31,7 @@ import os
 import sys
 import string
 import glob
+from shutil import move as shutil_move
 # UI libs
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QDialog
@@ -50,7 +51,8 @@ from libs.ccRead import ColorchipRead
 from libs.folderMonitor import Folder_Watcher
 from libs.folderMonitor import New_Image_Emitter
 from libs.boss_worker import (Boss, BCWorkerData, BlurWorkerData, EQWorkerData,
-                         Job, BossSignalData, WorkerSignalData, WorkerErrorData)
+                              Job, BossSignalData, WorkerSignalData,
+                              WorkerErrorData, SaveWorkerData)
 
 
 class ImageDialog(QDialog):
@@ -85,71 +87,6 @@ class Timer_Emitter(QtCore.QObject):
     """
     timerStart = QtCore.pyqtSignal()
     timerStop = QtCore.pyqtSignal()
-
-
-class Save_Output_Handler:
-    """
-    Class to handle storing the processed images, using names and formats
-    detemrined by user preferences.
-    """
-    def __init__(self, output_map, dupNamingPolicy):
-        self.output_map = output_map
-        # establish self.suffix_lookup according to dupNamingPolicy
-        # given an int (count of how many files have exact matching names,
-        # returns an appropriate file name suffix)
-        if dupNamingPolicy == 'append LOWER case letter':
-            self.suffix_lookup = lambda x: {n+1: ch for n, ch in enumerate(string.ascii_lowercase)}.get(x)
-        elif dupNamingPolicy == 'append UPPER case letter':
-            self.suffix_lookup = lambda x: {n+1: ch for n, ch in enumerate(string.ascii_uppercase)}.get(x)
-        elif dupNamingPolicy == 'append Number with underscore':
-            self.suffix_lookup = lambda x: f'_{x}'
-        elif dupNamingPolicy == 'OVERWRITE original image with newest':
-            self.suffix_lookup = lambda x: ''
-        else:
-            self.suffix_lookup = False
-
-    def save_output_images(self, im, im_base_names, orig_img_path, orig_im_ext,
-                           meta_data=None):
-        """
-        Function that saves processed images to the appropriate format and
-        locations.
-        :param im: Processed Image array to be saved.
-        :type im: cv2 Array
-        :param im_base_names: the destination file(s) base names. Usually a
-        catalog number. Passed in as a list of strings.
-        :type im_base_names: list
-        :param orig_img_path: Path to the original image
-        :type orig_img_path: str, path object
-        :param ext: Extension of the original image with the "."
-        :type ext: str
-        :param meta_data: Optional, metadata dictionary organized with
-        keys as destination metadata tag names, values as key value.
-        :type meta_data: dict
-        """
-        output_map = self.output_map
-        # todo pass these off to boss_worker 
-        # for each bc_value or file name passed in
-        for bc in im_base_names:
-            # for each appropriate extension in output_map
-            for ext in ['.tif', '.jpg', '.png', '.raw']:
-                # unpack the value tuple
-                to_save, path = output_map[ext]
-                if to_save:
-                    # not sure of slick way to avoid checking ext twice
-                    if ext == '.raw':
-                        ext = orig_im_ext
-                    fileQty = len(glob.glob(f'{path}//{bc}*{ext}'))
-                    if fileQty > 0:
-                        new_file_suffix = self.suffix_lookup(fileQty)
-                        new_file_base_name = f'{bc}{new_file_suffix}'
-                        new_file_name = f'{path}//{new_file_base_name}{ext}'
-                    else:
-                        new_file_name = f'{path}//{bc}{ext}'
-                    # actually save it
-                    if ext == '.raw':
-                        shutil_move(orig_img_path, new_file_name)
-                    else:           
-                        cv2.imwrite(new_file_name, cv2.cvtColor(im, cv2.COLOR_RGB2BGR))
 
 
 class appWindow(QMainWindow):
@@ -295,13 +232,77 @@ class appWindow(QMainWindow):
         group_saveProcessedPng = self.mainWindow.group_saveProcessedPng.isChecked()
         lineEdit_pathProcessedPng = self.mainWindow.lineEdit_pathProcessedPng.text()
         # each value is a tuple containing (bool if checked, path, extension)
-        output_map = {'.raw':(group_keepUnalteredRaw, lineEdit_pathUnalteredRaw),
+        self.output_map = {'.raw':(group_keepUnalteredRaw, lineEdit_pathUnalteredRaw),
                       '.jpg':(group_saveProcessedJpg, lineEdit_pathProcessedJpg),
                       '.tif':(group_saveProcessedTIFF, lineEdit_pathProcessedTIFF),
                       '.png':(group_saveProcessedPng, lineEdit_pathProcessedPng)}
         dupNamingPolicy = self.mainWindow.comboBox_dupNamingPolicy.currentText()
 
-        self.save_output_handler = Save_Output_Handler(output_map, dupNamingPolicy)
+        # establish self.suffix_lookup according to dupNamingPolicy
+        # given an int (count of how many files have exact matching names,
+        # returns an appropriate file name suffix)
+        if dupNamingPolicy == 'append LOWER case letter':
+            self.suffix_lookup = lambda x: {n+1: ch for n, ch in enumerate(string.ascii_lowercase)}.get(x)
+        elif dupNamingPolicy == 'append UPPER case letter':
+            self.suffix_lookup = lambda x: {n+1: ch for n, ch in enumerate(string.ascii_uppercase)}.get(x)
+        elif dupNamingPolicy == 'append Number with underscore':
+            self.suffix_lookup = lambda x: f'_{x}'
+        elif dupNamingPolicy == 'OVERWRITE original image with newest':
+            self.suffix_lookup = lambda x: ''
+        else:
+            self.suffix_lookup = False
+
+    def save_output_images(self, im, im_base_names, orig_img_path, orig_im_ext,
+                           meta_data=None):
+        """
+        Function that saves processed images to the appropriate format and
+        locations.
+        :param im: Processed Image array to be saved.
+        :type im: cv2 Array
+        :param im_base_names: the destination file(s) base names. Usually a
+        catalog number. Passed in as a list of strings.
+        :type im_base_names: list
+        :param orig_img_path: Path to the original image
+        :type orig_img_path: str, path object
+        :param ext: Extension of the original image with the "."
+        :type ext: str
+        :param meta_data: Optional, metadata dictionary organized with
+        keys as destination metadata tag names, values as key value.
+        :type meta_data: dict
+        """
+        im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
+        output_map = self.output_map
+        # todo pass these off to boss_worker 
+        # for each bc_value or file name passed in
+        for bc in im_base_names:
+            # for each appropriate extension in output_map
+            for ext in ['.tif', '.png', '.jpg', '.raw']:
+                # unpack the value tuple
+                to_save, path = output_map[ext]
+                if to_save:
+                    # not sure of slick way to avoid checking ext twice
+                    if ext == '.raw':
+                        ext = orig_im_ext
+                    fileQty = len(glob.glob(f'{path}//{bc}*{ext}'))
+                    if fileQty > 0:
+                        new_file_suffix = self.suffix_lookup[fileQty]
+                        new_file_base_name = f'{bc}{new_file_suffix}'
+                        new_file_name = f'{path}//{new_file_base_name}{ext}'
+                    else:
+                        new_file_name = f'{path}//{bc}{ext}'
+                    if ext == orig_im_ext:
+                        # if it is a raw move just perform it
+                        try:
+                            shutil_move(orig_img_path, new_file_name)
+                        except FileNotFoundError:
+                            # condition when multiple bcs try to move > once.
+                            pass
+                    else:
+                        # if it a cv2 save function pass it to boss_worker
+                        save_worker_data = SaveWorkerData(new_file_name, im)
+                        save_job = Job('save_worker', save_worker_data, cv2.imwrite)
+                        self.boss_thread.request_job(save_job)
+                        #cv2.imwrite(new_file_name,im)
 
     def handle_blur_result(self, result):
         self.is_blurry = result
@@ -314,11 +315,35 @@ class appWindow(QMainWindow):
             detail_text = f'Blurry Image Path: {self.img_path}'
             self.userNotice(notice_text, notice_title, detail_text)
 
+    def handle_pp_result(self, result):
+        im = self.im
+        
+        # if no bc_code was found or checking for it is turned off
+        if self.bc_code:
+            names = self.bc_code
+        else: # name based on base_file_name
+            names = [self.base_file_name]
+
+        self.save_output_images(im, names, self.img_path, self.ext)
+
+    def handle_save_result(self, result):
+        """ called when the the save_worker finishes up """
+        # inform the app when image processing is complete
+        self.processing_image = False
+        # these are happening too soon
+        self.Timer_Emitter.timerStop.emit()
+        self.Image_Complete_Emitter.completed.emit()
+
     def alert_blur_finished(self):
         """ called when the results are in from blur detection. """
  
     def handle_bc_result(self, result):
         self.bc_code = result
+        if not self.bc_code:
+            notice_title = 'No Barcode Warning'
+            notice_text = f'Warning, No Barcode found!'
+            detail_text = f'No barcode found in image named: {self.img_path}'
+            self.userNotice(notice_text, notice_title, detail_text)
 
     def alert_bc_finished(self):
         """ called when the results are in from bcRead."""
@@ -373,7 +398,9 @@ class appWindow(QMainWindow):
                 elif worker_signal_data.worker_name == 'eq_worker':
                     self.handle_eq_result(worker_signal_data.signal_data)
                 elif worker_signal_data.worker_name == 'pp_worker':
-                    pass  # ???
+                    self.handle_pp_result(worker_signal_data.signal_data)
+                elif worker_signal_data.worker_name == 'save_worker':
+                    self.handle_save_result(worker_signal_data.signal_data)
 
     def handle_job_error(self, boss_signal_data):
         if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
@@ -536,6 +563,7 @@ class appWindow(QMainWindow):
         given a path to an unprocessed image, performs the appropriate
         processing steps.
         """
+        self.processing_image = True
         self.Timer_Emitter.timerStart.emit()
         try:
             im = self.openImageFile(img_path)
@@ -547,9 +575,9 @@ class appWindow(QMainWindow):
             title = 'Error opening file'
             detail_text = f'LibRawFatalError opening: {img_path}\nUsually this indicates a corrupted input image file.'
             self.userNotice(text, title, detail_text)
+            self.processing_image = True
             return
 
-        self.processing_image = True
         print(f'processing: {img_path}')
         self.img_path = img_path
         file_name, self.ext = os.path.splitext(img_path)
@@ -582,7 +610,6 @@ class appWindow(QMainWindow):
             # equipment corrections should set self.im
         else:
             self.im = im
-
         if self.mainWindow.group_colorCheckerDetection:
             # colorchecker functions
             if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
@@ -598,6 +625,7 @@ class appWindow(QMainWindow):
         # waiting on all workers before saveing happens in Boss thread
         pp_job = Job('pp_worker', None, self.post_processing)
         self.boss_thread.request_job(pp_job)
+        # process is now handed off too self.post_processing()
 
     def save_finished(self):
         print(f'saving {self.img_path} has finished.')
@@ -611,10 +639,6 @@ class appWindow(QMainWindow):
         im = self.im
         cropped_cc = self.cropped_cc
 
-#        for sty in ['retinex', 'avg_white', 'max_white']:
-#            im1 = self.white_balance_image(im, cropped_cc, style=sty)
-#            nim = self.colorchipDetect.ocv_to_pil(im1)
-#            nim.save(f"{sty}.jpg")
         # white balance params or styles will probably be a UI element.
         if self.mainWindow.checkBox_performWhiteBalance.isChecked():
             im = self.white_balance_image(im, cropped_cc, style='avg_white')
@@ -628,16 +652,9 @@ class appWindow(QMainWindow):
             user_def_quad = quad_map.index(user_def_loc) + 1
             # cc_quadrant starts at first,
             im = self.orient_image(im, self.cc_quadrant, user_def_quad)
-        # if no bc_code was found or checking for it is turned off
-        if self.bc_code:
-            names = self.bc_code
-        else: # name based on base_file_name
-            names = [self.base_file_name]
-        self.save_output_handler.save_output_images(im, names, self.img_path, self.ext)
-        # inform the app when image processing is complete
-        self.processing_image = False
-        self.Image_Complete_Emitter.completed.emit()
-        self.Timer_Emitter.timerStop.emit()
+        # pass off whatever was done to the image
+        self.im = im
+        # process is now handed off too self.handle_pp_result()
 
     def orient_image(self, im, picker_quadrant, desired_quadrant):
         '''
@@ -845,7 +862,6 @@ class appWindow(QMainWindow):
         return reply
 
     # Functions related to the saving and retrieval of preference settings
-
     def has(self, key):
         return self.settings.contains(key)
 

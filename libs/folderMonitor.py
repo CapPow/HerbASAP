@@ -23,7 +23,6 @@
 # imports here
 import string
 from os import path
-from shutil import move as shutil_move
 #import piexif
 
 from watchdog.events import PatternMatchingEventHandler
