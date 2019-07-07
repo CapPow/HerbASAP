@@ -8,5 +8,7 @@ ui/__pycache__/
 *.pyc
 
 
+
 # local environment directory
 env/
+.idea/

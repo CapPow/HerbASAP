@@ -23,6 +23,7 @@
 import lensfunpy
 import piexif
 import cv2
+import glob
 import numpy as np
 import os
 
@@ -58,8 +59,11 @@ class eqRead():
         lensModel = imgDict.get('lensmodel','')
         focalLength = imgDict.get('focallength','')[0]
         apertureValue = imgDict.get('fnumber','')[0]
+
         # load the equipment database
         db = lensfunpy.Database()
+        # db = lensfunpy.Database(paths=glob.glob('libs/lensfunpy-db/*.xml')) # For future use
+
         # lookup the camera details
         cam = db.find_cameras(camMaker, camModel, loose_search=False)[0]
         # lookup the lens details
