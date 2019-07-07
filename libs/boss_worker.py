@@ -2,7 +2,7 @@
 # bc_worker
 # blur_worker
 # eq_worker
-# save_worker
+# pp_worker
 from PyQt5.QtCore import (QObject, QRunnable, pyqtSignal, pyqtSlot, QThread,
                           QEventLoop)
 from PyQt5.QtWidgets import QApplication
@@ -77,7 +77,6 @@ class Boss(QThread):
     def __init__(self, thread_pool):
         super(Boss, self).__init__()
         self.__thread_pool = thread_pool
-        self.__sleep_time = 2  # measured in seconds
         self.__job_queue = []
         self.__should_run = True
         self.__is_bc_worker_running = False
@@ -88,37 +87,6 @@ class Boss(QThread):
         self.signals = BossSignals()
 
     def request_job(self, job):
-        """
-
-        """
-        #self.__job_queue.append(job)  # append job to queue (now last element)
-        self.__spawn_thread(job)
-
-#    def run(self):
-#        """
-#        see: https://doc.qt.io/archives/qq/qq27-responsive-guis.html#waitinginalocaleventloop
-#        """
-#        boss_started_data = BossSignalData(False, 'boss thread has started')
-#        self.signals.boss_started.emit(boss_started_data)
-#        while self.__should_run:
-#            if len(self.__job_queue) > 0:
-#                print('job_queue len is: ' + str(len(self.__job_queue)))
-#                job = self.__job_queue.pop(0)  # pop first element
-#                """
-#                    if the job is save_worker, then we will append it to the end of the queue
-#                    otherwise, the job is OK to run
-#                    1. if job is save_worker, we want to wait to schedule it until other threads complete
-#                        a. all threads complete == all __is_$_running are False
-#                    ! - ensure this doesn't overfill memory, not sure how Python will deal with popping / appending
-#                        big elements onto the queue. if the job data is re-created each time we may have memory
-#                        issues
-#                """
-#                self.__spawn_thread(job)
-#            else:
-#                pass
-#            #self.sleep(self.__sleep_time)  # https://doc.qt.io/qt-5/qthread.html#sleep
-
-    def __spawn_thread(self, job):
         """
 
         """
@@ -149,19 +117,29 @@ class Boss(QThread):
             eq_worker.signals.result.connect(self.worker_result_handler)
             eq_worker.signals.finished.connect(self.worker_finished_handler)
             self.__thread_pool.start(eq_worker)  # start eq_worker thread
-        # in this case, job_data should be None
-        elif job.job_name == 'save_worker' and job.job_data is None and job.job_function is not None:
+            # in this case, job_data should be None
+        elif job.job_name == 'pp_worker' and job.job_data is None and job.job_function is not None:
             # wait until 'clear_to_save' signal
             wait_event = QEventLoop()
             self.signals.clear_to_save.connect(wait_event.quit)       
             wait_event.exec()
-            save_worker = Worker(job.job_function)
-            save_worker.set_worker_name('save_worker')
-            save_worker.signals.started.connect(self.worker_started_handler)
-            save_worker.signals.error.connect(self.worker_error_handler)
-            save_worker.signals.result.connect(self.worker_result_handler)
-            save_worker.signals.finished.connect(self.worker_finished_handler)
-            self.__thread_pool.start(save_worker)  # start save_worker thread
+            pp_worker = Worker(job.job_function)
+            pp_worker.set_worker_name('pp_worker')
+            pp_worker.signals.started.connect(self.worker_started_handler)
+            pp_worker.signals.error.connect(self.worker_error_handler)
+            pp_worker.signals.result.connect(self.worker_result_handler)
+            pp_worker.signals.finished.connect(self.worker_finished_handler)
+            self.__thread_pool.start(pp_worker)  # start pp_worker thread
+            #save image jobs, this'll probably be hard drive rate limited
+#        elif job.job_name == 'eq_worker' and job.job_data is not None and job.job_function is not None:
+#            self.__is_eq_worker_running = True
+#            eq_worker = Worker(job.job_function, job.job_data.im, job.job_data.img_path, job.job_data.mDistance)
+#            eq_worker.set_worker_name('eq_worker')
+#            eq_worker.signals.started.connect(self.worker_started_handler)
+#            eq_worker.signals.error.connect(self.worker_error_handler)
+#            eq_worker.signals.result.connect(self.worker_result_handler)
+#            eq_worker.signals.finished.connect(self.worker_finished_handler)
+#            self.__thread_pool.start(eq_worker)  # start eq_worker thread
         else:
             print('no my son')
 

@@ -24,7 +24,6 @@
 import string
 from os import path
 from shutil import move as shutil_move
-import glob
 #import piexif
 
 from watchdog.events import PatternMatchingEventHandler
@@ -64,15 +63,12 @@ class Event_Handler(PatternMatchingEventHandler):
         # if it is leaving the self.watch_dir, set self.last_item = None
         if (path.dirname(img_path) != self.watch_dir) or event.event_type in self._removeEvents:
             # if a file is moved out out self.watch_dir:
-            #self.parent.existing_files.remove(img_path)
             if img_path == self.last_item:
                 self.last_item = None
             pass
         # if the event is an emit event and has not been seen emit it.
         if (event_type in self._emitEvents) and (img_path != self.last_item):
         #(img_path not in self.parent.existing_files):
-            # update the list of known files
-            #self.parent.existing_files.append(img_path)
             self._emitter.new_image_signal.emit(img_path)
         # remember this was the last object seen.
         self.last_item = img_path
@@ -82,13 +78,6 @@ class Event_Handler(PatternMatchingEventHandler):
 class Folder_Watcher:
     def __init__(self, input_folder_path=None, raw_image_patterns=None):
         self.watch_dir = input_folder_path
-        # identify currently present files        
-        
-        #self.existing_files = []
-        #for files in raw_image_patterns:
-        #    globPattern = path.join(input_folder_path, files)
-        #    self.existing_files.extend(glob.glob(globPattern))
-        
         self.emitter = New_Image_Emitter()
         self.observer = Observer(timeout=0.2)
         self.event_handler = Event_Handler(
@@ -103,63 +92,3 @@ class Folder_Watcher:
         self.observer.start()
         self.observer.join(timeout=.1)
 
-class Save_Output_Handler:
-    """
-    Class to handle storing the processed images, using names and formats
-    detemrined by user preferences.
-    """
-    def __init__(self, output_map, dupNamingPolicy):
-        self.output_map = output_map
-        # establish self.suffix_lookup according to dupNamingPolicy
-        # given an int (count of how many files have exact matching names,
-        # returns an appropriate file name suffix)
-        if dupNamingPolicy == 'append LOWER case letter':
-            self.suffix_lookup = lambda x: {n+1: ch for n, ch in enumerate(string.ascii_lowercase)}.get(x)
-        elif dupNamingPolicy == 'append UPPER case letter':
-            self.suffix_lookup = lambda x: {n+1: ch for n, ch in enumerate(string.ascii_uppercase)}.get(x)
-        elif dupNamingPolicy == 'append Number with underscore':
-            self.suffix_lookup = lambda x: f'_{x}'
-        elif dupNamingPolicy == 'OVERWRITE original image with newest':
-            self.suffix_lookup = lambda x: ''
-        else:
-            self.suffix_lookup = False
-
-    def save_output_images(self, im, orig_img_path, im_base_names, meta_data=None):
-        """
-        Function that saves processed images to the appropriate format and
-        locations.
-        :param im: Processed Image array to be saved.
-        :type im: cv2 Array
-        :param im_base_names: the destination file(s) base names. Usually a
-        catalog number. Passed in as a list of strings.
-        :type im_base_names: list
-        :param meta_data: Optional, metadata dictionary organized with
-        keys as destination metadata tag names, values as key value.
-        :type meta_data: dict
-        """
-        output_map = self.output_map
-        for obj, location, ext in output_map:
-            if obj:
-                to_rename = False
-                # flag for when the file should be moved instead of cv2 written
-                if not ext:
-                    ext = path.splitext(orig_img_path)[-1]
-                    to_rename = True
-                for bc in im_base_names:
-                    fileQty = len(glob.glob(f'{location}//{bc}*{ext}'))
-                    if fileQty > 0:
-                        new_file_suffix = self.suffix_lookup(fileQty)
-                        new_file_base_name = f'{bc}{new_file_suffix}'
-                        new_file_name = f'{location}//{new_file_base_name}{ext}'
-                    else:
-                        new_file_name = f'{location}//{bc}{ext}'
-                    # TODO add in the metadata handling code
-                    # piexif's transplant function may be useful if the exif is dumped in
-                    # the saving process.
-                    # See https://piexif.readthedocs.io/en/latest/functions.html#transplant
-                    # also, add in this program's name  and version  to proper tag for processing documentation
-                    # save outputs
-                    if to_rename:
-                        shutil_move(orig_img_path, new_file_name)
-                    else:
-                        cv2.imwrite(new_file_name, cv2.cvtColor(im, cv2.COLOR_RGB2BGR))

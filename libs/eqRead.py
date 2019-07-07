@@ -62,7 +62,7 @@ class eqRead():
 
         # load the equipment database
         db = lensfunpy.Database()
-        # db = lensfunpy.Database(paths=glob.glob('libs/lensfunpy-db/*.xml')) # For future use
+        #db = lensfunpy.Database(paths=glob.glob('libs/lensfunpy-db/*.xml')) # For future use
 
         # lookup the camera details
         cam = db.find_cameras(camMaker, camModel, loose_search=False)[0]
