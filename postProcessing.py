@@ -433,11 +433,11 @@ class appWindow(QMainWindow):
         # lum = (whiteR + whiteG + whiteB) / 3
 
         np_im = np.array(im)
-        np_color_chip_im = np.array(color_chip_im)
+        np_color_chip_im = np.array(color_chip_im, np.uint8)
 
         if style == "clip":
             try:
-                whiteR, whiteG, whiteB = self.colorchipDetect.predict_color_chip_whitevals(color_chip_im)
+                whiteR, whiteG, whiteB = self.colorchipDetect.predict_color_chip_whitevals(np_color_chip_im)
                 lum = (whiteR * 0.2126 + whiteG * 0.7152 + whiteB * 0.0722)
                 imgR = im[..., 0].copy()
                 imgG = im[..., 1].copy()
@@ -491,7 +491,7 @@ class appWindow(QMainWindow):
             im[2] = np.minimum(im[2] * (255 / float(color_chip_im[2].max())), 255)
             return im.transpose(1, 2, 0).astype(np.uint8)
         elif style == 'avg_white':
-            avg_white = self.colorchipDetect.predict_color_chip_whitevals(color_chip_im)
+            avg_white = self.colorchipDetect.predict_color_chip_whitevals(np_color_chip_im)
             brightest = np.array(avg_white).max()
 
             color_chip_im = np_color_chip_im.transpose(2, 0, 1)

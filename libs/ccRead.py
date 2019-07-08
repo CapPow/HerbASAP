@@ -535,43 +535,21 @@ class ColorchipRead:
         Takes the white values within the cropped CC image and averages them in RGB. The whitest values in the image is
         determined in the L*a*b color space, wherein only lightness values higher than (max lightness value - 1) is
         considered
-
-        Converting from RGB to LAB color space is not supported under PIL, but was done through a solution from:
-        https://gist.github.com/mrkn/28f95f95731a5a24e553
+        
         :param color_chip_image: The cropped color chip image.
         :type color_chip_image: Image
         :return: Returns a list of the averaged whitest values
         :rtype: list
         """
-        cci_array = np.array(color_chip_image)
 
-        srgb_profile = ImageCms.createProfile("sRGB")
-        lab_profile = ImageCms.createProfile("LAB")
-        rgb2lab_transform = ImageCms.buildTransformFromOpenProfiles(srgb_profile, lab_profile, "RGB", "LAB")
-        color_chip_image_lab = ImageCms.applyTransform(color_chip_image, rgb2lab_transform)
-
-        ccil_array = np.array(color_chip_image_lab)
+        cci_array = np.array(color_chip_image,  dtype=np.uint8)
+        ccil_array = cv2.cvtColor(color_chip_image, cv2.COLOR_RGB2Lab)
         width, height = ccil_array.shape[0], ccil_array.shape[1]
-
-        lightness_dict = {}
-        for row in range(width):
-            for column in range(height):
-                lightness = ccil_array[row][column][0]
-                lightness_dict[(row, column)] = lightness
-
-        max_lightness = max(list(lightness_dict.values()))
-        white_pixels_indices = []
-        for idx, lightness in enumerate(list(lightness_dict.values())):
-            if lightness > (max_lightness - 1):
-                white_pixels_indices.append(list(lightness_dict.keys())[idx])
-
-        white_pixels_rgbvals = []
-        for index in white_pixels_indices:
-            row, column = index[0], index[1]
-            white_pixels_rgbvals.append(cci_array[row][column])
-
-        white_pixels_nparray = np.array(white_pixels_rgbvals)
-        white_pixels_average = np.average(white_pixels_nparray, axis=0)
+        # id max_lightness in ccil (lab space)
+        max_lightness = ccil_array[...,0].max()
+        # index cci_array based on conditions met in ccil_array
+        white_pixels_rgbvals = cci_array[ ccil_array[...,0]> max_lightness-1]
+        white_pixels_average = np.average(white_pixels_rgbvals, axis=0)
 
         return list(white_pixels_average)
 
