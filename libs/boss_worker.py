@@ -280,6 +280,9 @@ class Worker(QRunnable):
             worker_error_data = WorkerErrorData(e, exctype, value, traceback.format_exc())
             error_data = WorkerSignalData(self.worker_name, worker_error_data)
             self.signals.error.emit(error_data)
+            # NOTE This makes the program more fragile, should be removed as we get closer to release
+            # added for now because useful tracebacks were being obfuscated
+            raise
         else:
             result_data = WorkerSignalData(self.worker_name, result)
             self.signals.result.emit(result_data)  # Return the result of the processing
