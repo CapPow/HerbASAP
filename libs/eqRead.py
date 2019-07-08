@@ -21,6 +21,7 @@
 
 """
 import lensfunpy
+from lensfunpy import XMLFormatError
 import piexif
 import cv2
 import glob
@@ -31,7 +32,11 @@ class eqRead():
     def __init__(self, parent=None, *args):
         super(eqRead, self).__init__()
         self.parent = parent
-        
+        try:  # prefer to use system db
+            self.db = lensfunpy.Database()
+        except XMLFormatError:
+            # if there is a format error, attempt to use locally bundled xmls
+            self.db = lensfunpy.Database(paths=glob.glob('libs/lensfunpy-db/*.xml')) # For future use            
         # piexif's transplant function may be useful if the exif is dumped in
         # the saving process.
         # See https://piexif.readthedocs.io/en/latest/functions.html#transplant
@@ -61,9 +66,7 @@ class eqRead():
         apertureValue = imgDict.get('fnumber','')[0]
 
         # load the equipment database
-        #db = lensfunpy.Database()
-        db = lensfunpy.Database(paths=glob.glob('libs/lensfunpy-db/*.xml')) # For future use
-
+        db = self.db
         # lookup the camera details
         cam = db.find_cameras(camMaker, camModel, loose_search=False)[0]
         # lookup the lens details
@@ -89,7 +92,6 @@ class eqRead():
 
         # extract the equipment details. Returned as dict (equip).
         equip = self.detImagingEquipment(imgPath)
-        print(equip)
         # setup equipment variables
         height, width, rgb = im.shape
         mod = lensfunpy.Modifier(equip['lens'],
