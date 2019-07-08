@@ -61,8 +61,8 @@ class eqRead():
         apertureValue = imgDict.get('fnumber','')[0]
 
         # load the equipment database
-        db = lensfunpy.Database()
-        #db = lensfunpy.Database(paths=glob.glob('libs/lensfunpy-db/*.xml')) # For future use
+        #db = lensfunpy.Database()
+        db = lensfunpy.Database(paths=glob.glob('libs/lensfunpy-db/*.xml')) # For future use
 
         # lookup the camera details
         cam = db.find_cameras(camMaker, camModel, loose_search=False)[0]
@@ -89,6 +89,7 @@ class eqRead():
 
         # extract the equipment details. Returned as dict (equip).
         equip = self.detImagingEquipment(imgPath)
+        print(equip)
         # setup equipment variables
         height, width, rgb = im.shape
         mod = lensfunpy.Modifier(equip['lens'],
