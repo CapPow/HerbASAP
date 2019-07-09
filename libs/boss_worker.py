@@ -190,7 +190,7 @@ class Boss(QThread):
                     self.__is_blur_worker_running,
                     self.__is_bc_worker_running]):
             self.signals.clear_to_save.emit()
-        
+
     def worker_error_handler(self, worker_signal_data):
         """
             single handler for all finished signals to be routed through

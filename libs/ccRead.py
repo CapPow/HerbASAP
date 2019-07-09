@@ -77,7 +77,6 @@ class ColorchipRead:
                                                                  self.high_precision_model.layers[0].input,
                                                                  K.learning_phase()],
                                                                 [self.high_precision_model.layers[-1].output])
-
 #        init_im = np.zeros((250, 250, 3)).astype('uint8')
 #        init_im = Image.fromarray(init_im)
 #        print("[INFO] Initializing neural networks")

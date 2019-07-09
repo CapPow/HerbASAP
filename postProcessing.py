@@ -35,7 +35,8 @@ from shutil import move as shutil_move
 # UI libs
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QDialog
-from PyQt5.QtCore import (QSettings, Qt, QObject, QThreadPool, QEventLoop)
+from PyQt5.QtCore import (QSettings, Qt, QObject, QThreadPool, QEventLoop,
+                          QMimeData)
 # image libs
 import rawpy
 from rawpy import LibRawNonFatalError, LibRawFatalError
@@ -110,14 +111,16 @@ class appWindow(QMainWindow):
         self.settings.setFallbacksEnabled(False)    # File only, no fallback to registry.
         # populate the settings based on the previous preferences
         self.populateSettings()
-
-        self.New_Image_Emitter = New_Image_Emitter()
-
+        ###
         # initalize the folder_watcher using current user inputs
+        ###
         self.setup_Folder_Watcher()
-        # initalize the Save_Output_Handler using current user inputs
         self.setup_Output_Handler()
+        ###
+        # signaling for the to process image queue
+        ###
         self.image_queue = []
+        self.New_Image_Emitter = New_Image_Emitter()
         self.Image_Complete_Emitter = Image_Complete_Emitter()
         self.Image_Complete_Emitter.completed.connect(self.process_from_queue)
         # using signals to start/stop timers
@@ -125,22 +128,24 @@ class appWindow(QMainWindow):
         self.Timer_Emitter.timerStart.connect(self.start_timer)
         self.Timer_Emitter.timerStop.connect(self.stop_timer)
         self.timer_start = time.time()
-        # fill in the previews
+        ####
+        #set up bcRead & associated ui
+        ###
         self.updateCatalogNumberPreviews()
-        prefix = self.mainWindow.lineEdit_catalogNumberPrefix.text()
-        digits = int(self.mainWindow.spinBox_catalogDigits.value())
-        self.bcRead = bcRead(prefix, digits, parent=self.mainWindow)
+        patterns = self.retrieve_bc_patterns()
+        self.fill_patterns(patterns)
+        self.bcRead = bcRead(patterns, parent=self.mainWindow)
+        ###
+        #
+        ###
         self.blurDetect = blurDetect(parent=self.mainWindow)
         self.colorchipDetect = ColorchipRead(parent=self.mainWindow)
         self.eqRead = eqRead(parent=self.mainWindow)
-        # self.ccRead = ccRead(parent=self.mainWindow)
 
-        # assign applicable user settings for eqRead.
-        # this function is here, for ease of slot assignment in pyqt designer
         self.reset_working_variables()
-        # self.updateEqSettings()
-
-        # create boss thread, it starts itself and is running the __boss_function
+        ###
+        # job manaager "boss_thread", it starts itself and is running the __boss_function
+        ###
         self.boss_thread = Boss(self.threadPool)
         # setup Boss's signals
         self.boss_thread.signals.boss_started.connect(self.handle_boss_started)
@@ -153,6 +158,10 @@ class appWindow(QMainWindow):
         # https://doc.qt.io/qt-5/qthread.html#start
         self.boss_thread.start()
         print('boss thread started')
+        
+        # setup static UI buttons
+        self.mainWindow.toolButton_removePattern.pressed.connect(self.remove_pattern)
+        self.mainWindow.toolButton_addPattern.pressed.connect(self.add_pattern)
 
 #       self.versionCheck()
 
@@ -199,6 +208,15 @@ class appWindow(QMainWindow):
         run_time = end_time - self.timer_start
         print(f'Elapsed runtime: {run_time}')
 
+    def update_cc_image(self, color_chip_im):
+        width, height = color_chip_im.size
+        bytesPerLine = 3 * width
+        qImg = QtGui.QImage(np.array(color_chip_im), width, height, bytesPerLine, QtGui.QImage.Format_RGB888)
+        pixmap = QtGui.QPixmap.fromImage(qImg)
+        pixmap_image = QtGui.QPixmap(pixmap)
+        cc_view_label = self.mainWindow.label_cc_image
+        cc_view_label.setPixmap(pixmap_image)
+
     def setup_Folder_Watcher(self, raw_image_patterns=None):
         """
         initiates self.foldeR_watcher with user inputs.
@@ -213,7 +231,19 @@ class appWindow(QMainWindow):
         lineEdit_inputPath = self.mainWindow.lineEdit_inputPath.text()
         self.folder_watcher = Folder_Watcher(lineEdit_inputPath, raw_image_patterns)
         self.folder_watcher.emitter.new_image_signal.connect(self.queue_image)
-        self.mainWindow.pushButton_beginMonitoring.clicked.connect(self.folder_watcher.run)
+        self.mainWindow.pushButton_toggleMonitoring.clicked.connect(self.toggle_folder_monitoring)
+        
+    def toggle_folder_monitoring(self):
+        folder_watcher = self.folder_watcher
+        pushButton = self.mainWindow.pushButton_toggleMonitoring
+        print(folder_watcher.is_monitoring)
+        if folder_watcher.is_monitoring:
+            pushButton.setText('Begin folder monitoring')
+            folder_watcher.stop()
+        else:
+            pushButton.setText(' Stop folder monitoring')
+            folder_watcher.run()
+
 
     def setup_Output_Handler(self):
         """
@@ -242,13 +272,13 @@ class appWindow(QMainWindow):
         # establish self.suffix_lookup according to dupNamingPolicy
         # given an int (count of how many files have exact matching names,
         # returns an appropriate file name suffix)
-        if dupNamingPolicy == 'append LOWER case letter':
+        if dupNamingPolicy == 'LOWER case letter':
             self.suffix_lookup = lambda x: {n+1: ch for n, ch in enumerate(string.ascii_lowercase)}.get(x)
-        elif dupNamingPolicy == 'append UPPER case letter':
+        elif dupNamingPolicy == 'UPPER case letter':
             self.suffix_lookup = lambda x: {n+1: ch for n, ch in enumerate(string.ascii_uppercase)}.get(x)
-        elif dupNamingPolicy == 'append Number with underscore':
+        elif dupNamingPolicy == 'Number with underscore':
             self.suffix_lookup = lambda x: f'_{x}'
-        elif dupNamingPolicy == 'OVERWRITE original image with newest':
+        elif dupNamingPolicy == 'OVERWRITE original':
             self.suffix_lookup = lambda x: ''
         else:
             self.suffix_lookup = False
@@ -628,6 +658,7 @@ class appWindow(QMainWindow):
             # self.cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
             self.cropped_cc = cropped_cc
             print(f"CC | Position: {cc_position}, Quadrant: {self.cc_quadrant}")
+            self.update_cc_image(cropped_cc)
 
         # waiting on all workers before saveing happens in Boss thread
         pp_job = Job('pp_worker', None, self.post_processing)
@@ -683,9 +714,7 @@ class appWindow(QMainWindow):
         """ a development assistant function, connected to a GUI button
         used to test various functions before complete GUI integration."""
 
-        img_path, _ = QtWidgets.QFileDialog.getOpenFileName(
-                None, "Open Sample Image")
-
+        img_path, _ = QtWidgets.QFileDialog.getOpenFileName(None, "Open Sample Image")
         self.queue_image(img_path)
 
     def openImageFile(self, imgPath,
@@ -774,6 +803,66 @@ class appWindow(QMainWindow):
         self.mainWindow.groupBox_colorCheckerSize.setEnabled(ccStatus)
         self.mainWindow.group_equipmentDetection.setEnabled(eqStatus)
 
+    def fill_patterns(self, joinedPattern):
+        """
+        Populates the listWidget_patterns with saved patterns.
+        """
+        patterns = self.retrieve_bc_patterns()
+        patterns = joinedPattern.split('|')
+        listWidget_patterns = self.mainWindow.listWidget_patterns
+        listWidget_patterns.clear()
+        for i, pattern in enumerate(patterns):
+            # save the item
+            listWidget_patterns.addItem(pattern)
+            # now that it exists set the flag as editable
+            item = listWidget_patterns.item(i)
+            item.setFlags(item.flags() | Qt.ItemIsEditable)
+
+    def add_pattern(self):
+        """
+        called when toolButton_addPattern is pressed
+        """
+        prefix = self.mainWindow.lineEdit_catalogNumberPrefix.text()
+        digits = int(self.mainWindow.spinBox_catalogDigits.value())
+        if digits == 0:
+            collRegEx = rf'^({prefix}.*)\D*'
+        else:
+            collRegEx = rf'^({prefix}\d{{{digits}}})\D*'
+
+        listWidget_patterns = self.mainWindow.listWidget_patterns
+        listWidget_patterns.addItem(collRegEx)
+        item_pos = listWidget_patterns.count()
+        self.set_bc_pattern()
+        
+
+    def remove_pattern(self):
+        """
+        called when toolButton_removePattern is pressed
+        """
+        listWidget_patterns = self.mainWindow.listWidget_patterns
+        selection = listWidget_patterns.currentRow()
+        item = listWidget_patterns.takeItem(selection)
+        item = None
+        self.set_bc_pattern()
+    
+    def retrieve_bc_patterns(self):
+        """
+        harvests all pattern strings in the listWidget_patterns and returns
+        them as a unique "|" joined set
+        """
+        listWidget_patterns = self.mainWindow.listWidget_patterns
+        # is there really no way to get everything from a listWidget?
+        patterns = listWidget_patterns.findItems('', Qt.MatchContains)
+        patterns = "|".join(set(x.text() for x in patterns))
+        return patterns
+
+    def set_bc_pattern(self):
+        """ harvests all pattern strings in the listWidget_patterns, joins
+        them and sends them to self.bcRead.compileRegexPattern which in turn
+        sets the bcRead.rePattern attribute."""
+        patterns = self.retrieve_bc_patterns()
+        self.bcRead.compileRegexPattern(patterns)
+
     def updateCatalogNumberPreviews(self):
         """ called when a change is made to any of the appropriate fields in
         barcode detection group. Updates the example preview labels"""
@@ -785,7 +874,6 @@ class appWindow(QMainWindow):
         try:
             prefix = self.lineEdit_catalogNumberPrefix.text()
             digits = int(self.spinBox_catalogDigits.value())
-            self.bcRead.bcReadcompileRegexPattern(prefix, digits)
         except AttributeError:
             # bcRead may not have been imported yet
             pass
@@ -793,10 +881,13 @@ class appWindow(QMainWindow):
         # update bc pattern preview
         prefix = self.mainWindow.lineEdit_catalogNumberPrefix.text()
         digits = int(self.mainWindow.spinBox_catalogDigits.value())
-        startingNum = ''.join(str(x) for x in list(range(digits)))
-        startingNum = startingNum.zfill(digits)  # fill in leading zeroes
+        if digits == 0:
+            startingNum = '(anything)'    
+        else:
+            startingNum = ''.join(str(x) for x in list(range(digits)))
+            startingNum = startingNum.zfill(digits)  # fill in leading zeroes
         previewText = f'{prefix}{startingNum}'  # assemble the preview string.
-        self.mainWindow.label_previewDisplay.setText(previewText) # set it
+        #self.mainWindow.label_previewDisplay.setText(previewText) # set it
         # update dup naming preview
         self.setup_Output_Handler()
         dupPreviewEnd = self.suffix_lookup(1)
@@ -897,10 +988,13 @@ class appWindow(QMainWindow):
         children = self.mainWindow.tabWidget.findChildren(QObject)
         [x.blockSignals(True) for x in children]
 
+        # populate listWidget_patterns        
+        self.fill_patterns(self.get('joinedPattern', '.*'))
+        
         # QComboBox
         comboBox_colorCheckerPosition = self.get('comboBox_colorCheckerPosition', 'Upper right')
         self.populateQComboBoxSettings( self.mainWindow.comboBox_colorCheckerPosition, comboBox_colorCheckerPosition)
-        comboBox_dupNamingPolicy = self.get('comboBox_dupNamingPolicy', 'append LOWER case letter')
+        comboBox_dupNamingPolicy = self.get('comboBox_dupNamingPolicy', 'LOWER case letter')
         self.populateQComboBoxSettings( self.mainWindow.comboBox_dupNamingPolicy, comboBox_dupNamingPolicy)
 
         # QLineEdit
@@ -1018,6 +1112,8 @@ class appWindow(QMainWindow):
 #        except AttributeError:  # first run may not yet have this saved.
 #            date_versionCheck = ""
 #        self.setValue('date_versionCheck', date_versionCheck)
+        # save the stored barcode patterns
+        self.settings.setValue('joinedPattern', self.retrieve_bc_patterns())
 
         # QComboBox
         comboBox_colorCheckerPosition = self.mainWindow.comboBox_colorCheckerPosition.currentText()

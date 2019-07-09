@@ -23,6 +23,7 @@
 # imports here
 import string
 from os import path
+import time
 #import piexif
 
 from watchdog.events import PatternMatchingEventHandler
@@ -85,9 +86,20 @@ class Folder_Watcher:
                 emitter=self.emitter,
                 patterns=raw_image_patterns,
                 ignore_directories=True)
+        self.is_monitoring = False
 
     def run(self):
-        self.observer.schedule(self.event_handler, self.watch_dir)
-        self.observer.start()
-        self.observer.join(timeout=.1)
+        if self.is_monitoring:
+            pass
+        else:
+            self.is_monitoring = True
+            self.observer.schedule(self.event_handler, self.watch_dir)
+            self.observer.start()
+            #self.observer.join()
 
+    def stop(self):
+        while (self.observer.event_queue.unfinished_tasks != 0):
+                time.sleep(1)
+        self.observer.stop()
+        self.observer.join(timeout=.1)
+        self.is_monitoring = False

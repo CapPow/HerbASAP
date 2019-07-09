@@ -52,24 +52,17 @@ class bcRead():
     rotation_list (list): The saved rotation list
     """
 
-    def __init__(self, prefix=".*", digits="*", 
+    def __init__(self, patterns, 
                  rotation_list=[9,25,18], parent=None, *args):
         super(bcRead, self).__init__()
         self.parent = parent
-        self.compileRegexPattern(prefix, digits)
+        self.compileRegexPattern(patterns)
         # This might need promoted to a user preference in mainwindow
         self.rotation_list = rotation_list
 
-    def compileRegexPattern(self, prefix, digits):
+    def compileRegexPattern(self, patterns):
         """ compiles a collection specific regex pattern """
-        #  if the digits are not explicit, match 0 to any quantity of digits.
-        if digits == "*":
-            collRegEx = rf'^({prefix}\d*)\D*'
-        else:
-            # triple { required for combining regex and f strings
-            collRegEx = rf'^({prefix}\d{{{digits}}})\D*'
-        rePattern = re.compile(collRegEx)
-        # set the compiled regex as a class attribute.
+        rePattern = re.compile(patterns)
         self.rePattern = rePattern
 
     def checkPattern(self, bcData):
@@ -119,11 +112,10 @@ class bcRead():
                 len_bc = len(bcRawData)
                 if len_bc > 0:
                     break
-            # if we hit the end of the rotation_list with no results return None
+            # if the rotation_list is exhausted with no results, return None
             else:
                 return None
-        #for_cv2_im = cv2.cvtColor(rotated_img, cv2.COLOR_RGB2BGR)
-        #cv2.imwrite('rotated_img.jpg', for_cv2_im)
+
         if return_details:
             bcData = []
             for result in bcRawData:

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>705</width>
+    <width>668</width>
     <height>627</height>
    </rect>
   </property>
@@ -28,20 +28,14 @@
         <string>Auto Post Processing</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_16">
-        <item row="0" column="0">
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
+        <item row="2" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButton_testFunction">
+          <property name="text">
+           <string>testFunction</string>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
+         </widget>
         </item>
-        <item row="2" column="0">
+        <item row="3" column="0" colspan="2">
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QPushButton" name="pushButton_close">
@@ -64,7 +58,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_beginMonitoring">
+           <widget class="QPushButton" name="pushButton_toggleMonitoring">
             <property name="text">
              <string>Begin Monitoring Folder</string>
             </property>
@@ -73,11 +67,24 @@
          </layout>
         </item>
         <item row="1" column="0">
-         <widget class="QPushButton" name="pushButton_testFunction">
+         <widget class="QLabel" name="label_cc_image">
           <property name="text">
-           <string>testFunction</string>
+           <string/>
           </property>
          </widget>
+        </item>
+        <item row="0" column="0">
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </widget>
@@ -96,7 +103,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>663</width>
+             <width>626</width>
              <height>513</height>
             </rect>
            </property>
@@ -327,8 +334,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>646</width>
-               <height>975</height>
+               <width>609</width>
+               <height>1029</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -390,17 +397,94 @@
                     <bool>false</bool>
                    </property>
                    <layout class="QGridLayout" name="gridLayout_3">
-                    <item row="3" column="0">
-                     <widget class="QLabel" name="label_dupPreview">
+                    <item row="2" column="0">
+                     <widget class="QLabel" name="label_dupNamingPolicy">
                       <property name="text">
-                       <string>Preview</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                       <string>Duplicate naming policy</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="0" column="6">
+                    <item row="1" column="1">
+                     <widget class="QLineEdit" name="lineEdit_catalogNumberPrefix">
+                      <property name="placeholderText">
+                       <string>ABCD</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="3">
+                     <widget class="QSpinBox" name="spinBox_catalogDigits">
+                      <property name="frame">
+                       <bool>true</bool>
+                      </property>
+                      <property name="minimum">
+                       <number>0</number>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="2">
+                     <widget class="QLabel" name="label_digits">
+                      <property name="text">
+                       <string>Digits</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="1" colspan="3">
+                     <widget class="QComboBox" name="comboBox_dupNamingPolicy">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="sizeAdjustPolicy">
+                       <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+                      </property>
+                      <item>
+                       <property name="text">
+                        <string>LOWER case letter</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>UPPER case letter</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Number with underscore</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>OVERWRITE original</string>
+                       </property>
+                      </item>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="label_catalogNumberPrefix">
+                      <property name="text">
+                       <string>Catalog Number Prefix</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="0">
+                     <spacer name="verticalSpacer_2">
+                      <property name="orientation">
+                       <enum>Qt::Vertical</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>20</width>
+                        <height>40</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                    <item row="0" column="8">
                      <spacer name="horizontalSpacer">
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
@@ -413,32 +497,15 @@
                       </property>
                      </spacer>
                     </item>
-                    <item row="2" column="2" colspan="3">
-                     <widget class="QComboBox" name="comboBox_dupNamingPolicy">
-                      <item>
-                       <property name="text">
-                        <string>append LOWER case letter</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>append UPPER case letter</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>append Number with underscore</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>OVERWRITE original image with newest</string>
-                       </property>
-                      </item>
+                    <item row="3" column="1">
+                     <widget class="QLabel" name="label_dupPreviewDisplay">
+                      <property name="text">
+                       <string/>
+                      </property>
                      </widget>
                     </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="label_preview">
+                    <item row="3" column="0">
+                     <widget class="QLabel" name="label_dupPreview">
                       <property name="text">
                        <string>Preview</string>
                       </property>
@@ -447,53 +514,56 @@
                       </property>
                      </widget>
                     </item>
-                    <item row="0" column="4">
-                     <widget class="QSpinBox" name="spinBox_catalogDigits">
-                      <property name="minimum">
-                       <number>1</number>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="2" colspan="4">
-                     <widget class="QLabel" name="label_previewDisplay">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="2">
-                     <widget class="QLineEdit" name="lineEdit_catalogNumberPrefix">
-                      <property name="placeholderText">
-                       <string>ABCD</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="3">
-                     <widget class="QLabel" name="label_digits">
-                      <property name="text">
-                       <string>Digits</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="label_catalogNumberPrefix">
-                      <property name="text">
-                       <string>Catalog Number Prefix</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="label_dupNamingPolicy">
-                      <property name="text">
-                       <string>Duplicate naming policy</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="2" colspan="4">
-                     <widget class="QLabel" name="label_dupPreviewDisplay">
-                      <property name="text">
-                       <string/>
-                      </property>
+                    <item row="0" column="7" rowspan="4">
+                     <widget class="QFrame" name="frame_patterns">
+                      <layout class="QGridLayout" name="gridLayout_18">
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item row="0" column="0" colspan="3">
+                        <widget class="QListWidget" name="listWidget_patterns">
+                         <property name="autoScroll">
+                          <bool>false</bool>
+                         </property>
+                         <property name="selectionRectVisible">
+                          <bool>false</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="3" column="2">
+                        <widget class="QToolButton" name="toolButton_removePattern">
+                         <property name="text">
+                          <string>remove</string>
+                         </property>
+                         <property name="autoRaise">
+                          <bool>false</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="3" column="1">
+                        <spacer name="horizontalSpacer_11">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>40</width>
+                           <height>20</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                       <item row="3" column="0">
+                        <widget class="QToolButton" name="toolButton_addPattern">
+                         <property name="text">
+                          <string>add </string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
                      </widget>
                     </item>
                    </layout>
@@ -508,6 +578,25 @@
                  <string>Blur detection</string>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_8">
+                 <item row="2" column="0" colspan="2">
+                  <widget class="QLabel" name="label_15">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <pointsize>10</pointsize>
+                     <italic>true</italic>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>(lower is more blur tolerant)</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
                  <item row="0" column="0">
                   <widget class="QCheckBox" name="checkBox_blurDetection">
                    <property name="text">
@@ -518,36 +607,13 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="4">
-                  <spacer name="horizontalSpacer_4">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item row="0" column="2">
-                  <widget class="QLabel" name="label_13">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
-                   <property name="text">
-                    <string>Laplacian threshold</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="3">
+                 <item row="1" column="1">
                   <widget class="QDoubleSpinBox" name="doubleSpinBox_blurThreshold">
                    <property name="enabled">
                     <bool>true</bool>
+                   </property>
+                   <property name="focusPolicy">
+                    <enum>Qt::ClickFocus</enum>
                    </property>
                    <property name="decimals">
                     <number>3</number>
@@ -566,7 +632,7 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="1">
+                 <item row="1" column="2">
                   <spacer name="horizontalSpacer_6">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
@@ -578,6 +644,19 @@
                     </size>
                    </property>
                   </spacer>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_13">
+                   <property name="enabled">
+                    <bool>true</bool>
+                   </property>
+                   <property name="text">
+                    <string>Laplacian threshold</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>
@@ -607,13 +686,6 @@
                       </property>
                      </widget>
                     </item>
-                    <item row="0" column="0">
-                     <widget class="QRadioButton" name="radioButton_colorCheckerSmall">
-                      <property name="text">
-                       <string>Small</string>
-                      </property>
-                     </widget>
-                    </item>
                     <item row="0" column="2">
                      <spacer name="horizontalSpacer_9">
                       <property name="orientation">
@@ -626,6 +698,13 @@
                        </size>
                       </property>
                      </spacer>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QRadioButton" name="radioButton_colorCheckerSmall">
+                      <property name="text">
+                       <string>Small</string>
+                      </property>
+                     </widget>
                     </item>
                    </layout>
                   </widget>
@@ -775,6 +854,9 @@
                 <layout class="QGridLayout" name="gridLayout_9">
                  <item row="0" column="1">
                   <widget class="QDoubleSpinBox" name="doubleSpinBox_gammaValue">
+                   <property name="focusPolicy">
+                    <enum>Qt::ClickFocus</enum>
+                   </property>
                    <property name="minimum">
                     <double>0.010000000000000</double>
                    </property>
@@ -823,21 +905,7 @@
                 <property name="checkable">
                  <bool>false</bool>
                 </property>
-                <layout class="QFormLayout" name="formLayout">
-                 <item row="0" column="0" colspan="2">
-                  <widget class="QCheckBox" name="checkBox_metaDataApplication">
-                   <property name="text">
-                    <string>Apply metadata to images</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="label_collectionName">
-                   <property name="text">
-                    <string>Collection name</string>
-                   </property>
-                  </widget>
-                 </item>
+                <layout class="QGridLayout" name="gridLayout_19" columnstretch="0,3,0">
                  <item row="1" column="1">
                   <widget class="QPlainTextEdit" name="plainTextEdit_collectionName">
                    <property name="sizePolicy">
@@ -857,37 +925,21 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="3" column="0">
-                  <widget class="QLabel" name="label_collectionIURL">
+                 <item row="5" column="0">
+                  <widget class="QLabel" name="label_copywriteLicense">
                    <property name="text">
-                    <string>Collection URL</string>
+                    <string>Copywrite License:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_collectionName">
+                   <property name="text">
+                    <string>Collection name</string>
                    </property>
                   </widget>
                  </item>
                  <item row="3" column="1">
-                  <widget class="QPlainTextEdit" name="plainTextEdit_collectionURL">
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>50</height>
-                    </size>
-                   </property>
-                   <property name="inputMethodHints">
-                    <set>Qt::ImhMultiLine|Qt::ImhUrlCharactersOnly</set>
-                   </property>
-                   <property name="tabChangesFocus">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="0">
-                  <widget class="QLabel" name="label_contactName">
-                   <property name="text">
-                    <string>Contact name</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="1">
                   <widget class="QPlainTextEdit" name="plainTextEdit_contactName">
                    <property name="minimumSize">
                     <size>
@@ -900,14 +952,47 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="5" column="0">
+                 <item row="4" column="0">
                   <widget class="QLabel" name="label_contactEmail">
                    <property name="text">
                     <string>Contact Email</string>
                    </property>
                   </widget>
                  </item>
+                 <item row="1" column="2">
+                  <spacer name="horizontalSpacer_10">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_collectionIURL">
+                   <property name="text">
+                    <string>Collection URL</string>
+                   </property>
+                  </widget>
+                 </item>
                  <item row="5" column="1">
+                  <widget class="QPlainTextEdit" name="plainTextEdit_copywriteLicense">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>50</height>
+                    </size>
+                   </property>
+                   <property name="tabChangesFocus">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
                   <widget class="QPlainTextEdit" name="plainTextEdit_contactEmail">
                    <property name="minimumSize">
                     <size>
@@ -923,20 +1008,30 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="6" column="0">
-                  <widget class="QLabel" name="label_copywriteLicense">
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="label_contactName">
                    <property name="text">
-                    <string>Copywrite License:</string>
+                    <string>Contact name</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="6" column="1">
-                  <widget class="QPlainTextEdit" name="plainTextEdit_copywriteLicense">
+                 <item row="0" column="0" colspan="2">
+                  <widget class="QCheckBox" name="checkBox_metaDataApplication">
+                   <property name="text">
+                    <string>Apply metadata to images</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QPlainTextEdit" name="plainTextEdit_collectionURL">
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
                      <height>50</height>
                     </size>
+                   </property>
+                   <property name="inputMethodHints">
+                    <set>Qt::ImhMultiLine|Qt::ImhUrlCharactersOnly</set>
                    </property>
                    <property name="tabChangesFocus">
                     <bool>true</bool>
@@ -963,7 +1058,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>705</width>
+     <width>668</width>
      <height>22</height>
     </rect>
    </property>
@@ -1011,7 +1106,7 @@
   <tabstop>group_equipmentDetection</tabstop>
   <tabstop>group_metaDataApplication</tabstop>
   <tabstop>plainTextEdit_collectionName</tabstop>
-  <tabstop>pushButton_beginMonitoring</tabstop>
+  <tabstop>pushButton_toggleMonitoring</tabstop>
   <tabstop>plainTextEdit_copywriteLicense</tabstop>
   <tabstop>monitor_scrollArea</tabstop>
   <tabstop>pushButton_close</tabstop>
@@ -1019,24 +1114,10 @@
   <tabstop>plainTextEdit_contactName</tabstop>
   <tabstop>plainTextEdit_collectionURL</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="resources/Resources.qrc"/>
+ </resources>
  <connections>
-  <connection>
-   <sender>spinBox_catalogDigits</sender>
-   <signal>editingFinished()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>470</x>
-     <y>41</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>381</x>
-     <y>27</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>comboBox_dupNamingPolicy</sender>
    <signal>currentIndexChanged(QString)</signal>
@@ -1044,8 +1125,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>470</x>
-     <y>94</y>
+     <x>367</x>
+     <y>251</y>
     </hint>
     <hint type="destinationlabel">
      <x>503</x>
@@ -1060,8 +1141,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>417</x>
-     <y>406</y>
+     <x>399</x>
+     <y>555</y>
     </hint>
     <hint type="destinationlabel">
      <x>255</x>
@@ -1076,8 +1157,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>85</x>
-     <y>390</y>
+     <x>114</x>
+     <y>540</y>
     </hint>
     <hint type="destinationlabel">
      <x>341</x>
@@ -1092,8 +1173,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>159</x>
-     <y>444</y>
+     <x>188</x>
+     <y>593</y>
     </hint>
     <hint type="destinationlabel">
      <x>158</x>
@@ -1108,8 +1189,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>158</x>
-     <y>510</y>
+     <x>187</x>
+     <y>656</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -1124,8 +1205,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>138</x>
-     <y>645</y>
+     <x>167</x>
+     <y>791</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -1140,11 +1221,11 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>649</x>
-     <y>700</y>
+     <x>566</x>
+     <y>831</y>
     </hint>
     <hint type="destinationlabel">
-     <x>698</x>
+     <x>667</x>
      <y>322</y>
     </hint>
    </hints>
@@ -1156,11 +1237,11 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>649</x>
-     <y>763</y>
+     <x>566</x>
+     <y>874</y>
     </hint>
     <hint type="destinationlabel">
-     <x>699</x>
+     <x>667</x>
      <y>372</y>
     </hint>
    </hints>
@@ -1172,11 +1253,11 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>649</x>
-     <y>819</y>
+     <x>566</x>
+     <y>930</y>
     </hint>
     <hint type="destinationlabel">
-     <x>699</x>
+     <x>667</x>
      <y>431</y>
     </hint>
    </hints>
@@ -1188,11 +1269,11 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>649</x>
-     <y>875</y>
+     <x>566</x>
+     <y>986</y>
     </hint>
     <hint type="destinationlabel">
-     <x>697</x>
+     <x>667</x>
      <y>490</y>
     </hint>
    </hints>
@@ -1204,11 +1285,11 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>649</x>
-     <y>931</y>
+     <x>566</x>
+     <y>1042</y>
     </hint>
     <hint type="destinationlabel">
-     <x>698</x>
+     <x>667</x>
      <y>533</y>
     </hint>
    </hints>
@@ -1332,8 +1413,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>197</x>
-     <y>430</y>
+     <x>269</x>
+     <y>463</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -1348,8 +1429,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>195</x>
-     <y>522</y>
+     <x>267</x>
+     <y>563</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -1368,7 +1449,7 @@
      <y>154</y>
     </hint>
     <hint type="destinationlabel">
-     <x>696</x>
+     <x>667</x>
      <y>139</y>
     </hint>
    </hints>
@@ -1384,7 +1465,7 @@
      <y>246</y>
     </hint>
     <hint type="destinationlabel">
-     <x>693</x>
+     <x>667</x>
      <y>250</y>
     </hint>
    </hints>
@@ -1400,7 +1481,7 @@
      <y>338</y>
     </hint>
     <hint type="destinationlabel">
-     <x>694</x>
+     <x>667</x>
      <y>357</y>
     </hint>
    </hints>
@@ -1412,11 +1493,11 @@
    <slot>setFolderPath()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>600</x>
-     <y>430</y>
+     <x>628</x>
+     <y>463</y>
     </hint>
     <hint type="destinationlabel">
-     <x>696</x>
+     <x>667</x>
      <y>453</y>
     </hint>
    </hints>
@@ -1428,11 +1509,11 @@
    <slot>setFolderPath()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>600</x>
-     <y>522</y>
+     <x>628</x>
+     <y>563</y>
     </hint>
     <hint type="destinationlabel">
-     <x>697</x>
+     <x>667</x>
      <y>558</y>
     </hint>
    </hints>
@@ -1444,11 +1525,11 @@
    <slot>updateCatalogNumberPreviews()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>377</x>
-     <y>42</y>
+     <x>274</x>
+     <y>194</y>
     </hint>
     <hint type="destinationlabel">
-     <x>695</x>
+     <x>667</x>
      <y>209</y>
     </hint>
    </hints>
@@ -1460,11 +1541,11 @@
    <slot>updateCatalogNumberPreviews()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>470</x>
-     <y>41</y>
+     <x>367</x>
+     <y>195</y>
     </hint>
     <hint type="destinationlabel">
-     <x>697</x>
+     <x>667</x>
      <y>192</y>
     </hint>
    </hints>
@@ -1476,11 +1557,11 @@
    <slot>updateCatalogNumberPreviews()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>470</x>
-     <y>94</y>
+     <x>367</x>
+     <y>251</y>
     </hint>
     <hint type="destinationlabel">
-     <x>692</x>
+     <x>667</x>
      <y>240</y>
     </hint>
    </hints>
@@ -1493,10 +1574,10 @@
    <hints>
     <hint type="sourcelabel">
      <x>310</x>
-     <y>-43</y>
+     <y>82</y>
     </hint>
     <hint type="destinationlabel">
-     <x>696</x>
+     <x>667</x>
      <y>116</y>
     </hint>
    </hints>
@@ -1508,8 +1589,8 @@
    <slot>updateCatalogNumberPreviews()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>154</x>
-     <y>77</y>
+     <x>183</x>
+     <y>164</y>
     </hint>
     <hint type="destinationlabel">
      <x>265</x>
@@ -1524,11 +1605,11 @@
    <slot>testFunction()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>101</x>
-     <y>75</y>
+     <x>112</x>
+     <y>548</y>
     </hint>
     <hint type="destinationlabel">
-     <x>694</x>
+     <x>667</x>
      <y>542</y>
     </hint>
    </hints>
@@ -1541,10 +1622,10 @@
    <hints>
     <hint type="sourcelabel">
      <x>543</x>
-     <y>513</y>
+     <y>654</y>
     </hint>
     <hint type="destinationlabel">
-     <x>697</x>
+     <x>667</x>
      <y>288</y>
     </hint>
    </hints>
@@ -1556,12 +1637,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>178</x>
-     <y>192</y>
+     <x>202</x>
+     <y>329</y>
     </hint>
     <hint type="destinationlabel">
-     <x>521</x>
-     <y>195</y>
+     <x>274</x>
+     <y>356</y>
     </hint>
    </hints>
   </connection>
@@ -1572,12 +1653,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>134</x>
-     <y>192</y>
+     <x>163</x>
+     <y>329</y>
     </hint>
     <hint type="destinationlabel">
-     <x>449</x>
-     <y>195</y>
+     <x>160</x>
+     <y>356</y>
     </hint>
    </hints>
   </connection>
@@ -1588,8 +1669,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>133</x>
-     <y>275</y>
+     <x>194</x>
+     <y>486</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -1604,12 +1685,44 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>89</x>
-     <y>301</y>
+     <x>126</x>
+     <y>486</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
      <y>307</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toolButton_addPattern</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>saveSettings()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>416</x>
+     <y>262</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>666</x>
+     <y>292</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toolButton_removePattern</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>saveSettings()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>562</x>
+     <y>259</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>667</x>
+     <y>346</y>
     </hint>
    </hints>
   </connection>
