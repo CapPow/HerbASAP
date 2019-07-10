@@ -330,6 +330,18 @@ class ColorchipRead:
 
                 hists_rgb.append(hist)
                 hists_hsv.append(hist_hsv)
+        elif stride_style == 'ultraquick':
+            positions = [(0, 0, partition_size, partition_size),
+                         (0, image_height - partition_size, partition_size, image_height),
+                         (image_width - partition_size, 0, image_width, partition_size),
+                         (image_width - partition_size, image_height - partition_size, image_width, image_height)]
+
+            for position in positions:
+                partitioned_im = im.crop(position)
+                possible_positions.append(position)
+                partitioned_im_hsv = im_hsv.crop(position)
+                hists_rgb.append(partitioned_im.histogram())
+                hists_hsv.append(partitioned_im_hsv.histogram())
         else:
             raise RuntimeError('Invalid stride_style was given, must be "quick" or "whole"')
 
