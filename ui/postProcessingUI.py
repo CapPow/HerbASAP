@@ -275,7 +275,7 @@ class Ui_MainWindow(object):
         self.preferences_ScrollArea.setWidgetResizable(True)
         self.preferences_ScrollArea.setObjectName("preferences_ScrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, -24, 547, 1029))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 547, 1029))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
@@ -745,4 +745,3 @@ class Ui_MainWindow(object):
         self.menuSettings.setTitle(_translate("MainWindow", "Settings"))
 
 
-import Resources_rc

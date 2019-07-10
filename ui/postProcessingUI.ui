@@ -614,7 +614,7 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>-24</y>
+               <y>0</y>
                <width>547</width>
                <height>1029</height>
               </rect>
@@ -1395,9 +1395,7 @@
   <tabstop>plainTextEdit_contactName</tabstop>
   <tabstop>plainTextEdit_collectionURL</tabstop>
  </tabstops>
- <resources>
-  <include location="resources/Resources.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>comboBox_dupNamingPolicy</sender>
