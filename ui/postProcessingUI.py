@@ -12,7 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(604, 606)
+        MainWindow.resize(632, 606)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -275,7 +275,7 @@ class Ui_MainWindow(object):
         self.preferences_ScrollArea.setWidgetResizable(True)
         self.preferences_ScrollArea.setObjectName("preferences_ScrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 547, 1065))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, -194, 573, 1065))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
@@ -587,7 +587,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.tabWidget, 0, 1, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 604, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 632, 22))
         self.menubar.setObjectName("menubar")
         self.menuFolder = QtWidgets.QMenu(self.menubar)
         self.menuFolder.setObjectName("menuFolder")
@@ -605,7 +605,7 @@ class Ui_MainWindow(object):
         self.label_3.setBuddy(self.label_3)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(0)
         self.comboBox_dupNamingPolicy.currentIndexChanged['QString'].connect(MainWindow.saveSettings)
         self.comboBox_colorCheckerPosition.currentTextChanged['QString'].connect(MainWindow.saveSettings)
         self.group_verifyRotation.toggled['bool'].connect(MainWindow.saveSettings)

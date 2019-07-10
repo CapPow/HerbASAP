@@ -814,8 +814,7 @@ class appWindow(QMainWindow):
             if ccStatus:
                 mb = ImageDialog(cropped_img)
                 mb.exec()
-                print(mb)
-                if mb:
+                if mb == QMessageBox.Yes:
                     ccStatus = True
                 else:
                     ccStatus = False
@@ -829,14 +828,21 @@ class appWindow(QMainWindow):
             eqStatus = False
             print('eqStatus returned exception:')
             print(e)
+        # each relevant feature, and the associated status
+        features = {self.mainWindow.group_barcodeDetection: bcStatus,
+                    self.mainWindow.group_renameByBarcode: bcStatus,
+                    self.mainWindow.group_blurDetection: blurStatus,
+                    self.mainWindow.group_colorCheckerDetection: ccStatus,
+                    self.mainWindow.group_verifyRotation: ccStatus,
+                    self.mainWindow.checkBox_performWhiteBalance: ccStatus,
+                    self.mainWindow.groupBox_colorCheckerSize: ccStatus,
+                    self.mainWindow.group_equipmentDetection: eqStatus,
+                    self.mainWindow.checkBox_lensCorrection: eqStatus}
 
-        self.mainWindow.group_barcodeDetection.setEnabled(bcStatus)
-        self.mainWindow.group_blurDetection.setEnabled(blurStatus)
-        self.mainWindow.group_colorCheckerDetection.setEnabled(ccStatus)
-        self.mainWindow.group_verifyRotation.setEnabled(ccStatus)
-        self.mainWindow.checkBox_performWhiteBalance.setEnabled(ccStatus)
-        self.mainWindow.groupBox_colorCheckerSize.setEnabled(ccStatus)
-        self.mainWindow.group_equipmentDetection.setEnabled(eqStatus)
+        for feature, status in features.items():
+            feature.setEnabled(status)
+            if not status:
+                feature.setChecked(status)
 
     def fill_patterns(self, joinedPattern):
         """
@@ -1064,18 +1070,18 @@ class appWindow(QMainWindow):
         # note: the fallback value of '' will trigger an unchecked condition in self.convertCheckState()
         checkBox_performWhiteBalance = self.convertCheckState(self.get('checkBox_performWhiteBalance','true'))
         self.mainWindow.checkBox_performWhiteBalance.setCheckState(checkBox_performWhiteBalance)
-        #checkBox_vignettingCorrection = self.convertCheckState(self.get('checkBox_vignettingCorrection',''))
-        #self.mainWindow.checkBox_vignettingCorrection.setCheckState(checkBox_vignettingCorrection)
-        #checkBox_distortionCorrection = self.convertCheckState(self.get('checkBox_distortionCorrection',''))
-        #self.mainWindow.checkBox_distortionCorrection.setCheckState(checkBox_distortionCorrection)
-        #checkBox_chromaticAberrationCorrection = self.convertCheckState(self.get('checkBox_chromaticAberrationCorrection',''))
-        #self.mainWindow.checkBox_chromaticAberrationCorrection.setCheckState(checkBox_chromaticAberrationCorrection)
         checkBox_lensCorrection = self.convertCheckState(self.get('checkBox_lensCorrection','true'))
         self.mainWindow.checkBox_lensCorrection.setCheckState(checkBox_lensCorrection)
         checkBox_metaDataApplication = self.convertCheckState(self.get('checkBox_metaDataApplication','true'))
         self.mainWindow.checkBox_metaDataApplication.setCheckState(checkBox_metaDataApplication)
         checkBox_blurDetection = self.convertCheckState(self.get('checkBox_blurDetection','true'))
         self.mainWindow.checkBox_blurDetection.setCheckState(checkBox_blurDetection)
+        
+        # QCheckBox (enable state)
+        checkBox_performWhiteBalance_enabled = self.convertEnabledState(self.get('checkBox_performWhiteBalance_enabled', 'true'))
+        self.mainWindow.checkBox_performWhiteBalance.setEnabled(checkBox_performWhiteBalance_enabled)
+        checkBox_lensCorrection_enabled = self.convertEnabledState(self.get('checkBox_lensCorrection_enabled', 'true'))
+        self.mainWindow.checkBox_lensCorrection.setEnabled(checkBox_lensCorrection_enabled)
 
         # QGroupbox (checkstate)
         #group_renameByBarcode = self.get('group_renameByBarcode','')
@@ -1091,12 +1097,17 @@ class appWindow(QMainWindow):
         self.mainWindow.group_saveProcessedPng.setChecked(group_saveProcessedPng)
         group_verifyRotation_checkstate = self.convertCheckState(self.get('group_verifyRotation_checkstate', 'true'))
         self.mainWindow.group_verifyRotation .setChecked(group_verifyRotation_checkstate)
+        
 
         # QGroupbox (enablestate)
-        group_barcodeDetection = self.convertEnabledState(self.get('group_barcodeDetection','true'))
-        self.mainWindow.group_barcodeDetection.setEnabled(group_barcodeDetection)
+        group_renameByBarcode_enabled = self.convertEnabledState(self.get('group_renameByBarcode_enabled','true'))
+        self.mainWindow.group_renameByBarcode.setEnabled(group_renameByBarcode_enabled)
+        group_barcodeDetection_enabled = self.convertEnabledState(self.get('group_barcodeDetection_enabled','true'))
+        self.mainWindow.group_barcodeDetection.setEnabled(group_barcodeDetection_enabled)
         group_colorCheckerDetection = self.convertEnabledState(self.get('group_colorCheckerDetection','true'))
         self.mainWindow.group_colorCheckerDetection.setEnabled(group_colorCheckerDetection)
+        groupBox_colorCheckerSize = self.convertEnabledState(self.get('groupBox_colorCheckerSize','true'))
+        self.mainWindow.groupBox_colorCheckerSize.setEnabled(groupBox_colorCheckerSize)
         group_verifyRotation = self.convertEnabledState(self.get('group_verifyRotation','true'))
         self.mainWindow.group_verifyRotation.setEnabled(group_verifyRotation)
         group_equipmentDetection = self.convertEnabledState(self.get('group_equipmentDetection','true'))
@@ -1127,9 +1138,9 @@ class appWindow(QMainWindow):
         #self.settings.value_DarkTheme.setChecked(value_DarkTheme)
         #value_LightTheme = self.get('value_LightTheme', True)
         #self.settings.value_LightTheme.setChecked(value_LightTheme)
-        radioButton_colorCheckerSmall = self.get('radioButton_colorCheckerSmall', True)
+        radioButton_colorCheckerSmall =  self.convertCheckState(self.get('radioButton_colorCheckerSmall', 'true'))
         self.mainWindow.radioButton_colorCheckerSmall.setChecked(radioButton_colorCheckerSmall)
-        radioButton_colorCheckerLarge = self.get('radioButton_colorCheckerLarge', False)
+        radioButton_colorCheckerLarge =  self.convertCheckState(self.get('radioButton_colorCheckerLarge', 'false'))
         self.mainWindow.radioButton_colorCheckerLarge.setChecked(radioButton_colorCheckerLarge)
 
 
@@ -1185,18 +1196,20 @@ class appWindow(QMainWindow):
         # QCheckBox
         checkBox_performWhiteBalance = self.mainWindow.checkBox_performWhiteBalance.isChecked()
         self.settings.setValue('checkBox_performWhiteBalance', checkBox_performWhiteBalance)
-        #checkBox_vignettingCorrection = self.mainWindow.checkBox_vignettingCorrection.isChecked()
-        #self.settings.setValue('checkBox_vignettingCorrection', checkBox_vignettingCorrection)
-        #checkBox_distortionCorrection = self.mainWindow.checkBox_distortionCorrection.isChecked()
-        #self.settings.setValue('checkBox_distortionCorrection', checkBox_distortionCorrection)
-        #checkBox_chromaticAberrationCorrection = self.mainWindow.checkBox_chromaticAberrationCorrection.isChecked()
-        #self.settings.setValue('checkBox_chromaticAberrationCorrection', checkBox_chromaticAberrationCorrection)
+        checkBox_performWhiteBalance = self.mainWindow.checkBox_performWhiteBalance.isChecked()
+        self.settings.setValue('checkBox_performWhiteBalance', checkBox_performWhiteBalance)
         checkBox_lensCorrection = self.mainWindow.checkBox_lensCorrection.isChecked()
         self.settings.setValue('checkBox_lensCorrection', checkBox_lensCorrection)
         checkBox_metaDataApplication = self.mainWindow.checkBox_metaDataApplication.isChecked()
         self.settings.setValue('checkBox_metaDataApplication', checkBox_metaDataApplication)
         checkBox_blurDetection = self.mainWindow.checkBox_blurDetection.isChecked()
         self.settings.setValue('checkBox_blurDetection', checkBox_blurDetection)
+
+        # QCheckBox (enable state)
+        checkBox_performWhiteBalance_enabled = self.mainWindow.checkBox_performWhiteBalance.isEnabled()
+        self.settings.setValue('checkBox_performWhiteBalance_enabled', checkBox_performWhiteBalance_enabled)
+        checkBox_lensCorrection_enabled = self.mainWindow.checkBox_lensCorrection.isEnabled()
+        self.settings.setValue('checkBox_lensCorrection_enabled', checkBox_lensCorrection_enabled)
 
         # QGroupbox (checkstate)
         group_renameByBarcode = self.mainWindow.group_renameByBarcode.isChecked()
@@ -1211,12 +1224,16 @@ class appWindow(QMainWindow):
         self.settings.setValue('group_saveProcessedPng',group_saveProcessedPng)
         group_verifyRotation_checkstate = self.mainWindow.group_verifyRotation.isChecked()
         self.settings.setValue('group_verifyRotation_checkstate', group_verifyRotation_checkstate)
-
+        
         # QGroupbox (enablestate)
-        group_barcodeDetection = self.mainWindow.group_barcodeDetection.isEnabled()
-        self.settings.setValue('group_barcodeDetection', group_barcodeDetection)
+        group_renameByBarcode_enabled = self.mainWindow.group_renameByBarcode.isEnabled()
+        self.settings.setValue('group_renameByBarcode_enabled', group_renameByBarcode_enabled)
+        group_barcodeDetection_enabled = self.mainWindow.group_barcodeDetection.isEnabled()
+        self.settings.setValue('group_barcodeDetection_enabled', group_barcodeDetection_enabled)
         group_colorCheckerDetection = self.mainWindow.group_colorCheckerDetection.isEnabled()
         self.settings.setValue('group_colorCheckerDetection',group_colorCheckerDetection)
+        groupBox_colorCheckerSize = self.mainWindow.groupBox_colorCheckerSize.isEnabled()
+        self.settings.setValue('groupBox_colorCheckerSize',groupBox_colorCheckerSize)
         group_verifyRotation = self.mainWindow.group_verifyRotation.isEnabled()
         self.settings.setValue('group_verifyRotation',group_verifyRotation)
         group_equipmentDetection = self.mainWindow.group_equipmentDetection.isEnabled()
