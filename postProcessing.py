@@ -31,6 +31,7 @@ import os
 import sys
 import string
 import glob
+import re
 from shutil import move as shutil_move
 # UI libs
 from PyQt5 import QtWidgets, QtCore, QtGui
@@ -869,7 +870,14 @@ class appWindow(QMainWindow):
             collRegEx = rf'^({prefix}.*)\D*'
         else:
             collRegEx = rf'^({prefix}\d{{{digits}}})\D*'
-
+        try:  # test compile the new pattern
+            re.compile(collRegEx)
+        except re.error:
+            notice_title = 'Regex Pattern Error'
+            notice_text = f'Warning, improper regex pattern.'
+            detail_text = f'Regex patterns failed to compile.\n{collRegEx}'
+            self.userNotice(notice_text, notice_title, detail_text)
+            return
         listWidget_patterns = self.mainWindow.listWidget_patterns
         listWidget_patterns.addItem(collRegEx)
         item_pos = listWidget_patterns.count() - 1
@@ -904,7 +912,13 @@ class appWindow(QMainWindow):
         them and sends them to self.bcRead.compileRegexPattern which in turn
         sets the bcRead.rePattern attribute."""
         patterns = self.retrieve_bc_patterns()
-        self.bcRead.compileRegexPattern(patterns)
+        try:
+            self.bcRead.compileRegexPattern(patterns)
+        except re.error:
+            notice_title = 'Regex Pattern Error'
+            notice_text = f'Warning, improper regex pattern.'
+            detail_text = f'Regex patterns failed to compile.\n{patterns}'
+            self.userNotice(notice_text, notice_title, detail_text)
 
     def updateCatalogNumberPreviews(self):
         """ called when a change is made to any of the appropriate fields in

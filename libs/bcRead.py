@@ -62,8 +62,14 @@ class bcRead():
 
     def compileRegexPattern(self, patterns):
         """ compiles a collection specific regex pattern """
-        rePattern = re.compile(patterns)
-        self.rePattern = rePattern
+        #  assume an empty pattern is a confused user, match everything.
+        if patterns == '':
+            patterns = '.*'
+        try:
+            rePattern = re.compile(patterns)
+            self.rePattern = rePattern
+        except re.error:
+            raise
 
     def checkPattern(self, bcData):
         """ verifies if the bcData matches the compiled rePattern.
