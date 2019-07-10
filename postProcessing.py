@@ -602,12 +602,6 @@ class appWindow(QMainWindow):
             im = self.openImageFile(img_path)
         except LibRawFatalError:
             # empty path passed
-            if img_path == '':
-                return
-            text = 'Corrupted or incompatible image file.'
-            title = 'Error opening file'
-            detail_text = f'LibRawFatalError opening: {img_path}\nUsually this indicates a corrupted input image file.'
-            self.userNotice(text, title, detail_text)
             self.processing_image = True
             return
 
@@ -766,6 +760,12 @@ class appWindow(QMainWindow):
             bgr = cv2.imread(imgPath)
             im = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
         except LibRawFatalError:
+            if imgPath == '':
+                raise
+            text = 'Corrupted or incompatible image file.'
+            title = 'Error opening file'
+            detail_text = f'LibRawFatalError opening: {imgPath}\nUsually this indicates a corrupted input image file.'
+            self.userNotice(text, title, detail_text)
             raise
         return im
 
@@ -783,7 +783,10 @@ class appWindow(QMainWindow):
                 None, "Open Sample Image", QtCore.QDir.homePath())
         if imgPath == '':
             return
-        im = self.openImageFile(imgPath)
+        try:
+            im = self.openImageFile(imgPath)
+        except LibRawFatalError:
+            return
         original_size, reduced_img = self.scale_images_with_info(im)
         grey = cv2.cvtColor(reduced_img, cv2.COLOR_BGR2GRAY)
         try:
@@ -800,7 +803,7 @@ class appWindow(QMainWindow):
             print(e)
         try:
             # NOTE This currently checks radio button for large / small
-            # If the size determiner becomes
+            # If the size determiner becomes more useful we can use it to make this choice
             if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
                 cc_size = 'small'
             else:
@@ -811,6 +814,7 @@ class appWindow(QMainWindow):
             if ccStatus:
                 mb = ImageDialog(cropped_img)
                 mb.exec()
+                print(mb)
                 if mb:
                     ccStatus = True
                 else:
@@ -862,7 +866,9 @@ class appWindow(QMainWindow):
 
         listWidget_patterns = self.mainWindow.listWidget_patterns
         listWidget_patterns.addItem(collRegEx)
-        item_pos = listWidget_patterns.count()
+        item_pos = listWidget_patterns.count() - 1
+        item = listWidget_patterns.item(item_pos)
+        item.setFlags(item.flags() | Qt.ItemIsEditable)
         self.set_bc_pattern()
         
 
@@ -949,7 +955,7 @@ class appWindow(QMainWindow):
         msg.setWindowTitle(title)
         if detailText != None:
             msg.setDetailedText(detailText)
-
+        msg.setStandardButtons(QMessageBox.No | QMessageBox.Yes)
         msg.setDefaultButton(QMessageBox.No)
         reply = msg.exec_()
         if reply == QMessageBox.Yes:
@@ -961,7 +967,7 @@ class appWindow(QMainWindow):
         elif reply == QMessageBox.Retry:
             return True
         else:
-            return "cancel"
+            return False
 
     def userNotice(self, text, title='', detailText = None):
         """ a general user notice """
@@ -1056,7 +1062,7 @@ class appWindow(QMainWindow):
 
         # QCheckBox
         # note: the fallback value of '' will trigger an unchecked condition in self.convertCheckState()
-        checkBox_performWhiteBalance = self.convertCheckState(self.get('checkBox_performWhiteBalance',''))
+        checkBox_performWhiteBalance = self.convertCheckState(self.get('checkBox_performWhiteBalance','true'))
         self.mainWindow.checkBox_performWhiteBalance.setCheckState(checkBox_performWhiteBalance)
         #checkBox_vignettingCorrection = self.convertCheckState(self.get('checkBox_vignettingCorrection',''))
         #self.mainWindow.checkBox_vignettingCorrection.setCheckState(checkBox_vignettingCorrection)
@@ -1064,43 +1070,43 @@ class appWindow(QMainWindow):
         #self.mainWindow.checkBox_distortionCorrection.setCheckState(checkBox_distortionCorrection)
         #checkBox_chromaticAberrationCorrection = self.convertCheckState(self.get('checkBox_chromaticAberrationCorrection',''))
         #self.mainWindow.checkBox_chromaticAberrationCorrection.setCheckState(checkBox_chromaticAberrationCorrection)
-        checkBox_lensCorrection = self.convertCheckState(self.get('checkBox_lensCorrection',''))
+        checkBox_lensCorrection = self.convertCheckState(self.get('checkBox_lensCorrection','true'))
         self.mainWindow.checkBox_lensCorrection.setCheckState(checkBox_lensCorrection)
-        checkBox_metaDataApplication = self.convertCheckState(self.get('checkBox_metaDataApplication',''))
+        checkBox_metaDataApplication = self.convertCheckState(self.get('checkBox_metaDataApplication','true'))
         self.mainWindow.checkBox_metaDataApplication.setCheckState(checkBox_metaDataApplication)
-        checkBox_blurDetection = self.convertCheckState(self.get('checkBox_blurDetection',''))
+        checkBox_blurDetection = self.convertCheckState(self.get('checkBox_blurDetection','true'))
         self.mainWindow.checkBox_blurDetection.setCheckState(checkBox_blurDetection)
 
         # QGroupbox (checkstate)
         #group_renameByBarcode = self.get('group_renameByBarcode','')
-        group_renameByBarcode = self.get('group_renameByBarcode',False)
+        group_renameByBarcode = self.convertCheckState(self.get('group_renameByBarcode','true'))
         self.mainWindow.group_renameByBarcode.setChecked(group_renameByBarcode)
-        group_keepUnalteredRaw = self.get('group_keepUnalteredRaw',False)
+        group_keepUnalteredRaw = self.convertCheckState(self.get('group_keepUnalteredRaw','true'))
         self.mainWindow.group_keepUnalteredRaw.setChecked(group_keepUnalteredRaw)
-        group_saveProcessedJpg = self.get('group_saveProcessedJpg',False)
+        group_saveProcessedJpg = self.convertCheckState(self.get('group_saveProcessedJpg','true'))
         self.mainWindow.group_saveProcessedJpg.setChecked(group_saveProcessedJpg)
-        group_saveProcessedTIFF = self.get('group_saveProcessedTIFF',False)
+        group_saveProcessedTIFF = self.convertCheckState(self.get('group_saveProcessedTIFF','true'))
         self.mainWindow.group_saveProcessedTIFF.setChecked(group_saveProcessedTIFF)
-        group_saveProcessedPng = self.get('group_saveProcessedPng',False)
+        group_saveProcessedPng = self.convertCheckState(self.get('group_saveProcessedPng','true'))
         self.mainWindow.group_saveProcessedPng.setChecked(group_saveProcessedPng)
-        group_verifyRotation_checkstate = self.get('group_verifyRotation_checkstate', False)
+        group_verifyRotation_checkstate = self.convertCheckState(self.get('group_verifyRotation_checkstate', 'true'))
         self.mainWindow.group_verifyRotation .setChecked(group_verifyRotation_checkstate)
 
         # QGroupbox (enablestate)
-        group_barcodeDetection = self.convertEnabledState(self.get('group_barcodeDetection',False))
+        group_barcodeDetection = self.convertEnabledState(self.get('group_barcodeDetection','true'))
         self.mainWindow.group_barcodeDetection.setEnabled(group_barcodeDetection)
-        group_colorCheckerDetection = self.convertEnabledState(self.get('group_colorCheckerDetection',False))
+        group_colorCheckerDetection = self.convertEnabledState(self.get('group_colorCheckerDetection','true'))
         self.mainWindow.group_colorCheckerDetection.setEnabled(group_colorCheckerDetection)
-        group_verifyRotation = self.convertEnabledState(self.get('group_verifyRotation',False))
+        group_verifyRotation = self.convertEnabledState(self.get('group_verifyRotation','true'))
         self.mainWindow.group_verifyRotation.setEnabled(group_verifyRotation)
-        group_equipmentDetection = self.convertEnabledState(self.get('group_equipmentDetection',False))
+        group_equipmentDetection = self.convertEnabledState(self.get('group_equipmentDetection','true'))
         self.mainWindow.group_equipmentDetection.setEnabled(group_equipmentDetection)
         # metaDataApplication should always be an option
         #group_metaDataApplication = self.convertEnabledState(self.get('group_metaDataApplication','true'))
         #self.mainWindow.group_metaDataApplication.setEnabled(group_metaDataApplication)
 
         # QSpinBox
-        spinBox_catalogDigits = int(self.get('spinBox_catalogDigits', 6))
+        spinBox_catalogDigits = int(self.get('spinBox_catalogDigits', 0))
         self.mainWindow.spinBox_catalogDigits.setValue(spinBox_catalogDigits)
 
         # QDoubleSpinBox
@@ -1247,6 +1253,21 @@ class appWindow(QMainWindow):
         # cleanup, after changes are made, should re-initalize some classes
         self.setup_Folder_Watcher()
         self.setup_Output_Handler()
+
+    def reset_all_settings(self):
+        """
+        called by the pushButton_resetSettings, removes all settings and loads
+        default settings.
+        """
+        text = "Reset ALL settings to default?"
+        title = "Are you sure?"
+        detailText = "This will revert all settings, and Image locations to default."
+        user_agree = self.userAsk(text, title, detailText)
+        if user_agree:
+            self.settings.remove('')
+            self.populateSettings()
+            self.saveSettings()
+        
 
 app = QtWidgets.QApplication(sys.argv)
 w = appWindow()
