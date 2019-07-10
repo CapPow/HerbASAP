@@ -205,17 +205,9 @@ class appWindow(QMainWindow):
 
     def stop_timer(self):
         end_time = time.time()
-        run_time = end_time - self.timer_start
+        run_time = round(end_time - self.timer_start, 3)
+        self.mainWindow.label_processtime.setText(str(run_time))
         print(f'Elapsed runtime: {run_time}')
-
-    def update_cc_image(self, color_chip_im):
-        width, height = color_chip_im.size
-        bytesPerLine = 3 * width
-        qImg = QtGui.QImage(np.array(color_chip_im), width, height, bytesPerLine, QtGui.QImage.Format_RGB888)
-        pixmap = QtGui.QPixmap.fromImage(qImg)
-        pixmap_image = QtGui.QPixmap(pixmap)
-        cc_view_label = self.mainWindow.label_cc_image
-        cc_view_label.setPixmap(pixmap_image)
 
     def setup_Folder_Watcher(self, raw_image_patterns=None):
         """
@@ -236,7 +228,6 @@ class appWindow(QMainWindow):
     def toggle_folder_monitoring(self):
         folder_watcher = self.folder_watcher
         pushButton = self.mainWindow.pushButton_toggleMonitoring
-        print(folder_watcher.is_monitoring)
         if folder_watcher.is_monitoring:
             pushButton.setText('Begin folder monitoring')
             folder_watcher.stop()
@@ -340,8 +331,8 @@ class appWindow(QMainWindow):
                     #cv2.imwrite(new_file_name,im)
 
     def handle_blur_result(self, result):
-        self.is_blurry = result['isblurry']
-        if self.is_blurry:
+        is_blurry = result['isblurry']
+        if is_blurry:
             notice_title = 'Blurry Image Warning'
             if self.bc_code:
                 notice_text = f'Warning, {self.bc_code} is blurry.'
@@ -349,6 +340,11 @@ class appWindow(QMainWindow):
                 notice_text = f'Warning, {self.img_path} is blurry.'
             detail_text = f'laplacian={result["laplacian"]}\nnormalized laplacian={result["lapNorm"]}\nimg variance ={result["imVar"]}\n {self.base_file_name}'
             self.userNotice(notice_text, notice_title, detail_text)
+        self.is_blurry = is_blurry
+        self.mainWindow.label_isBlurry.setText(str(is_blurry))
+        self.mainWindow.label_laplacian.setText(str(round(result['laplacian'], 3)))
+        self.mainWindow.label_imvar.setText(str(round(result['imVar'], 3)))
+        self.mainWindow.label_lapnorm.setText(str(round(result['lapNorm'], 3)))
 
     def handle_pp_result(self, result):
         # if no bc_code was found or checking for it is turned off
@@ -374,16 +370,17 @@ class appWindow(QMainWindow):
         """ called when the results are in from blur detection. """
  
     def handle_bc_result(self, result):
-        self.bc_code = result
-        if not self.bc_code:
+        if not result:
             notice_title = 'No Barcode Warning'
             notice_text = f'Warning, No Barcode found!'
             detail_text = f'No barcode found in image named: {self.img_path}'
             self.userNotice(notice_text, notice_title, detail_text)
+            # todo, have user entry option here return and store as result
+        self.bc_code = result
+        self.mainWindow.label_barcodes.setText(', '.join(result))
 
     def alert_bc_finished(self):
         """ called when the results are in from bcRead."""
-        #print('bc detection finished')
 
     def handle_eq_result(self, result):
         # this is the corrected image array
@@ -392,20 +389,18 @@ class appWindow(QMainWindow):
 
     def alert_eq_finished(self):
         """ called when the results are in from eqRead."""
-        #print('eq corrections finished')
 
     # boss signal handlers
     def handle_boss_started(self, boss_signal_data):
         pass
         #if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
             #if boss_signal_data.signal_data is str:
-                #print(boss_signal_data.signal_data)
+
 
     def handle_boss_finished(self, boss_signal_data):
         pass
         #if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
             #if boss_signal_data.signal_data is str:
-                #print(boss_signal_data.signal_data)
 
     def handle_job_started(self, boss_signal_data):
         pass
@@ -521,7 +516,8 @@ class appWindow(QMainWindow):
             im[2] = np.minimum(im[2] * (255 / float(color_chip_im[2].max())), 255)
             return im.transpose(1, 2, 0).astype(np.uint8)
         elif style == 'avg_white':
-            avg_white = self.colorchipDetect.predict_color_chip_whitevals(np_color_chip_im)
+            #avg_white = self.colorchipDetect.predict_color_chip_whitevals(np_color_chip_im)
+            avg_white = self.cc_avg_white
             brightest = np.array(avg_white).max()
 
             color_chip_im = np_color_chip_im.transpose(2, 0, 1)
@@ -622,6 +618,7 @@ class appWindow(QMainWindow):
 
         # converting to greyscale
         original_size, reduced_img = self.scale_images_with_info(im)
+        self.reduced_img = reduced_img  # storing to use as preview later
         grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
 
         if self.mainWindow.group_renameByBarcode.isChecked():
@@ -650,20 +647,53 @@ class appWindow(QMainWindow):
         if self.mainWindow.group_colorCheckerDetection:
             # colorchecker functions
             if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
-                #cc_position, cropped_cc = self.colorchipDetect.process_colorchip_small(reduced_img, original_size)
-                cc_position, cropped_cc = self.colorchipDetect.process_colorchip_small(reduced_img, original_size, stride_style='quick')
+                cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_small(reduced_img, original_size, stride_style='quick')
             else:
-                cc_position, cropped_cc = self.colorchipDetect.process_colorchip_big(im)
+                cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
             self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
-            # self.cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
+            cropped_cc = np.array(cropped_cc, np.uint8)
             self.cropped_cc = cropped_cc
+            cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
+            self.cc_avg_white = cc_avg_white
             print(f"CC | Position: {cc_position}, Quadrant: {self.cc_quadrant}")
-            self.update_cc_image(cropped_cc)
+            self.update_cc_info(self.cc_quadrant, cropped_cc, cc_crop_time, cc_avg_white)
 
         # waiting on all workers before saveing happens in Boss thread
         pp_job = Job('pp_worker', None, self.post_processing)
         self.boss_thread.request_job(pp_job)
         # process is now handed off too self.post_processing()
+
+    def update_cc_info(self, cc_position, cropped_cc, cc_crop_time, cc_avg_white):
+        """
+        updates cc related diagnostic details.
+        """
+        height, width = cropped_cc.shape[0:2]
+        bytesPerLine = 3 * width
+        qImg = QtGui.QImage(cropped_cc, width, height, bytesPerLine, QtGui.QImage.Format_RGB888)#.rgbSwapped()
+        pixmap = QtGui.QPixmap.fromImage(qImg)
+        pixmap_image = QtGui.QPixmap(pixmap)
+        cc_view_label = self.mainWindow.label_cc_image
+        cc_view_label.setPixmap(pixmap_image)
+        self.mainWindow.label_runtime.setText(str(cc_crop_time))
+        # there has got to be a better way to convert this list of np.floats
+        self.mainWindow.label_whitergb.setText(', '.join([str(int(x)) for x in cc_avg_white]))
+        self.mainWindow.label_quad.setText(str(cc_position))
+
+    def update_preview_img(self, im):
+        # trying smaller preview
+        h,w = im.shape[0:2]
+        width = 300
+        hpercent = (width/float(w))
+        height = int((float(h)*float(hpercent)))
+        size = (width, height)
+        im = cv2.resize(im, size,interpolation=cv2.INTER_LINEAR)
+        #height, width= im.shape[0:2]
+        bytesPerLine = 3 * width
+        qImg = QtGui.QImage(im, width, height, bytesPerLine, QtGui.QImage.Format_RGB888)#.rgbSwapped()
+        pixmap = QtGui.QPixmap.fromImage(qImg)
+        pixmap_image = QtGui.QPixmap(pixmap)
+        preview_label = self.mainWindow.label_imPreview
+        preview_label.setPixmap(pixmap_image)
 
     def save_finished(self):
         print(f'saving {self.img_path} has finished.')
@@ -690,6 +720,7 @@ class appWindow(QMainWindow):
             # cc_quadrant starts at first,
             im = self.orient_image(im, self.cc_quadrant, user_def_quad)
         # pass off whatever was done to the image
+        self.update_preview_img(im)
         self.im = im
         # process is now handed off too self.handle_pp_result()
 

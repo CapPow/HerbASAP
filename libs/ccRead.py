@@ -208,6 +208,7 @@ class ColorchipRead:
         :type im: OCV Image
         :return: TBD
         """
+        start = time.time()
         im = self.ocv_to_pil(im)
         original_image_width, original_image_height = im.size
 
@@ -222,9 +223,10 @@ class ColorchipRead:
         scaled_y1, scaled_y2 = prop_y1 * original_image_height, prop_x2 * original_image_height
 
         cropped_im = im.crop((scaled_x1, scaled_y1, scaled_x2, scaled_y2))
-
+        end = time.time()
+        cc_crop_time = round(end - start, 3)
         try:
-            return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), cropped_im
+            return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), cropped_im, cc_crop_time
         except SystemError as e:
             print(f"System error: {e}")
 
@@ -299,16 +301,7 @@ class ColorchipRead:
         """
         im = self.ocv_to_pil(im)
         im_hsv = im.convert("HSV")
-
-
-
-        # pim = self.ocv_to_pil(partitions[0])
-        # pim.show()
-        # print(partitions[1].shape)
-
-
         start = time.time()
-        im_hsv = im.convert("HSV")
         image_width, image_height = im.size
         original_width, original_height = original_size
         possible_positions = []
@@ -487,7 +480,8 @@ class ColorchipRead:
         try:
             # best_image.show()
             print(f"Color chip cropping took: {end - start} seconds.")
-            return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image
+            cc_crop_time = round(end - start, 3)
+            return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image, cc_crop_time
         except ValueError as e:
             print(f"ccRead had a value error: {e}")
             return None
@@ -578,11 +572,10 @@ class ColorchipRead:
         if cc_size == 'predict':
             cc_size = self.predict_colorchip_size(im)
         if cc_size == 'big':
-            cc_position, cropped_cc = self.process_colorchip_big(im)
+            cc_position, cropped_cc, cc_crop_time = self.process_colorchip_big(im)
         else:
-            cc_position, cropped_cc = self.process_colorchip_small(im, original_size)
+            cc_position, cropped_cc, cc_crop_time= self.process_colorchip_small(im, original_size)
         
-        print(cc_position)
         if isinstance(cc_position, tuple):
             ccStatus = True
         else:
