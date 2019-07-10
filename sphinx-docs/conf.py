@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'AYUP'
-copyright = "We are not copyrighted but it's part of the theme sadly."
+copyright = "2019, Caleb Powell, Joey Shaw, Jacob Motley, Jason Best, Dakila Ledesma"
 author = 'Caleb Powell, Joey Shaw, Jacob Motley, Jason Best, Dakila Ledesma'
 
 # The full version, including alpha/beta/rc tags

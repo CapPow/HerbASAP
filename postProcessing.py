@@ -1299,12 +1299,12 @@ class appWindow(QMainWindow):
             self.populateSettings()
             self.saveSettings()
         
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    w = appWindow()
+    # check if there are theme settings
+    #if w.settings.get('value_DarkTheme', False):
+    #    app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+    w.show()
 
-app = QtWidgets.QApplication(sys.argv)
-w = appWindow()
-# check if there are theme settings
-#if w.settings.get('value_DarkTheme', False):
-#    app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
-w.show()
-
-sys.exit(app.exec_())
+    sys.exit(app.exec_())

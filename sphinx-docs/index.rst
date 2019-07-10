@@ -7,8 +7,6 @@
 Welcome to AYUP's documentation!
 ===================================================
 
-We're a group of overworked individuals
-
 .. autosummary::
   :toctree:
 

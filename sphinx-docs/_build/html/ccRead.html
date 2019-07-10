@@ -1,0 +1,358 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ccRead: Automatic colorchip reading &mdash; AYUP pre-release-01 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="eqRead: Equipment reading" href="eqRead.html" />
+    <link rel="prev" title="blurDetect: Automatic blur detection" href="blurDetect.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> AYUP
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="postProcessing.html">Postprocessing: Main app window and functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bcRead.html">bcRead: Automatic barcode reading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="blurDetect.html">blurDetect: Automatic blur detection</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ccRead: Automatic colorchip reading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eqRead.html">eqRead: Equipment reading</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">AYUP</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>ccRead: Automatic colorchip reading</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/ccRead.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="ccread-automatic-colorchip-reading">
+<h1>ccRead: Automatic colorchip reading<a class="headerlink" href="#ccread-automatic-colorchip-reading" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="libs.ccRead.ColorchipRead">
+<em class="property">class </em><code class="sig-prename descclassname">libs.ccRead.</code><code class="sig-name descname">ColorchipRead</code><span class="sig-paren">(</span><em class="sig-param">parent=None</em>, <em class="sig-param">*args</em><span class="sig-paren">)</span><a class="headerlink" href="#libs.ccRead.ColorchipRead" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="libs.ccRead.ColorchipRead.extract_patches">
+<code class="sig-name descname">extract_patches</code><span class="sig-paren">(</span><em class="sig-param">arr</em>, <em class="sig-param">patch_shape=125</em>, <em class="sig-param">extraction_step=25</em><span class="sig-paren">)</span><a class="headerlink" href="#libs.ccRead.ColorchipRead.extract_patches" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts patches of any n-dimensional array in place using strides.
+Given an n-dimensional array it will return a 2n-dimensional array with
+the first n dimensions indexing patch position and the last n indexing
+the patch content. This operation is immediate (O(1)). A reshape
+performed on the first n dimensions will cause numpy to copy data, leading
+to a list of extracted patches.
+Read more in the <span class="xref std std-ref">User Guide</span>.
+Parameters
+———-
+arr : ndarray</p>
+<blockquote>
+<div><p>n-dimensional array of which patches are to be extracted</p>
+</div></blockquote>
+<dl class="simple">
+<dt>patch_shape<span class="classifier">integer or tuple of length arr.ndim</span></dt><dd><p>Indicates the shape of the patches to be extracted. If an
+integer is given, the shape will be a hypercube of
+sidelength given by its value.</p>
+</dd>
+<dt>extraction_step<span class="classifier">integer or tuple of length arr.ndim</span></dt><dd><p>Indicates step size at which extraction shall be performed.
+If integer is given, then the step is uniform in all dimensions.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>patches<span class="classifier">strided ndarray</span></dt><dd><p>2n-dimensional array indexing patches on first n dimensions and
+containing patches on the last n dimensions. These dimensions
+are fake, but this way no data is copied. A simple reshape invokes
+a copying operation to obtain a list of patches:
+result.reshape([-1] + list(patch_shape))</p>
+</dd>
+</dl>
+<p>Function adapted from: <a class="reference external" href="https://github.com/diacaf/image-enhance-keras/blob/master/imgpatch.py">https://github.com/diacaf/image-enhance-keras/blob/master/imgpatch.py</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="libs.ccRead.ColorchipRead.ocv_to_pil">
+<code class="sig-name descname">ocv_to_pil</code><span class="sig-paren">(</span><em class="sig-param">im</em><span class="sig-paren">)</span><a class="headerlink" href="#libs.ccRead.ColorchipRead.ocv_to_pil" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts an OCV image into PIL format. From
+<a class="reference external" href="https://stackoverflow.com/questions/43232813/convert-opencv-image-format-to-pil-image-format?noredirect=1&amp;lq=1">https://stackoverflow.com/questions/43232813/convert-opencv-image-format-to-pil-image-format?noredirect=1&amp;lq=1</a>
+:param im: OpenCV image.
+:type im:
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="libs.ccRead.ColorchipRead.predict_color_chip_quadrant">
+<code class="sig-name descname">predict_color_chip_quadrant</code><span class="sig-paren">(</span><em class="sig-param">original_size</em>, <em class="sig-param">scaled_crop_location</em><span class="sig-paren">)</span><a class="headerlink" href="#libs.ccRead.ColorchipRead.predict_color_chip_quadrant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the quadrant of the color chip location
+:param original_size: Size of the original image, in the format (width, height)
+:type original_size: tuple
+:param scaled_crop_location: Tuple of the scaled location of the scaled colorchip crop location, in the format
+(x1, y1, x2, y2)
+:type scaled_crop_location: tuple
+:return: Returns the quadrant where the color chip lies.
+:rtype: int</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="libs.ccRead.ColorchipRead.predict_color_chip_whitevals">
+<code class="sig-name descname">predict_color_chip_whitevals</code><span class="sig-paren">(</span><em class="sig-param">color_chip_image</em><span class="sig-paren">)</span><a class="headerlink" href="#libs.ccRead.ColorchipRead.predict_color_chip_whitevals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes the white values within the cropped CC image and averages them in RGB. The whitest values in the image is
+determined in the L*a*b color space, wherein only lightness values higher than (max lightness value - 1) is
+considered</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>color_chip_image</strong> (<em>Image</em>) – The cropped color chip image.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns a list of the averaged whitest values</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="libs.ccRead.ColorchipRead.predict_colorchip_size">
+<code class="sig-name descname">predict_colorchip_size</code><span class="sig-paren">(</span><em class="sig-param">im</em><span class="sig-paren">)</span><a class="headerlink" href="#libs.ccRead.ColorchipRead.predict_colorchip_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predicts the size of the color chip through color histograms and a dense neural network. This is essential for
+knowing the correct neural network model to use for determining the color chip values.
+:param im: The image to be predicted on.
+:type im: OCV Image
+:return: Returns ‘big’ for big colorchips, and ‘small’ for small colorchips.
+:rtype: str</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="libs.ccRead.ColorchipRead.process_colorchip_big">
+<code class="sig-name descname">process_colorchip_big</code><span class="sig-paren">(</span><em class="sig-param">im</em><span class="sig-paren">)</span><a class="headerlink" href="#libs.ccRead.ColorchipRead.process_colorchip_big" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processes big color chips using neural networks
+:param im: The image to be processed.
+:type im: OCV Image
+:return: TBD</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="libs.ccRead.ColorchipRead.process_colorchip_small">
+<code class="sig-name descname">process_colorchip_small</code><span class="sig-paren">(</span><em class="sig-param">im</em>, <em class="sig-param">original_size</em>, <em class="sig-param">stride_style='quick'</em>, <em class="sig-param">stride=25</em>, <em class="sig-param">partition_size=125</em>, <em class="sig-param">buffer_size=10</em>, <em class="sig-param">over_crop=0</em>, <em class="sig-param">high_precision=False</em><span class="sig-paren">)</span><a class="headerlink" href="#libs.ccRead.ColorchipRead.process_colorchip_small" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>im</strong> – </p></li>
+<li><p><strong>original_size</strong> – </p></li>
+<li><p><strong>stride_style</strong> – </p></li>
+<li><p><strong>stride</strong> – </p></li>
+<li><p><strong>partition_size</strong> – </p></li>
+<li><p><strong>buffer_size</strong> – </p></li>
+<li><p><strong>over_crop</strong> – </p></li>
+<li><p><strong>high_precision</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="libs.ccRead.ColorchipRead.test_feature">
+<code class="sig-name descname">test_feature</code><span class="sig-paren">(</span><em class="sig-param">im</em>, <em class="sig-param">original_size</em>, <em class="sig-param">cc_size='predict'</em><span class="sig-paren">)</span><a class="headerlink" href="#libs.ccRead.ColorchipRead.test_feature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests whether the given image (and its color chip) is compatible with the neural network. This function does not
+spit out values. Compatibility means that the neural network found a color-chip like object, but does not
+ensure that the object found is truly a color chip.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>im</strong> (<em>Image</em>) – Image to be tested. Must be in PIL format.</p></li>
+<li><p><strong>stride</strong> (<em>int</em>) – The amount of pixels that the partition window will move.</p></li>
+<li><p><strong>partition_size</strong> (<em>int</em>) – The size of the partition window.</p></li>
+<li><p><strong>buffer_size</strong> – The amount of images the region proposal network will keep for the discriminator. In</p></li>
+</ul>
+</dd>
+</dl>
+<p>general, the higher the number of this buffer size, the more likely that the true color chip will reside in the
+buffer. However, this also decreases (linearly) how many images can be processed within a given time.
+:type buffer_size: int
+:param high_precision: Boolean to control whether or not to use the high precision discriminator model. The
+high precision is slightly less accurate in terms of centering the color chip, but should have less false
+positives. It is also slower than the regular discriminator model.
+:return: Returns true if the neural networks are able to detect a color chip within an image. Returns false if
+it cannot find a color chip.
+:rtype: bool</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="eqRead.html" class="btn btn-neutral float-right" title="eqRead: Equipment reading" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="blurDetect.html" class="btn btn-neutral float-left" title="blurDetect: Automatic blur detection" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Caleb Powell, Joey Shaw, Jacob Motley, Jason Best, Dakila Ledesma
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
