@@ -67,11 +67,9 @@ class bcRead():
         self.backend = backend
 
     def decode_zbar(self, im):
-        print('dec zbar')
         return zbar_decode(im)
 
     def decode_libdmtx(self, im):
-        print('dec libdmtx')
         return libdmtx_decode(im, timeout=1500)
 
     def set_backend(self, backend='zbar'):
@@ -88,7 +86,6 @@ class bcRead():
             self.decode = self.decode_zbar
         elif backend == 'libdmtx':
             self.decode = self.decode_libdmtx
-        print(backend)
 
     def compileRegexPattern(self, patterns):
         """ compiles a collection specific regex pattern """
@@ -100,23 +97,6 @@ class bcRead():
             self.rePattern = rePattern
         except re.error:
             raise
-
-    def checkPattern(self, bcData):
-        """ verifies if the bcData matches the compiled rePattern.
-
-            Args:
-            bcData (str): a decoded barcode value string, which is checked
-            against the collection pattern "self.rePattern"
-
-            Returns (bool): success status of the match
-        """
-        bcData = bcData.data.decode("utf-8")
-        if self.rePattern is None:
-            return True
-        elif self.rePattern.match(bcData):
-            return True
-        else:
-            return False
 
     def decodeBC(self, img, verifyPattern=True, return_details=False):
         """ attempts to decode barcodes from an image array object.
@@ -142,13 +122,10 @@ class bcRead():
             code_reader = self.decode_zbar
         elif backend == 'libdmtx':
             code_reader = self.decode_libdmtx
-
-        if verifyPattern:
-            bcRawData = [x for x in code_reader(img) if self.checkPattern(x)]
-        else:
-            # note the potential name collision between re.decode
-            bcRawData = [x.data.decode('utf-8') for x in code_reader(img)]
-        # if no results are found, start the using the rotation_list
+        # decode each code found from bytes to utf-8
+        bcRawData = [x.data.decode('utf-8') for x in code_reader(img)]
+        if verifyPattern:  # limit the results to those matching rePattern
+            bcRawData = [x for x in bcRawData if self.rePattern.match(x)]
         rot_deg = 0  # in case we don't rotate but want the 
         rev_mat = None  # variable to hold the reverse matrix
         len_bc = len(bcRawData)
@@ -156,10 +133,10 @@ class bcRead():
             for deg in self.rotation_list:
                 rot_deg += deg
                 rotated_img, rev_mat = self.rotateImg(img, rot_deg, return_details)
-                if verifyPattern:
-                    bcRawData = [x for x in code_reader(rotated_img) if self.checkPattern(x)]
-                else:
-                    bcRawData = [x.data.decode('utf-8') for x in code_reader(rotated_img)]
+                # decode each code found from bytes to utf-8
+                bcRawData = [x.data.decode('utf-8') for x in code_reader(rotated_img)]
+                if verifyPattern:  # limit the results to those matching rePattern
+                    bcRawData = [x for x in bcRawData if self.rePattern.match(x)]
                 len_bc = len(bcRawData)
                 if len_bc > 0:
                     break
@@ -200,14 +177,15 @@ class bcRead():
         mat[0, 2] += (n_width / 2) - cent_x
         mat[1, 2] += (n_height / 2) - cent_y
         rotated_img = cv2.warpAffine(img, mat, (n_width, n_height))
-        # now calculate the reverse matrix
-        (r_height, r_width) = rotated_img.shape[:2]
-        (cent_x, cent_y) = (r_width // 2, r_height // 2) 
-        rev_mat = cv2.getRotationMatrix2D((cent_x, cent_y), angle, 1.0)
-        rev_mat[0, 2] += (width / 2) - cent_x
-        rev_mat[1, 2] += (height / 2) - cent_y
-
-        return (rotated_img, rev_mat)
+        if reversible:  # now calculate the reverse matrix
+            (r_height, r_width) = rotated_img.shape[:2]
+            (cent_x, cent_y) = (r_width // 2, r_height // 2) 
+            rev_mat = cv2.getRotationMatrix2D((cent_x, cent_y), angle, 1.0)
+            rev_mat[0, 2] += (width / 2) - cent_x
+            rev_mat[1, 2] += (height / 2) - cent_y
+            return rotated_img, rev_mat
+        else:  # return none so the results can be parsed similarly 
+            return rotated_img, None
     
     def det_bc_center(self, rect, rev_mat):
         """

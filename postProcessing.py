@@ -45,7 +45,8 @@ import cv2
 import numpy as np
 # internal libs
 from ui.postProcessingUI import Ui_MainWindow
-from ui.imageDialog import Ui_Dialog
+from ui.imageDialogUI import Ui_Dialog_image
+from ui.noBcDialogUI import Ui_Dialog_noBc
 from libs.bcRead import bcRead
 from libs.eqRead import eqRead
 from libs.blurDetect import blurDetect
@@ -63,7 +64,7 @@ class ImageDialog(QDialog):
         self.init_ui(img_array_object)
 
     def init_ui(self, img_array_object):
-        mb = Ui_Dialog()
+        mb = Ui_Dialog_image()
         mb.setupUi(self)
         width, height = img_array_object.size
         bytesPerLine = 3 * width
@@ -72,9 +73,32 @@ class ImageDialog(QDialog):
         pixmap_image = QtGui.QPixmap(pixmap01)
         mb.label_Image.setPixmap(pixmap_image)
 
-    def retranslateUi(self, Dialog):
-        _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+#    def retranslateUi(self, Dialog):
+#        _translate = QtCore.QCoreApplication.translate
+#        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+
+
+class BcDialog(QDialog):
+    """
+    a simple user dialog, for asking what the user to enter a barcode value.
+    """
+    def __init__(self):
+        super().__init__()
+        self.init_ui()
+
+    def init_ui(self):
+        self.mb = Ui_Dialog_noBc()
+        self.mb.setupUi(self)
+        self.mb.lineEdit_userBC.setFocus(True)
+
+    def ask_for_bc(self):
+        dialog = self.exec()
+        if dialog:
+            result = self.mb.lineEdit_userBC.text()
+            return result
+        else:
+            return None
+
 
 class Image_Complete_Emitter(QtCore.QObject):
     """
@@ -375,10 +399,14 @@ class appWindow(QMainWindow):
  
     def handle_bc_result(self, result):
         if not result:
-            notice_title = 'No Barcode Warning'
-            notice_text = f'Warning, No Barcode found!'
-            detail_text = f'No barcode found in image named: {self.img_path}'
-            self.userNotice(notice_text, notice_title, detail_text)
+            userDialog = BcDialog()
+            result = [userDialog.ask_for_bc()]
+#            self.bc_code = None
+#            self.bc_code = result
+#            notice_title = 'No Barcode Warning'
+#            notice_text = f'Warning, No Barcode found!'
+#            detail_text = f'No barcode found in image named: {self.img_path}'
+#            self.userNotice(notice_text, notice_title, detail_text)
             # todo, have user entry option here return and store as result
         self.bc_code = result
         self.mainWindow.label_barcodes.setText(', '.join(result))
@@ -857,8 +885,9 @@ class appWindow(QMainWindow):
 
         for feature, status in features.items():
             feature.setEnabled(status)
-            if not status:
-                feature.setChecked(status)
+            #if not status:
+            feature.setChecked(status)
+
         # store the discovered settings
         self.saveSettings()
 

@@ -18,7 +18,7 @@
     <item row="0" column="1">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <property name="usesScrollButtons">
        <bool>true</bool>
@@ -614,9 +614,9 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>0</y>
+               <y>-328</y>
                <width>573</width>
-               <height>1065</height>
+               <height>1087</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -678,112 +678,9 @@
                     <bool>true</bool>
                    </property>
                    <property name="checked">
-                    <bool>false</bool>
+                    <bool>true</bool>
                    </property>
                    <layout class="QGridLayout" name="gridLayout_3">
-                    <item row="0" column="8">
-                     <spacer name="horizontalSpacer">
-                      <property name="orientation">
-                       <enum>Qt::Horizontal</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>40</width>
-                        <height>20</height>
-                       </size>
-                      </property>
-                     </spacer>
-                    </item>
-                    <item row="0" column="7" rowspan="4">
-                     <widget class="QFrame" name="frame_patterns">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <layout class="QGridLayout" name="gridLayout_18">
-                       <property name="topMargin">
-                        <number>0</number>
-                       </property>
-                       <property name="bottomMargin">
-                        <number>0</number>
-                       </property>
-                       <item row="0" column="0" colspan="3">
-                        <widget class="QListWidget" name="listWidget_patterns">
-                         <property name="enabled">
-                          <bool>true</bool>
-                         </property>
-                         <property name="autoScroll">
-                          <bool>false</bool>
-                         </property>
-                         <property name="selectionRectVisible">
-                          <bool>false</bool>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="3" column="2">
-                        <widget class="QToolButton" name="toolButton_removePattern">
-                         <property name="enabled">
-                          <bool>true</bool>
-                         </property>
-                         <property name="text">
-                          <string>remove</string>
-                         </property>
-                         <property name="checkable">
-                          <bool>false</bool>
-                         </property>
-                         <property name="autoRaise">
-                          <bool>false</bool>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="3" column="1">
-                        <spacer name="horizontalSpacer_11">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>40</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                       <item row="3" column="0">
-                        <widget class="QToolButton" name="toolButton_addPattern">
-                         <property name="enabled">
-                          <bool>true</bool>
-                         </property>
-                         <property name="text">
-                          <string>add </string>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </widget>
-                    </item>
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="label_catalogNumberPrefix">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="text">
-                       <string>Catalog Number Prefix</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="1">
-                     <widget class="QLineEdit" name="lineEdit_catalogNumberPrefix">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="placeholderText">
-                       <string>ABCD</string>
-                      </property>
-                     </widget>
-                    </item>
                     <item row="0" column="2">
                      <widget class="QLabel" name="label_digits">
                       <property name="enabled">
@@ -807,6 +704,29 @@
                       </property>
                      </widget>
                     </item>
+                    <item row="0" column="1">
+                     <widget class="QLineEdit" name="lineEdit_catalogNumberPrefix">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="placeholderText">
+                       <string>ABCD</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="0">
+                     <widget class="QLabel" name="label_25">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="text">
+                       <string>Decoder backend </string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                      </property>
+                     </widget>
+                    </item>
                     <item row="1" column="0">
                      <widget class="QLabel" name="label_dupNamingPolicy">
                       <property name="enabled">
@@ -819,6 +739,75 @@
                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                       </property>
                      </widget>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QLabel" name="label_dupPreview">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="text">
+                       <string>Preview</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="1" colspan="3">
+                     <widget class="QComboBox" name="comboBox_bcBackend">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="currentIndex">
+                       <number>1</number>
+                      </property>
+                      <item>
+                       <property name="text">
+                        <string>libdmtx</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>zbar</string>
+                       </property>
+                      </item>
+                     </widget>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="label_catalogNumberPrefix">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="text">
+                       <string>Catalog Number Prefix</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="1" colspan="3">
+                     <widget class="QLabel" name="label_dupPreviewDisplay">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="8">
+                     <spacer name="horizontalSpacer">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>40</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
                     </item>
                     <item row="1" column="1" colspan="3">
                      <widget class="QComboBox" name="comboBox_dupNamingPolicy">
@@ -856,60 +845,89 @@
                       </item>
                      </widget>
                     </item>
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="label_dupPreview">
+                    <item row="0" column="7" rowspan="4">
+                     <widget class="QFrame" name="frame_patterns">
                       <property name="enabled">
                        <bool>true</bool>
                       </property>
-                      <property name="text">
-                       <string>Preview</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="1" colspan="3">
-                     <widget class="QLabel" name="label_dupPreviewDisplay">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="0">
-                     <widget class="QLabel" name="label_25">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="text">
-                       <string>Decoder backend </string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="1" colspan="3">
-                     <widget class="QComboBox" name="comboBox_bcBackend">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="currentIndex">
-                       <number>1</number>
-                      </property>
-                      <item>
-                       <property name="text">
-                        <string>libdmtx</string>
+                      <layout class="QGridLayout" name="gridLayout_18">
+                       <property name="topMargin">
+                        <number>0</number>
                        </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>zbar</string>
+                       <property name="bottomMargin">
+                        <number>0</number>
                        </property>
-                      </item>
+                       <item row="4" column="2">
+                        <widget class="QToolButton" name="toolButton_removePattern">
+                         <property name="enabled">
+                          <bool>true</bool>
+                         </property>
+                         <property name="text">
+                          <string>remove</string>
+                         </property>
+                         <property name="checkable">
+                          <bool>false</bool>
+                         </property>
+                         <property name="autoRaise">
+                          <bool>false</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="0" colspan="3">
+                        <widget class="QListWidget" name="listWidget_patterns">
+                         <property name="enabled">
+                          <bool>true</bool>
+                         </property>
+                         <property name="autoScroll">
+                          <bool>false</bool>
+                         </property>
+                         <property name="selectionRectVisible">
+                          <bool>false</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="4" column="0">
+                        <widget class="QToolButton" name="toolButton_addPattern">
+                         <property name="enabled">
+                          <bool>true</bool>
+                         </property>
+                         <property name="text">
+                          <string>add </string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="4" column="1">
+                        <spacer name="horizontalSpacer_11">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>40</width>
+                           <height>20</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                       <item row="0" column="0" colspan="3">
+                        <widget class="QLabel" name="label_28">
+                         <property name="enabled">
+                          <bool>false</bool>
+                         </property>
+                         <property name="font">
+                          <font>
+                           <italic>true</italic>
+                          </font>
+                         </property>
+                         <property name="text">
+                          <string>barcode regex patterns</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
                      </widget>
                     </item>
                    </layout>
@@ -1028,10 +1046,13 @@
                     <string>Color checker size</string>
                    </property>
                    <layout class="QGridLayout" name="gridLayout_17">
-                    <item row="0" column="1">
-                     <widget class="QRadioButton" name="radioButton_colorCheckerLarge">
+                    <item row="0" column="0">
+                     <widget class="QRadioButton" name="radioButton_colorCheckerSmall">
                       <property name="text">
-                       <string>Large</string>
+                       <string>Small</string>
+                      </property>
+                      <property name="checked">
+                       <bool>true</bool>
                       </property>
                      </widget>
                     </item>
@@ -1048,10 +1069,10 @@
                       </property>
                      </spacer>
                     </item>
-                    <item row="0" column="0">
-                     <widget class="QRadioButton" name="radioButton_colorCheckerSmall">
+                    <item row="0" column="1">
+                     <widget class="QRadioButton" name="radioButton_colorCheckerLarge">
                       <property name="text">
-                       <string>Small</string>
+                       <string>Large</string>
                       </property>
                      </widget>
                     </item>
@@ -1070,7 +1091,7 @@
                     <bool>true</bool>
                    </property>
                    <property name="checked">
-                    <bool>false</bool>
+                    <bool>true</bool>
                    </property>
                    <layout class="QGridLayout" name="gridLayout_5">
                     <item row="0" column="2">
@@ -1143,6 +1164,9 @@
                    <property name="text">
                     <string>Perform white balance using color checker</string>
                    </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
                   </widget>
                  </item>
                 </layout>
@@ -1213,6 +1237,9 @@
                    </property>
                    <property name="text">
                     <string>Perform Lens corrections</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
                    </property>
                   </widget>
                  </item>
@@ -1410,6 +1437,9 @@
                   <widget class="QCheckBox" name="checkBox_metaDataApplication">
                    <property name="text">
                     <string>Apply metadata to images</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
                    </property>
                   </widget>
                  </item>
