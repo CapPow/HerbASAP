@@ -18,7 +18,7 @@
     <item row="0" column="1">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <property name="usesScrollButtons">
        <bool>true</bool>
@@ -681,108 +681,6 @@
                     <bool>false</bool>
                    </property>
                    <layout class="QGridLayout" name="gridLayout_3">
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="label_dupNamingPolicy">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="text">
-                       <string>Duplicate naming policy</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="1">
-                     <widget class="QLineEdit" name="lineEdit_catalogNumberPrefix">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="placeholderText">
-                       <string>ABCD</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="3">
-                     <widget class="QSpinBox" name="spinBox_catalogDigits">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="frame">
-                       <bool>true</bool>
-                      </property>
-                      <property name="minimum">
-                       <number>0</number>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="2">
-                     <widget class="QLabel" name="label_digits">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="text">
-                       <string>Digits</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="1" colspan="3">
-                     <widget class="QComboBox" name="comboBox_dupNamingPolicy">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="sizeAdjustPolicy">
-                       <enum>QComboBox::AdjustToMinimumContentsLength</enum>
-                      </property>
-                      <item>
-                       <property name="text">
-                        <string>LOWER case letter</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>UPPER case letter</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Number with underscore</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>OVERWRITE original</string>
-                       </property>
-                      </item>
-                     </widget>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="label_catalogNumberPrefix">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="text">
-                       <string>Catalog Number Prefix</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="0">
-                     <spacer name="verticalSpacer_2">
-                      <property name="orientation">
-                       <enum>Qt::Vertical</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>20</width>
-                        <height>40</height>
-                       </size>
-                      </property>
-                     </spacer>
-                    </item>
                     <item row="0" column="8">
                      <spacer name="horizontalSpacer">
                       <property name="orientation">
@@ -795,26 +693,6 @@
                        </size>
                       </property>
                      </spacer>
-                    </item>
-                    <item row="3" column="1">
-                     <widget class="QLabel" name="label_dupPreviewDisplay">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="0">
-                     <widget class="QLabel" name="label_dupPreview">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="text">
-                       <string>Preview</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
                     </item>
                     <item row="0" column="7" rowspan="4">
                      <widget class="QFrame" name="frame_patterns">
@@ -881,6 +759,157 @@
                         </widget>
                        </item>
                       </layout>
+                     </widget>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="label_catalogNumberPrefix">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="text">
+                       <string>Catalog Number Prefix</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QLineEdit" name="lineEdit_catalogNumberPrefix">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="placeholderText">
+                       <string>ABCD</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="2">
+                     <widget class="QLabel" name="label_digits">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="text">
+                       <string>Digits</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="3">
+                     <widget class="QSpinBox" name="spinBox_catalogDigits">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="frame">
+                       <bool>true</bool>
+                      </property>
+                      <property name="minimum">
+                       <number>0</number>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="label_dupNamingPolicy">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="text">
+                       <string>Duplicate naming policy</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1" colspan="3">
+                     <widget class="QComboBox" name="comboBox_dupNamingPolicy">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="sizeAdjustPolicy">
+                       <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+                      </property>
+                      <item>
+                       <property name="text">
+                        <string>LOWER case letter</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>UPPER case letter</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Number with underscore</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>OVERWRITE original</string>
+                       </property>
+                      </item>
+                     </widget>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QLabel" name="label_dupPreview">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="text">
+                       <string>Preview</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="1" colspan="3">
+                     <widget class="QLabel" name="label_dupPreviewDisplay">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="0">
+                     <widget class="QLabel" name="label_25">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="text">
+                       <string>Decoder backend </string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="1" colspan="3">
+                     <widget class="QComboBox" name="comboBox_bcBackend">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="currentIndex">
+                       <number>1</number>
+                      </property>
+                      <item>
+                       <property name="text">
+                        <string>libdmtx</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>zbar</string>
+                       </property>
+                      </item>
                      </widget>
                     </item>
                    </layout>
@@ -1098,6 +1127,9 @@
                       <property name="text">
                        <string>Color checker Position</string>
                       </property>
+                      <property name="alignment">
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                      </property>
                      </widget>
                     </item>
                    </layout>
@@ -1217,6 +1249,9 @@
                    <property name="text">
                     <string>Gamma value:</string>
                    </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
                   </widget>
                  </item>
                  <item row="0" column="2">
@@ -1271,12 +1306,18 @@
                    <property name="text">
                     <string>Copywrite License:</string>
                    </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
                   </widget>
                  </item>
                  <item row="1" column="0">
                   <widget class="QLabel" name="label_collectionName">
                    <property name="text">
-                    <string>Collection name</string>
+                    <string>Collection name:</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                    </property>
                   </widget>
                  </item>
@@ -1296,7 +1337,10 @@
                  <item row="4" column="0">
                   <widget class="QLabel" name="label_contactEmail">
                    <property name="text">
-                    <string>Contact Email</string>
+                    <string>Contact Email:</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                    </property>
                   </widget>
                  </item>
@@ -1316,7 +1360,10 @@
                  <item row="2" column="0">
                   <widget class="QLabel" name="label_collectionIURL">
                    <property name="text">
-                    <string>Collection URL</string>
+                    <string>Collection URL:</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                    </property>
                   </widget>
                  </item>
@@ -1352,7 +1399,10 @@
                  <item row="3" column="0">
                   <widget class="QLabel" name="label_contactName">
                    <property name="text">
-                    <string>Contact name</string>
+                    <string>Contact name:</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                    </property>
                   </widget>
                  </item>
@@ -1463,8 +1513,6 @@
   <tabstop>preferences_ScrollArea</tabstop>
   <tabstop>group_barcodeDetection</tabstop>
   <tabstop>group_renameByBarcode</tabstop>
-  <tabstop>lineEdit_catalogNumberPrefix</tabstop>
-  <tabstop>spinBox_catalogDigits</tabstop>
   <tabstop>group_colorCheckerDetection</tabstop>
   <tabstop>group_verifyRotation</tabstop>
   <tabstop>checkBox_performWhiteBalance</tabstop>
@@ -1489,7 +1537,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>336</x>
-     <y>-333</y>
+     <y>224</y>
     </hint>
     <hint type="destinationlabel">
      <x>503</x>
@@ -1505,7 +1553,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>368</x>
-     <y>-29</y>
+     <y>561</y>
     </hint>
     <hint type="destinationlabel">
      <x>255</x>
@@ -1521,7 +1569,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>143</x>
-     <y>-18</y>
+     <y>572</y>
     </hint>
     <hint type="destinationlabel">
      <x>341</x>
@@ -1537,7 +1585,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>217</x>
-     <y>9</y>
+     <y>599</y>
     </hint>
     <hint type="destinationlabel">
      <x>158</x>
@@ -1553,7 +1601,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>216</x>
-     <y>75</y>
+     <y>665</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -1569,7 +1617,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>196</x>
-     <y>210</y>
+     <y>800</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -1585,10 +1633,10 @@
    <hints>
     <hint type="sourcelabel">
      <x>504</x>
-     <y>266</y>
+     <y>856</y>
     </hint>
     <hint type="destinationlabel">
-     <x>667</x>
+     <x>631</x>
      <y>322</y>
     </hint>
    </hints>
@@ -1601,10 +1649,10 @@
    <hints>
     <hint type="sourcelabel">
      <x>504</x>
-     <y>322</y>
+     <y>912</y>
     </hint>
     <hint type="destinationlabel">
-     <x>667</x>
+     <x>631</x>
      <y>372</y>
     </hint>
    </hints>
@@ -1617,10 +1665,10 @@
    <hints>
     <hint type="sourcelabel">
      <x>504</x>
-     <y>378</y>
+     <y>968</y>
     </hint>
     <hint type="destinationlabel">
-     <x>667</x>
+     <x>631</x>
      <y>431</y>
     </hint>
    </hints>
@@ -1633,10 +1681,10 @@
    <hints>
     <hint type="sourcelabel">
      <x>504</x>
-     <y>434</y>
+     <y>1024</y>
     </hint>
     <hint type="destinationlabel">
-     <x>667</x>
+     <x>631</x>
      <y>490</y>
     </hint>
    </hints>
@@ -1649,10 +1697,10 @@
    <hints>
     <hint type="sourcelabel">
      <x>504</x>
-     <y>490</y>
+     <y>1080</y>
     </hint>
     <hint type="destinationlabel">
-     <x>667</x>
+     <x>631</x>
      <y>533</y>
     </hint>
    </hints>
@@ -1812,7 +1860,7 @@
      <y>154</y>
     </hint>
     <hint type="destinationlabel">
-     <x>667</x>
+     <x>631</x>
      <y>139</y>
     </hint>
    </hints>
@@ -1828,7 +1876,7 @@
      <y>246</y>
     </hint>
     <hint type="destinationlabel">
-     <x>667</x>
+     <x>631</x>
      <y>250</y>
     </hint>
    </hints>
@@ -1844,7 +1892,7 @@
      <y>338</y>
     </hint>
     <hint type="destinationlabel">
-     <x>667</x>
+     <x>631</x>
      <y>357</y>
     </hint>
    </hints>
@@ -1860,7 +1908,7 @@
      <y>434</y>
     </hint>
     <hint type="destinationlabel">
-     <x>667</x>
+     <x>631</x>
      <y>453</y>
     </hint>
    </hints>
@@ -1876,7 +1924,7 @@
      <y>527</y>
     </hint>
     <hint type="destinationlabel">
-     <x>667</x>
+     <x>631</x>
      <y>558</y>
     </hint>
    </hints>
@@ -1889,10 +1937,10 @@
    <hints>
     <hint type="sourcelabel">
      <x>243</x>
-     <y>-363</y>
+     <y>194</y>
     </hint>
     <hint type="destinationlabel">
-     <x>667</x>
+     <x>631</x>
      <y>209</y>
     </hint>
    </hints>
@@ -1904,11 +1952,11 @@
    <slot>updateCatalogNumberPreviews()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>336</x>
-     <y>-364</y>
+     <x>349</x>
+     <y>193</y>
     </hint>
     <hint type="destinationlabel">
-     <x>667</x>
+     <x>631</x>
      <y>192</y>
     </hint>
    </hints>
@@ -1921,10 +1969,10 @@
    <hints>
     <hint type="sourcelabel">
      <x>336</x>
-     <y>-333</y>
+     <y>224</y>
     </hint>
     <hint type="destinationlabel">
-     <x>667</x>
+     <x>631</x>
      <y>240</y>
     </hint>
    </hints>
@@ -1937,10 +1985,10 @@
    <hints>
     <hint type="sourcelabel">
      <x>310</x>
-     <y>-481</y>
+     <y>109</y>
     </hint>
     <hint type="destinationlabel">
-     <x>667</x>
+     <x>631</x>
      <y>116</y>
     </hint>
    </hints>
@@ -1953,7 +2001,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>212</x>
-     <y>-339</y>
+     <y>251</y>
     </hint>
     <hint type="destinationlabel">
      <x>265</x>
@@ -1972,7 +2020,7 @@
      <y>527</y>
     </hint>
     <hint type="destinationlabel">
-     <x>667</x>
+     <x>631</x>
      <y>542</y>
     </hint>
    </hints>
@@ -1985,10 +2033,10 @@
    <hints>
     <hint type="sourcelabel">
      <x>543</x>
-     <y>78</y>
+     <y>668</y>
     </hint>
     <hint type="destinationlabel">
-     <x>667</x>
+     <x>631</x>
      <y>288</y>
     </hint>
    </hints>
@@ -2001,11 +2049,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>202</x>
-     <y>-237</y>
+     <y>353</y>
     </hint>
     <hint type="destinationlabel">
      <x>274</x>
-     <y>-205</y>
+     <y>385</y>
     </hint>
    </hints>
   </connection>
@@ -2017,11 +2065,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>192</x>
-     <y>-237</y>
+     <y>353</y>
     </hint>
     <hint type="destinationlabel">
      <x>189</x>
-     <y>-205</y>
+     <y>385</y>
     </hint>
    </hints>
   </connection>
@@ -2033,7 +2081,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>194</x>
-     <y>-95</y>
+     <y>495</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -2049,7 +2097,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>126</x>
-     <y>-95</y>
+     <y>495</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -2064,11 +2112,11 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>390</x>
-     <y>-311</y>
+     <x>403</x>
+     <y>279</y>
     </hint>
     <hint type="destinationlabel">
-     <x>666</x>
+     <x>631</x>
      <y>292</y>
     </hint>
    </hints>
@@ -2080,11 +2128,11 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>526</x>
-     <y>-311</y>
+     <x>552</x>
+     <y>279</y>
     </hint>
     <hint type="destinationlabel">
-     <x>667</x>
+     <x>631</x>
      <y>346</y>
     </hint>
    </hints>
@@ -2096,12 +2144,28 @@
    <slot>reset_all_settings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>475</x>
-     <y>523</y>
+     <x>501</x>
+     <y>1113</y>
     </hint>
     <hint type="destinationlabel">
      <x>604</x>
      <y>547</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_bcBackend</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>saveSettings()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>265</x>
+     <y>272</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>627</x>
+     <y>279</y>
     </hint>
    </hints>
   </connection>

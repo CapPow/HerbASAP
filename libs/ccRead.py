@@ -58,12 +58,12 @@ class ColorchipRead:
     def __init__(self, parent=None, *args):
         super(ColorchipRead, self).__init__()
         self.parent = parent
-        # self.position_model = load_model("libs/models/mlp_proposal.hdf5")
-        # self.discriminator_model = load_model("libs/models/discriminator.hdf5")
-        # self.high_precision_model = load_model("libs/models/highprecision_discriminator.hdf5")
-        # self.size_det_model = load_model("libs/models/size_model.hdf5")
-        # self.large_colorchip_regressor_model = load_model("libs/models/lcc_regressor.hdf5")
-        # self.size_model = load_model("libs/models/size_model.hdf5")
+        self.position_model = load_model("libs/models/mlp_proposal.hdf5")
+        self.discriminator_model = load_model("libs/models/discriminator.hdf5")
+        self.high_precision_model = load_model("libs/models/highprecision_discriminator.hdf5")
+        self.size_det_model = load_model("libs/models/size_model.hdf5")
+        self.large_colorchip_regressor_model = load_model("libs/models/lcc_regressor.hdf5")
+        self.size_model = load_model("libs/models/size_model.hdf5")
 
         self.position_function = K.function(
             [self.position_model.layers[0].input, self.position_model.layers[1].input, K.learning_phase()],
@@ -527,6 +527,7 @@ class ColorchipRead:
         it cannot find a color chip.
         :rtype: bool
         """
+
         if cc_size == 'predict':
             cc_size = self.predict_colorchip_size(im)
         if cc_size == 'big':
