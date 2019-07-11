@@ -785,7 +785,9 @@ class appWindow(QMainWindow):
         gamma_value = (usr_gamma, usr_gamma)
         try:  # use rawpy to convert raw to openCV
             with rawpy.imread(imgPath) as raw:
+                wb = raw.camera_whitebalance
                 im = raw.postprocess(chromatic_aberration=(1, 1),
+                                     user_wb=wb,
                                      demosaic_algorithm=demosaic,
                                      gamma=gamma_value,
                                      output_color=self.metaRead)
