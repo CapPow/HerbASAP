@@ -13,18 +13,10 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-"""
-
-    AYUP (as of yet unnamed program) performs post processing steps on raw 
-    format images of natural history specimens. Specifically designed for 
-    Herbarium sheet images.
-
-"""
-# imports here
 import numpy as np
-from numpy.lib.stride_tricks import as_strided
-import numbers
-
+from PIL import Image
+import cv2
+import time
 import os
 
 try:
@@ -43,15 +35,7 @@ except ImportError:
     finally:
         os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
         os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-
-from PIL import Image, ImageCms
-import cv2
-import time
-import os
-
-# os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-print(f"[INFO] Forcing use of CPU for neural network prediction (TensorFlow)")
+        print(f"[INFO] Forcing use of CPU for neural network prediction (TensorFlow)")
 
 
 class ColorchipRead:
@@ -164,8 +148,9 @@ class ColorchipRead:
         Converts an OCV image into PIL format. From
         https://stackoverflow.com/questions/43232813/convert-opencv-image-format-to-pil-image-format?noredirect=1&lq=1
         :param im: OpenCV image.
-        :type im:
-        :return:
+        :type im: numpy.ndarray
+        :return: Returns an image converted to PIL format.
+        :rtype: PIL.Image
         """
 
         pil_image = np.array(im)
@@ -177,7 +162,7 @@ class ColorchipRead:
         Predicts the size of the color chip through color histograms and a dense neural network. This is essential for
         knowing the correct neural network model to use for determining the color chip values.
         :param im: The image to be predicted on.
-        :type im: OCV Image
+        :type im: ndarray
         :return: Returns 'big' for big colorchips, and 'small' for small colorchips.
         :rtype: str
         """
@@ -203,12 +188,14 @@ class ColorchipRead:
 
     def process_colorchip_big(self, im):
         """
-        Processes big color chips using neural networks
-        :param im: The image to be processed.
-        :type im: OCV Image
-        :return: TBD
+        Processes big colorchips using a minimally-modified Google MobileNetV2 neural network model. The model predicts
+        the bounding box within a shrunken 256x256 image. Most large colorchips should be accurately predicted, as long
+        as enough colorchip information is retained after this resizing.
+        :param im: The image to be processed. Should have a large colorchip.
+        :type im: Image
+        :return: Returns a tuple containing the bounding box (x1, y1, x2, y2) and the cropped image of the colorchip.
+        :rtype: tuple
         """
-        start = time.time()
         im = self.ocv_to_pil(im)
         original_image_width, original_image_height = im.size
 
@@ -223,10 +210,9 @@ class ColorchipRead:
         scaled_y1, scaled_y2 = prop_y1 * original_image_height, prop_x2 * original_image_height
 
         cropped_im = im.crop((scaled_x1, scaled_y1, scaled_x2, scaled_y2))
-        end = time.time()
-        cc_crop_time = round(end - start, 3)
+
         try:
-            return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), cropped_im, cc_crop_time
+            return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), cropped_im
         except SystemError as e:
             print(f"System error: {e}")
 
@@ -234,16 +220,40 @@ class ColorchipRead:
                                 stride=25, partition_size=125, buffer_size=10,
                                 over_crop=0, high_precision=False):
         """
+        Finds small colorchips using the quickCC model. This model is specifically trained on tiny colorchips found in
+        many herbarium collections. If the colorchip is similar in size to those, and is in the same proportion to the
+        image, the model should be able to find it.
 
-        :param im:
-        :param original_size:
-        :param stride_style:
-        :param stride:
-        :param partition_size:
-        :param buffer_size:
-        :param over_crop:
-        :param high_precision:
-        :return:
+        :param im: The image containing the small colorchip.
+        :type im: PIL.Image
+        :param original_size: The original size of the image as a tuple containing (width, height). This is used for
+        calculating the final bounding box respective to the original size of the image.
+        :type original_size: tuple
+        :param stride_style: A string that denotes the stride style, either "whole", "quick", or "ultraquick". In
+        whole, the neural network will look at the entirety of the image. Quick will look at only the outside borders
+        of the image, and therefore is appropriate for collections wherein the colorchip is found in the outside
+        border. Ultraquick will only look at the four outer corners of the image. Using quicker stride styles heavily
+        decrease the amount of processing time.
+        :type stride_style: str
+        :param stride: The amount of pixels the sliding window will move. In general, lower values will allow more
+        accurate predictions, but at the cost of significantly higher computation time. If you find that your
+        colorchips are mis-cropped, lower this value.
+        :type stride: int
+        :param partition_size: The partition size of the sliding window. If your colorchip is slightly large (relative
+        to other collections), increase this value. If it is slightly too small (relative to other collections)
+        decrease this value.
+        :type partition_size: int
+        :param buffer_size: The amount of partition images to be processed by the classifier network. A higher value
+        will increase accuracy (if the proposal network did not correctly determine the colorchip) but also increase
+        computation time.
+        :type buffer_size: int
+        :param over_crop: The amount of pixels the sliding window will go past the original image dimensions. Helpful
+        if your colorchips are cropped at the end of the image.
+        :type over_crop: int
+        :param high_precision: [INFO] Will be changed soon, must rewrite docs for this parameter.
+        :type high_precision: bool
+        :return: Returns a tuple containing the bounding box (x1, y1, x2, y2) and the cropped image of the colorchip.
+        :rtype: tuple
         """
         im = self.ocv_to_pil(im)
         im_hsv = im.convert("HSV")
@@ -255,33 +265,15 @@ class ColorchipRead:
         hists_hsv = []
 
         if stride_style == 'whole':
-            nstart = time.time()
-            im = np.array(im)
-            im_hsv = np.array(im_hsv)
-            partitions = self.extract_patches(im,
-                                              (partition_size, partition_size, 3),
-                                              stride)
-            partitions_hsv = self.extract_patches(im_hsv,
-                                                  (partition_size, partition_size, 3),
-                                                  stride)
-            partitions = np.reshape(partitions, (-1, 125, 125, 3))
-            partitions_hsv = np.reshape(partitions_hsv, (-1, 125, 125, 3))
             for r in range(-over_crop, (image_height - partition_size) // stride + over_crop):
                 for c in range(-over_crop, (image_width - partition_size) // stride + over_crop):
                     x1, y1 = c * stride, r * stride
                     x2, y2 = x1 + partition_size, y1 + partition_size
                     possible_positions.append((x1, y1, x2, y2))
-            #         partitioned_im_hsv = im_hsv.crop((x1, y1, x2, y2))
-            #         hists_rgb.append(partitioned_im.histogram())
-            #         hists_hsv.append(partitioned_im_hsv.histogram())
-
-            for index in range(len(partitions)):
-                partitioned_im = Image.fromarray(partitions[index])
-                partitioned_im_hsv = Image.fromarray(partitions_hsv[index])
-                hists_rgb.append(partitioned_im.histogram())
-                hists_hsv.append(partitioned_im_hsv.histogram())
-
-            print(f"New striding took {time.time() - nstart}")
+                    partitioned_im = im.crop((x1, y1, x2, y2))
+                    partitioned_im_hsv = im_hsv.crop((x1, y1, x2, y2))
+                    hists_rgb.append(partitioned_im.histogram())
+                    hists_hsv.append(partitioned_im_hsv.histogram())
 
         elif stride_style == 'quick':
             for c in range(-over_crop, (image_width - partition_size) // stride + over_crop):
@@ -453,7 +445,8 @@ class ColorchipRead:
             print(f"ccRead had a system error: {e}")
             return None
 
-    def predict_color_chip_quadrant(self, original_size, scaled_crop_location):
+    @staticmethod
+    def predict_color_chip_quadrant(original_size, scaled_crop_location):
         """
         Returns the quadrant of the color chip location
         :param original_size: Size of the original image, in the format (width, height)
@@ -481,7 +474,8 @@ class ColorchipRead:
         else:
             return None
 
-    def predict_color_chip_whitevals(self, color_chip_image):
+    @staticmethod
+    def predict_color_chip_whitevals(color_chip_image):
         """
         Takes the white values within the cropped CC image and averages them in RGB. The whitest values in the image is
         determined in the L*a*b color space, wherein only lightness values higher than (max lightness value - 1) is
