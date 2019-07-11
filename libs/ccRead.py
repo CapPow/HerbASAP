@@ -498,40 +498,41 @@ class ColorchipRead:
 
         return list(white_pixels_average)
 
-    # def test_feature(self, im, original_size, cc_size='predict'):
-    #     """
-    #     Tests whether the given image (and its color chip) is compatible with the neural network. This function does not
-    #     spit out values. Compatibility means that the neural network found a color-chip like object, but does not
-    #     ensure that the object found is truly a color chip.
-    #
-    #     :param im: Image to be tested. Must be in PIL format.
-    #     :type im: Image
-    #     :param stride: The amount of pixels that the partition window will move.
-    #     :type stride: int
-    #     :param partition_size: The size of the partition window.
-    #     :type partition_size: int
-    #     :param buffer_size: The amount of images the region proposal network will keep for the discriminator. In
-    #     general, the higher the number of this buffer size, the more likely that the true color chip will reside in the
-    #     buffer. However, this also decreases (linearly) how many images can be processed within a given time.
-    #     :type buffer_size: int
-    #     :param high_precision: Boolean to control whether or not to use the high precision discriminator model. The
-    #     high precision is slightly less accurate in terms of centering the color chip, but should have less false
-    #     positives. It is also slower than the regular discriminator model.
-    #     :return: Returns true if the neural networks are able to detect a color chip within an image. Returns false if
-    #     it cannot find a color chip.
-    #     :rtype: bool
-    #     """
-    #     if cc_size == 'predict':
-    #         cc_size = self.predict_colorchip_size(im)
-    #     if cc_size == 'big':
-    #         cc_position, cropped_cc, cc_crop_time = self.process_colorchip_big(im)
-    #     else:
-    #         cc_position, cropped_cc, cc_crop_time= self.process_colorchip_small(im, original_size)
-    #
-    #     if isinstance(cc_position, tuple):
-    #         ccStatus = True
-    #     else:
-    #         ccStatus = False
-    #     return ccStatus, cropped_cc
+    def test_feature(self, im, original_size, cc_size='predict'):
+        """
+        Tests whether the given image (and its color chip) is compatible with the neural network. This function does not
+        spit out values. Compatibility means that the neural network found a color-chip like object, but does not
+        ensure that the object found is truly a color chip.
+
+        :param im: Image to be tested. Must be in PIL format.
+        :type im: Image
+        :param stride: The amount of pixels that the partition window will move.
+        :type stride: int
+        :param partition_size: The size of the partition window.
+        :type partition_size: int
+        :param buffer_size: The amount of images the region proposal network will keep for the discriminator. In
+        general, the higher the number of this buffer size, the more likely that the true color chip will reside in the
+        buffer. However, this also decreases (linearly) how many images can be processed within a given time.
+        :type buffer_size: int
+        :param high_precision: Boolean to control whether or not to use the high precision discriminator model. The
+        high precision is slightly less accurate in terms of centering the color chip, but should have less false
+        positives. It is also slower than the regular discriminator model.
+        :return: Returns true if the neural networks are able to detect a color chip within an image. Returns false if
+        it cannot find a color chip.
+        :rtype: bool
+        """
+
+        if cc_size == 'predict':
+            cc_size = self.predict_colorchip_size(im)
+        if cc_size == 'big':
+            cc_position, cropped_cc, cc_crop_time = self.process_colorchip_big(im)
+        else:
+            cc_position, cropped_cc, cc_crop_time= self.process_colorchip_small(im, original_size)
+        
+        if isinstance(cc_position, tuple):
+            ccStatus = True
+        else:
+            ccStatus = False
+        return ccStatus, cropped_cc
             
             

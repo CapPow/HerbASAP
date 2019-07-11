@@ -45,7 +45,8 @@ import cv2
 import numpy as np
 # internal libs
 from ui.postProcessingUI import Ui_MainWindow
-from ui.imageDialog import Ui_Dialog
+from ui.imageDialogUI import Ui_Dialog_image
+from ui.noBcDialogUI import Ui_Dialog_noBc
 from libs.bcRead import bcRead
 from libs.eqRead import eqRead
 from libs.blurDetect import blurDetect
@@ -63,7 +64,7 @@ class ImageDialog(QDialog):
         self.init_ui(img_array_object)
 
     def init_ui(self, img_array_object):
-        mb = Ui_Dialog()
+        mb = Ui_Dialog_image()
         mb.setupUi(self)
         width, height = img_array_object.size
         bytesPerLine = 3 * width
@@ -72,9 +73,32 @@ class ImageDialog(QDialog):
         pixmap_image = QtGui.QPixmap(pixmap01)
         mb.label_Image.setPixmap(pixmap_image)
 
-    def retranslateUi(self, Dialog):
-        _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+#    def retranslateUi(self, Dialog):
+#        _translate = QtCore.QCoreApplication.translate
+#        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+
+
+class BcDialog(QDialog):
+    """
+    a simple user dialog, for asking what the user to enter a barcode value.
+    """
+    def __init__(self):
+        super().__init__()
+        self.init_ui()
+
+    def init_ui(self):
+        self.mb = Ui_Dialog_noBc()
+        self.mb.setupUi(self)
+        self.mb.lineEdit_userBC.setFocus(True)
+
+    def ask_for_bc(self):
+        dialog = self.exec()
+        if dialog:
+            result = self.mb.lineEdit_userBC.text()
+            return result
+        else:
+            return None
+
 
 class Image_Complete_Emitter(QtCore.QObject):
     """
@@ -135,7 +159,8 @@ class appWindow(QMainWindow):
         self.updateCatalogNumberPreviews()
         patterns = self.retrieve_bc_patterns()
         self.fill_patterns(patterns)
-        self.bcRead = bcRead(patterns, parent=self.mainWindow)
+        backend = self.mainWindow.comboBox_bcBackend.currentText()
+        self.bcRead = bcRead(patterns, backend, parent=self.mainWindow)
         ###
         #
         ###
@@ -302,7 +327,9 @@ class appWindow(QMainWindow):
             # '.raw': (group_keepUnalteredRaw, lineEdit_pathUnalteredRaw)
             to_save = [(x,y[1]) for x, y in output_map.items() if y[0]]
             # store how many save_jobs are expected to global variable
-            self.working_save_jobs = len(to_save)
+            self.working_save_jobs = self.working_save_jobs
+            if self.working_save_jobs < 1:  # condition when no outputs saved
+                self.handle_save_result('')
             #  '.jpg':(group_saveProcessedJpg, lineEdit_pathProcessedJpg),
             for ext, path in to_save:
                 # not sure of slick way to avoid checking ext twice
@@ -372,10 +399,14 @@ class appWindow(QMainWindow):
  
     def handle_bc_result(self, result):
         if not result:
-            notice_title = 'No Barcode Warning'
-            notice_text = f'Warning, No Barcode found!'
-            detail_text = f'No barcode found in image named: {self.img_path}'
-            self.userNotice(notice_text, notice_title, detail_text)
+            userDialog = BcDialog()
+            result = [userDialog.ask_for_bc()]
+#            self.bc_code = None
+#            self.bc_code = result
+#            notice_title = 'No Barcode Warning'
+#            notice_text = f'Warning, No Barcode found!'
+#            detail_text = f'No barcode found in image named: {self.img_path}'
+#            self.userNotice(notice_text, notice_title, detail_text)
             # todo, have user entry option here return and store as result
         self.bc_code = result
         self.mainWindow.label_barcodes.setText(', '.join(result))
@@ -789,13 +820,22 @@ class appWindow(QMainWindow):
         except LibRawFatalError:
             return
         original_size, reduced_img = self.scale_images_with_info(im)
-        grey = cv2.cvtColor(reduced_img, cv2.COLOR_BGR2GRAY)
-        try:
+        grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+        bcStatus = self.bcRead.testFeature(grey)
+        if not bcStatus:
+            # if first try fails, swap backend and retry
+            backend = self.mainWindow.comboBox_bcBackend.currentText()
+            if backend == 'zbar':
+                backend = 'libdmtx'
+                self.bcRead.backend = backend
+            elif backend == 'libdmtx':
+                backend = 'zbar'
+                self.bcRead.backend = backend
+                # try with alternative backend
+            print(f'trying with {backend}')
             bcStatus = self.bcRead.testFeature(grey)
-        except Exception as e:
-            bcStatus = False
-            print('bcRead returned exception:')
-            print(e)
+            if bcStatus:  # if it worked, change the comboBox
+                self.populateQComboBoxSettings(self.mainWindow.comboBox_bcBackend, backend)
         try:
             blurStatus = self.blurDetect.testFeature(grey)
         except Exception as e:
@@ -803,22 +843,25 @@ class appWindow(QMainWindow):
             print('blurStatus returned exception:')
             print(e)
         try:
-            # NOTE This currently checks radio button for large / small
             # If the size determiner becomes more useful we can use it to make this choice
-            if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
-                cc_size = 'small'
-            else:
-                cc_size = 'big'
-            ccStatus, cropped_img = self.colorchipDetect.test_feature(reduced_img, original_size, cc_size)
-            # if the status was true, use the image dialog box to ask the
-            # user if it properly detected the color chip.
-            if ccStatus:
-                mb = ImageDialog(cropped_img)
-                mb.exec()
-                if mb == QMessageBox.Yes:
-                    ccStatus = True
-                else:
-                    ccStatus = False
+            # for now iterate over both big and small options.
+            for cc_size, ui_radio_element in {'small':self.mainWindow.radioButton_colorCheckerSmall,
+                                              'big':self.mainWindow.radioButton_colorCheckerLarge}.items():
+                
+                ccStatus, cropped_img = self.colorchipDetect.test_feature(reduced_img, original_size, cc_size)
+                # if result seems appropriate, use the image dialog box to ask
+                # the user if it properly detected the color chip.
+                if ccStatus:
+                    mb = ImageDialog(cropped_img)
+                    if mb.exec():
+                        ccStatus = True
+                        ui_radio_element.setChecked(True)
+                        break
+                    else:
+                        ui_radio_element.setChecked(False)
+            else:  # if the user agrees to neither, then deactivate cc functions.
+                ccStatus = False
+                
         except Exception as e:
             ccStatus = False
             print('ccStatus returned exception:')
@@ -842,8 +885,11 @@ class appWindow(QMainWindow):
 
         for feature, status in features.items():
             feature.setEnabled(status)
-            if not status:
-                feature.setChecked(status)
+            #if not status:
+            feature.setChecked(status)
+
+        # store the discovered settings
+        self.saveSettings()
 
     def fill_patterns(self, joinedPattern):
         """
@@ -1046,13 +1092,15 @@ class appWindow(QMainWindow):
         [x.blockSignals(True) for x in children]
 
         # populate listWidget_patterns        
-        self.fill_patterns(self.get('joinedPattern', '.*'))
-        
+        self.fill_patterns(self.get('joinedPattern', ''))
+       
         # QComboBox
         comboBox_colorCheckerPosition = self.get('comboBox_colorCheckerPosition', 'Upper right')
         self.populateQComboBoxSettings( self.mainWindow.comboBox_colorCheckerPosition, comboBox_colorCheckerPosition)
         comboBox_dupNamingPolicy = self.get('comboBox_dupNamingPolicy', 'LOWER case letter')
         self.populateQComboBoxSettings( self.mainWindow.comboBox_dupNamingPolicy, comboBox_dupNamingPolicy)
+        comboBox_bcBackend = self.get('comboBox_bcBackend', 'zbar')
+        self.populateQComboBoxSettings( self.mainWindow.comboBox_bcBackend, comboBox_bcBackend)
 
         # QLineEdit
         lineEdit_catalogNumberPrefix = self.get('lineEdit_catalogNumberPrefix','')
@@ -1101,15 +1149,15 @@ class appWindow(QMainWindow):
         #group_renameByBarcode = self.get('group_renameByBarcode','')
         group_renameByBarcode = self.convertCheckState(self.get('group_renameByBarcode','true'))
         self.mainWindow.group_renameByBarcode.setChecked(group_renameByBarcode)
-        group_keepUnalteredRaw = self.convertCheckState(self.get('group_keepUnalteredRaw','true'))
+        group_keepUnalteredRaw = self.convertCheckState(self.get('group_keepUnalteredRaw','false'))
         self.mainWindow.group_keepUnalteredRaw.setChecked(group_keepUnalteredRaw)
-        group_saveProcessedJpg = self.convertCheckState(self.get('group_saveProcessedJpg','true'))
+        group_saveProcessedJpg = self.convertCheckState(self.get('group_saveProcessedJpg','false'))
         self.mainWindow.group_saveProcessedJpg.setChecked(group_saveProcessedJpg)
-        group_saveProcessedTIFF = self.convertCheckState(self.get('group_saveProcessedTIFF','true'))
+        group_saveProcessedTIFF = self.convertCheckState(self.get('group_saveProcessedTIFF','false'))
         self.mainWindow.group_saveProcessedTIFF.setChecked(group_saveProcessedTIFF)
-        group_saveProcessedPng = self.convertCheckState(self.get('group_saveProcessedPng','true'))
+        group_saveProcessedPng = self.convertCheckState(self.get('group_saveProcessedPng','false'))
         self.mainWindow.group_saveProcessedPng.setChecked(group_saveProcessedPng)
-        group_verifyRotation_checkstate = self.convertCheckState(self.get('group_verifyRotation_checkstate', 'true'))
+        group_verifyRotation_checkstate = self.convertCheckState(self.get('group_verifyRotation_checkstate', 'false'))
         self.mainWindow.group_verifyRotation .setChecked(group_verifyRotation_checkstate)
         
 
@@ -1137,7 +1185,7 @@ class appWindow(QMainWindow):
         # QDoubleSpinBox
         doubleSpinBox_focalDistance = float(self.get('doubleSpinBox_focalDistance', 25.5))
         self.mainWindow.doubleSpinBox_focalDistance.setValue(doubleSpinBox_focalDistance)
-        doubleSpinBox_blurThreshold = float(self.get('doubleSpinBox_blurThreshold', 0.08))
+        doubleSpinBox_blurThreshold = float(self.get('doubleSpinBox_blurThreshold', 0.008))
         self.mainWindow.doubleSpinBox_blurThreshold.setValue(doubleSpinBox_blurThreshold)
         doubleSpinBox_gammaValue = float(self.get('doubleSpinBox_gammaValue', 2.20))
         self.mainWindow.doubleSpinBox_gammaValue.setValue(doubleSpinBox_gammaValue)
@@ -1174,12 +1222,19 @@ class appWindow(QMainWindow):
 #        except AttributeError:  # first run may not yet have this saved.
 #            date_versionCheck = ""
 #        self.setValue('date_versionCheck', date_versionCheck)
+
         # save the stored barcode patterns
         self.settings.setValue('joinedPattern', self.retrieve_bc_patterns())
+        # be sure the bcRead backend is updated
+        self.bcRead.backend = self.mainWindow.comboBox_bcBackend.currentText()
 
         # QComboBox
         comboBox_colorCheckerPosition = self.mainWindow.comboBox_colorCheckerPosition.currentText()
         self.settings.setValue('comboBox_colorCheckerPosition', comboBox_colorCheckerPosition)
+        comboBox_dupNamingPolicy = self.mainWindow.comboBox_dupNamingPolicy.currentText()
+        self.settings.setValue('comboBox_dupNamingPolicy', comboBox_dupNamingPolicy)
+        comboBox_bcBackend = self.mainWindow.comboBox_bcBackend.currentText()
+        self.settings.setValue('comboBox_bcBackend', comboBox_bcBackend)
 
         # QLineEdit
         lineEdit_catalogNumberPrefix = self.mainWindow.lineEdit_catalogNumberPrefix.text()

@@ -21,8 +21,6 @@
 
 """
 import re
-from pyzbar.pyzbar import decode
-
 import numpy as np
 import cv2
 
@@ -30,63 +28,77 @@ from math import cos as math_cos
 from math import sin as math_sin
 from math import radians
 
+from pyzbar.pyzbar import decode as zbar_decode
+from pylibdmtx.pylibdmtx import decode as libdmtx_decode
 
+###
+# Developer note: the libraries: re, pyzbar, and pylibdmtx all have a "decode"
+# method which are used in this class. This can cause difficult to debug issues
+###
 class bcRead():
     """A barcode reader class
 
     Args:
-    prefix (str, optional): a collection code prefix. If left empty,
-        Matches any to no value(s)
-
-    digits (int, optional): the quantity of digits expected in the barcode.
-        If left empty, matches any to no digit(s)
-
+    
+    patterns (str): A string of uncompiled, "|" concatenated regex patterns.
+    
+    backend (str): Either "zbar" or "libdmtx", to determine which libarary 
+        should be used for decoding. Default is 'zbar.'
+    
     rotation_list (iterable, optional): iterable containing a series of int
         representing image rotations (in degrees) to attempt if no barcode is 
-        found. Default values are [9, 15, 18]. Rotation attempts stop after any
+        found. Default values are [9, 25, 18]. Rotation attempts stop after any
         results are found. The list's rotations are cumulative. Short or empty
         lists will decrease the time before giving up on finding a barcode.
         
     Attributes:
     rePattern (obj): A compiled regex pattern
+    backend (str): a string to determine which decoder was imported.
     rotation_list (list): The saved rotation list
     """
 
-    def __init__(self, patterns, 
+    def __init__(self, patterns, backend='zbar',
                  rotation_list=[9,25,18], parent=None, *args):
         super(bcRead, self).__init__()
         self.parent = parent
         self.compileRegexPattern(patterns)
         # This might need promoted to a user preference in mainwindow
         self.rotation_list = rotation_list
+        self.backend = backend
+
+    def decode_zbar(self, im):
+        return zbar_decode(im)
+
+    def decode_libdmtx(self, im):
+        return libdmtx_decode(im, timeout=1500)
+
+    def set_backend(self, backend='zbar'):
+        """
+        Sets which libarary should be used for decoding. Default is 'zbar.'
+        
+        :param backend: string either 'zbar' or 'libdmtx' libdmtx is useful for
+        datamatrix decoding.
+        :type backend: str
+        :return:
+        """
+        self.backend = backend
+        if backend == 'zbar':
+            self.decode = self.decode_zbar
+        elif backend == 'libdmtx':
+            self.decode = self.decode_libdmtx
 
     def compileRegexPattern(self, patterns):
         """ compiles a collection specific regex pattern """
         #  assume an empty pattern is a confused user, match everything.
         if patterns == '':
-            patterns = '.*'
+            patterns = '^(.*)'
         try:
             rePattern = re.compile(patterns)
             self.rePattern = rePattern
         except re.error:
             raise
 
-    def checkPattern(self, bcData):
-        """ verifies if the bcData matches the compiled rePattern.
-
-            Args:
-            bcData (str): a decoded barcode value string, which is checked
-            against the collection pattern "self.rePattern"
-
-            Returns (bool): success status of the match
-        """
-        bcData = bcData.data.decode("utf-8")
-        if self.rePattern.match(bcData):
-            return True
-        else:
-            return False
-
-    def decodeBC(self, img, return_details=False):
+    def decodeBC(self, img, verifyPattern=True, return_details=False):
         """ attempts to decode barcodes from an image array object.
         
         Given a np array image object (img), decodes BCs and returns those
@@ -105,8 +117,15 @@ class bcRead():
             If return_details = True, then returns a list of dictionaries.
         """
         # the complete output from pyzbar which matches checkPattern
-        bcRawData = [x for x in decode(img) if self.checkPattern(x)]
-        # if no results are found, start the using the rotation_list
+        backend = self.backend
+        if backend == 'zbar':
+            code_reader = self.decode_zbar
+        elif backend == 'libdmtx':
+            code_reader = self.decode_libdmtx
+        # decode each code found from bytes to utf-8
+        bcRawData = [x.data.decode('utf-8') for x in code_reader(img)]
+        if verifyPattern:  # limit the results to those matching rePattern
+            bcRawData = [x for x in bcRawData if self.rePattern.match(x)]
         rot_deg = 0  # in case we don't rotate but want the 
         rev_mat = None  # variable to hold the reverse matrix
         len_bc = len(bcRawData)
@@ -114,14 +133,15 @@ class bcRead():
             for deg in self.rotation_list:
                 rot_deg += deg
                 rotated_img, rev_mat = self.rotateImg(img, rot_deg, return_details)
-                bcRawData = [x for x in decode(rotated_img) if self.checkPattern(x)]
+                # decode each code found from bytes to utf-8
+                bcRawData = [x.data.decode('utf-8') for x in code_reader(rotated_img)]
+                if verifyPattern:  # limit the results to those matching rePattern
+                    bcRawData = [x for x in bcRawData if self.rePattern.match(x)]
                 len_bc = len(bcRawData)
                 if len_bc > 0:
                     break
-            # if the rotation_list is exhausted with no results, return None
-            else:
+            else:  # if the rotation_list is exhausted, return None
                 return None
-
         if return_details:
             bcData = []
             for result in bcRawData:
@@ -135,12 +155,9 @@ class bcRead():
                               'max_dim':max_dim,
                               'type':bcType}
                 bcData.append(resultDict)
+            return bcData
         else:
-            # filter out non-matching strings
-            bcData = [x.data.decode("utf-8") for x in bcRawData]
-            # a list of matched barcodes found in bcRawData
-        
-        return bcData
+            return bcRawData
 
     def rotateImg(self, img, angle, reversible=False):
         """ 
@@ -150,7 +167,6 @@ class bcRead():
         """
         # see: https://stackoverflow.com/questions/48479656/how-can-i-rotate-an-ndarray-image-properly
         # https://www.pyimagesearch.com/2017/01/02/rotate-images-correctly-with-opencv-and-python/
-
         (height, width) = img.shape[:2]
         (cent_x, cent_y) = (width // 2, height // 2)
         mat = cv2.getRotationMatrix2D((cent_x, cent_y), -angle, 1.0)
@@ -160,17 +176,16 @@ class bcRead():
         n_height = int((height * cos) + (width * sin))
         mat[0, 2] += (n_width / 2) - cent_x
         mat[1, 2] += (n_height / 2) - cent_y
-        
         rotated_img = cv2.warpAffine(img, mat, (n_width, n_height))
-        
-        # now calculate the reverse matrix
-        (r_height, r_width) = rotated_img.shape[:2]
-        (cent_x, cent_y) = (r_width // 2, r_height // 2) 
-        rev_mat = cv2.getRotationMatrix2D((cent_x, cent_y), angle, 1.0)
-        rev_mat[0, 2] += (width / 2) - cent_x
-        rev_mat[1, 2] += (height / 2) - cent_y
-
-        return (rotated_img, rev_mat)
+        if reversible:  # now calculate the reverse matrix
+            (r_height, r_width) = rotated_img.shape[:2]
+            (cent_x, cent_y) = (r_width // 2, r_height // 2) 
+            rev_mat = cv2.getRotationMatrix2D((cent_x, cent_y), angle, 1.0)
+            rev_mat[0, 2] += (width / 2) - cent_x
+            rev_mat[1, 2] += (height / 2) - cent_y
+            return rotated_img, rev_mat
+        else:  # return none so the results can be parsed similarly 
+            return rotated_img, None
     
     def det_bc_center(self, rect, rev_mat):
         """
@@ -199,13 +214,16 @@ class bcRead():
 
     def testFeature(self, img):
         """Returns bool condition, if this module functions on a test input."""
-
         try:
-            if isinstance(self.decodeBC(img), list):
+            # set aside current pattern and check for ANYTHING
+            decodedData = self.decodeBC(img, verifyPattern=True)
+            # return current pattern
+            if isinstance(decodedData, list):
                 return True
             else:
                 return False
-        except:
+        except Exception as e:
+            print(e)
             # some unknown error, assume test failed
             return False
 

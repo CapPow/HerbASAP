@@ -3,3 +3,4 @@
 pyrcc5 -o Resources_rc.py ui/resources/Resources.qrc
 pyuic5 -o ui/postProcessingUI.py ui/postProcessingUI.ui
 pyuic5 -o ui/imageDialog.py ui/imageDialogUI.ui
+pyuic5 -o ui/noBcDialogUI.py ui/noBcDialogUI.ui
