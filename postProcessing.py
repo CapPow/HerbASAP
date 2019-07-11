@@ -56,7 +56,7 @@ from libs.folderMonitor import New_Image_Emitter
 from libs.boss_worker import (Boss, BCWorkerData, BlurWorkerData, EQWorkerData,
                               Job, BossSignalData, WorkerSignalData,
                               WorkerErrorData, SaveWorkerData)
-
+from libs.metaRead import MetaRead
 
 class ImageDialog(QDialog):
     def __init__(self, img_array_object):
@@ -167,6 +167,7 @@ class appWindow(QMainWindow):
         self.blurDetect = blurDetect(parent=self.mainWindow)
         self.colorchipDetect = ColorchipRead(parent=self.mainWindow)
         self.eqRead = eqRead(parent=self.mainWindow)
+        self.metaRead = MetaRead(parent=self.mainWindow)
 
         self.reset_working_variables()
         ###
@@ -613,6 +614,7 @@ class appWindow(QMainWindow):
         sets all class variables relevant to the current working image to None.
         """
         self.img_path = None
+        # self.metaRead = None
         self.base_file_name = None
         self.ext = None
         self.im = None
@@ -778,14 +780,15 @@ class appWindow(QMainWindow):
                       demosaic=rawpy.DemosaicAlgorithm.AHD):
         """ given an image path, attempts to return a numpy array image object
         """
+        image_meta = self.metaRead.set_exif(imgPath)
         usr_gamma = self.mainWindow.doubleSpinBox_gammaValue.value()
         gamma_value = (usr_gamma, usr_gamma)
         try:  # use rawpy to convert raw to openCV
             with rawpy.imread(imgPath) as raw:
                 im = raw.postprocess(chromatic_aberration=(1, 1),
-                                      demosaic_algorithm=demosaic,
-                                      gamma=gamma_value,
-                                      output_color=rawpy.ColorSpace.raw)
+                                     demosaic_algorithm=demosaic,
+                                     gamma=gamma_value,
+                                     output_color=self.metaRead)
 
         # if it is not a raw format, just try and open it.
         except LibRawNonFatalError:

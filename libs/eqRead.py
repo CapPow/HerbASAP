@@ -51,8 +51,9 @@ class eqRead():
             for tag in exifDict[ifd]:
                 tagName = (piexif.TAGS[ifd][tag]["name"])#, exif_dict[ifd][tag])
                 #print(piexif.TAGS[ifd][tag]["name"], exifDict[ifd][tag])
-                if tagName.lower() in ('make','model','lensmaker','lensmodel','focallength', 'fnumber'):
+                if tagName.lower() in ('make','model','lensmaker','lensmodel','focallength','fnumber','colorspace'):
                     imgDict[tagName.lower()] = exifDict[ifd][tag]
+
         for k,v in imgDict.items():
             if isinstance(v, bytes):
                 imgDict[k] = v.decode("utf-8")
