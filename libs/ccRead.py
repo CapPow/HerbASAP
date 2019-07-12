@@ -20,6 +20,7 @@ import time
 import os
 
 try:
+    import alskdfhj
     import plaidml.keras
     plaidml.keras.install_backend()
 
@@ -164,6 +165,7 @@ class ColorchipRead:
         :return: Returns a tuple containing the bounding box (x1, y1, x2, y2) and the cropped image of the colorchip.
         :rtype: tuple
         """
+        start = time.time()
         im = self.ocv_to_pil(im)
         original_image_width, original_image_height = im.size
 
@@ -180,7 +182,7 @@ class ColorchipRead:
         cropped_im = im.crop((scaled_x1, scaled_y1, scaled_x2, scaled_y2))
 
         try:
-            return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), cropped_im
+            return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), cropped_im, time.time() - start
         except SystemError as e:
             print(f"System error: {e}")
 
@@ -359,9 +361,15 @@ class ColorchipRead:
                     best_location = list(most_certain_images.values())[idx]
                     best_image = im.crop(tuple(best_location))
 
+        hpstart = time.time()
         if high_precision:
-            high_precision_crop = self.high_precision_model.predict(np.array([best_image]))
+            np_best_image = np.array(best_image)
+            np_best_image = np_best_image.reshape((1, 125, 125, 3))
+            high_precision_crop = self.high_precision_model.predict(np_best_image)
+            high_precision_crop *= 255
             best_image = best_image.crop(tuple(high_precision_crop[0]))
+
+        print(f"High precision took {time.time() - hpstart} seconds.")
 
         x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
         prop_x1, prop_y1, prop_x2, prop_y2 = x1 / image_width, y1 / image_height, x2 / image_width, y2 / image_height
@@ -373,7 +381,7 @@ class ColorchipRead:
 
         end = time.time()
         try:
-            # best_image.show()
+            best_image.show()
             print(f"Color chip cropping took: {end - start} seconds.")
             cc_crop_time = round(end - start, 3)
             return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image, cc_crop_time
