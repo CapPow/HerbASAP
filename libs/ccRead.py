@@ -44,7 +44,7 @@ class ColorchipRead:
         self.parent = parent
         self.position_model = load_model("libs/models/mlp_proposal.hdf5")
         self.discriminator_model = load_model("libs/models/discriminator.hdf5")
-        self.high_precision_model = load_model("libs/models/highprecision_discriminator.hdf5")
+        self.high_precision_model = load_model("libs/models/scc_high_precision.hdf5")
         self.size_det_model = load_model("libs/models/size_model.hdf5")
         self.large_colorchip_regressor_model = load_model("libs/models/lcc_regressor.hdf5")
         self.size_model = load_model("libs/models/size_model.hdf5")
