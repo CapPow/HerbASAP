@@ -56,11 +56,6 @@ class ColorchipRead:
         self.discriminator_function = K.function([self.discriminator_model.layers[0].input, K.learning_phase()],
                                                  [self.discriminator_model.layers[-1].output])
 
-        self.high_precision_discriminator_function = K.function([self.high_precision_model.layers[10].input,
-                                                                 self.high_precision_model.layers[11].input,
-                                                                 self.high_precision_model.layers[0].input,
-                                                                 K.learning_phase()],
-                                                                [self.high_precision_model.layers[-1].output])
 #        init_im = np.zeros((250, 250, 3)).astype('uint8')
 #        init_im = Image.fromarray(init_im)
 #        print("[INFO] Initializing neural networks")
@@ -110,33 +105,6 @@ class ColorchipRead:
 
         for i in range(n_iter):
             result.append(self.discriminator_function([x, 1]))
-
-        result = np.array(result)
-        uncertainty = result.var(axis=0)
-        prediction = result.mean(axis=0)
-        return prediction, uncertainty
-
-    def _predict_uncertainty_hp_discriminator(self, x, n_iter=10):
-        """
-        Predicts with uncertainty the probability that the given partition contains a color chip using the mean and
-        variance. This uses the high precision model, which is more robust against false positives if
-
-        Note: Currently, this model performs very poorly (relative to the normal discriminator model) against images
-        with drastic white balance shift.
-
-        :param x: A list that contains both the RGB histogram and the HSV histogram of a given partition. Format of the
-        list should be [rgb_histogram, hsv_histogram]
-        :type x: list, ndarray
-        :param n_iter: Number of iterations for the results. Most often would be the length of the list of histograms,
-        though in a sorted list could be a value between 0 and length of list.
-        :type n_iter: int
-        :return: Returns the prediction and uncertainty. The prediction is a category exclusive probability.
-        :rtype: list
-        """
-        result = []
-
-        for i in range(n_iter):
-            result.append(self.high_precision_discriminator_function([x[0], x[1], x[2], 1]))
 
         result = np.array(result)
         uncertainty = result.var(axis=0)
@@ -358,47 +326,20 @@ class ColorchipRead:
         only_cc_probability_column = []
 
         highest_prob_images = []
-        if not high_precision:
 
-            for position in list(most_certain_images.values()):
-                highest_prob_images.append(np.array(im.crop(position)))
+        for position in list(most_certain_images.values()):
+            highest_prob_images.append(np.array(im.crop(position)))
 
-            highest_prob_images_pred = np.array(highest_prob_images)
-            discriminator_prediction, discriminator_uncertainty = self._predict_uncertainty_discriminator(
-                highest_prob_images_pred,
-                len(highest_prob_images_pred))
+        highest_prob_images_pred = np.array(highest_prob_images)
+        discriminator_prediction, discriminator_uncertainty = self._predict_uncertainty_discriminator(
+            highest_prob_images_pred,
+            len(highest_prob_images_pred))
 
-            try:
-                only_cc_uncertainty_column = discriminator_uncertainty[0][:, 1]
-                only_cc_probability_column = discriminator_prediction[0][:, 1]
-            except IndexError:
-                print("Discriminator could not find best image.")
-
-        else:
-            print("Using high precision discriminator")
-            highest_prob_rgb_hists = []
-            highest_prob_hsv_hists = []
-            for position in list(most_certain_images.values()):
-                h_image = im.crop(position)
-                h_image_hsv = im_hsv.crop(position)
-                highest_prob_rgb_hists.append(h_image.histogram())
-                highest_prob_hsv_hists.append(h_image_hsv.histogram())
-                highest_prob_images.append(np.array(h_image))
-
-            highest_prob_images_pred = np.array(highest_prob_images)
-            highest_prob_rgb_hists = np.array(highest_prob_rgb_hists)
-            highest_prob_hsv_hists = np.array(highest_prob_hsv_hists)
-            discriminator_prediction, discriminator_uncertainty = self._predict_uncertainty_hp_discriminator(
-                [highest_prob_rgb_hists,
-                 highest_prob_hsv_hists,
-                 highest_prob_images_pred],
-                len(highest_prob_rgb_hists))
-
-            try:
-                only_cc_uncertainty_column = discriminator_uncertainty[0][:, 1]
-                only_cc_probability_column = discriminator_prediction[0][:, 1]
-            except IndexError:
-                print("Discriminator could not find best image.")
+        try:
+            only_cc_uncertainty_column = discriminator_uncertainty[0][:, 1]
+            only_cc_probability_column = discriminator_prediction[0][:, 1]
+        except IndexError:
+            print("Discriminator could not find best image.")
 
         lowest_uncertainty = 1
         best_image = None
@@ -417,6 +358,10 @@ class ColorchipRead:
                     lowest_uncertainty = only_cc_uncertainty_column[idx]
                     best_location = list(most_certain_images.values())[idx]
                     best_image = im.crop(tuple(best_location))
+
+        if high_precision:
+            high_precision_crop = self.high_precision_model.predict(np.array([best_image]))
+            best_image = best_image.crop(tuple(high_precision_crop[0]))
 
         x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
         prop_x1, prop_y1, prop_x2, prop_y2 = x1 / image_width, y1 / image_height, x2 / image_width, y2 / image_height

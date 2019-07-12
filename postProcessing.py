@@ -675,7 +675,7 @@ class appWindow(QMainWindow):
         if self.mainWindow.group_colorCheckerDetection:
             # colorchecker functions
             if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
-                cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_small(reduced_img, original_size, stride_style='quick')
+                cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_small(reduced_img, original_size, stride_style='quick', high_precision=True)
             else:
                 cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
             self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
