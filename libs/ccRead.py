@@ -366,7 +366,7 @@ class ColorchipRead:
             np_best_image = np.array(best_image)
             np_best_image = np_best_image.reshape((1, 125, 125, 3))
             high_precision_crop = self.high_precision_model.predict(np_best_image)
-            high_precision_crop *= 255
+            high_precision_crop *= 125
             best_image = best_image.crop(tuple(high_precision_crop[0]))
 
         print(f"High precision took {time.time() - hpstart} seconds.")
@@ -433,7 +433,7 @@ class ColorchipRead:
         Takes the white values within the cropped CC image and averages them in RGB. The whitest values in the image is
         determined in the L*a*b color space, wherein only lightness values higher than (max lightness value - 1) is
         considered
-        
+
         :param color_chip_image: The cropped color chip image.
         :type color_chip_image: Image
         :return: Returns a list of the averaged whitest values
@@ -481,11 +481,9 @@ class ColorchipRead:
             cc_position, cropped_cc, cc_crop_time = self.process_colorchip_big(im)
         else:
             cc_position, cropped_cc, cc_crop_time= self.process_colorchip_small(im, original_size)
-        
+
         if isinstance(cc_position, tuple):
             ccStatus = True
         else:
             ccStatus = False
         return ccStatus, cropped_cc
-            
-            
