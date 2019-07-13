@@ -381,7 +381,7 @@ class ColorchipRead:
 
         end = time.time()
         try:
-            best_image.show()
+            #best_image.show()
             print(f"Color chip cropping took: {end - start} seconds.")
             cc_crop_time = round(end - start, 3)
             return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image, cc_crop_time

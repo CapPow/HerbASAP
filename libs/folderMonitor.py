@@ -79,7 +79,6 @@ class Folder_Watcher:
     def __init__(self, input_folder_path=None, raw_image_patterns=None):
         self.watch_dir = input_folder_path
         self.emitter = New_Image_Emitter()
-        self.observer = Observer(timeout=0.2)
         self.event_handler = Event_Handler(
                 parent=self,
                 watch_dir=self.watch_dir,
@@ -92,10 +91,10 @@ class Folder_Watcher:
         if self.is_monitoring:
             pass
         else:
+            self.observer = Observer(timeout=0.2)
             self.is_monitoring = True
             self.observer.schedule(self.event_handler, self.watch_dir)
             self.observer.start()
-            #self.observer.join()
 
     def stop(self):
         while (self.observer.event_queue.unfinished_tasks != 0):

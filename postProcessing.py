@@ -253,14 +253,19 @@ class appWindow(QMainWindow):
         self.mainWindow.pushButton_toggleMonitoring.clicked.connect(self.toggle_folder_monitoring)
         
     def toggle_folder_monitoring(self):
-        folder_watcher = self.folder_watcher
         pushButton = self.mainWindow.pushButton_toggleMonitoring
-        if folder_watcher.is_monitoring:
+        if self.folder_watcher.is_monitoring:
             pushButton.setText('Begin folder monitoring')
-            folder_watcher.stop()
-        else:
+            self.folder_watcher.stop()
+        else:  # if no input path, ask the user for it.
+            if self.mainWindow.lineEdit_inputPath.text() == '':
+                self.mainWindow.pushButton_inputPath.click()
+                # if they insist on an empty path give up on folder monitoring.
+                if self.mainWindow.lineEdit_inputPath.text() == '':
+                    return
+                self.setup_Folder_Watcher()
             pushButton.setText(' Stop folder monitoring')
-            folder_watcher.run()
+            self.folder_watcher.run()
 
 
     def setup_Output_Handler(self):
@@ -780,7 +785,7 @@ class appWindow(QMainWindow):
                       demosaic=rawpy.DemosaicAlgorithm.AHD):
         """ given an image path, attempts to return a numpy array image object
         """
-        image_meta = self.metaRead.set_exif(imgPath)
+        #image_meta = self.metaRead.set_exif(imgPath)
         usr_gamma = self.mainWindow.doubleSpinBox_gammaValue.value()
         gamma_value = (usr_gamma, usr_gamma)
         try:  # use rawpy to convert raw to openCV
