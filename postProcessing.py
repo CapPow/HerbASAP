@@ -794,8 +794,7 @@ class appWindow(QMainWindow):
                 im = raw.postprocess(chromatic_aberration=(1, 1),
                                      user_wb=wb,
                                      demosaic_algorithm=demosaic,
-                                     gamma=gamma_value,
-                                     output_color=self.metaRead)
+                                     gamma=gamma_value)
 
         # if it is not a raw format, just try and open it.
         except LibRawNonFatalError:
