@@ -366,7 +366,6 @@ class ColorchipRead:
             np_best_image = np.array(best_image)
             np_best_image = np_best_image.reshape((1, 125, 125, 3))
             high_precision_crop = self.high_precision_model.predict(np_best_image)
-            high_precision_crop *= 125
             best_image = best_image.crop(tuple(high_precision_crop[0]))
 
         print(f"High precision took {time.time() - hpstart} seconds.")
@@ -381,7 +380,7 @@ class ColorchipRead:
 
         end = time.time()
         try:
-            #best_image.show()
+            best_image.show()
             print(f"Color chip cropping took: {end - start} seconds.")
             cc_crop_time = round(end - start, 3)
             return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image, cc_crop_time
