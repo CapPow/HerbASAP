@@ -20,7 +20,6 @@ import time
 import os
 
 try:
-    import alskdfhj
     import plaidml.keras
     plaidml.keras.install_backend()
 
@@ -363,9 +362,11 @@ class ColorchipRead:
 
         hpstart = time.time()
         if high_precision:
+            best_image.show()
             np_best_image = np.array(best_image)
             np_best_image = np_best_image.reshape((1, 125, 125, 3))
             high_precision_crop = self.high_precision_model.predict(np_best_image)
+            print(high_precision_crop)
             best_image = best_image.crop(tuple(high_precision_crop[0]))
 
         print(f"High precision took {time.time() - hpstart} seconds.")
