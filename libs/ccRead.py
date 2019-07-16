@@ -19,26 +19,8 @@ import cv2
 import time
 import os
 
-try:
-    import asdkjf
-    import plaidml.keras
-    plaidml.keras.install_backend()
 
-    from keras.models import load_model
-    import keras.backend as K
-except ImportError:
-    try:
-        from tensorflow.keras.models import load_model
-        from tensorflow.keras import backend as K
-    except ImportError:
-        from keras.models import load_model
-        import keras.backend as K
-    finally:
-        pass
-        # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-        # os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-        # print(f"[INFO] Forcing use of CPU for neural network prediction (TensorFlow)")
-
+import tensorflow as tf
 
 class ColorchipError(Exception):
     pass
@@ -48,73 +30,29 @@ class ColorchipRead:
     def __init__(self, parent=None, *args):
         super(ColorchipRead, self).__init__()
         self.parent = parent
-        self.position_model = load_model("libs/models/mlp_proposal.hdf5")
-        self.discriminator_model = load_model("libs/models/discriminator.hdf5")
-        self.size_det_model = load_model("libs/models/size_model.hdf5")
-        self.large_colorchip_regressor_model = load_model("libs/models/lcc_regressor.hdf5")
-        self.size_model = load_model("libs/models/size_model.hdf5")
+        self.position_model = tf.lite.Interpreter(model_path="libs/models/mlp_proposal.tflite")
+        self.position_model.allocate_tensors()
+        self.position_input_details = self.position_model.get_input_details()
+        self.position_output_details = self.position_model.get_output_details()
 
-        self.position_function = K.function(
-            [self.position_model.layers[0].input, self.position_model.layers[1].input, K.learning_phase()],
-            [self.position_model.layers[-1].output])
+        self.discriminator_model = tf.lite.Interpreter(model_path="libs/models/discriminator.tflite")
+        self.discriminator_model.allocate_tensors()
+        self.discriminator_input_details = self.discriminator_model.get_input_details()
+        self.discriminator_output_details = self.discriminator_model.get_output_details()
 
-        self.discriminator_function = K.function([self.discriminator_model.layers[0].input, K.learning_phase()],
-                                                 [self.discriminator_model.layers[-1].output])
+        self.large_colorchip_regressor_model = tf.lite.Interpreter(model_path="libs/models/lcc_regressor.tflite")
+        self.large_colorchip_regressor_model.allocate_tensors()
+        self.large_colorchip_input_details = self.large_colorchip_regressor_model.get_input_details()
+        self.large_colorchip_output_details = self.large_colorchip_regressor_model.get_output_details()
 
-#        init_im = np.zeros((250, 250, 3)).astype('uint8')
-#        init_im = Image.fromarray(init_im)
-#        print("[INFO] Initializing neural networks")
-#        self.predict_colorchip_size(init_im)
-#        self.process_colorchip_big(init_im)
-#        self.process_colorchip_small(init_im, (250, 250))
-#        print("[INFO] Finished initializing neural networks")
+        init_im = np.zeros((250, 250, 3)).astype('uint8')
+        init_im = Image.fromarray(init_im)
+        #        print("[INFO] Initializing neural networks")
+        #        self.predict_colorchip_size(init_im)
+        #        self.process_colorchip_big(init_im)
+        self.process_colorchip_small(init_im, (250, 250))
+        #        print("[INFO] Finished initializing neural networks")
 
-    def _predict_uncertainty_position(self, x, n_iter=10):
-        """
-        Predicts with uncertainty the position of a color chip using the mean and variance.
-
-        :param x: A list that contains both the RGB histogram and the HSV histogram of a given partition. Format of the
-        list should be [rgb_histogram, hsv_histogram]
-        :type x: list, ndarray
-        :param n_iter: Number of iterations for the results. Most often would be the length of the list of histograms,
-        though in a sorted list could be a value between 0 and length of list.
-        :type n_iter: int
-        :return: Returns the prediction and uncertainty. The prediction is a category exclusive probability.
-        :rtype: list
-        """
-        result = []
-
-        for i in range(n_iter):
-            result.append(self.position_function([x[0], x[1], 1]))
-
-        result = np.array(result)
-        uncertainty = result.var(axis=0)
-        prediction = result.mean(axis=0)
-        return prediction, uncertainty
-
-    def _predict_uncertainty_discriminator(self, x, n_iter=10):
-        """
-        Predicts with uncertainty the probability that the given partition contains a color chip using the mean and
-        variance.
-
-        :param x: A list that contains both the RGB histogram and the HSV histogram of a given partition. Format of the
-        list should be [rgb_histogram, hsv_histogram]
-        :type x: list, ndarray
-        :param n_iter: Number of iterations for the results. Most often would be the length of the list of histograms,
-        though in a sorted list could be a value between 0 and length of list.
-        :type n_iter: int
-        :return: Returns the prediction and uncertainty. The prediction is a category exclusive probability.
-        :rtype: list
-        """
-        result = []
-
-        for i in range(n_iter):
-            result.append(self.discriminator_function([x, 1]))
-
-        result = np.array(result)
-        uncertainty = result.var(axis=0)
-        prediction = result.mean(axis=0)
-        return prediction, uncertainty
 
     def ocv_to_pil(self, im):
         """
@@ -129,35 +67,6 @@ class ColorchipRead:
         pil_image = np.array(im)
         pil_image = Image.fromarray(pil_image)
         return pil_image
-
-    def predict_colorchip_size(self, im):
-        """
-        Predicts the size of the color chip through color histograms and a dense neural network. This is essential for
-        knowing the correct neural network model to use for determining the color chip values.
-        :param im: The image to be predicted on.
-        :type im: ndarray
-        :return: Returns 'big' for big colorchips, and 'small' for small colorchips.
-        :rtype: str
-        """
-
-        start = time.time()
-        im = self.ocv_to_pil(im)
-        im_hsv = im.convert("HSV")
-
-        hist_rgb = im.histogram()
-        hist_hsv = im_hsv.histogram()
-
-        X_rgb = np.array(hist_rgb) / 8196
-        X_hsv = np.array(hist_hsv) / 8196
-
-        size_det_result = self.size_det_model.predict([[X_rgb], [X_hsv]])[0]
-
-        end = time.time()
-        print(f"Predict color chip size took: {end - start} seconds.")
-        if size_det_result[0] > size_det_result[1]:
-            return 'big'
-        else:
-            return 'small'
 
     def process_colorchip_big(self, im):
         """
@@ -340,53 +249,46 @@ class ColorchipRead:
         else:
             raise ColorchipError('Invalid stride_style was given, must be "quick" or "whole"')
 
-        hists_rgb = np.array(hists_rgb) / 255
-        hists_hsv = np.array(hists_hsv) / 255
+        hists_rgb = np.array(hists_rgb, dtype=np.float32) / 255
+        hists_hsv = np.array(hists_hsv, dtype=np.float32) / 255
 
-        position_prediction, position_uncertainty = self._predict_uncertainty_position([hists_rgb, hists_hsv],
-                                                                                       len([hists_rgb, hists_hsv]))
+        position_predictions = []
+        indices = [i for i in range(len(hists_rgb))]
+        position_start = time.time()
+        for i in range(len(hists_rgb)):
+            try:
+                self.position_model.set_tensor(self.position_input_details[0]['index'], [hists_rgb[i]])
+                self.position_model.set_tensor(self.position_input_details[1]['index'], [hists_hsv[i]])
+                self.position_model.invoke()
+                # outputs.append(self.position_model.get_tensor(self.position_output_details[0]['index']))
+                position_predictions.append(self.position_model.get_tensor(self.position_output_details[0]['index'])[0][1])
+            except:
+                position_predictions.append(np.array([[1, 0]], dtype=np.float32).tolist())
+        print(f"Region proposal took {time.time() - position_start}")
 
-        only_cc_position_uncertainty = position_uncertainty[0][:, 1]
-        only_cc_position_prediction = position_prediction[0][:, 1]
-
-        most_certain_images = {}
-        position_prediction_dict = dict(zip(only_cc_position_prediction,
-                                            [i for i in range(len(only_cc_position_prediction))]))
-
-        for prediction in sorted(position_prediction_dict)[-buffer_size:]:
-            most_certain_images[only_cc_position_uncertainty[position_prediction_dict[prediction]]] = \
-                possible_positions[position_prediction_dict[prediction]]
+        position_predictions, indices = (list(t) for t in zip(*sorted(zip(position_predictions, indices))))
 
         highest_prob_images = []
+        highest_prob_positions = []
+        for i in indices[-buffer_size:]:
+            highest_prob_images.append(np.array(im.crop(possible_positions[indices[i]])))
+            highest_prob_positions.append(possible_positions[indices[i]])
 
-        for position in list(most_certain_images.values()):
-            highest_prob_images.append(np.array(im.crop(position)))
+        highest_prob_images_pred = np.array(highest_prob_images, dtype=np.float32)
+        discriminator_predictions = []
+        for i in range(len(highest_prob_images)):
+            self.discriminator_model.set_tensor(self.discriminator_input_details[0]['index'], [highest_prob_images_pred[i]])
+            self.discriminator_model.invoke()
+            discriminator_predictions.append(self.discriminator_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1])
 
-        highest_prob_images_pred = np.array(highest_prob_images)
-        discriminator_prediction, discriminator_uncertainty = self._predict_uncertainty_discriminator(
-            highest_prob_images_pred,
-            len(highest_prob_images_pred))
-
-        try:
-            only_cc_uncertainty_column = discriminator_uncertainty[0][:, 1]
-            only_cc_probability_column = discriminator_prediction[0][:, 1]
-        except IndexError as e:
-            raise ColorchipError(f'Unable to properly slice discriminator prediction array. It is likely empty. '
-                                 f'Error: {e}')
-
-        lowest_uncertainty = 1
         best_image = None
         best_location = None
-
-        max_discriminator_pred = max(only_cc_probability_column)
-        if max_discriminator_pred > 0:
-            for idx, prediction_value in enumerate(only_cc_probability_column):
-                if prediction_value > max_discriminator_pred - 0.05 and \
-                        only_cc_uncertainty_column[idx] < lowest_uncertainty:
-                    lowest_uncertainty = only_cc_uncertainty_column[idx]
-                    best_location = list(most_certain_images.values())[idx]
-                    best_image = im.crop(tuple(best_location))
-
+        highest = 0
+        for i in range(len(discriminator_predictions)):
+            if discriminator_predictions[i] > highest:
+                best_image = Image.fromarray(highest_prob_images[indices[i]])
+                best_location = highest_prob_positions[indices[i]]
+        print(best_location)
         if best_image is None:
             raise ColorchipError("Discriminator could not find the best image. "
                                  "Try lowering the prediction floor value.")
@@ -397,21 +299,23 @@ class ColorchipRead:
             cv_best_image = cv2.cvtColor(np_best_image, cv2.COLOR_RGB2HSV)
 
             squares = ColorchipRead.find_squares(cv_best_image)
-            print(squares)
             squares = np.array(squares)
 
             biggest_square = None
             highest_diff = 0
             for contour in squares:
                 cnt = np.array(contour)
+                print(cnt)
                 x_arr = cnt[..., 0]
                 y_arr = cnt[..., 1]
                 x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
                 diff = (y2 - y1) + (x2 - x1)
 
-                if highest_diff < diff < 235:
+                if highest_diff < diff < 245:
                     highest_diff = diff
                     biggest_square = (x1, y1, x2, y2)
+
+            print(biggest_square)
 
             best_image = np.array(best_image.crop(biggest_square), np.uint8)
             x1, y1, x2, y2 = best_location[0] + biggest_square[0], best_location[1] + biggest_square[1], best_location[2] + biggest_square[0], best_location[3] + biggest_square[1]
