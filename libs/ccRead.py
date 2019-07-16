@@ -411,7 +411,7 @@ class ColorchipRead:
                     highest_diff = diff
                     biggest_square = (x1, y1, x2, y2)
 
-            best_image = best_image.crop(biggest_square)
+            best_image = np.array(best_image.crop(biggest_square), np.uint8)
             x1, y1, x2, y2 = best_location[0] + biggest_square[0], best_location[1] + biggest_square[1], best_location[2] + biggest_square[0], best_location[3] + biggest_square[1]
         else:
             x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
@@ -484,7 +484,6 @@ class ColorchipRead:
         :return: Returns a list of the averaged whitest values
         :rtype: list
         """
-
         cci_array = np.array(color_chip_image,  dtype=np.uint8)
         ccil_array = cv2.cvtColor(color_chip_image, cv2.COLOR_RGB2Lab)
         width, height = ccil_array.shape[0], ccil_array.shape[1]
