@@ -20,6 +20,7 @@ import time
 import os
 
 try:
+    import asdkjf
     import plaidml.keras
     plaidml.keras.install_backend()
 
@@ -33,10 +34,10 @@ except ImportError:
         from keras.models import load_model
         import keras.backend as K
     finally:
-        os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-        os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-        print(f"[INFO] Forcing use of CPU for neural network prediction (TensorFlow)")
-
+        pass
+        # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+        # os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+        # print(f"[INFO] Forcing use of CPU for neural network prediction (TensorFlow)")
 
 class ColorchipRead:
     def __init__(self, parent=None, *args):
@@ -44,7 +45,6 @@ class ColorchipRead:
         self.parent = parent
         self.position_model = load_model("libs/models/mlp_proposal.hdf5")
         self.discriminator_model = load_model("libs/models/discriminator.hdf5")
-        self.high_precision_model = load_model("libs/models/scc_high_precision.hdf5")
         self.size_det_model = load_model("libs/models/size_model.hdf5")
         self.large_colorchip_regressor_model = load_model("libs/models/lcc_regressor.hdf5")
         self.size_model = load_model("libs/models/size_model.hdf5")
@@ -184,6 +184,35 @@ class ColorchipRead:
             return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), cropped_im, time.time() - start
         except SystemError as e:
             print(f"System error: {e}")
+
+    @staticmethod
+    def angle_cos(p0, p1, p2):
+        d1, d2 = (p0 - p1).astype('float'), (p2 - p1).astype('float')
+        return abs(np.dot(d1, d2) / np.sqrt(np.dot(d1, d1) * np.dot(d2, d2)))
+
+    @staticmethod
+    def find_squares(img):
+        # taken from: opencv samples
+        img = cv2.GaussianBlur(img, (5, 5), 0)
+        squares = []
+        for gray in cv2.split(img):
+            for thrs in range(0, 255, 26):
+                if thrs == 0:
+                    bin = cv2.Canny(gray, 0, 50, apertureSize=3)
+                    bin = cv2.dilate(bin, None)
+                else:
+                    _retval, bin = cv2.threshold(gray, thrs, 255, cv2.THRESH_BINARY)
+                contours, _hierarchy = cv2.findContours(bin, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+                for cnt in contours:
+                    cnt_len = cv2.arcLength(cnt, True)
+                    cnt = cv2.approxPolyDP(cnt, 0.02 * cnt_len, True)
+                    if len(cnt) == 4 and cv2.contourArea(cnt) > 850 and cv2.contourArea(
+                            cnt) < 100000 and cv2.isContourConvex(cnt):
+                        cnt = cnt.reshape(-1, 2)
+                        max_cos = np.max([ColorchipRead.angle_cos(cnt[i], cnt[(i + 1) % 4], cnt[(i + 2) % 4]) for i in range(4)])
+                        if max_cos < 0.1:
+                            squares.append(cnt)
+        return squares
 
     def process_colorchip_small(self, im, original_size, stride_style='quick',
                                 stride=25, partition_size=125, buffer_size=10,
@@ -362,16 +391,32 @@ class ColorchipRead:
 
         hpstart = time.time()
         if high_precision:
-            best_image.show()
             np_best_image = np.array(best_image)
-            np_best_image = np_best_image.reshape((1, 125, 125, 3))
-            high_precision_crop = self.high_precision_model.predict(np_best_image)
-            print(high_precision_crop)
-            best_image = best_image.crop(tuple(high_precision_crop[0]))
+            cv_best_image = cv2.cvtColor(np_best_image, cv2.COLOR_RGB2HSV)
+
+            squares = ColorchipRead.find_squares(cv_best_image)
+            print(squares)
+            squares = np.array(squares)
+
+            biggest_square = None
+            highest_diff = 0
+            for contour in squares:
+                cnt = np.array(contour)
+                x_arr = cnt[..., 0]
+                y_arr = cnt[..., 1]
+                x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
+                diff = (y2 - y1) + (x2 - x1)
+
+                if highest_diff < diff < 235:
+                    highest_diff = diff
+                    biggest_square = (x1, y1, x2, y2)
+
+            best_image = best_image.crop(biggest_square)
+            x1, y1, x2, y2 = best_location[0] + biggest_square[0], best_location[1] + biggest_square[1], best_location[2] + biggest_square[0], best_location[3] + biggest_square[1]
+        else:
+            x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
 
         print(f"High precision took {time.time() - hpstart} seconds.")
-
-        x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
         prop_x1, prop_y1, prop_x2, prop_y2 = x1 / image_width, y1 / image_height, x2 / image_width, y2 / image_height
 
         scaled_x1, scaled_y1, scaled_x2, scaled_y2 = prop_x1 * original_width, \
@@ -381,7 +426,7 @@ class ColorchipRead:
 
         end = time.time()
         try:
-            best_image.show()
+            # best_image.save("cc.jpg")
             print(f"Color chip cropping took: {end - start} seconds.")
             cc_crop_time = round(end - start, 3)
             return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image, cc_crop_time
