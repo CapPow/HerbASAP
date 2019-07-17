@@ -85,7 +85,11 @@ class ColorchipRead:
         resized_im = im.resize((256, 256))
         im_np = np.array(resized_im) / 255
 
-        crop_vals = self.large_colorchip_regressor_model.predict(np.array([im_np]))[0]
+        self.large_colorchip_regressor_model.set_tensor(self.large_colorchip_input_details[0]['index'], np.array([im_np]))
+        self.large_colorchip_regressor_model.invoke()
+
+        print(self.large_colorchip_input_details[0])
+        crop_vals = self.large_colorchip_regressor_model.get_tensor(self.large_colorchip_regressor_model[0]['index'])[0]
 
         prop_crop_vals = np.array(crop_vals) / 256
         prop_x1, prop_y1, prop_x2, prop_y2 = prop_crop_vals[0], prop_crop_vals[1], prop_crop_vals[2], prop_crop_vals[3]
@@ -271,6 +275,7 @@ class ColorchipRead:
         highest_prob_images = []
         highest_prob_positions = []
         for i in indices[-buffer_size:]:
+            # im.crop(possible_positions[indices[i]]).show()
             highest_prob_images.append(np.array(im.crop(possible_positions[indices[i]])))
             highest_prob_positions.append(possible_positions[indices[i]])
 
@@ -280,14 +285,17 @@ class ColorchipRead:
             self.discriminator_model.set_tensor(self.discriminator_input_details[0]['index'], [highest_prob_images_pred[i]])
             self.discriminator_model.invoke()
             discriminator_predictions.append(self.discriminator_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1])
-
+        print(max(discriminator_predictions))
+        
         best_image = None
         best_location = None
         highest = 0
+        print(discriminator_predictions)
         for i in range(len(discriminator_predictions)):
             if discriminator_predictions[i] > highest:
-                best_image = Image.fromarray(highest_prob_images[indices[i]])
-                best_location = highest_prob_positions[indices[i]]
+                best_image = Image.fromarray(highest_prob_images[i])
+                best_location = highest_prob_positions[i]
+                highest = discriminator_predictions[i]
         print(best_location)
         if best_image is None:
             raise ColorchipError("Discriminator could not find the best image. "
@@ -305,7 +313,6 @@ class ColorchipRead:
             highest_diff = 0
             for contour in squares:
                 cnt = np.array(contour)
-                print(cnt)
                 x_arr = cnt[..., 0]
                 y_arr = cnt[..., 1]
                 x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
@@ -314,8 +321,6 @@ class ColorchipRead:
                 if highest_diff < diff < 245:
                     highest_diff = diff
                     biggest_square = (x1, y1, x2, y2)
-
-            print(biggest_square)
 
             best_image = np.array(best_image.crop(biggest_square), np.uint8)
             x1, y1, x2, y2 = best_location[0] + biggest_square[0], best_location[1] + biggest_square[1], best_location[2] + biggest_square[0], best_location[3] + biggest_square[1]
