@@ -30,7 +30,7 @@ class ColorchipRead:
     def __init__(self, parent=None, *args):
         super(ColorchipRead, self).__init__()
         self.parent = parent
-        self.position_model = tf.lite.Interpreter(model_path="libs/models/mlp_proposal.tflite")
+        self.position_model = tf.lite.Interpreter(model_path="libs/models/mlp_proposal_bn.tflite")
         self.position_model.allocate_tensors()
         self.position_input_details = self.position_model.get_input_details()
         self.position_output_details = self.position_model.get_output_details()
@@ -44,15 +44,6 @@ class ColorchipRead:
         self.large_colorchip_regressor_model.allocate_tensors()
         self.large_colorchip_input_details = self.large_colorchip_regressor_model.get_input_details()
         self.large_colorchip_output_details = self.large_colorchip_regressor_model.get_output_details()
-
-        init_im = np.zeros((250, 250, 3)).astype('uint8')
-        init_im = Image.fromarray(init_im)
-        #        print("[INFO] Initializing neural networks")
-        #        self.predict_colorchip_size(init_im)
-        #        self.process_colorchip_big(init_im)
-        self.process_colorchip_small(init_im, (250, 250))
-        #        print("[INFO] Finished initializing neural networks")
-
 
     def ocv_to_pil(self, im):
         """
@@ -133,7 +124,7 @@ class ColorchipRead:
         return squares
 
     def process_colorchip_small(self, im, original_size, stride_style='quick',
-                                stride=25, partition_size=125, buffer_size=10,
+                                stride=25, partition_size=125,
                                 over_crop=0, high_precision=False):
         """
         Finds small colorchips using the quickCC model. This model is specifically trained on tiny colorchips found in
@@ -272,32 +263,26 @@ class ColorchipRead:
 
         position_predictions, indices = (list(t) for t in zip(*sorted(zip(position_predictions, indices))))
 
+        position_predictions.reverse()
+        indices.reverse()
+
         highest_prob_images = []
         highest_prob_positions = []
-        for i in indices[-buffer_size:]:
+        for i in indices:
             # im.crop(possible_positions[indices[i]]).show()
             highest_prob_images.append(np.array(im.crop(possible_positions[indices[i]])))
             highest_prob_positions.append(possible_positions[indices[i]])
 
         highest_prob_images_pred = np.array(highest_prob_images, dtype=np.float32)
-        discriminator_predictions = []
         for i in range(len(highest_prob_images)):
             self.discriminator_model.set_tensor(self.discriminator_input_details[0]['index'], [highest_prob_images_pred[i]])
             self.discriminator_model.invoke()
-            discriminator_predictions.append(self.discriminator_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1])
-        print(max(discriminator_predictions))
-        
-        best_image = None
-        best_location = None
-        highest = 0
-        print(discriminator_predictions)
-        for i in range(len(discriminator_predictions)):
-            if discriminator_predictions[i] > highest:
+            if self.discriminator_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1] > 0.999:
+                print(i)
                 best_image = Image.fromarray(highest_prob_images[i])
                 best_location = highest_prob_positions[i]
-                highest = discriminator_predictions[i]
-        print(best_location)
-        if best_image is None:
+                break
+        else:
             raise ColorchipError("Discriminator could not find the best image. "
                                  "Try lowering the prediction floor value.")
 
