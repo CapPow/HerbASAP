@@ -105,7 +105,7 @@ class ColorchipRead:
         img = cv2.GaussianBlur(img, (5, 5), 0)
         squares = []
         for gray in cv2.split(img):
-            for thrs in range(0, 255, 26):
+            for thrs in range(0, 255, 6):
                 if thrs == 0:
                     bin = cv2.Canny(gray, 0, 50, apertureSize=3)
                     bin = cv2.dilate(bin, None)
@@ -307,7 +307,7 @@ class ColorchipRead:
                     highest_diff = diff
                     biggest_square = (x1, y1, x2, y2)
 
-            best_image = np.array(best_image.crop(biggest_square), np.uint8)
+            best_image = best_image.crop(biggest_square)
             x1, y1, x2, y2 = best_location[0] + biggest_square[0], best_location[1] + biggest_square[1], best_location[2] + biggest_square[0], best_location[3] + biggest_square[1]
         else:
             x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
@@ -320,8 +320,10 @@ class ColorchipRead:
                                                      prop_x2 * original_width, \
                                                      prop_y2 * original_height
 
+
         end = time.time()
         print(f"Color chip cropping took: {end - start} seconds.")
+        best_image = np.array(best_image, dtype=np.uint8)
         cc_crop_time = round(end - start, 3)
         return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image, cc_crop_time
 
