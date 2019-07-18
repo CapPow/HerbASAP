@@ -50,7 +50,7 @@ from ui.noBcDialogUI import Ui_Dialog_noBc
 from libs.bcRead import bcRead
 from libs.eqRead import eqRead
 from libs.blurDetect import blurDetect
-from libs.ccRead import ColorchipRead
+from libs.ccRead import ColorchipRead, ColorChipError
 from libs.folderMonitor import Folder_Watcher
 from libs.folderMonitor import New_Image_Emitter
 from libs.boss_worker import (Boss, BCWorkerData, BlurWorkerData, EQWorkerData,
@@ -528,6 +528,12 @@ class appWindow(QMainWindow):
         self.ext = None
         self.im = None
         self.cc_avg_white = None
+        try:
+            if self.raw_base:  # try extra hard to free up these resources.
+                print('manually forcing closure')
+                self.raw_base.close()
+        except AttributeError:
+            pass  # occasion where no raw images have been unpacked yet
         self.raw_base = None
         self.bc_code = None
         self.is_blurry = None  # could be helpful for 'line item warnings'
@@ -545,9 +551,8 @@ class appWindow(QMainWindow):
         self.Timer_Emitter.timerStart.emit()
         try:
             im = self.openImageFile(img_path)
-        except LibRawFatalError:
-            # empty path passed
-            self.processing_image = True
+        except (LibRawFatalError, LibRawNonFatalError) as e:
+            self.reset_working_variables()
             return
 
         print(f'processing: {img_path}')
@@ -559,18 +564,26 @@ class appWindow(QMainWindow):
         self.reduced_img = reduced_img  # storing to use as preview later
         if self.mainWindow.group_colorCheckerDetection:
             # colorchecker functions
-            if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
-                cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_small(reduced_img, original_size, stride_style='quick', high_precision=True)
-            else:
-                cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
-            self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
-            cropped_cc = np.array(cropped_cc, np.uint8)
-            self.cropped_cc = cropped_cc
-            cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
-            self.cc_avg_white = cc_avg_white
-            print(f"CC | Position: {cc_position}, Quadrant: {self.cc_quadrant}")
-            self.update_cc_info(self.cc_quadrant, cropped_cc, cc_crop_time, cc_avg_white)
-        # apply corrections based on what is learned from the colorchipDetect
+            try:
+                if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
+                    cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_small(reduced_img, original_size, stride_style='quick', high_precision=True)
+                else:
+                    cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
+                self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
+                self.cropped_cc = cropped_cc
+                cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
+                self.cc_avg_white = cc_avg_white
+                print(f"CC | Position: {cc_position}, Quadrant: {self.cc_quadrant}")
+                self.update_cc_info(self.cc_quadrant, cropped_cc, cc_crop_time, cc_avg_white)
+            # apply corrections based on what is learned from the colorchipDetect
+            except ColorChipError as e:
+                notice_title = 'Error Determining Color Chip Location'
+                notice_text = 'Critical Error: Image was NOT processed!'
+                detail_text = f'While attempting to determine the color chip location the following exception was rasied:\n{e}'
+                self.userNotice(notice_text, notice_title, detail_text)
+                # prepare to wipe the slate clean and exit
+                self.reset_working_variables()
+                return
 
         if not self.mainWindow.checkBox_performWhiteBalance.isChecked():
             self.cc_avg_white = None
@@ -720,13 +733,12 @@ class appWindow(QMainWindow):
 
         # pretty much must be a raw format image
         except (LibRawFatalError, LibRawNonFatalError) as e:
-            if imgPath == '':
-                raise
-            text = 'Corrupted or incompatible image file.'
-            title = 'Error opening file'
-            detail_text = f'LibRawFatalError opening: {imgPath}\nUsually this indicates a corrupted input image file.\n{e}'
-            self.userNotice(text, title, detail_text)
-            raise
+            if imgPath != '':
+                title = 'Error opening file'
+                text = 'Corrupted or incompatible image file.'
+                detail_text = f'LibRawError opening: {imgPath}\nUsually this indicates a corrupted or incompatible image.\n{e}'
+                self.userNotice(text, title, detail_text)
+            raise  # Pass this up to the process function for halting
         return im
 
     def testFeatureCompatability(self):

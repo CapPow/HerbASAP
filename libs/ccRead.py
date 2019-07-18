@@ -40,8 +40,28 @@ except ImportError:
         # print(f"[INFO] Forcing use of CPU for neural network prediction (TensorFlow)")
 
 
-class ColorchipError(Exception):
+class ColorChipError(Exception):
+    def __init__(self, msg='ColorChipError', *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)
     pass
+
+
+class InvalidStride(ColorChipError):
+    def __init__(self):
+        default_message = 'Invalid stride_style was given, must be "quick" or "whole"'
+        super().__init__(default_message)
+
+
+class EmptyDiscriminatorArray(ColorChipError):
+    def __init__(self):
+        default_message = 'Unable to properly slice discriminator prediction array. It is likely empty.'
+        super().__init__(default_message)
+
+
+class DiscriminatorFailed(ColorChipError):
+    def __init__(self):
+        default_message = 'Discriminator could not find the best image. Try lowering the prediction floor value.'
+        super().__init__(default_message)
 
 
 class ColorchipRead:
@@ -184,11 +204,12 @@ class ColorchipRead:
         scaled_y1, scaled_y2 = prop_y1 * original_image_height, prop_x2 * original_image_height
 
         cropped_im = im.crop((scaled_x1, scaled_y1, scaled_x2, scaled_y2))
+        cropped_im = np.array(cropped_im, np.uint8)  # return it as a numpy array
 
         try:
             return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), cropped_im, time.time() - start
         except SystemError as e:
-            print(f"System error: {e}")
+            raise ColorChipError("System error: {e}")
 
     @staticmethod
     def angle_cos(p0, p1, p2):
@@ -338,7 +359,7 @@ class ColorchipRead:
                 hists_rgb.append(partitioned_im.histogram())
                 hists_hsv.append(partitioned_im_hsv.histogram())
         else:
-            raise ColorchipError('Invalid stride_style was given, must be "quick" or "whole"')
+            raise InvalidStride
 
         hists_rgb = np.array(hists_rgb) / 255
         hists_hsv = np.array(hists_hsv) / 255
@@ -371,8 +392,7 @@ class ColorchipRead:
             only_cc_uncertainty_column = discriminator_uncertainty[0][:, 1]
             only_cc_probability_column = discriminator_prediction[0][:, 1]
         except IndexError as e:
-            raise ColorchipError(f'Unable to properly slice discriminator prediction array. It is likely empty. '
-                                 f'Error: {e}')
+            raise EmptyDiscriminatorArray
 
         lowest_uncertainty = 1
         best_image = None
@@ -388,35 +408,37 @@ class ColorchipRead:
                     best_image = im.crop(tuple(best_location))
 
         if best_image is None:
-            raise ColorchipError("Discriminator could not find the best image. "
-                                 "Try lowering the prediction floor value.")
+            raise DiscriminatorFailed
 
         hpstart = time.time()
-        if high_precision:
-            np_best_image = np.array(best_image)
-            cv_best_image = cv2.cvtColor(np_best_image, cv2.COLOR_RGB2HSV)
-
-            squares = ColorchipRead.find_squares(cv_best_image)
-            print(squares)
-            squares = np.array(squares)
-
-            biggest_square = None
-            highest_diff = 0
-            for contour in squares:
-                cnt = np.array(contour)
-                x_arr = cnt[..., 0]
-                y_arr = cnt[..., 1]
-                x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
-                diff = (y2 - y1) + (x2 - x1)
-
-                if highest_diff < diff < 235:
-                    highest_diff = diff
-                    biggest_square = (x1, y1, x2, y2)
-
-            best_image = np.array(best_image.crop(biggest_square), np.uint8)
-            x1, y1, x2, y2 = best_location[0] + biggest_square[0], best_location[1] + biggest_square[1], best_location[2] + biggest_square[0], best_location[3] + biggest_square[1]
-        else:
-            x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
+        try:
+            if high_precision:
+                np_best_image = np.array(best_image)
+                cv_best_image = cv2.cvtColor(np_best_image, cv2.COLOR_RGB2HSV)
+    
+                squares = ColorchipRead.find_squares(cv_best_image)
+                print(squares)
+                squares = np.array(squares)
+    
+                biggest_square = None
+                highest_diff = 0
+                for contour in squares:
+                    cnt = np.array(contour)
+                    x_arr = cnt[..., 0]
+                    y_arr = cnt[..., 1]
+                    x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
+                    diff = (y2 - y1) + (x2 - x1)
+    
+                    if highest_diff < diff < 235:
+                        highest_diff = diff
+                        biggest_square = (x1, y1, x2, y2)
+                #  return cropped color chip as a numpy array
+                best_image = np.array(best_image.crop(biggest_square), np.uint8)
+                x1, y1, x2, y2 = best_location[0] + biggest_square[0], best_location[1] + biggest_square[1], best_location[2] + biggest_square[0], best_location[3] + biggest_square[1]
+            else:
+                x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
+        except Exception as e:
+            raise InvalidStride
 
         print(f"High precision took {time.time() - hpstart} seconds.")
         prop_x1, prop_y1, prop_x2, prop_y2 = x1 / image_width, y1 / image_height, x2 / image_width, y2 / image_height
