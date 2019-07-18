@@ -39,6 +39,11 @@ except ImportError:
         # os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
         # print(f"[INFO] Forcing use of CPU for neural network prediction (TensorFlow)")
 
+
+class ColorchipError(Exception):
+    pass
+
+
 class ColorchipRead:
     def __init__(self, parent=None, *args):
         super(ColorchipRead, self).__init__()
@@ -333,7 +338,7 @@ class ColorchipRead:
                 hists_rgb.append(partitioned_im.histogram())
                 hists_hsv.append(partitioned_im_hsv.histogram())
         else:
-            raise RuntimeError('Invalid stride_style was given, must be "quick" or "whole"')
+            raise ColorchipError('Invalid stride_style was given, must be "quick" or "whole"')
 
         hists_rgb = np.array(hists_rgb) / 255
         hists_hsv = np.array(hists_hsv) / 255
@@ -352,9 +357,6 @@ class ColorchipRead:
             most_certain_images[only_cc_position_uncertainty[position_prediction_dict[prediction]]] = \
                 possible_positions[position_prediction_dict[prediction]]
 
-        only_cc_uncertainty_column = []
-        only_cc_probability_column = []
-
         highest_prob_images = []
 
         for position in list(most_certain_images.values()):
@@ -368,17 +370,13 @@ class ColorchipRead:
         try:
             only_cc_uncertainty_column = discriminator_uncertainty[0][:, 1]
             only_cc_probability_column = discriminator_prediction[0][:, 1]
-        except IndexError:
-            print("Discriminator could not find best image.")
+        except IndexError as e:
+            raise ColorchipError(f'Unable to properly slice discriminator prediction array. It is likely empty. '
+                                 f'Error: {e}')
 
         lowest_uncertainty = 1
         best_image = None
         best_location = None
-
-        # for i in range(buffer_size):
-        #     if only_cc_probability_column[i] == float('inf'): # Catching inf prediction, which is not permissible.
-        #         only_cc_probability_column[i] = 0
-        #         only_cc_uncertainty_column[i] = 1
 
         max_discriminator_pred = max(only_cc_probability_column)
         if max_discriminator_pred > 0:
@@ -388,6 +386,10 @@ class ColorchipRead:
                     lowest_uncertainty = only_cc_uncertainty_column[idx]
                     best_location = list(most_certain_images.values())[idx]
                     best_image = im.crop(tuple(best_location))
+
+        if best_image is None:
+            raise ColorchipError("Discriminator could not find the best image. "
+                                 "Try lowering the prediction floor value.")
 
         hpstart = time.time()
         if high_precision:
@@ -425,23 +427,9 @@ class ColorchipRead:
                                                      prop_y2 * original_height
 
         end = time.time()
-        try:
-            # best_image.save("cc.jpg")
-            print(f"Color chip cropping took: {end - start} seconds.")
-            cc_crop_time = round(end - start, 3)
-            return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image, cc_crop_time
-        except ValueError as e:
-            print(f"ccRead had a value error: {e}")
-            return None
-        except AttributeError as e:
-            print(f"ccRead had an attribute error: {e}")
-            return None
-        except IndexError as e:
-            print(f"ccRead had an index error: {e}")
-            return None
-        except SystemError as e:
-            print(f"ccRead had a system error: {e}")
-            return None
+        print(f"Color chip cropping took: {end - start} seconds.")
+        cc_crop_time = round(end - start, 3)
+        return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image, cc_crop_time
 
     @staticmethod
     def predict_color_chip_quadrant(original_size, scaled_crop_location):
