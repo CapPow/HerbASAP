@@ -475,93 +475,6 @@ class appWindow(QMainWindow):
                     print(f'value: {str(worker_error_data.value)}')
                     print(f'formatted exception: {str(worker_error_data.format_exc)}')
 
-    def white_balance_image(self, im, color_chip_im, style="clip"):
-        """
-
-        :param im:
-        :param color_chip_im:
-        :param style:
-        :return:
-        """
-        # lum = (whiteR + whiteG + whiteB) / 3
-
-        np_im = np.array(im)
-        np_color_chip_im = np.array(color_chip_im, np.uint8)
-
-        if style == "clip":
-            try:
-                whiteR, whiteG, whiteB = self.colorchipDetect.predict_color_chip_whitevals(np_color_chip_im)
-                lum = (whiteR * 0.2126 + whiteG * 0.7152 + whiteB * 0.0722)
-                imgR = im[..., 0].copy()
-                imgG = im[..., 1].copy()
-                imgB = im[..., 2].copy()
-
-                imgR = imgR * lum / whiteR
-                imgR = np.where(imgR > 255, 255, imgR)
-                imgR = np.where(imgR < 0, 0, imgR)
-                imgG = imgG * lum / whiteG
-                imgG = np.where(imgG > 255, 255, imgG)
-                imgG = np.where(imgG < 0, 0, imgG)
-                imgB = imgB * lum / whiteB
-                imgB = np.where(imgB > 255, 255, imgB)
-                imgB = np.where(imgB < 0, 0, imgB)
-
-                im[..., 0] = imgR
-                im[..., 1] = imgG
-                im[..., 2] = imgB
-            except Exception as e:
-                print(f"[ERROR] Error in {style} style white balancing: {e}")
-        elif style == "retinex":
-            # Code modified from a literal Japanese god here: https://gist.github.com/shunsukeaihara/4603234
-            nimg = np_color_chip_im.transpose(2, 0, 1).astype(np.uint32)
-            orig_image = np_im.transpose(2, 0, 1).astype(np.uint32)
-
-            sum_r = np.sum(nimg[0])
-            sum_r2 = np.sum(nimg[0] ** 2)
-            max_r = nimg[0].max()
-            max_r2 = max_r ** 2
-            sum_g = np.sum(nimg[1])
-            max_g = nimg[1].max()
-            coefficient = np.linalg.solve(np.array([[sum_r2, sum_r], [max_r2, max_r]]),
-                                          np.array([sum_g, max_g]))
-            orig_image[0] = np.minimum((orig_image[0] ** 2) * coefficient[0] + orig_image[0] * coefficient[1], 255)
-            sum_b = np.sum(nimg[1])
-            sum_b2 = np.sum(nimg[1] ** 2)
-            max_b = nimg[1].max()
-            max_b2 = max_r ** 2
-            coefficient = np.linalg.solve(np.array([[sum_b2, sum_b], [max_b2, max_b]]), np.array([sum_g, max_g]))
-            orig_image[1] = np.minimum((orig_image[1] ** 2) * coefficient[0] + orig_image[1] * coefficient[1], 255)
-            return orig_image.transpose(1, 2, 0).astype(np.uint8)
-        
-        elif style == 'max_white':
-            color_chip_im = np_color_chip_im.transpose(2, 0, 1)
-            color_chip_im = color_chip_im.astype(np.int32)
-            im = np_im.transpose(2, 0, 1)
-            im = im.astype(np.int32)
-
-            im[0] = np.minimum(im[0] * (255 / float(color_chip_im[0].max())), 255)
-            im[1] = np.minimum(im[1] * (255 / float(color_chip_im[1].max())), 255)
-            im[2] = np.minimum(im[2] * (255 / float(color_chip_im[2].max())), 255)
-            return im.transpose(1, 2, 0).astype(np.uint8)
-        elif style == 'avg_white':
-            #avg_white = self.colorchipDetect.predict_color_chip_whitevals(np_color_chip_im)
-            avg_white = self.cc_avg_white
-            brightest = np.array(avg_white).max()
-
-            color_chip_im = np_color_chip_im.transpose(2, 0, 1)
-            color_chip_im = color_chip_im.astype(np.int32)
-            im = np_im.transpose(2, 0, 1)
-            im = im.astype(np.int32)
-
-            im[0] = np.minimum(im[0] * (brightest / float(color_chip_im[0].max())), 255)
-            im[1] = np.minimum(im[1] * (brightest / float(color_chip_im[1].max())), 255)
-            im[2] = np.minimum(im[2] * (brightest / float(color_chip_im[2].max())), 255)
-            return im.transpose(1, 2, 0).astype(np.uint8)
-        else:
-            raise NotImplementedError("This white balancing style does not exist")
-
-        return im
-
     def scale_images_with_info(self, im, largest_dim=1875):
         """
         Function that scales images proportionally, and returns both the original image size as a tuple of image
@@ -691,7 +604,6 @@ class appWindow(QMainWindow):
             bc_job = Job('bc_worker', bc_worker_data, self.bcRead.decodeBC)
             self.boss_thread.request_job(bc_job)
 
-        print(self.im.shape)
         if self.mainWindow.checkBox_blurDetection.isChecked():
             # test for bluryness
             blur_threshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
@@ -699,7 +611,6 @@ class appWindow(QMainWindow):
             blur_job = Job('blur_worker', blur_worker_data, self.blurDetect.blur_check)
             self.boss_thread.request_job(blur_job)
         
-        print(self.im.shape)
         if self.mainWindow.checkBox_lensCorrection.isChecked():
             # equipment corrections
             cm_distance = self.mainWindow.doubleSpinBox_focalDistance.value()
@@ -712,7 +623,6 @@ class appWindow(QMainWindow):
             names = self.bc_code
         else:  # name based on base_file_name
             names = [self.base_file_name]
-        print(self.im.shape)
         self.save_output_images(self.im, names, self.img_path, self.ext)
 
     def update_cc_info(self, cc_position, cropped_cc, cc_crop_time, cc_avg_white):
@@ -733,15 +643,14 @@ class appWindow(QMainWindow):
 
     def update_preview_img(self, im):
         # trying smaller preview
-        h,w = im.shape[0:2]
+        h, w = im.shape[0:2]
         width = 300
         hpercent = (width/float(w))
         height = int((float(h)*float(hpercent)))
         size = (width, height)
-        im = cv2.resize(im, size,interpolation=cv2.INTER_LINEAR)
-        #height, width= im.shape[0:2]
+        im = cv2.resize(im, size, interpolation=cv2.INTER_LINEAR)
         bytesPerLine = 3 * width
-        qImg = QtGui.QImage(im, width, height, bytesPerLine, QtGui.QImage.Format_RGB888)#.rgbSwapped()
+        qImg = QtGui.QImage(im, width, height, bytesPerLine, QtGui.QImage.Format_RGB888)  #.rgbSwapped()
         pixmap = QtGui.QPixmap.fromImage(qImg)
         pixmap_image = QtGui.QPixmap(pixmap)
         preview_label = self.mainWindow.label_imPreview
@@ -749,23 +658,6 @@ class appWindow(QMainWindow):
 
     def save_finished(self):
         print(f'saving {self.img_path} has finished.')
-
-    def orient_image(self, im, picker_quadrant, desired_quadrant):
-        '''
-        corrects image rotation using the position of the color picker.
-        picker_quadrant = the known quadrant of a color picker location,
-        desired_quadrant = the position the color picker should be in.
-        '''
-        try:
-            rotation_qty = (picker_quadrant - desired_quadrant)
-            im = np.rot90(im, rotation_qty)
-        except TypeError:
-            # alert the user of an issue
-            msg_text = 'Could not infer color checker location'
-            title_text = 'Error finding color checker'
-            detail_text = f'TypeError retrieving quadrant from {self.img_path}'
-            self.userNotice(msg_text, title_text, detail_text)
-        return im
 
     def testFunction(self):
         """ a development assistant function, connected to a GUI button
