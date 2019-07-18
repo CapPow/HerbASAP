@@ -18,6 +18,8 @@ from PIL import Image
 import cv2
 import time
 import tensorflow as tf
+print(f"[INFO] Using TensorFlow Lite models. Precision may be worse due to lack of variance calculations.")
+
 
 class ColorchipError(Exception):
     pass
@@ -241,8 +243,8 @@ class ColorchipRead:
         else:
             raise ColorchipError('Invalid stride_style was given, must be "quick" or "whole"')
 
-        hists_rgb = np.array(hists_rgb, dtype=np.float32) / 255
-        hists_hsv = np.array(hists_hsv, dtype=np.float32) / 255
+        hists_rgb = np.array(hists_rgb, dtype=np.float16) / 15625
+        hists_hsv = np.array(hists_hsv, dtype=np.float16) / 15625
 
         position_predictions = []
         indices = [i for i in range(len(hists_rgb))]
@@ -253,15 +255,16 @@ class ColorchipRead:
                 self.position_model.set_tensor(self.position_input_details[1]['index'], [hists_hsv[i]])
                 self.position_model.invoke()
                 # outputs.append(self.position_model.get_tensor(self.position_output_details[0]['index']))
-                position_predictions.append(self.position_model.get_tensor(self.position_output_details[0]['index'])[0][1])
+                position_predictions.append(self.position_model.get_tensor(self.position_output_details[0]['index'])[0][0])
             except:
                 position_predictions.append(np.array([[1, 0]], dtype=np.float32).tolist())
         print(f"Region proposal took {time.time() - position_start}")
 
         position_predictions, indices = (list(t) for t in zip(*sorted(zip(position_predictions, indices))))
+        position_predictions.reverse()
+        indices.reverse()
 
-        # position_predictions.reverse()
-        # indices.reverse()
+        print(max(position_predictions))
 
         highest_prob_images = []
         highest_prob_positions = []
@@ -274,7 +277,7 @@ class ColorchipRead:
         for i in range(len(highest_prob_images)):
             self.discriminator_model.set_tensor(self.discriminator_input_details[0]['index'], [highest_prob_images_pred[i]])
             self.discriminator_model.invoke()
-            if self.discriminator_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1] > 0.9999:
+            if self.discriminator_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1] > 0.9995:
                 print(i)
                 best_image = Image.fromarray(highest_prob_images[i])
                 best_location = highest_prob_positions[i]
@@ -316,7 +319,6 @@ class ColorchipRead:
                                                      prop_y1 * original_height, \
                                                      prop_x2 * original_width, \
                                                      prop_y2 * original_height
-
 
         end = time.time()
         print(f"Color chip cropping took: {end - start} seconds.")
