@@ -297,7 +297,7 @@ class ColorchipRead:
         for i in range(len(highest_prob_images)):
             self.discriminator_model.set_tensor(self.discriminator_input_details[0]['index'], [highest_prob_images_pred[i]])
             self.discriminator_model.invoke()
-            if self.discriminator_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1] > 0.9995:
+            if self.discriminator_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1] > 0.999:
                 print(i)
                 best_image = Image.fromarray(highest_prob_images[i])
                 best_location = highest_prob_positions[i]
