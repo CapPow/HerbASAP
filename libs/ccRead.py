@@ -461,27 +461,43 @@ class ColorchipRead:
             return None
 
     @staticmethod
-    def predict_color_chip_whitevals(color_chip_image):
+    def predict_color_chip_whitevals(cropped_cc):
         """
         Takes the white values within the cropped CC image and averages them in RGB. The whitest values in the image is
         determined in the L*a*b color space, wherein only lightness values higher than (max lightness value - 1) is
         considered
 
-        :param color_chip_image: The cropped color chip image.
-        :type color_chip_image: Image
+        :param cropped_cc: The cropped color chip image
+        :type cropped_cc: Image
         :return: Returns a list of the averaged whitest values
         :rtype: list
         """
-        cci_array = np.array(color_chip_image,  dtype=np.uint8)
-        ccil_array = cv2.cvtColor(color_chip_image, cv2.COLOR_RGB2Lab)
-        width, height = ccil_array.shape[0], ccil_array.shape[1]
-        # id max_lightness in ccil (lab space)
-        max_lightness = ccil_array[...,0].max()
-        # index cci_array based on conditions met in ccil_array
-        white_pixels_rgbvals = cci_array[ ccil_array[...,0]> max_lightness-1]
-        white_pixels_average = np.average(white_pixels_rgbvals, axis=0)
-
-        return list(white_pixels_average)
+        # get min/max points & values using green channel
+        grayImg = cv2.cvtColor(cropped_cc, cv2.COLOR_RGB2GRAY) #convert to gray
+        minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(grayImg)
+        # determine an allowable range for the floodfill
+        var_threshold = int((maxVal-minVal) * .1)
+        h,w,chn = cropped_cc.shape
+        seed = maxLoc
+        mask = np.zeros((h+2,w+2),np.uint8)
+        floodflags = 8
+        floodflags |= cv2.FLOODFILL_FIXED_RANGE
+        floodflags |= cv2.FLOODFILL_MASK_ONLY
+        floodflags |= (int(maxVal) << 8)
+        num,cropped_cc,mask,rect = cv2.floodFill(cropped_cc, mask, seed,
+                                                 0,
+                                                 (var_threshold,)*3,
+                                                 (var_threshold,)*3,
+                                                 floodflags)
+        # correct for the mask expansion
+        mask = mask[1:-1, 1:-1, ...]
+        # extract the rgb values of the floodfilled sections
+        extracted = cropped_cc[ mask != 0]
+        # get mean of the resulting r,g,b values
+        avg_white = extracted.reshape(-1,extracted.shape[-1]).mean(0)
+        # convert it to an array of ints
+        avg_white = np.asarray(avg_white, dtype=int)
+        return list(avg_white)
 
     def test_feature(self, im, original_size, cc_size='predict'):
         """
