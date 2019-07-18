@@ -21,8 +21,28 @@ import tensorflow as tf
 print(f"[INFO] Using TensorFlow Lite models. Precision may be worse due to lack of variance calculations.")
 
 
-class ColorchipError(Exception):
+class ColorChipError(Exception):
+    def __init__(self, msg='ColorChipError', *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)
     pass
+
+
+class InvalidStride(ColorChipError):
+    def __init__(self):
+        default_message = 'Invalid stride_style was given, must be "quick" or "whole"'
+        super().__init__(default_message)
+
+
+class EmptyDiscriminatorArray(ColorChipError):
+    def __init__(self):
+        default_message = 'Unable to properly slice discriminator prediction array. It is likely empty.'
+        super().__init__(default_message)
+
+
+class DiscriminatorFailed(ColorChipError):
+    def __init__(self):
+        default_message = 'Discriminator could not find the best image. Try lowering the prediction floor value.'
+        super().__init__(default_message)
 
 
 class ColorchipRead:
@@ -87,11 +107,12 @@ class ColorchipRead:
         scaled_y1, scaled_y2 = prop_y1 * original_image_height, prop_x2 * original_image_height
 
         cropped_im = im.crop((scaled_x1, scaled_y1, scaled_x2, scaled_y2))
+        cropped_im = np.array(cropped_im, np.uint8)  # return it as a numpy array
 
         try:
             return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), cropped_im, time.time() - start
         except SystemError as e:
-            print(f"System error: {e}")
+            raise ColorChipError("System error: {e}")
 
     @staticmethod
     def angle_cos(p0, p1, p2):
@@ -241,7 +262,7 @@ class ColorchipRead:
                 hists_rgb.append(partitioned_im.histogram())
                 hists_hsv.append(partitioned_im_hsv.histogram())
         else:
-            raise ColorchipError('Invalid stride_style was given, must be "quick" or "whole"')
+            raise InvalidStride
 
         hists_rgb = np.array(hists_rgb, dtype=np.float16) / 15625
         hists_hsv = np.array(hists_hsv, dtype=np.float16) / 15625
@@ -265,7 +286,6 @@ class ColorchipRead:
         indices.reverse()
 
         print(max(position_predictions))
-
         highest_prob_images = []
         highest_prob_positions = []
         for i in indices:
@@ -283,34 +303,36 @@ class ColorchipRead:
                 best_location = highest_prob_positions[i]
                 break
         else:
-            raise ColorchipError("Discriminator could not find the best image. "
-                                 "Try lowering the prediction floor value.")
+            raise DiscriminatorFailed
 
         hpstart = time.time()
-        if high_precision:
-            np_best_image = np.array(best_image)
-            cv_best_image = cv2.cvtColor(np_best_image, cv2.COLOR_RGB2HSV)
+        try:
+            if high_precision:
+                np_best_image = np.array(best_image)
+                cv_best_image = cv2.cvtColor(np_best_image, cv2.COLOR_RGB2HSV)
 
-            squares = ColorchipRead.find_squares(cv_best_image)
-            squares = np.array(squares)
+                squares = ColorchipRead.find_squares(cv_best_image)
+                squares = np.array(squares)
 
-            biggest_square = None
-            highest_diff = 0
-            for contour in squares:
-                cnt = np.array(contour)
-                x_arr = cnt[..., 0]
-                y_arr = cnt[..., 1]
-                x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
-                diff = (y2 - y1) + (x2 - x1)
+                biggest_square = None
+                highest_diff = 0
+                for contour in squares:
+                    cnt = np.array(contour)
+                    x_arr = cnt[..., 0]
+                    y_arr = cnt[..., 1]
+                    x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
+                    diff = (y2 - y1) + (x2 - x1)
 
-                if highest_diff < diff < 245:
-                    highest_diff = diff
-                    biggest_square = (x1, y1, x2, y2)
+                    if highest_diff < diff < 245:
+                        highest_diff = diff
+                        biggest_square = (x1, y1, x2, y2)
 
-            best_image = best_image.crop(biggest_square)
-            x1, y1, x2, y2 = best_location[0] + biggest_square[0], best_location[1] + biggest_square[1], best_location[2] + biggest_square[0], best_location[3] + biggest_square[1]
-        else:
-            x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
+                best_image = best_image.crop(biggest_square)
+                x1, y1, x2, y2 = best_location[0] + biggest_square[0], best_location[1] + biggest_square[1], best_location[2] + biggest_square[0], best_location[3] + biggest_square[1]
+            else:
+                x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
+        except Exception as e:
+            raise InvalidStride
 
         print(f"High precision took {time.time() - hpstart} seconds.")
         prop_x1, prop_y1, prop_x2, prop_y2 = x1 / image_width, y1 / image_height, x2 / image_width, y2 / image_height
@@ -356,27 +378,43 @@ class ColorchipRead:
             return None
 
     @staticmethod
-    def predict_color_chip_whitevals(color_chip_image):
+    def predict_color_chip_whitevals(cropped_cc):
         """
         Takes the white values within the cropped CC image and averages them in RGB. The whitest values in the image is
         determined in the L*a*b color space, wherein only lightness values higher than (max lightness value - 1) is
         considered
 
-        :param color_chip_image: The cropped color chip image.
-        :type color_chip_image: Image
+        :param cropped_cc: The cropped color chip image
+        :type cropped_cc: Image
         :return: Returns a list of the averaged whitest values
         :rtype: list
         """
-        cci_array = np.array(color_chip_image,  dtype=np.uint8)
-        ccil_array = cv2.cvtColor(color_chip_image, cv2.COLOR_RGB2Lab)
-        width, height = ccil_array.shape[0], ccil_array.shape[1]
-        # id max_lightness in ccil (lab space)
-        max_lightness = ccil_array[...,0].max()
-        # index cci_array based on conditions met in ccil_array
-        white_pixels_rgbvals = cci_array[ ccil_array[...,0]> max_lightness-1]
-        white_pixels_average = np.average(white_pixels_rgbvals, axis=0)
-
-        return list(white_pixels_average)
+        # get min/max points & values using green channel
+        grayImg = cv2.cvtColor(cropped_cc, cv2.COLOR_RGB2GRAY) #convert to gray
+        minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(grayImg)
+        # determine an allowable range for the floodfill
+        var_threshold = int((maxVal-minVal) * .1)
+        h,w,chn = cropped_cc.shape
+        seed = maxLoc
+        mask = np.zeros((h+2,w+2),np.uint8)
+        floodflags = 8
+        floodflags |= cv2.FLOODFILL_FIXED_RANGE
+        floodflags |= cv2.FLOODFILL_MASK_ONLY
+        floodflags |= (int(maxVal) << 8)
+        num,cropped_cc,mask,rect = cv2.floodFill(cropped_cc, mask, seed,
+                                                 0,
+                                                 (var_threshold,)*3,
+                                                 (var_threshold,)*3,
+                                                 floodflags)
+        # correct for the mask expansion
+        mask = mask[1:-1, 1:-1, ...]
+        # extract the rgb values of the floodfilled sections
+        extracted = cropped_cc[ mask != 0]
+        # get mean of the resulting r,g,b values
+        avg_white = extracted.reshape(-1,extracted.shape[-1]).mean(0)
+        # convert it to an array of ints
+        avg_white = np.asarray(avg_white, dtype=int)
+        return list(avg_white)
 
     def test_feature(self, im, original_size, cc_size='predict'):
         """

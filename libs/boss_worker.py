@@ -2,7 +2,6 @@
 # bc_worker
 # blur_worker
 # eq_worker
-# pp_worker
 from PyQt5.QtCore import (QObject, QRunnable, pyqtSignal, pyqtSlot, QThread,
                           QEventLoop)
 from PyQt5.QtWidgets import QApplication
@@ -126,20 +125,10 @@ class Boss(QThread):
             eq_worker.signals.finished.connect(self.worker_finished_handler)
             self.__thread_pool.start(eq_worker)  # start eq_worker thread
             # in this case, job_data should be None
-        elif job.job_name == 'pp_worker' and job.job_data is None and job.job_function is not None:
-            # wait until 'clear_to_save' signal
+        elif job.job_name == 'save_worker' and job.job_data is not None and job.job_function is not None:
             wait_event = QEventLoop()
             self.signals.clear_to_save.connect(wait_event.quit)       
             wait_event.exec()
-            pp_worker = Worker(job.job_function)
-            pp_worker.set_worker_name('pp_worker')
-            pp_worker.signals.started.connect(self.worker_started_handler)
-            pp_worker.signals.error.connect(self.worker_error_handler)
-            pp_worker.signals.result.connect(self.worker_result_handler)
-            pp_worker.signals.finished.connect(self.worker_finished_handler)
-            self.__thread_pool.start(pp_worker)  # start pp_worker thread
-            # save image jobs, this'll probably be hard drive rate limited
-        elif job.job_name == 'save_worker' and job.job_data is not None and job.job_function is not None:
             save_worker = Worker(job.job_function, job.job_data.new_file_name, job.job_data.im)
             save_worker.set_worker_name('save_worker')
             save_worker.signals.started.connect(self.worker_started_handler)

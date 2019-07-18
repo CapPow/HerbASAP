@@ -50,7 +50,7 @@ from ui.noBcDialogUI import Ui_Dialog_noBc
 from libs.bcRead import bcRead
 from libs.eqRead import eqRead
 from libs.blurDetect import blurDetect
-from libs.ccRead import ColorchipRead
+from libs.ccRead import ColorchipRead, ColorChipError
 from libs.folderMonitor import Folder_Watcher
 from libs.folderMonitor import New_Image_Emitter
 from libs.boss_worker import (Boss, BCWorkerData, BlurWorkerData, EQWorkerData,
@@ -380,14 +380,6 @@ class appWindow(QMainWindow):
         self.mainWindow.label_imvar.setText(str(round(result['imVar'], 3)))
         self.mainWindow.label_lapnorm.setText(str(round(result['lapNorm'], 3)))
 
-    def handle_pp_result(self, result):
-        # if no bc_code was found or checking for it is turned off
-        if self.bc_code:
-            names = self.bc_code
-        else: # name based on base_file_name
-            names = [self.base_file_name]
-        self.save_output_images(self.im, names, self.img_path, self.ext)
-
     def handle_save_result(self, result):
         """ called when the the save_worker finishes up """
         # tick off one working_save_job 
@@ -466,8 +458,6 @@ class appWindow(QMainWindow):
                     self.handle_blur_result(worker_signal_data.signal_data)
                 elif worker_signal_data.worker_name == 'eq_worker':
                     self.handle_eq_result(worker_signal_data.signal_data)
-                elif worker_signal_data.worker_name == 'pp_worker':
-                    self.handle_pp_result(worker_signal_data.signal_data)
                 elif worker_signal_data.worker_name == 'save_worker':
                     self.handle_save_result(worker_signal_data.signal_data)
 
@@ -484,93 +474,6 @@ class appWindow(QMainWindow):
                     print(f'exception type: {str(worker_error_data.exctype)}')
                     print(f'value: {str(worker_error_data.value)}')
                     print(f'formatted exception: {str(worker_error_data.format_exc)}')
-
-    def white_balance_image(self, im, color_chip_im, style="clip"):
-        """
-
-        :param im:
-        :param color_chip_im:
-        :param style:
-        :return:
-        """
-        # lum = (whiteR + whiteG + whiteB) / 3
-
-        np_im = np.array(im)
-        np_color_chip_im = np.array(color_chip_im, np.uint8)
-
-        if style == "clip":
-            try:
-                whiteR, whiteG, whiteB = self.colorchipDetect.predict_color_chip_whitevals(np_color_chip_im)
-                lum = (whiteR * 0.2126 + whiteG * 0.7152 + whiteB * 0.0722)
-                imgR = im[..., 0].copy()
-                imgG = im[..., 1].copy()
-                imgB = im[..., 2].copy()
-
-                imgR = imgR * lum / whiteR
-                imgR = np.where(imgR > 255, 255, imgR)
-                imgR = np.where(imgR < 0, 0, imgR)
-                imgG = imgG * lum / whiteG
-                imgG = np.where(imgG > 255, 255, imgG)
-                imgG = np.where(imgG < 0, 0, imgG)
-                imgB = imgB * lum / whiteB
-                imgB = np.where(imgB > 255, 255, imgB)
-                imgB = np.where(imgB < 0, 0, imgB)
-
-                im[..., 0] = imgR
-                im[..., 1] = imgG
-                im[..., 2] = imgB
-            except Exception as e:
-                print(f"[ERROR] Error in {style} style white balancing: {e}")
-        elif style == "retinex":
-            # Code modified from a literal Japanese god here: https://gist.github.com/shunsukeaihara/4603234
-            nimg = np_color_chip_im.transpose(2, 0, 1).astype(np.uint32)
-            orig_image = np_im.transpose(2, 0, 1).astype(np.uint32)
-
-            sum_r = np.sum(nimg[0])
-            sum_r2 = np.sum(nimg[0] ** 2)
-            max_r = nimg[0].max()
-            max_r2 = max_r ** 2
-            sum_g = np.sum(nimg[1])
-            max_g = nimg[1].max()
-            coefficient = np.linalg.solve(np.array([[sum_r2, sum_r], [max_r2, max_r]]),
-                                          np.array([sum_g, max_g]))
-            orig_image[0] = np.minimum((orig_image[0] ** 2) * coefficient[0] + orig_image[0] * coefficient[1], 255)
-            sum_b = np.sum(nimg[1])
-            sum_b2 = np.sum(nimg[1] ** 2)
-            max_b = nimg[1].max()
-            max_b2 = max_r ** 2
-            coefficient = np.linalg.solve(np.array([[sum_b2, sum_b], [max_b2, max_b]]), np.array([sum_g, max_g]))
-            orig_image[1] = np.minimum((orig_image[1] ** 2) * coefficient[0] + orig_image[1] * coefficient[1], 255)
-            return orig_image.transpose(1, 2, 0).astype(np.uint8)
-        
-        elif style == 'max_white':
-            color_chip_im = np_color_chip_im.transpose(2, 0, 1)
-            color_chip_im = color_chip_im.astype(np.int32)
-            im = np_im.transpose(2, 0, 1)
-            im = im.astype(np.int32)
-
-            im[0] = np.minimum(im[0] * (255 / float(color_chip_im[0].max())), 255)
-            im[1] = np.minimum(im[1] * (255 / float(color_chip_im[1].max())), 255)
-            im[2] = np.minimum(im[2] * (255 / float(color_chip_im[2].max())), 255)
-            return im.transpose(1, 2, 0).astype(np.uint8)
-        elif style == 'avg_white':
-            #avg_white = self.colorchipDetect.predict_color_chip_whitevals(np_color_chip_im)
-            avg_white = self.cc_avg_white
-            brightest = np.array(avg_white).max()
-
-            color_chip_im = np_color_chip_im.transpose(2, 0, 1)
-            color_chip_im = color_chip_im.astype(np.int32)
-            im = np_im.transpose(2, 0, 1)
-            im = im.astype(np.int32)
-
-            im[0] = np.minimum(im[0] * (brightest / float(color_chip_im[0].max())), 255)
-            im[1] = np.minimum(im[1] * (brightest / float(color_chip_im[1].max())), 255)
-            im[2] = np.minimum(im[2] * (brightest / float(color_chip_im[2].max())), 255)
-            return im.transpose(1, 2, 0).astype(np.uint8)
-        else:
-            raise NotImplementedError("This white balancing style does not exist")
-
-        return im
 
     def scale_images_with_info(self, im, largest_dim=1875):
         """
@@ -621,8 +524,17 @@ class appWindow(QMainWindow):
         self.img_path = None
         # self.metaRead = None
         self.base_file_name = None
+        self.flip_value = 0
         self.ext = None
         self.im = None
+        self.cc_avg_white = None
+        try:
+            if self.raw_base:  # try extra hard to free up these resources.
+                print('manually forcing closure')
+                self.raw_base.close()
+        except AttributeError:
+            pass  # occasion where no raw images have been unpacked yet
+        self.raw_base = None
         self.bc_code = None
         self.is_blurry = None  # could be helpful for 'line item warnings'
         self.cc_quadrant = None
@@ -639,21 +551,66 @@ class appWindow(QMainWindow):
         self.Timer_Emitter.timerStart.emit()
         try:
             im = self.openImageFile(img_path)
-        except LibRawFatalError:
-            # empty path passed
-            self.processing_image = True
+        except (LibRawFatalError, LibRawNonFatalError) as e:
+            self.reset_working_variables()
             return
 
         print(f'processing: {img_path}')
         self.img_path = img_path
         file_name, self.ext = os.path.splitext(img_path)
         self.base_file_name = os.path.basename(file_name)
+        original_size, reduced_img = self.scale_images_with_info(im)
+        # reduce the image for the cnn
+        self.reduced_img = reduced_img  # storing to use as preview later
+        if self.mainWindow.group_colorCheckerDetection:
+            # colorchecker functions
+            try:
+                if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
+                    cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_small(reduced_img, original_size, stride_style='quick', high_precision=True)
+                else:
+                    cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
+                self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
+                self.cropped_cc = cropped_cc
+                cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
+                self.cc_avg_white = cc_avg_white
+                print(f"CC | Position: {cc_position}, Quadrant: {self.cc_quadrant}")
+                self.update_cc_info(self.cc_quadrant, cropped_cc, cc_crop_time, cc_avg_white)
+            # apply corrections based on what is learned from the colorchipDetect
+            except ColorChipError as e:
+                notice_title = 'Error Determining Color Chip Location'
+                notice_text = 'Critical Error: Image was NOT processed!'
+                detail_text = f'While attempting to determine the color chip location the following exception was rasied:\n{e}'
+                self.userNotice(notice_text, notice_title, detail_text)
+                # prepare to wipe the slate clean and exit
+                self.reset_working_variables()
+                return
+
+        if not self.mainWindow.checkBox_performWhiteBalance.isChecked():
+            self.cc_avg_white = None
+
+        if self.mainWindow.group_verifyRotation.isChecked():
+            user_def_loc = self.mainWindow.comboBox_colorCheckerPosition.currentText()
+            quad_map = ['Upper right',
+                        'Lower right',
+                        'Lower left',
+                        'Upper left']
+            user_def_quad = quad_map.index(user_def_loc) + 1
+            # cc_quadrant starts at first,
+            # determine the proper rawpy flip value necessary
+            rotation_qty = (self.cc_quadrant - user_def_quad)
+            # rawpy: [0-7] Flip image (0=none, 3=180, 5=90CCW, 6=90CW)
+            # create a list to travel based on difference
+            rotations = [5, 3, 6, 0, 5, 3, 6]
+            startPos = 3  # starting position in the list
+            endPos = rotation_qty + startPos  # ending index in the list
+            self.flip_value = rotations[endPos]  # value at that position
+        self.apply_corrections()
+        # pass off what was learned and properly open image.
+        self.update_preview_img(self.im)
+        # process is now handed off too self.handle_pp_result()
 
         # converting to greyscale
-        original_size, reduced_img = self.scale_images_with_info(im)
-        self.reduced_img = reduced_img  # storing to use as preview later
-        grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-
+        grey = cv2.cvtColor(self.im, cv2.COLOR_BGR2GRAY)
         if self.mainWindow.group_renameByBarcode.isChecked():
             # retrieve the barcode values from image
             bc_worker_data = BCWorkerData(grey)
@@ -666,35 +623,20 @@ class appWindow(QMainWindow):
             blur_worker_data = BlurWorkerData(grey, blur_threshold, True)
             blur_job = Job('blur_worker', blur_worker_data, self.blurDetect.blur_check)
             self.boss_thread.request_job(blur_job)
-
+        
         if self.mainWindow.checkBox_lensCorrection.isChecked():
             # equipment corrections
             cm_distance = self.mainWindow.doubleSpinBox_focalDistance.value()
             m_distance = round(cm_distance / 100, 5)
-            eq_worker_data = EQWorkerData(im, img_path, m_distance)
+            eq_worker_data = EQWorkerData(self.im, self.img_path, m_distance)
             eq_job = Job('eq_worker', eq_worker_data, self.eqRead.lensCorrect)
             self.boss_thread.request_job(eq_job)
             # equipment corrections should set self.im
-        else:
-            self.im = im
-        if self.mainWindow.group_colorCheckerDetection:
-            # colorchecker functions
-            if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
-                cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_small(reduced_img, original_size, stride_style='quick', high_precision=True)
-            else:
-                cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
-            self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
-            cropped_cc = np.array(cropped_cc, np.uint8)
-            self.cropped_cc = cropped_cc
-            cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
-            self.cc_avg_white = cc_avg_white
-            print(f"CC | Position: {cc_position}, Quadrant: {self.cc_quadrant}")
-            self.update_cc_info(self.cc_quadrant, cropped_cc, cc_crop_time, cc_avg_white)
-
-        # waiting on all workers before saveing happens in Boss thread
-        pp_job = Job('pp_worker', None, self.post_processing)
-        self.boss_thread.request_job(pp_job)
-        # process is now handed off too self.post_processing()
+        if self.bc_code:
+            names = self.bc_code
+        else:  # name based on base_file_name
+            names = [self.base_file_name]
+        self.save_output_images(self.im, names, self.img_path, self.ext)
 
     def update_cc_info(self, cc_position, cropped_cc, cc_crop_time, cc_avg_white):
         """
@@ -714,15 +656,14 @@ class appWindow(QMainWindow):
 
     def update_preview_img(self, im):
         # trying smaller preview
-        h,w = im.shape[0:2]
+        h, w = im.shape[0:2]
         width = 300
         hpercent = (width/float(w))
         height = int((float(h)*float(hpercent)))
         size = (width, height)
-        im = cv2.resize(im, size,interpolation=cv2.INTER_LINEAR)
-        #height, width= im.shape[0:2]
+        im = cv2.resize(im, size, interpolation=cv2.INTER_LINEAR)
         bytesPerLine = 3 * width
-        qImg = QtGui.QImage(im, width, height, bytesPerLine, QtGui.QImage.Format_RGB888)#.rgbSwapped()
+        qImg = QtGui.QImage(im, width, height, bytesPerLine, QtGui.QImage.Format_RGB888)  #.rgbSwapped()
         pixmap = QtGui.QPixmap.fromImage(qImg)
         pixmap_image = QtGui.QPixmap(pixmap)
         preview_label = self.mainWindow.label_imPreview
@@ -731,49 +672,6 @@ class appWindow(QMainWindow):
     def save_finished(self):
         print(f'saving {self.img_path} has finished.')
 
-    def post_processing(self):
-        """
-        combines async results and performs the post processing steps
-        white balance, rotation verification then calls the saving functions
-        on the final output.
-        """
-        im = self.im
-        cropped_cc = self.cropped_cc
-        # white balance params or styles will probably be a UI element.
-        if self.mainWindow.checkBox_performWhiteBalance.isChecked():
-            im = self.white_balance_image(im, cropped_cc, style='avg_white')
-
-        if self.mainWindow.group_verifyRotation.isChecked():
-            user_def_loc = self.mainWindow.comboBox_colorCheckerPosition.currentText()
-            quad_map = ['Upper right',
-                        'Lower right',
-                        'Lower left',
-                        'Upper left']
-            user_def_quad = quad_map.index(user_def_loc) + 1
-            # cc_quadrant starts at first,
-            im = self.orient_image(im, self.cc_quadrant, user_def_quad)
-        # pass off whatever was done to the image
-        self.update_preview_img(im)
-        self.im = im
-        # process is now handed off too self.handle_pp_result()
-
-    def orient_image(self, im, picker_quadrant, desired_quadrant):
-        '''
-        corrects image rotation using the position of the color picker.
-        picker_quadrant = the known quadrant of a color picker location,
-        desired_quadrant = the position the color picker should be in.
-        '''
-        try:
-            rotation_qty = (picker_quadrant - desired_quadrant)
-            im = np.rot90(im, rotation_qty)
-        except TypeError:
-            # alert the user of an issue
-            msg_text = 'Could not infer color checker location'
-            title_text = 'Error finding color checker'
-            detail_text = f'TypeError retrieving quadrant from {self.img_path}'
-            self.userNotice(msg_text, title_text, detail_text)
-        return im
-
     def testFunction(self):
         """ a development assistant function, connected to a GUI button
         used to test various functions before complete GUI integration."""
@@ -781,33 +679,66 @@ class appWindow(QMainWindow):
         img_path, _ = QtWidgets.QFileDialog.getOpenFileName(None, "Open Sample Image")
         self.queue_image(img_path)
 
+    def apply_corrections(self):
+        """
+        applies postprocessing to self.raw_base based on what was learned
+        from the initial openImageFile object.
+        """
+        if self.cc_avg_white: # if a cc_avg_white value was found
+            use_camera_wb=False
+            # normalize each value by 255
+            cc_avg_white = [255/x for x in self.cc_avg_white]
+            r,g,b = cc_avg_white
+            g = g/2
+            wb = [r, g, b, g]
+            use_camera_wb=False
+        else: # otherwise use as shot values
+            use_camera_wb=True
+            wb = [1,1,1,1]
+
+        rgb_cor = self.raw_base.postprocess(demosaic_algorithm=rawpy.DemosaicAlgorithm.AHD,
+                                                  dcb_enhance = True,
+                                                  use_camera_wb=use_camera_wb,
+                                                  user_wb=wb,
+                                                  output_color=rawpy.ColorSpace.sRGB,
+                                                  output_bps=8,
+                                                  user_flip=self.flip_value,
+                                                  user_sat=None,
+                                                  auto_bright_thr=None,
+                                                  bright=1.0,
+                                                  exp_shift=None,
+                                                  chromatic_aberration= (1,1),
+                                                  exp_preserve_highlights=1.0,
+                                                  no_auto_scale=False,
+                                                  gamma=None
+                                                 )
+        self.raw_base.close()
+        self.im = rgb_cor
+
     def openImageFile(self, imgPath,
                       demosaic=rawpy.DemosaicAlgorithm.AHD):
         """ given an image path, attempts to return a numpy array image object
         """
-        #image_meta = self.metaRead.set_exif(imgPath)
-        usr_gamma = self.mainWindow.doubleSpinBox_gammaValue.value()
-        gamma_value = (usr_gamma, usr_gamma)
+        # first open an unadulterated reference version of the image
         try:  # use rawpy to convert raw to openCV
-            with rawpy.imread(imgPath) as raw:
-                wb = raw.camera_whitebalance
-                im = raw.postprocess(chromatic_aberration=(1, 1),
-                                     user_wb=wb,
-                                     demosaic_algorithm=demosaic,
-                                     gamma=gamma_value)
+            self.raw_base = rawpy.imread(imgPath)
+            im = self.raw_base.postprocess(output_color=rawpy.ColorSpace.raw,
+                                      half_size=True,
+                                      use_auto_wb=False,
+                                      user_wb=[1, 0.5, 1, 0],
+                                      no_auto_bright=True,
+                                      demosaic_algorithm=rawpy.DemosaicAlgorithm.LINEAR
+                                      )
+            #raw_base.close()
 
-        # if it is not a raw format, just try and open it.
-        except LibRawNonFatalError:
-            bgr = cv2.imread(imgPath)
-            im = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
-        except LibRawFatalError:
-            if imgPath == '':
-                raise
-            text = 'Corrupted or incompatible image file.'
-            title = 'Error opening file'
-            detail_text = f'LibRawFatalError opening: {imgPath}\nUsually this indicates a corrupted input image file.'
-            self.userNotice(text, title, detail_text)
-            raise
+        # pretty much must be a raw format image
+        except (LibRawFatalError, LibRawNonFatalError) as e:
+            if imgPath != '':
+                title = 'Error opening file'
+                text = 'Corrupted or incompatible image file.'
+                detail_text = f'LibRawError opening: {imgPath}\nUsually this indicates a corrupted or incompatible image.\n{e}'
+                self.userNotice(text, title, detail_text)
+            raise  # Pass this up to the process function for halting
         return im
 
     def testFeatureCompatability(self):
