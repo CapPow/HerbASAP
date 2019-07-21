@@ -1,5 +1,5 @@
 import tensorflow as tf
 
-converter = tf.lite.TFLiteConverter.from_keras_model_file("mlp_proposal_s.hdf5")
+converter = tf.lite.TFLiteConverter.from_keras_model_file("discriminator.hdf5")
 tflite_model = converter.convert()
-open("mlp_proposal_s.tflite", "wb").write(tflite_model)
+open("discriminator.tflite", "wb").write(tflite_model)
