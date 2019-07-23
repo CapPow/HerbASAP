@@ -49,7 +49,7 @@ class ColorchipRead:
     def __init__(self, parent=None, *args):
         super(ColorchipRead, self).__init__()
         self.parent = parent
-        self.position_model = tf.lite.Interpreter(model_path="libs/models/mlp_proposal.tflite")
+        self.position_model = tf.lite.Interpreter(model_path="libs/models/mlp_proposal_s.tflite")
         self.position_model.allocate_tensors()
         self.position_input_details = self.position_model.get_input_details()
         self.position_output_details = self.position_model.get_output_details()
@@ -298,7 +298,7 @@ class ColorchipRead:
             self.discriminator_model.set_tensor(self.discriminator_input_details[0]['index'], [highest_prob_images_pred[i]])
             self.discriminator_model.invoke()
 
-            if self.discriminator_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1] > 0.90:
+            if self.discriminator_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1] > 0.95:
                 print(f"Got {i}")
                 best_image = Image.fromarray(highest_prob_images[i])
                 best_location = highest_prob_positions[i]
