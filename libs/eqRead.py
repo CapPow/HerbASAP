@@ -51,8 +51,7 @@ class eqRead():
             for tag in exifDict[ifd]:
                 tagName = (piexif.TAGS[ifd][tag]["name"])#, exif_dict[ifd][tag])
                 #print(piexif.TAGS[ifd][tag]["name"], exifDict[ifd][tag])
-                print(tagName)
-                if tagName.lower() in ('make','model','lensmaker','lensmodel','focallength','fnumber','colorspace'):
+                if tagName.lower() in ('make','model','lensmodel','focallength','fnumber','colorspace'):
                     imgDict[tagName.lower()] = exifDict[ifd][tag]
 
         for k,v in imgDict.items():
@@ -73,7 +72,6 @@ class eqRead():
         cam = db.find_cameras(camMaker, camModel, loose_search=False)[0]
         # lookup the lens details
         lens = db.find_lenses(cam, lens=lensModel, loose_search=False)[0]
-        print(lens)
         # organize the result into a dict.
         result = {'cam':cam,
                   'lens':lens,
