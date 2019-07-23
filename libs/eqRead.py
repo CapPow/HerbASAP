@@ -61,8 +61,7 @@ class eqRead():
         #'Copyright'
         camMaker = imgDict.get('make','')
         camModel = imgDict.get('model','')
-        lensMaker = imgDict.get('lensmaker','')
-        lensModel = imgDict.get('lensmodel','')
+        lensModel = imgDict.get('lensmodel','')[0]
         focalLength = imgDict.get('focallength','')[0]
         apertureValue = imgDict.get('fnumber','')[0]
 
