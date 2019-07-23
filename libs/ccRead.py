@@ -198,7 +198,7 @@ class ColorchipRead:
                     x2, y2 = x1 + partition_size, y1 + partition_size
                     partitioned_im_hsv = im_hsv.crop((x1, y1, x2, y2))
                     extrema = partitioned_im_hsv.getextrema()
-                    if 160 < extrema[1][1]:
+                    if 150 < extrema[1][1]:
                         possible_positions.append((x1, y1, x2, y2))
                         partitioned_im = im.crop((x1, y1, x2, y2))
                         hists_rgb.append(partitioned_im.histogram())
