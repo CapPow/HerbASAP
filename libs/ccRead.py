@@ -196,11 +196,13 @@ class ColorchipRead:
                 for c in range(-over_crop, (image_width - partition_size) // stride + over_crop):
                     x1, y1 = c * stride, r * stride
                     x2, y2 = x1 + partition_size, y1 + partition_size
-                    possible_positions.append((x1, y1, x2, y2))
-                    partitioned_im = im.crop((x1, y1, x2, y2))
                     partitioned_im_hsv = im_hsv.crop((x1, y1, x2, y2))
-                    hists_rgb.append(partitioned_im.histogram())
-                    hists_hsv.append(partitioned_im_hsv.histogram())
+                    extrema = partitioned_im_hsv.getextrema()
+                    if 160 < extrema[1][1]:
+                        possible_positions.append((x1, y1, x2, y2))
+                        partitioned_im = im.crop((x1, y1, x2, y2))
+                        hists_rgb.append(partitioned_im.histogram())
+                        hists_hsv.append(partitioned_im_hsv.histogram())
 
         elif stride_style == 'quick':
             for c in range(-over_crop, (image_width - partition_size) // stride + over_crop):
@@ -282,8 +284,8 @@ class ColorchipRead:
         print(f"Region proposal took {time.time() - position_start}")
 
         position_predictions, indices = (list(t) for t in zip(*sorted(zip(position_predictions, indices))))
-        position_predictions.reverse()
-        indices.reverse()
+        # position_predictions.reverse()
+        # indices.reverse()
 
         print(max(position_predictions))
         highest_prob_images = []
