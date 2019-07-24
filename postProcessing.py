@@ -727,7 +727,7 @@ class appWindow(QMainWindow):
                                       use_auto_wb=False,
                                       user_wb=[1, 0.5, 1, 0],
                                       no_auto_bright=True,
-                                      demosaic_algorithm=rawpy.DemosaicAlgorithm.LINEAR
+                                      demosaic_algorithm=demosaic
                                       )
             #raw_base.close()
 
