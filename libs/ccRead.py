@@ -184,6 +184,8 @@ class ColorchipRead:
         """
         im = self.ocv_to_pil(im)
         im_hsv = im.convert("HSV")
+        whole_extrema = im_hsv.getextrema()
+        whole_extrema = whole_extrema[1][1]
         start = time.time()
         image_width, image_height = im.size
         original_width, original_height = original_size
@@ -198,7 +200,8 @@ class ColorchipRead:
                     x2, y2 = x1 + partition_size, y1 + partition_size
                     partitioned_im_hsv = im_hsv.crop((x1, y1, x2, y2))
                     extrema = partitioned_im_hsv.getextrema()
-                    if 150 < extrema[1][1]:
+                    extrema = extrema[1][1]
+                    if whole_extrema - 40 < extrema:
                         possible_positions.append((x1, y1, x2, y2))
                         partitioned_im = im.crop((x1, y1, x2, y2))
                         hists_rgb.append(partitioned_im.histogram())
@@ -266,8 +269,8 @@ class ColorchipRead:
         else:
             raise InvalidStride
 
-        hists_rgb = np.array(hists_rgb, dtype=np.float16) / 15625
-        hists_hsv = np.array(hists_hsv, dtype=np.float16) / 15625
+        hists_rgb = np.array(hists_rgb, dtype=np.uint16)
+        hists_hsv = np.array(hists_hsv, dtype=np.uint16)
 
         position_predictions = []
         indices = [i for i in range(len(hists_rgb))]
@@ -284,8 +287,8 @@ class ColorchipRead:
         print(f"Region proposal took {time.time() - position_start}")
 
         position_predictions, indices = (list(t) for t in zip(*sorted(zip(position_predictions, indices))))
-        # position_predictions.reverse()
-        # indices.reverse()
+        position_predictions.reverse()
+        indices.reverse()
 
         print(max(position_predictions))
         highest_prob_images = []
