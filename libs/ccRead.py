@@ -135,8 +135,8 @@ class ColorchipRead:
                 for cnt in contours:
                     cnt_len = cv2.arcLength(cnt, True)
                     cnt = cv2.approxPolyDP(cnt, 0.02 * cnt_len, True)
-                    if len(cnt) == 4 and cv2.contourArea(cnt) > 850 and cv2.contourArea(
-                            cnt) < 100000 and cv2.isContourConvex(cnt):
+                    contourArea = cv2.contourArea(cnt)
+                    if len(cnt) == 4 and contourArea > 850 and contourArea < 100000 and cv2.isContourConvex(cnt):
                         cnt = cnt.reshape(-1, 2)
                         max_cos = np.max([ColorchipRead.angle_cos(cnt[i], cnt[(i + 1) % 4], cnt[(i + 2) % 4]) for i in range(4)])
                         if max_cos < 0.1:

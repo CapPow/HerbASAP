@@ -126,9 +126,6 @@ class Boss(QThread):
             self.__thread_pool.start(eq_worker)  # start eq_worker thread
             # in this case, job_data should be None
         elif job.job_name == 'save_worker' and job.job_data is not None and job.job_function is not None:
-            wait_event = QEventLoop()
-            self.signals.clear_to_save.connect(wait_event.quit)       
-            wait_event.exec()
             save_worker = Worker(job.job_function, job.job_data.new_file_name, job.job_data.im)
             save_worker.set_worker_name('save_worker')
             save_worker.signals.started.connect(self.worker_started_handler)
