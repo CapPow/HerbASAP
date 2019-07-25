@@ -359,32 +359,35 @@ class bcRead():
         #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         # ID squares
         squares = self.find_squares(gray)
-        # iterate over each and det their midpoint intersects
-        h, w = gray.shape[0:2]
-        h -=1
-        w -=1
-        line_data = []
-        # extension happens in both directions, therefore effectively doubled.
-        extend = min(h,w) // 6
-        for square in squares:
-            a, b, c, d = square
-            ab_mid = self.det_midpoint(a, b)
-            cd_mid = self.det_midpoint(c, d)
-            x1, y1, x2, y2 = self.extend_vector(ab_mid, cd_mid, h, w, extend=extend)
-            pix_coords = self.extract_vector_coords(x1, y1, x2, y2, h, w)
-            zi = gray[pix_coords]
-            line_data.append(zi)
-    
-            da_mid = self.det_midpoint(d, a)
-            bc_mid = self.det_midpoint(b, c)
-            x1, y1, x2, y2 = self.extend_vector(da_mid, bc_mid, h, w, extend=extend)
-    
-            pix_coords = self.extract_vector_coords(x1, y1, x2, y2, h, w)
-            zi = gray[pix_coords]
-            line_data.append(zi)
-    
-        merged_lines = self.merge_proposals(line_data)
-        z = zbar_decode(merged_lines, y_density=0, x_density=1)
+        if len(squares) < 1:
+            z = zbar_decode(gray, y_density=3, x_density=3)
+        else:
+            # iterate over each and det their midpoint intersects
+            h, w = gray.shape[0:2]
+            h -=1
+            w -=1
+            line_data = []
+            # extension happens in both directions, therefore effectively doubled.
+            extend = min(h,w) // 6
+            for square in squares:
+                a, b, c, d = square
+                ab_mid = self.det_midpoint(a, b)
+                cd_mid = self.det_midpoint(c, d)
+                x1, y1, x2, y2 = self.extend_vector(ab_mid, cd_mid, h, w, extend=extend)
+                pix_coords = self.extract_vector_coords(x1, y1, x2, y2, h, w)
+                zi = gray[pix_coords]
+                line_data.append(zi)
+        
+                da_mid = self.det_midpoint(d, a)
+                bc_mid = self.det_midpoint(b, c)
+                x1, y1, x2, y2 = self.extend_vector(da_mid, bc_mid, h, w, extend=extend)
+        
+                pix_coords = self.extract_vector_coords(x1, y1, x2, y2, h, w)
+                zi = gray[pix_coords]
+                line_data.append(zi)
+        
+            merged_lines = self.merge_proposals(line_data)
+            z = zbar_decode(merged_lines, y_density=0, x_density=1)
         return z
 
     def testFeature(self, img):

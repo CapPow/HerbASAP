@@ -715,6 +715,8 @@ class appWindow(QMainWindow):
                                                   gamma=None
                                                  )
         self.raw_base.close()
+        del self.raw_base
+        self.raw_base = None  # be extra sure we free the ram
         self.im = rgb_cor
 
     def openImageFile(self, imgPath,
