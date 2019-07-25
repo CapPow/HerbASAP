@@ -39,18 +39,18 @@ class bcRead():
     """A barcode reader class
 
     Args:
-    
+
     patterns (str): A string of uncompiled, "|" concatenated regex patterns.
-    
+
     backend (str): Either "zbar" or "libdmtx", to determine which libarary 
         should be used for decoding. Default is 'zbar.'
-    
+
     rotation_list (iterable, optional): iterable containing a series of int
         representing image rotations (in degrees) to attempt if no barcode is 
         found. Default values are [9, 25, 18]. Rotation attempts stop after any
         results are found. The list's rotations are cumulative. Short or empty
         lists will decrease the time before giving up on finding a barcode.
-        
+
     Attributes:
     rePattern (obj): A compiled regex pattern
     backend (str): a string to determine which decoder was imported.
@@ -58,7 +58,7 @@ class bcRead():
     """
 
     def __init__(self, patterns, backend='zbar',
-                 rotation_list=[9,25,18], parent=None, *args):
+                 rotation_list=[9, 25, 18], parent=None, *args):
         super(bcRead, self).__init__()
         self.parent = parent
         self.compileRegexPattern(patterns)
@@ -75,7 +75,7 @@ class bcRead():
     def set_backend(self, backend='zbar'):
         """
         Sets which libarary should be used for decoding. Default is 'zbar.'
-        
+
         :param backend: string either 'zbar' or 'libdmtx' libdmtx is useful for
         datamatrix decoding.
         :type backend: str
@@ -100,64 +100,65 @@ class bcRead():
 
     def decodeBC(self, img, verifyPattern=True, return_details=False):
         """ attempts to decode barcodes from an image array object.
-        
+
         Given a np array image object (img), decodes BCs and returns those
         which match self.rePattern
-        
+
         verifies if the bcData matches the compiled rePattern.
 
         Args:
         img (numpy.ndarray): a numpy image array object
-        
-        return_details (bool, optional): default = False. Whether or not to 
+
+        return_details (bool, optional): default = False. Whether or not to
             return the barcode(s) bounding box coordinate(s) and format(s) in
             addition to the barcode value(s). Return a list of dictionaries.
-        
+
         Returns (list): a list of matched barcode value(s) found in the image.
             If return_details = True, then returns a list of dictionaries.
         """
         # the complete output from pyzbar which matches checkPattern
         backend = self.backend
         if backend == 'zbar':
-            code_reader = self.decode_zbar
+            #code_reader = self.decode_zbar
+            code_reader = self.extract_by_squares
         elif backend == 'libdmtx':
             code_reader = self.decode_libdmtx
         # decode each code found from bytes to utf-8
         bcRawData = [x.data.decode('utf-8') for x in code_reader(img)]
         if verifyPattern:  # limit the results to those matching rePattern
             bcRawData = [x for x in bcRawData if self.rePattern.match(x)]
-        rot_deg = 0  # in case we don't rotate but want the 
-        rev_mat = None  # variable to hold the reverse matrix
-        len_bc = len(bcRawData)
-        if len_bc < 1:
-            for deg in self.rotation_list:
-                rot_deg += deg
-                rotated_img, rev_mat = self.rotateImg(img, rot_deg, return_details)
-                # decode each code found from bytes to utf-8
-                bcRawData = [x.data.decode('utf-8') for x in code_reader(rotated_img)]
-                if verifyPattern:  # limit the results to those matching rePattern
-                    bcRawData = [x for x in bcRawData if self.rePattern.match(x)]
-                len_bc = len(bcRawData)
-                if len_bc > 0:
-                    break
-            else:  # if the rotation_list is exhausted, return None
-                return None
-        if return_details:
-            bcData = []
-            for result in bcRawData:
-                bcValue = result.data.decode("utf-8")
-                bcBox = result.rect
-                max_dim = max([bcBox.width, bcBox.height])
-                center = self.det_bc_center(bcBox, rev_mat)
-                bcType = result.type
-                resultDict = {'value':bcValue,
-                              'center':center,
-                              'max_dim':max_dim,
-                              'type':bcType}
-                bcData.append(resultDict)
-            return bcData
-        else:
-            return bcRawData
+        #rot_deg = 0  # in case we don't rotate but want the 
+        #rev_mat = None  # variable to hold the reverse matrix
+        #len_bc = len(bcRawData)
+        #if len_bc < 1:
+        #    for deg in self.rotation_list:
+        #        rot_deg += deg
+        #        rotated_img, rev_mat = self.rotateImg(img, rot_deg, return_details)
+        #        # decode each code found from bytes to utf-8
+        #        bcRawData = [x.data.decode('utf-8') for x in code_reader(rotated_img)]
+        #        if verifyPattern:  # limit the results to those matching rePattern
+        #            bcRawData = [x for x in bcRawData if self.rePattern.match(x)]
+        #        len_bc = len(bcRawData)
+        #        if len_bc > 0:
+        #            break
+        #    else:  # if the rotation_list is exhausted, return None
+        #        return None
+        #if return_details:
+        #    bcData = []
+        #    for result in bcRawData:
+        #        bcValue = result.data.decode("utf-8")
+        #        bcBox = result.rect
+        #        max_dim = max([bcBox.width, bcBox.height])
+        #        center = self.det_bc_center(bcBox, rev_mat)
+        #        bcType = result.type
+        #        resultDict = {'value':bcValue,
+        #                      'center':center,
+        #                      'max_dim':max_dim,
+        #                      'type':bcType}
+        #        bcData.append(resultDict)
+        #    return bcData
+        #else:
+        return bcRawData
 
     def rotateImg(self, img, angle, reversible=False):
         """ 
@@ -211,6 +212,144 @@ class bcRead():
         # otherwise convert current centerpoint using reverse matrix
         nx, ny = rev_mat.dot(np.array((px, py) + (1,))).astype(int)
         return (nx, ny)
+
+    def angle_cos(self, p0, p1, p2):
+        """
+        Utalized in find_squares, from opencv samples  
+        """
+        d1, d2 = (p0 - p1).astype('float'), (p2 - p1).astype('float')
+        return abs(np.dot(d1, d2) / np.sqrt(np.dot(d1, d1) * np.dot(d2, d2)))
+    
+    def find_squares(self, img):
+        """
+        Modified from: opencv samples, attempts to identify squares in img.
+        """
+        # Modified from: opencv samples    
+        ret,img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        img = cv2.GaussianBlur(img, (3, 3), 0)
+        img = cv2.erode(img, (5,5), iterations = 1)
+        img = cv2.dilate(img, (5,5), iterations = 1)
+        img = cv2.GaussianBlur(img, (5, 5), 0)
+        squares = []
+        for gray in cv2.split(img):  # this can probably be removed given it is always gray
+            #for thrs in range(0, 255, 6):
+            for thrs in range(0, 255, 18):
+                if thrs == 0:
+                    bin = cv2.Canny(gray, 0, 50, apertureSize=5)
+                    bin = cv2.dilate(bin, None)
+                else:
+                    _retval, bin = cv2.threshold(gray, thrs, 255, cv2.THRESH_BINARY)
+                contours, _hierarchy = cv2.findContours(bin, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+                for cnt in contours:
+                    cnt_len = cv2.arcLength(cnt, True)
+                    cnt = cv2.approxPolyDP(cnt, 0.02 * cnt_len, True)
+                    contourArea = cv2.contourArea(cnt)
+                    if len(cnt) == 4 and contourArea > 500 and contourArea < 100000 and cv2.isContourConvex(cnt):
+                        cnt = cnt.reshape(-1, 2)
+                        max_cos = np.max([self.angle_cos(cnt[i], cnt[(i + 1) % 4], cnt[(i + 2) % 4]) for i in range(4)])
+                        if max_cos < 0.2:
+                            squares.append(cnt)
+        return squares
+
+    def merge_proposals(self, images):
+        """
+        given a list of image slices, merges them vertically into one image.
+        """
+        min_pix_length = 10
+        images = [x for x in images if x.shape[0] > min_pix_length]
+        height = max(image.shape[0] for image in images) +1
+        width = len(images) + 1
+        output = np.zeros((height,width)).astype('uint8')
+        y = 0
+        for image in images:
+            h = image.shape[0] - 1
+            w = 1
+            output[0:h+1, y+w] = image
+            y += w 
+        return output
+    
+    def det_midpoint(self, p1, p2):
+        """
+        called by det_centroid_intersection()
+        """
+        return int((p1[0]+p2[0])/2), int((p1[1]+p2[1])/2)
+    
+    def det_centroid_intersection(self, square):
+        """
+        given a square contour, returns 2 vectors intersecting the midpoint.
+        """
+        a, b, c, d = square
+        ab_mid = self.det_midpoint(a, b)
+        cd_mid = self.det_midpoint(c, d)
+        da_mid = self.det_midpoint(d, a)
+        bc_mid = self.det_midpoint(b, c)
+        return ab_mid, cd_mid, da_mid, bc_mid
+    
+    def extend_vector(self, p1, p2, h, w, extend=500):
+        """
+        given 2 points of a vector, extends it an arbitrary amount not
+        exceeding a given height or width and not less than 0.
+        """
+        theta = np.arctan2(p1[1]-p2[1], p1[0]-p2[0])
+        endpt_x = max(0, min(p1[0] - extend*np.cos(theta), w))
+        endpt_y = max(0, min(p1[1] - extend*np.sin(theta), h))
+    
+        theta = np.arctan2(p2[1]-p1[1], p2[0]-p1[0])
+        startpt_x = max(0, min(p2[0] - extend*np.cos(theta), w))
+        startpt_y = max(0, min(p2[1] - extend*np.sin(theta), h))
+        return startpt_x, startpt_y, endpt_x, endpt_y
+    
+    def extract_vector_coords(self, x1, y1, x2, y2, h, w):
+        """
+        given 2 points of a vector, returns coordinates for the nearest pixels
+        traversed by that vector. 
+         
+        Modified from:
+        https://stackoverflow.com/questions/7878398/how-to-extract-an-arbitrary-line-of-values-from-a-numpy-array
+        """
+        length = int(np.hypot(x2-x1, y2-y1))-1
+        x = np.linspace(x1, x2, length)
+        x = np.rint(x).astype(int)
+        y = np.linspace(y1, y2, length)
+        y = np.rint(y).astype(int)
+        pix_coords = y, x
+        return pix_coords
+
+    def extract_by_squares(self, gray):
+        """
+        given a numpy array image attempts to identify all barcodes using
+        vector extraction.
+        """
+        #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        # ID squares
+        squares = self.find_squares(gray)
+        # iterate over each and det their midpoint intersects
+        h, w = gray.shape[0:2]
+        h -=1
+        w -=1
+        line_data = []
+        # extension happens in both directions, therefore effectively doubled.
+        extend = min(h,w) // 6
+        for square in squares:
+            a, b, c, d = square
+            ab_mid = self.det_midpoint(a, b)
+            cd_mid = self.det_midpoint(c, d)
+            x1, y1, x2, y2 = self.extend_vector(ab_mid, cd_mid, h, w, extend=extend)
+            pix_coords = self.extract_vector_coords(x1, y1, x2, y2, h, w)
+            zi = gray[pix_coords]
+            line_data.append(zi)
+    
+            da_mid = self.det_midpoint(d, a)
+            bc_mid = self.det_midpoint(b, c)
+            x1, y1, x2, y2 = self.extend_vector(da_mid, bc_mid, h, w, extend=extend)
+    
+            pix_coords = self.extract_vector_coords(x1, y1, x2, y2, h, w)
+            zi = gray[pix_coords]
+            line_data.append(zi)
+    
+        merged_lines = self.merge_proposals(line_data)
+        z = zbar_decode(merged_lines, y_density=0, x_density=1)
+        return z
 
     def testFeature(self, img):
         """Returns bool condition, if this module functions on a test input."""
