@@ -955,7 +955,8 @@ class appWindow(QMainWindow):
         targetDir = QtWidgets.QFileDialog.getExistingDirectory(
                 None, 'Select a folder:', QtCore.QDir.homePath(),
                 QtWidgets.QFileDialog.ShowDirsOnly)
-        targetField.setText(targetDir)
+        if targetDir != '':
+            targetField.setText(targetDir)
 
     def userAsk(self, text, title='', detailText=None):
         """ a general user dialog with yes / cancel options"""
