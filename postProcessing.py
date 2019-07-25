@@ -185,7 +185,7 @@ class appWindow(QMainWindow):
         # https://doc.qt.io/qt-5/qthread.html#start
         self.boss_thread.start()
         print('boss thread started')
-        
+
         # setup static UI buttons
         self.mainWindow.toolButton_removePattern.pressed.connect(self.remove_pattern)
         self.mainWindow.toolButton_addPattern.pressed.connect(self.add_pattern)
@@ -535,7 +535,7 @@ class appWindow(QMainWindow):
         except AttributeError:
             pass  # occasion where no raw images have been unpacked yet
         self.raw_base = None
-        self.bc_code = None
+        self.bc_code = []
         self.is_blurry = None  # could be helpful for 'line item warnings'
         self.cc_quadrant = None
         self.cropped_cc = None
