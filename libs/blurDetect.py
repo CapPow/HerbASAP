@@ -31,7 +31,7 @@ class blurDetect():
         super(blurDetect, self).__init__()
         self.parent = parent
 
-    def blur_check(self, img, threshold=0.008, return_details=False):
+    def blur_check(self, img, threshold=0.045, return_details=False):
         """ Given a grayscale np array image object (img)attempts to determine
         if an image array object is blurry using a normalized variance of
         Laplacian.
@@ -39,7 +39,7 @@ class blurDetect():
         Args:
         img (numpy.ndarray): a grayscale numpy image array object
 
-        threshold (float): default = 0.008. The threshold to determine if the
+        threshold (float): default = 0.045. The threshold to determine if the
         image is blury.
 
         return_details (bool, optional): default = False. Whether or not to
@@ -61,7 +61,7 @@ class blurDetect():
         #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         
         # store the variance of openCV's Laplacian operator
-        laplacian = cv2.Laplacian(img, cv2.CV_64F).var()
+        laplacian = cv2.Laplacian(img, cv2.CV_64F, ksize=3 ).var()
         # calc the image's variance, to account for 'image busyness'
         imVar = np.var(img)
         # normalize the laplacian variance by image variance

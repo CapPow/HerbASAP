@@ -2,9 +2,10 @@
 
 # Form implementation generated from reading ui file 'ui/postProcessingUI.ui'
 #
-# Created by: PyQt5 UI code generator 5.12.2
+# Created by: PyQt5 UI code generator 5.12.3
 #
 # WARNING! All changes made in this file will be lost!
+
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -275,7 +276,7 @@ class Ui_MainWindow(object):
         self.preferences_ScrollArea.setWidgetResizable(True)
         self.preferences_ScrollArea.setObjectName("preferences_ScrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, -415, 573, 1087))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, -227, 573, 1087))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
@@ -424,7 +425,7 @@ class Ui_MainWindow(object):
         self.doubleSpinBox_blurThreshold.setMinimum(0.001)
         self.doubleSpinBox_blurThreshold.setMaximum(9.99)
         self.doubleSpinBox_blurThreshold.setSingleStep(0.001)
-        self.doubleSpinBox_blurThreshold.setProperty("value", 0.008)
+        self.doubleSpinBox_blurThreshold.setProperty("value", 0.045)
         self.doubleSpinBox_blurThreshold.setObjectName("doubleSpinBox_blurThreshold")
         self.gridLayout_8.addWidget(self.doubleSpinBox_blurThreshold, 1, 1, 1, 1)
         spacerItem9 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -636,7 +637,7 @@ class Ui_MainWindow(object):
         self.label_3.setBuddy(self.label_3)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(0)
         self.comboBox_bcBackend.setCurrentIndex(1)
         self.comboBox_dupNamingPolicy.currentIndexChanged['QString'].connect(MainWindow.saveSettings)
         self.comboBox_colorCheckerPosition.currentTextChanged['QString'].connect(MainWindow.saveSettings)
@@ -809,5 +810,3 @@ class Ui_MainWindow(object):
         self.menuFolder.setTitle(_translate("MainWindow", "Folder"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
         self.menuSettings.setTitle(_translate("MainWindow", "Settings"))
-
-
