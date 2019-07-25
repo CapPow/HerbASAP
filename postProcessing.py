@@ -558,7 +558,22 @@ class appWindow(QMainWindow):
         print(f'processing: {img_path}')
         self.img_path = img_path
         file_name, self.ext = os.path.splitext(img_path)
-        self.base_file_name = os.path.basename(file_name)
+        self.base_file_name = os.path.basename(file_name)        
+        # converting to greyscale
+        grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+        if self.mainWindow.group_renameByBarcode.isChecked():
+            # retrieve the barcode values from image
+            bc_worker_data = BCWorkerData(grey)
+            bc_job = Job('bc_worker', bc_worker_data, self.bcRead.decodeBC)
+            self.boss_thread.request_job(bc_job)
+
+        if self.mainWindow.checkBox_blurDetection.isChecked():
+            # test for bluryness
+            blur_threshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
+            blur_worker_data = BlurWorkerData(grey, blur_threshold, True)
+            blur_job = Job('blur_worker', blur_worker_data, self.blurDetect.blur_check)
+            self.boss_thread.request_job(blur_job)
+        
         original_size, reduced_img = self.scale_images_with_info(im)
         # reduce the image for the cnn
         self.reduced_img = reduced_img  # storing to use as preview later
@@ -607,22 +622,6 @@ class appWindow(QMainWindow):
         self.apply_corrections()
         # pass off what was learned and properly open image.
         self.update_preview_img(self.im)
-        # process is now handed off too self.handle_pp_result()
-
-        # converting to greyscale
-        grey = cv2.cvtColor(self.im, cv2.COLOR_BGR2GRAY)
-        if self.mainWindow.group_renameByBarcode.isChecked():
-            # retrieve the barcode values from image
-            bc_worker_data = BCWorkerData(grey)
-            bc_job = Job('bc_worker', bc_worker_data, self.bcRead.decodeBC)
-            self.boss_thread.request_job(bc_job)
-
-        if self.mainWindow.checkBox_blurDetection.isChecked():
-            # test for bluryness
-            blur_threshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
-            blur_worker_data = BlurWorkerData(grey, blur_threshold, True)
-            blur_job = Job('blur_worker', blur_worker_data, self.blurDetect.blur_check)
-            self.boss_thread.request_job(blur_job)
         
         if self.mainWindow.checkBox_lensCorrection.isChecked():
             # equipment corrections
@@ -726,7 +725,7 @@ class appWindow(QMainWindow):
         try:  # use rawpy to convert raw to openCV
             self.raw_base = rawpy.imread(imgPath)
             im = self.raw_base.postprocess(output_color=rawpy.ColorSpace.raw,
-                                      half_size=True,
+                                      #half_size=True,
                                       use_auto_wb=False,
                                       user_wb=[1, 0.5, 1, 0],
                                       no_auto_bright=True,

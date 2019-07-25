@@ -1,0 +1,2 @@
+# cmd line to obtain the pyzbar fork with x/y density controls.
+(optionally sudo) pip install -e git+git://github.com/CapPow/pyzbar#egg=pyzbar
