@@ -32,27 +32,37 @@ from shutil import copyfile
 from platform import system
 
 # Modified pyzbar check
+site_packages_dir = site.getsitepackages()
+pyzbar_file = None
+pyzbar_loc = None
 try:
     if system() == 'Windows':
-        site_packages_dir = site.getsitepackages()[1]
-        pzfile = open(f"{site_packages_dir}\\pyzbar\\pyzbar.py")
+        for potential_dirs in site_packages_dir:
+            try:
+                pyzbar_file = open(f"{potential_dirs}\\pyzbar\\pyzbar.py")
+                pyzbar_loc = f"{potential_dirs}\\pyzbar\\pyzbar.py"
+            except:
+                continue
     else:
-        site_packages_dir = site.getsitepackages()[0]
-        pzfile = open(f"{site_packages_dir}/pyzbar/pyzbar.py")
+        for potential_dirs in site_packages_dir:
+            try:
+                pyzbar_file = open(f"{potential_dirs}/pyzbar/pyzbar.py")
+                pyzbar_loc = f"{potential_dirs}/pyzbar/pyzbar.py"
+            except:
+                continue
 except:
-    raise Exception("Need to install the modified pyzbar.py manually as I don't know where your pyzbar is located at.")
+    print("Need to install the modified pyzbar.py manually as I don't know where your pyzbar is located at. Program may crash.")
 
-pzfile_start = pzfile.readlines()[0]
-if pzfile_start != "# autoPostProcessing":
-    try:
-        if system() == 'Windows':
-            site_packages_dir = site.getsitepackages()[1]
-            copyfile("libs/deps/pyzbar.py", f"{site_packages_dir}\\pyzbar\\pyzbar.py")
-        else:
-            site_packages_dir = site.getsitepackages()[1]
-            copyfile("libs/deps/pyzbar.py", f"{site_packages_dir}/pyzbar/pyzbar.py")
-    except:
-        raise Exception("Need to install the modified pyzbar.py manually or run this program with sudo/admin!")
+if pyzbar_file is not None:
+    pzfile_start = pyzbar_file.readlines()[0]
+    if pzfile_start != "# autoPostProcessing":
+        try:
+            if system() == 'Windows':
+                copyfile("libs/deps/pyzbar.py", f"{pyzbar_loc}")
+            else:
+                copyfile("libs/deps/pyzbar.py", f"{pyzbar_loc}")
+        except:
+            print("Need to install the modified pyzbar.py manually or run this program with sudo/admin! Program may crash.")
 
 from pyzbar.pyzbar import decode as zbar_decode
 from pylibdmtx.pylibdmtx import decode as libdmtx_decode
