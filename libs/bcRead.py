@@ -27,6 +27,32 @@ import cv2
 from math import cos as math_cos
 from math import sin as math_sin
 from math import radians
+import site
+from shutil import copyfile
+from platform import system
+
+# Modified pyzbar check
+try:
+    if system() == 'Windows':
+        site_packages_dir = site.getsitepackages()[1]
+        pzfile = open(f"{site_packages_dir}\\pyzbar\\pyzbar.py")
+    else:
+        site_packages_dir = site.getsitepackages()[0]
+        pzfile = open(f"{site_packages_dir}/pyzbar/pyzbar.py")
+except:
+    raise Exception("Need to install the modified pyzbar.py manually as I don't know where your pyzbar is located at.")
+
+pzfile_start = pzfile.readlines()[0]
+if pzfile_start != "# autoPostProcessing":
+    try:
+        if system() == 'Windows':
+            site_packages_dir = site.getsitepackages()[1]
+            copyfile("libs/deps/pyzbar.py", f"{site_packages_dir}\\pyzbar\\pyzbar.py")
+        else:
+            site_packages_dir = site.getsitepackages()[1]
+            copyfile("libs/deps/pyzbar.py", f"{site_packages_dir}/pyzbar/pyzbar.py")
+    except:
+        raise Exception("Need to install the modified pyzbar.py manually or run this program with sudo/admin!")
 
 from pyzbar.pyzbar import decode as zbar_decode
 from pylibdmtx.pylibdmtx import decode as libdmtx_decode
