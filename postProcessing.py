@@ -632,7 +632,10 @@ class appWindow(QMainWindow):
             eq_job = Job('eq_worker', eq_worker_data, self.eqRead.lensCorrect)
             self.boss_thread.request_job(eq_job)
             # equipment corrections should set self.im
-        if self.bc_code:
+        wait_event = QEventLoop()
+        self.boss_thread.signals.clear_to_save.connect(wait_event.quit)
+        wait_event.exec()
+        if len(self.bc_code) > 0:
             names = self.bc_code
         else:  # name based on base_file_name
             names = [self.base_file_name]
