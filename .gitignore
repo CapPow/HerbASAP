@@ -12,3 +12,5 @@ ui/__pycache__/
 # local environment directory
 env/
 .idea/
+
+\.vscode/

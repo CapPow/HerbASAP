@@ -49,7 +49,7 @@ class ColorchipRead:
     def __init__(self, parent=None, *args):
         super(ColorchipRead, self).__init__()
         self.parent = parent
-        self.position_model = tf.lite.Interpreter(model_path="libs/models/mlp_proposal_s.tflite")
+        self.position_model = tf.lite.Interpreter(model_path="libs/models/mlp_proposal.tflite")
         self.position_model.allocate_tensors()
         self.position_input_details = self.position_model.get_input_details()
         self.position_output_details = self.position_model.get_output_details()
