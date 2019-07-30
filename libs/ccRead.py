@@ -306,26 +306,25 @@ class ColorchipRead:
         position_predictions = []
         position_start = time.time()
 
-        if full_tf == True:
-            position_prediction, position_uncertainty = self._position_with_uncertainty([hists_rgb, hists_hsv], 10)
+        if full_tf:
+            position_prediction, position_uncertainty = self._position_with_uncertainty([hists_rgb, hists_hsv], 3)
 
             only_cc_position_uncertainty = position_uncertainty[0][:, 1]
             only_cc_position_prediction = position_prediction[0][:, 1]
 
             indices = [index for index in range(len(only_cc_position_prediction))]
-            position_predictions, position_uncertainty, indices = (list(t) for t in zip(*sorted(zip(only_cc_position_uncertainty, only_cc_position_prediction, indices))))
-            # position_predictions.reverse()
-            # position_uncertainty.reverse()
-            # indices.reverse()
+            position_uncertainty, position_predictions, indices = (list(t) for t in zip(*sorted(zip(only_cc_position_uncertainty, only_cc_position_prediction, indices))))
+            print(len(indices))
 
             max_pred = max(position_predictions)
-            for _i in range(len(position_predictions)):
-                if position_predictions[_i] < max_pred - 1:
-                    del position_predictions[_i]
-                    del position_uncertainty[_i]
-                    del indices[_i]
-
-            print(position_predictions[0], position_predictions[-1], position_uncertainty[0], position_uncertainty[-1])
+            for _j in range(len(position_predictions)):
+                try:
+                    if position_predictions[_j] < (max_pred - 0.01):
+                        del position_predictions[_j]
+                        del position_uncertainty[_j]
+                        del indices[_j]
+                except IndexError:
+                    break
 
         else:
             indices = [i for i in range(len(hists_rgb))]
@@ -349,8 +348,8 @@ class ColorchipRead:
         highest_prob_positions = []
         for i in indices:
             # im.crop(possible_positions[indices[i]]).show()
-            highest_prob_images.append(np.array(im.crop(possible_positions[indices[i]])))
-            highest_prob_positions.append(possible_positions[indices[i]])
+            highest_prob_images.append(np.array(im.crop(possible_positions[i])))
+            highest_prob_positions.append(possible_positions[i])
 
         highest_prob_images_pred = np.array(highest_prob_images, dtype=np.float32) / 255
         for i in range(len(highest_prob_images)):
