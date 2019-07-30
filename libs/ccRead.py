@@ -18,12 +18,9 @@ from PIL import Image
 import cv2
 import time
 import tensorflow as tf
-try:
-    from tensorflow.keras.models import load_model
-    from tensorflow.keras import backend as K
-except:
-    from keras.models import load_model
-    import keras.backend as K
+from tensorflow.keras.models import load_model
+from tensorflow.keras import backend as K
+
                 
 print(f"[INFO] Using TensorFlow Lite models. Precision may be worse due to lack of variance calculations.")
 
@@ -144,7 +141,7 @@ class ColorchipRead:
     @staticmethod
     def find_squares(img):
         # taken from: opencv samples
-        img = cv2.GaussianBlur(img, (5, 5), 0)
+        img = cv2.GaussianBlur(img, (7, 7), 0)
         squares = []
         for gray in cv2.split(img):
             for thrs in range(0, 255, 6):
@@ -204,13 +201,7 @@ class ColorchipRead:
         :return: Returns a tuple containing the bounding box (x1, y1, x2, y2) and the cropped image of the colorchip.
         :rtype: tuple
         """
-        if full_tf == True:
-            try:
-                from tensorflow.keras.models import load_model
-                from tensorflow.keras import backend as K
-            except:
-                from keras.models import load_model
-                import keras.backend as K
+        
 
 
         im = self.ocv_to_pil(im)
@@ -380,9 +371,9 @@ class ColorchipRead:
                     x_arr = cnt[..., 0]
                     y_arr = cnt[..., 1]
                     x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
-                    diff = (y2 - y1) + (x2 - x1)
+                    diff = (y2 - y1) * (x2 - x1)
 
-                    if highest_diff < diff < 245:
+                    if highest_diff < diff < 14400:
                         highest_diff = diff
                         biggest_square = (x1, y1, x2, y2)
 
