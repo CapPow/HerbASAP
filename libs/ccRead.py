@@ -18,6 +18,13 @@ from PIL import Image
 import cv2
 import time
 import tensorflow as tf
+try:
+    from tensorflow.keras.models import load_model
+    from tensorflow.keras import backend as K
+except:
+    from keras.models import load_model
+    import keras.backend as K
+                
 print(f"[INFO] Using TensorFlow Lite models. Precision may be worse due to lack of variance calculations.")
 
 
@@ -54,6 +61,10 @@ class ColorchipRead:
         self.position_input_details = self.position_model.get_input_details()
         self.position_output_details = self.position_model.get_output_details()
 
+        self.K_position_model = load_model("libs/models/mlp_proposal_k.hdf5")
+        self.position_function = K.function([self.K_position_model.layers[0].input, self.K_position_model.layers[1].input, K.learning_phase()],
+        [self.K_position_model.layers[-1].output])
+
         self.discriminator_model = tf.lite.Interpreter(model_path="libs/models/discriminator.tflite")
         self.discriminator_model.allocate_tensors()
         self.discriminator_input_details = self.discriminator_model.get_input_details()
@@ -77,6 +88,17 @@ class ColorchipRead:
         pil_image = np.array(im)
         pil_image = Image.fromarray(pil_image)
         return pil_image
+
+    def _position_with_uncertainty(self, x, n_iter=10):
+        result = []
+
+        for i in range(n_iter):
+            result.append(self.position_function([x[0], x[1], 1]))
+
+        result = np.array(result)
+        uncertainty = result.var(axis=0)
+        prediction = result.mean(axis=0)
+        return prediction, uncertainty
 
     def process_colorchip_big(self, im):
         """
@@ -145,7 +167,7 @@ class ColorchipRead:
 
     def process_colorchip_small(self, im, original_size, stride_style='quick',
                                 stride=25, partition_size=125,
-                                over_crop=0, high_precision=False):
+                                over_crop=0, high_precision=False, full_tf=True):
         """
         Finds small colorchips using the quickCC model. This model is specifically trained on tiny colorchips found in
         many herbarium collections. If the colorchip is similar in size to those, and is in the same proportion to the
@@ -182,6 +204,15 @@ class ColorchipRead:
         :return: Returns a tuple containing the bounding box (x1, y1, x2, y2) and the cropped image of the colorchip.
         :rtype: tuple
         """
+        if full_tf == True:
+            try:
+                from tensorflow.keras.models import load_model
+                from tensorflow.keras import backend as K
+            except:
+                from keras.models import load_model
+                import keras.backend as K
+
+
         im = self.ocv_to_pil(im)
         im_hsv = im.convert("HSV")
         whole_extrema = im_hsv.getextrema()
@@ -273,22 +304,45 @@ class ColorchipRead:
         hists_hsv = np.array(hists_hsv, dtype=np.uint16)
 
         position_predictions = []
-        indices = [i for i in range(len(hists_rgb))]
         position_start = time.time()
-        for i in range(len(hists_rgb)):
-            try:
-                self.position_model.set_tensor(self.position_input_details[0]['index'], [hists_rgb[i]])
-                self.position_model.set_tensor(self.position_input_details[1]['index'], [hists_hsv[i]])
-                self.position_model.invoke()
-                # outputs.append(self.position_model.get_tensor(self.position_output_details[0]['index']))
-                position_predictions.append(self.position_model.get_tensor(self.position_output_details[0]['index'])[0][0])
-            except:
-                position_predictions.append(np.array([[1, 0]], dtype=np.float32).tolist())
-        print(f"Region proposal took {time.time() - position_start}")
 
-        position_predictions, indices = (list(t) for t in zip(*sorted(zip(position_predictions, indices))))
-        position_predictions.reverse()
-        indices.reverse()
+        if full_tf == True:
+            position_prediction, position_uncertainty = self._position_with_uncertainty([hists_rgb, hists_hsv], 10)
+
+            only_cc_position_uncertainty = position_uncertainty[0][:, 1]
+            only_cc_position_prediction = position_prediction[0][:, 1]
+
+            indices = [index for index in range(len(only_cc_position_prediction))]
+            position_predictions, position_uncertainty, indices = (list(t) for t in zip(*sorted(zip(only_cc_position_uncertainty, only_cc_position_prediction, indices))))
+            # position_predictions.reverse()
+            # position_uncertainty.reverse()
+            # indices.reverse()
+
+            max_pred = max(position_predictions)
+            for _i in range(len(position_predictions)):
+                if position_predictions[_i] < max_pred - 1:
+                    del position_predictions[_i]
+                    del position_uncertainty[_i]
+                    del indices[_i]
+
+            print(position_predictions[0], position_predictions[-1], position_uncertainty[0], position_uncertainty[-1])
+
+        else:
+            indices = [i for i in range(len(hists_rgb))]
+            for i in range(len(hists_rgb)):
+                try:
+                    self.position_model.set_tensor(self.position_input_details[0]['index'], [hists_rgb[i]])
+                    self.position_model.set_tensor(self.position_input_details[1]['index'], [hists_hsv[i]])
+                    self.position_model.invoke()
+                    # outputs.append(self.position_model.get_tensor(self.position_output_details[0]['index']))
+                    position_predictions.append(self.position_model.get_tensor(self.position_output_details[0]['index'])[0][0])
+                except:
+                    position_predictions.append(np.array([[1, 0]], dtype=np.float32).tolist())
+            print(f"Region proposal took {time.time() - position_start}")
+
+            position_predictions, indices = (list(t) for t in zip(*sorted(zip(position_predictions, indices))))
+            position_predictions.reverse()
+            indices.reverse()
 
         print(max(position_predictions))
         highest_prob_images = []
