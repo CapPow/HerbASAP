@@ -61,16 +61,19 @@ class ColorchipRead:
         self.K_position_model = load_model("libs/models/mlp_proposal_k.hdf5")
         self.position_function = K.function([self.K_position_model.layers[0].input, self.K_position_model.layers[1].input, K.learning_phase()],
         [self.K_position_model.layers[-1].output])
-
+        
         self.discriminator_model = tf.lite.Interpreter(model_path="libs/models/discriminator.tflite")
         self.discriminator_model.allocate_tensors()
         self.discriminator_input_details = self.discriminator_model.get_input_details()
         self.discriminator_output_details = self.discriminator_model.get_output_details()
 
-        self.large_colorchip_regressor_model = tf.lite.Interpreter(model_path="libs/models/lcc_regressor.tflite")
+        self.large_colorchip_regressor_model = tf.lite.Interpreter(model_path="libs/models/discriminator.tflite")
         self.large_colorchip_regressor_model.allocate_tensors()
         self.large_colorchip_input_details = self.large_colorchip_regressor_model.get_input_details()
         self.large_colorchip_output_details = self.large_colorchip_regressor_model.get_output_details()
+
+        self.large_colorchip_regressor_model_k = load_model("libs/models/lcc_regressor.hdf5")
+
 
     def ocv_to_pil(self, im):
         """
@@ -97,7 +100,7 @@ class ColorchipRead:
         prediction = result.mean(axis=0)
         return prediction, uncertainty
 
-    def process_colorchip_big(self, im):
+    def process_colorchip_big(self, im, full_tf=True):
         """
         Processes big colorchips using a minimally-modified Google MobileNetV2 neural network model. The model predicts
         the bounding box within a shrunken 256x256 image. Most large colorchips should be accurately predicted, as long
@@ -114,12 +117,13 @@ class ColorchipRead:
         resized_im = im.resize((256, 256))
         im_np = np.array(resized_im) / 255
 
-        self.large_colorchip_regressor_model.set_tensor(self.large_colorchip_input_details[0]['index'], np.array([im_np]))
-        self.large_colorchip_regressor_model.invoke()
-
-        print(self.large_colorchip_input_details[0])
-        crop_vals = self.large_colorchip_regressor_model.get_tensor(self.large_colorchip_regressor_model[0]['index'])[0]
-
+        if full_tf:
+            crop_vals = self.large_colorchip_regressor_model.predict(np.array([im_np]))[0]
+        else:
+            self.large_colorchip_regressor_model.set_tensor(self.large_colorchip_input_details[0]['index'], np.array([im_np]))
+            self.large_colorchip_regressor_model.invoke()
+            crop_vals = self.large_colorchip_regressor_model.get_tensor(self.large_colorchip_regressor_model[0]['index']) [0]
+        
         prop_crop_vals = np.array(crop_vals) / 256
         prop_x1, prop_y1, prop_x2, prop_y2 = prop_crop_vals[0], prop_crop_vals[1], prop_crop_vals[2], prop_crop_vals[3]
         scaled_x1, scaled_x2 = prop_x1 * original_image_width, prop_x2 * original_image_width
