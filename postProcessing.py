@@ -399,13 +399,6 @@ class appWindow(QMainWindow):
         if not result:
             userDialog = BcDialog()
             result = [userDialog.ask_for_bc()]
-#            self.bc_code = None
-#            self.bc_code = result
-#            notice_title = 'No Barcode Warning'
-#            notice_text = f'Warning, No Barcode found!'
-#            detail_text = f'No barcode found in image named: {self.img_path}'
-#            self.userNotice(notice_text, notice_title, detail_text)
-            # todo, have user entry option here return and store as result
         self.bc_code = result
         self.mainWindow.label_barcodes.setText(', '.join(result))
 
@@ -425,7 +418,6 @@ class appWindow(QMainWindow):
         pass
         #if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
             #if boss_signal_data.signal_data is str:
-
 
     def handle_boss_finished(self, boss_signal_data):
         pass
@@ -490,10 +482,10 @@ class appWindow(QMainWindow):
 
         if image_width > image_height:
             reduced_im = cv2.resize(im, (largest_dim, round((largest_dim / image_width) * image_height)),
-                                    interpolation=cv2.INTER_AREA)
+                                    interpolation=cv2.INTER_NEAREST)
         else:
             reduced_im = cv2.resize(im, (round((largest_dim / image_height) * image_width), largest_dim),
-                                    interpolation=cv2.INTER_AREA)
+                                    interpolation=cv2.INTER_NEAREST)
         return (image_width, image_height), reduced_im
 
     def queue_image(self, imgPath):
