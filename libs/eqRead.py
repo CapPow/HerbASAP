@@ -32,6 +32,8 @@ class eqRead():
     def __init__(self, parent=None, *args):
         super(eqRead, self).__init__()
         self.parent = parent
+        self.undist_coords = None
+        self.equip_list = None
         try:  # prefer to use system db
             self.db = lensfunpy.Database()
         except XMLFormatError:
@@ -83,17 +85,19 @@ class eqRead():
                 del result[k]
         
         return result
-    
-    #def transPlantMetaData
-    def lensCorrect(self, im, imgPath, focalDistance=0.255):
-        """ Attempts to perform lens corrections using origional image metadata.
-            im = an opened image object,
-            imgPath = the origional file object (for metadata extraction)"""
 
+    def setMod(self, equip, height, width, focalDistance=0.255):
+        """
+         Create the lensfunpy modifier
+        imgPath = the origional file object (for metadata extraction)
+        """
         # extract the equipment details. Returned as dict (equip).
-        equip = self.detImagingEquipment(imgPath)
+
+        cam = equip.get('cam','')
+        lens = equip.get('lens','')
+        equip_list = [cam, lens]
+        self.equip_list = equip_list
         # setup equipment variables
-        height, width, rgb = im.shape
         mod = lensfunpy.Modifier(equip['lens'],
                                  equip['cam'].crop_factor,
                                  width,
@@ -103,15 +107,29 @@ class eqRead():
                        equip['apertureValue'],
                        focalDistance,
                        flags=lensfunpy.ModifyFlags.ALL)
-        # generate pixel map
-        undist_coords = mod.apply_subpixel_geometry_distortion()        
+        self.undist_coords = mod.apply_subpixel_geometry_distortion()      
+
+    #def transPlantMetaData
+    def lensCorrect(self, im, imgPath, focalDistance=0.255):
+        """ Attempts to perform lens corrections using origional image metadata.
+            im = an opened image object"""
+
+        height, width, rgb = im.shape
+        equip = self.detImagingEquipment(imgPath)
+        cam = equip.get('cam','')
+        lens = equip.get('lens','')
+        equip_list = [cam, lens]
+        if equip_list != self.equip_list:
+            # if the image equipment is different than the previous images
+            # generate a new pixel map
+            self.setMod(equip, height, width, focalDistance)
         r = im[..., 0]
         # see for swapaxes: https://github.com/letmaik/lensfunpy/issues/17
         g = im[..., 1].swapaxes(0,1)
         b = im[..., 2]
-        r_undistorted = cv2.remap(r, undist_coords[..., 0], None, cv2.INTER_LANCZOS4)
-        g_undistorted = cv2.remap(g, undist_coords[..., 1], None, cv2.INTER_LANCZOS4)
-        b_undistorted = cv2.remap(b, undist_coords[..., 2], None, cv2.INTER_LANCZOS4)
+        r_undistorted = cv2.remap(r, self.undist_coords[..., 0], None, cv2.INTER_LANCZOS4)
+        g_undistorted = cv2.remap(g, self.undist_coords[..., 1], None, cv2.INTER_LANCZOS4)
+        b_undistorted = cv2.remap(b, self.undist_coords[..., 2], None, cv2.INTER_LANCZOS4)
         # save the channel maps back to the image.
         im[..., 0] = r_undistorted
         im[..., 1] = g_undistorted
