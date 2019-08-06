@@ -655,7 +655,7 @@ class appWindow(QMainWindow):
         hpercent = (width/float(w))
         height = int((float(h)*float(hpercent)))
         size = (width, height)
-        im = cv2.resize(im, size, interpolation=cv2.INTER_LINEAR)
+        im = cv2.resize(im, size, interpolation=cv2.INTER_NEAREST)
         bytesPerLine = 3 * width
         qImg = QtGui.QImage(im, width, height, bytesPerLine, QtGui.QImage.Format_RGB888)  #.rgbSwapped()
         pixmap = QtGui.QPixmap.fromImage(qImg)
