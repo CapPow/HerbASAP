@@ -168,7 +168,7 @@ class ColorchipRead:
 
     def process_colorchip_small(self, im, original_size, stride_style='quick',
                                 stride=25, partition_size=125,
-                                over_crop=0, high_precision=False, full_tf=True):
+                                over_crop=0, hard_cut_value=50, high_precision=False, full_tf=True):
         """
         Finds small colorchips using the quickCC model. This model is specifically trained on tiny colorchips found in
         many herbarium collections. If the colorchip is similar in size to those, and is in the same proportion to the
@@ -227,7 +227,7 @@ class ColorchipRead:
                     partitioned_im_hsv = im_hsv.crop((x1, y1, x2, y2))
                     extrema = partitioned_im_hsv.getextrema()
                     extrema = extrema[1][1]
-                    if whole_extrema - 40 < extrema:
+                    if whole_extrema - hard_cut_value < extrema:
                         possible_positions.append((x1, y1, x2, y2))
                         partitioned_im = im.crop((x1, y1, x2, y2))
                         hists_rgb.append(partitioned_im.histogram())
