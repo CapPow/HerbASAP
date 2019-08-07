@@ -258,33 +258,30 @@ class bcRead():
     
     def find_squares(self, img):
         """
-        Modified from: opencv samples, attempts to identify squares in img.
+        Heavily modified from opencv samples, attempts to identify squares
+        in an img.
         """
-        # Modified from: opencv samples    
         ret,img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-        img = cv2.GaussianBlur(img, (3, 3), 0)
-        img = cv2.erode(img, (5,5), iterations = 1)
-        img = cv2.dilate(img, (5,5), iterations = 1)
-        img = cv2.GaussianBlur(img, (5, 5), 0)
+        img = cv2.GaussianBlur(img, (3, 3), 3)
+        img = cv2.erode(img, None)
+        img = cv2.dilate(img, None)
         squares = []
-        for gray in cv2.split(img):  # this can probably be removed given it is always gray
-            #for thrs in range(0, 255, 6):
-            for thrs in range(0, 255, 18):
-                if thrs == 0:
-                    bin = cv2.Canny(gray, 0, 50, apertureSize=5)
-                    bin = cv2.dilate(bin, None)
-                else:
-                    _retval, bin = cv2.threshold(gray, thrs, 255, cv2.THRESH_BINARY)
-                contours, _hierarchy = cv2.findContours(bin, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-                for cnt in contours:
-                    cnt_len = cv2.arcLength(cnt, True)
-                    cnt = cv2.approxPolyDP(cnt, 0.02 * cnt_len, True)
-                    contourArea = cv2.contourArea(cnt)
-                    if len(cnt) == 4 and contourArea > 500 and contourArea < 100000 and cv2.isContourConvex(cnt):
-                        cnt = cnt.reshape(-1, 2)
-                        max_cos = np.max([self.angle_cos(cnt[i], cnt[(i + 1) % 4], cnt[(i + 2) % 4]) for i in range(4)])
-                        if max_cos < 0.2:
-                            squares.append(cnt)
+        for thrs in range(0, 255, 51):
+            if thrs == 0:
+                bin = cv2.Canny(img, 0, 50, apertureSize=5)
+                bin = cv2.dilate(bin, None)
+            else:
+                _retval, bin = cv2.threshold(img, thrs, 255, cv2.THRESH_BINARY)
+            contours, _hierarchy = cv2.findContours(bin, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+            for cnt in contours:
+                cnt_len = cv2.arcLength(cnt, True)
+                cnt = cv2.approxPolyDP(cnt, 0.02 * cnt_len, True)
+                contourArea = cv2.contourArea(cnt)
+                if len(cnt) == 4 and contourArea > 10 and contourArea < 10000 and cv2.isContourConvex(cnt):
+                    cnt = cnt.reshape(-1, 2)
+                    max_cos = np.max([self.angle_cos(cnt[i], cnt[(i + 1) % 4], cnt[(i + 2) % 4]) for i in range(4)])
+                    if max_cos < 0.1 :
+                        squares.append(cnt)
         return squares
 
     def merge_proposals(self, images):
@@ -343,7 +340,7 @@ class bcRead():
         Modified from:
         https://stackoverflow.com/questions/7878398/how-to-extract-an-arbitrary-line-of-values-from-a-numpy-array
         """
-        length = int(np.hypot(x2-x1, y2-y1))-1
+        length = int(np.hypot(x2-x1, y2-y1))
         x = np.linspace(x1, x2, length)
         x = np.rint(x).astype(int)
         y = np.linspace(y1, y2, length)
