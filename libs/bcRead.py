@@ -256,6 +256,14 @@ class bcRead():
         d1, d2 = (p0 - p1).astype('float'), (p2 - p1).astype('float')
         return abs(np.dot(d1, d2) / np.sqrt(np.dot(d1, d1) * np.dot(d2, d2)))
     
+    def adjust_gamma(self, image, gamma=1.0):
+        #from https://www.pyimagesearch.com/2015/10/05/opencv-gamma-correction/
+        invGamma = 1.0 / gamma
+        table = np.array([((i / 255.0) ** invGamma) * 255
+                          for i in np.arange(0, 256)]).astype("uint8")
+        # apply gamma correction using the lookup table
+        return cv2.LUT(image, table)
+
     def find_squares(self, img):
         """
         Heavily modified from opencv samples, attempts to identify squares
@@ -277,7 +285,7 @@ class bcRead():
                 cnt_len = cv2.arcLength(cnt, True)
                 cnt = cv2.approxPolyDP(cnt, 0.02 * cnt_len, True)
                 contourArea = cv2.contourArea(cnt)
-                if len(cnt) == 4 and contourArea > 10 and contourArea < 10000 and cv2.isContourConvex(cnt):
+                if len(cnt) == 4 and contourArea > 25 and contourArea < 10000 and cv2.isContourConvex(cnt):
                     cnt = cnt.reshape(-1, 2)
                     max_cos = np.max([self.angle_cos(cnt[i], cnt[(i + 1) % 4], cnt[(i + 2) % 4]) for i in range(4)])
                     if max_cos < 0.1 :
@@ -348,12 +356,11 @@ class bcRead():
         pix_coords = y, x
         return pix_coords
 
-    def extract_by_squares(self, gray):
+    def extract_by_squares(self, gray, retry=True):
         """
         given a numpy array image attempts to identify all barcodes using
         vector extraction.
         """
-        #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         # ID squares
         squares = self.find_squares(gray)
         if len(squares) < 1:
@@ -384,7 +391,13 @@ class bcRead():
                 line_data.append(zi)
         
             merged_lines = self.merge_proposals(line_data)
+            merged_lines_shape = merged_lines.shape
+            #print(f'merged_lines shape = {merged_lines_shape}')
             z = zbar_decode(merged_lines, y_density=0, x_density=1)
+            if len(z) < 1 & retry:
+                # if it failed, try once more after darkening it a lot
+                gray = self.adjust_gamma(gray, 0.4)
+                return self.extract_by_squares(gray, retry=False)
         return z
 
     def testFeature(self, img):
