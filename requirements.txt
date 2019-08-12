@@ -7,10 +7,11 @@ pathtools==0.1.2
 piexif==1.1.2
 Pillow==6.0.0
 protobuf==3.8.0
-PyQt5==5.10
-PyQt5-sip==4.19.15
+PyQt5==5.12.3
+PyQt5-sip==4.19.18
 PyYAML==5.1.1
 pyzbar==0.1.8
+pylibdmtx==0.1.9
 rawpy==0.13.1
 sip==4.19.8
 six==1.12.0
