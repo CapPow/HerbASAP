@@ -21,9 +21,6 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras import backend as K
 
-                
-print(f"[INFO] Using TensorFlow Lite models. Precision may be worse due to lack of variance calculations.")
-
 
 class ColorChipError(Exception):
     def __init__(self, msg='ColorChipError', *args, **kwargs):
@@ -143,12 +140,12 @@ class ColorchipRead:
         return abs(np.dot(d1, d2) / np.sqrt(np.dot(d1, d1) * np.dot(d2, d2)))
 
     @staticmethod
-    def find_squares(img):
+    def find_squares(img, contour_area_floor=850, contour_area_ceiling=100000, leap=6):
         # taken from: opencv samples
         img = cv2.GaussianBlur(img, (7, 7), 0)
         squares = []
         for gray in cv2.split(img):
-            for thrs in range(0, 255, 6):
+            for thrs in range(0, 255, leap):
                 if thrs == 0:
                     bin = cv2.Canny(gray, 0, 50, apertureSize=3)
                     bin = cv2.dilate(bin, None)
@@ -159,62 +156,18 @@ class ColorchipRead:
                     cnt_len = cv2.arcLength(cnt, True)
                     cnt = cv2.approxPolyDP(cnt, 0.02 * cnt_len, True)
                     contourArea = cv2.contourArea(cnt)
-                    if len(cnt) == 4 and contourArea > 850 and contourArea < 100000 and cv2.isContourConvex(cnt):
+                    if len(cnt) == 4 and contour_area_floor < contourArea < contour_area_ceiling \
+                            and cv2.isContourConvex(cnt):
                         cnt = cnt.reshape(-1, 2)
-                        max_cos = np.max([ColorchipRead.angle_cos(cnt[i], cnt[(i + 1) % 4], cnt[(i + 2) % 4]) for i in range(4)])
+                        max_cos = np.max([ColorchipRead.angle_cos(cnt[i], cnt[(i + 1) % 4], cnt[(i + 2) % 4])
+                                          for i in range(4)])
                         if max_cos < 0.1:
                             squares.append(cnt)
         return squares
 
-    def process_colorchip_small(self, im, original_size, stride_style='quick',
-                                stride=25, partition_size=125,
-                                over_crop=0, hard_cut_value=50, high_precision=False, full_tf=True):
-        """
-        Finds small colorchips using the quickCC model. This model is specifically trained on tiny colorchips found in
-        many herbarium collections. If the colorchip is similar in size to those, and is in the same proportion to the
-        image, the model should be able to find it.
-
-        :param im: The image containing the small colorchip.
-        :type im: PIL.Image
-        :param original_size: The original size of the image as a tuple containing (width, height). This is used for
-        calculating the final bounding box respective to the original size of the image.
-        :type original_size: tuple
-        :param stride_style: A string that denotes the stride style, either "whole", "quick", or "ultraquick". In
-        whole, the neural network will look at the entirety of the image. Quick will look at only the outside borders
-        of the image, and therefore is appropriate for collections wherein the colorchip is found in the outside
-        border. Ultraquick will only look at the four outer corners of the image. Using quicker stride styles heavily
-        decrease the amount of processing time.
-        :type stride_style: str
-        :param stride: The amount of pixels the sliding window will move. In general, lower values will allow more
-        accurate predictions, but at the cost of significantly higher computation time. If you find that your
-        colorchips are mis-cropped, lower this value.
-        :type stride: int
-        :param partition_size: The partition size of the sliding window. If your colorchip is slightly large (relative
-        to other collections), increase this value. If it is slightly too small (relative to other collections)
-        decrease this value.
-        :type partition_size: int
-        :param buffer_size: The amount of partition images to be processed by the classifier network. A higher value
-        will increase accuracy (if the proposal network did not correctly determine the colorchip) but also increase
-        computation time.
-        :type buffer_size: int
-        :param over_crop: The amount of pixels the sliding window will go past the original image dimensions. Helpful
-        if your colorchips are cropped at the end of the image.
-        :type over_crop: int
-        :param high_precision: [INFO] Will be changed soon, must rewrite docs for this parameter.
-        :type high_precision: bool
-        :return: Returns a tuple containing the bounding box (x1, y1, x2, y2) and the cropped image of the colorchip.
-        :rtype: tuple
-        """
-        
-
-
-        im = self.ocv_to_pil(im)
-        im_hsv = im.convert("HSV")
-        whole_extrema = im_hsv.getextrema()
-        whole_extrema = whole_extrema[1][1]
-        start = time.time()
-        image_width, image_height = im.size
-        original_width, original_height = original_size
+    @staticmethod
+    def _legacy_regions(im, im_hsv, image_width, image_height, whole_extrema, stride_style='quick', stride=25,
+                        partition_size=125, over_crop=0, hard_cut_value=50):
         possible_positions = []
         hists_rgb = []
         hists_hsv = []
@@ -295,6 +248,100 @@ class ColorchipRead:
         else:
             raise InvalidStride
 
+        return hists_rgb, hists_hsv, possible_positions
+
+    def _square_first_regions(self):
+        pass
+
+    def process_colorchip_small(self, im, original_size, stride_style='quick',
+                                stride=25, partition_size=125,
+                                over_crop=0, hard_cut_value=50, high_precision=False, full_tf=True):
+        """
+        Finds small colorchips using the quickCC model. This model is specifically trained on tiny colorchips found in
+        many herbarium collections. If the colorchip is similar in size to those, and is in the same proportion to the
+        image, the model should be able to find it.
+
+        :param im: The image containing the small colorchip.
+        :type im: PIL.Image
+        :param original_size: The original size of the image as a tuple containing (width, height). This is used for
+        calculating the final bounding box respective to the original size of the image.
+        :type original_size: tuple
+        :param stride_style: A string that denotes the stride style, either "whole", "quick", or "ultraquick". In
+        whole, the neural network will look at the entirety of the image. Quick will look at only the outside borders
+        of the image, and therefore is appropriate for collections wherein the colorchip is found in the outside
+        border. Ultraquick will only look at the four outer corners of the image. Using quicker stride styles heavily
+        decrease the amount of processing time.
+        :type stride_style: str
+        :param stride: The amount of pixels the sliding window will move. In general, lower values will allow more
+        accurate predictions, but at the cost of significantly higher computation time. If you find that your
+        colorchips are mis-cropped, lower this value.
+        :type stride: int
+        :param partition_size: The partition size of the sliding window. If your colorchip is slightly large (relative
+        to other collections), increase this value. If it is slightly too small (relative to other collections)
+        decrease this value.
+        :type partition_size: int
+        :param buffer_size: The amount of partition images to be processed by the classifier network. A higher value
+        will increase accuracy (if the proposal network did not correctly determine the colorchip) but also increase
+        computation time.
+        :type buffer_size: int
+        :param over_crop: The amount of pixels the sliding window will go past the original image dimensions. Helpful
+        if your colorchips are cropped at the end of the image.
+        :type over_crop: int
+        :param high_precision: [INFO] Will be changed soon, must rewrite docs for this parameter.
+        :type high_precision: bool
+        :return: Returns a tuple containing the bounding box (x1, y1, x2, y2) and the cropped image of the colorchip.
+        :rtype: tuple
+        """
+
+        nim = im
+        im = self.ocv_to_pil(im)
+        im_hsv = im.convert("HSV")
+        whole_extrema = im_hsv.getextrema()
+        whole_extrema = whole_extrema[1][1]
+        start = time.time()
+        image_width, image_height = im.size
+        original_width, original_height = original_size
+
+        cv_image = cv2.cvtColor(nim, cv2.COLOR_BGR2HSV)
+
+        squares = self.find_squares(cv_image, contour_area_floor=5000, contour_area_ceiling=54000, leap=51)
+        squares = np.array(squares)
+
+        part_im = []
+        possible_positions = []
+        for square in squares:
+            M = cv2.moments(square)
+            cX = int(M["m10"] / M["m00"])
+            cY = int(M["m01"] / M["m00"])
+
+            location = (cX - 62, cY - 62, cX + 63, cY + 63)
+            part_image = im.crop(location)
+            extrema = part_image.convert("HSV").getextrema()
+            extrema = extrema[1][1]
+            if whole_extrema - hard_cut_value < extrema:
+                part_im.append(part_image)
+                possible_positions.append(location)
+
+        if len(part_im) != 0:
+            inference_type = 'find_squares'
+            hists_rgb = []
+            hists_hsv = []
+            for im in part_im:
+                im_hsv = im.convert("HSV")
+                hists_rgb.append(im.histogram())
+                hists_hsv.append(im_hsv.histogram())
+
+        else:
+            inference_type = 'legacy'
+            hists_rgb, hists_hsv, possible_positions = self._legacy_regions(im=im, im_hsv=im_hsv,
+                                                                            image_width=image_width,
+                                                                            image_height=image_height,
+                                                                            whole_extrema=whole_extrema,
+                                                                            stride_style=stride_style, stride=stride,
+                                                                            partition_size=partition_size,
+                                                                            over_crop=over_crop,
+                                                                            hard_cut_value=hard_cut_value)
+
         hists_rgb = np.array(hists_rgb, dtype=np.uint16)
         hists_hsv = np.array(hists_hsv, dtype=np.uint16)
 
@@ -308,8 +355,8 @@ class ColorchipRead:
             only_cc_position_prediction = position_prediction[0][:, 1]
 
             indices = [index for index in range(len(only_cc_position_prediction))]
-            position_uncertainty, position_predictions, indices = (list(t) for t in zip(*sorted(zip(only_cc_position_uncertainty, only_cc_position_prediction, indices))))
-            print(len(indices))
+            position_uncertainty, position_predictions, indices = \
+                (list(t) for t in zip(*sorted(zip(only_cc_position_uncertainty, only_cc_position_prediction, indices))))
 
             max_pred = max(position_predictions)
             for _j in range(len(position_predictions)):
@@ -338,26 +385,35 @@ class ColorchipRead:
             position_predictions.reverse()
             indices.reverse()
 
-        print(max(position_predictions))
         highest_prob_images = []
         highest_prob_positions = []
-        for i in indices:
-            # im.crop(possible_positions[indices[i]]).show()
-            highest_prob_images.append(np.array(im.crop(possible_positions[i])))
-            highest_prob_positions.append(possible_positions[i])
+
+        if inference_type == 'find_squares':
+            highest_prob_images = [np.array(part_im[k]) for k in indices]
+            highest_prob_positions = [possible_positions[k] for k in indices]
+        else:
+            for i in indices:
+                # im.crop(possible_positions[indices[i]]).show()
+                highest_prob_images.append(np.array(im.crop(possible_positions[i])))
+                highest_prob_positions.append(possible_positions[i])
 
         highest_prob_images_pred = np.array(highest_prob_images, dtype=np.float32) / 255
-        for i in range(len(highest_prob_images)):
-            self.discriminator_model.set_tensor(self.discriminator_input_details[0]['index'], [highest_prob_images_pred[i]])
-            self.discriminator_model.invoke()
 
-            if self.discriminator_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1] > 0.95:
-                print(f"Got {i}")
-                best_image = Image.fromarray(highest_prob_images[i])
-                best_location = highest_prob_positions[i]
-                break
+        if inference_type == 'find_squares':
+            best_image = Image.fromarray(highest_prob_images[0])
+            best_location = highest_prob_positions[0]
         else:
-            raise DiscriminatorFailed
+            for i in range(len(highest_prob_images)):
+                self.discriminator_model.set_tensor(self.discriminator_input_details[0]['index'], [highest_prob_images_pred[i]])
+                self.discriminator_model.invoke()
+
+                if self.discriminator_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1] > 0.95:
+                    print(f"Discriminator took {i} predictions before finding the colorchip.")
+                    best_image = Image.fromarray(highest_prob_images[i])
+                    best_location = highest_prob_positions[i]
+                    break
+            else:
+                raise DiscriminatorFailed
 
         hpstart = time.time()
         try:
@@ -397,7 +453,7 @@ class ColorchipRead:
                                                      prop_y2 * original_height
 
         end = time.time()
-        print(f"Color chip cropping took: {end - start} seconds.")
+        print(f"Color chip cropping took: {end - start} seconds using {inference_type} proposal.")
         best_image = np.array(best_image, dtype=np.uint8)
         cc_crop_time = round(end - start, 3)
         return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image, cc_crop_time
