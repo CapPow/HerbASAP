@@ -420,23 +420,22 @@ class ColorchipRead:
             if high_precision:
                 np_best_image = np.array(best_image)
                 cv_best_image = cv2.cvtColor(np_best_image, cv2.COLOR_RGB2HSV)
-
-                squares = ColorchipRead.find_squares(cv_best_image)
-                squares = np.array(squares)
-
-                biggest_square = None
-                highest_diff = 0
-                for contour in squares:
-                    cnt = np.array(contour)
-                    x_arr = cnt[..., 0]
-                    y_arr = cnt[..., 1]
-                    x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
-                    diff = (y2 - y1) * (x2 - x1)
-
-                    if highest_diff < diff < 14400:
-                        highest_diff = diff
-                        biggest_square = (x1, y1, x2, y2)
-
+                # determine a a min / max based on partition_size
+                partition_area = partition_size * partition_size
+                min_crop_area = partition_area // 10
+                max_crop_area = partition_area // 1.15
+                # identify squares in the crop
+                squares = ColorchipRead.find_squares(cv_best_image,
+                                                     contour_area_floor=min_crop_area,
+                                                     contour_area_ceiling=max_crop_area)
+                
+                # identify the largest area among contours
+                biggest_square = max(squares, key = cv2.contourArea)
+                # convert contour into a PIL friendly format
+                x_arr = biggest_square[..., 0]
+                y_arr = biggest_square[..., 1]
+                x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
+                biggest_square = (x1, y1, x2, y2)
                 best_image = best_image.crop(biggest_square)
                 x1, y1, x2, y2 = best_location[0] + biggest_square[0], best_location[1] + biggest_square[1], best_location[2] + biggest_square[0], best_location[3] + biggest_square[1]
             else:
@@ -490,16 +489,14 @@ class ColorchipRead:
     @staticmethod
     def predict_color_chip_whitevals(cropped_cc):
         """
-        Takes the white values within the cropped CC image and averages them in RGB. The whitest values in the image is
-        determined in the L*a*b color space, wherein only lightness values higher than (max lightness value - 1) is
-        considered
+        Takes a cropped CC image and determines the average RGB values of the 
+        whitest portion.
 
         :param cropped_cc: The cropped color chip image
         :type cropped_cc: Image
         :return: Returns a list of the averaged whitest values
         :rtype: list
         """
-        # get min/max points & values using green channel
         grayImg = cv2.cvtColor(cropped_cc, cv2.COLOR_RGB2GRAY) #convert to gray
         minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(grayImg)
         # determine an allowable range for the floodfill
