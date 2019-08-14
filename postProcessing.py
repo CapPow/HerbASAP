@@ -47,6 +47,7 @@ import numpy as np
 from ui.postProcessingUI import Ui_MainWindow
 from ui.imageDialogUI import Ui_Dialog_image
 from ui.noBcDialogUI import Ui_Dialog_noBc
+from ui import assets_rc
 from libs.bcRead import bcRead
 from libs.eqRead import eqRead
 from libs.blurDetect import blurDetect
@@ -251,7 +252,7 @@ class appWindow(QMainWindow):
         self.folder_watcher = Folder_Watcher(lineEdit_inputPath, raw_image_patterns)
         self.folder_watcher.emitter.new_image_signal.connect(self.queue_image)
         self.mainWindow.pushButton_toggleMonitoring.clicked.connect(self.toggle_folder_monitoring)
-        
+
     def toggle_folder_monitoring(self):
         pushButton = self.mainWindow.pushButton_toggleMonitoring
         if self.folder_watcher.is_monitoring:
@@ -325,44 +326,81 @@ class appWindow(QMainWindow):
         :type meta_data: dict
         """
         im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
+        # reset recently_produced_images
+        self.recently_produced_images = [orig_img_path]
         output_map = self.output_map
-        # todo pass these off to boss_worker
-        # for each bc_value or file name passed in
-        for bc in im_base_names:
-            # breakout output_map into a list of tuples containing (ext, path)
-            # '.raw': (group_keepUnalteredRaw, lineEdit_pathUnalteredRaw)
-            to_save = [(x,y[1]) for x, y in output_map.items() if y[0]]
-            # store how many save_jobs are expected to global variable
-            self.working_save_jobs = self.working_save_jobs
-            if self.working_save_jobs < 1:  # condition when no outputs saved
-                self.handle_save_result('')
-            #  '.jpg':(group_saveProcessedJpg, lineEdit_pathProcessedJpg),
-            for ext, path in to_save:
-                # not sure of slick way to avoid checking ext twice
-                if ext == '.raw':
-                    ext = orig_im_ext
-                fileQty = len(glob.glob(f'{path}//{bc}*{ext}'))
-                if fileQty > 0:
-                    new_file_suffix = self.suffix_lookup(fileQty)
-                    new_file_base_name = f'{bc}{new_file_suffix}'
-                    new_file_name = f'{path}//{new_file_base_name}{ext}'
-                else:
-                    new_file_name = f'{path}//{bc}{ext}'
-                if ext == orig_im_ext:
-                    # if it is a raw move just perform it
-                    try:
-                        shutil_move(orig_img_path, new_file_name)
-                    except FileNotFoundError:
-                        # condition when multiple bcs try to move > once.
-                        pass
-                    #  treat this process as if it was passed to boss_worker
-                    self.handle_save_result('')
-                else:
-                    # if it a cv2 save function pass it to boss_worker
-                    save_worker_data = SaveWorkerData(new_file_name, im)
-                    save_job = Job('save_worker', save_worker_data, cv2.imwrite)
-                    self.boss_thread.request_job(save_job)
-                    #cv2.imwrite(new_file_name,im)
+
+        # breakout output_map into a list of tuples containing (ext, path)
+        to_save = [(x,y[1]) for x, y in output_map.items() if y[0]]
+        # store how many save_jobs are expected to global variable
+        self.working_save_jobs = len(im_base_names) * len(to_save)
+        if self.working_save_jobs < 1:  # condition when no outputs saved
+            #  treat this process as if it was passed to boss_worker
+            self.handle_save_result(orig_img_path)
+        else:
+            # for each bc_value or file name passed in...
+            for bc in im_base_names:
+                for ext, path in to_save:
+                    # not sure of slick way to avoid checking ext twice
+                    if ext == '.raw':
+                        ext = orig_im_ext
+                    fileQty = len(glob.glob(f'{path}//{bc}*{ext}'))
+                    if fileQty > 0:
+                        new_file_suffix = self.suffix_lookup(fileQty)
+                        new_file_base_name = f'{bc}{new_file_suffix}'
+                        new_file_name = f'{path}//{new_file_base_name}{ext}'
+                    else:
+                        new_file_name = f'{path}//{bc}{ext}'
+                    if ext == orig_im_ext:
+                        # if it is a raw move just perform it
+                        try:
+                            shutil_move(orig_img_path, new_file_name)
+                            #  treat this process as if it was passed to boss_worker
+                            self.handle_save_result(new_file_name)
+                        except FileNotFoundError:
+                            #  treat this process as if it was passed to boss_worker
+                            self.handle_save_result(False)
+                            # condition when multiple bcs try to move > once.
+                            pass
+                    else:
+                        # if it a cv2 save function pass it to boss_worker
+                        save_worker_data = SaveWorkerData(new_file_name, im)
+                        save_job = Job('save_worker', save_worker_data, self._cv2_save)
+                        self.boss_thread.request_job(save_job)
+
+    def _cv2_save(self, new_file_name, im):
+        """
+        cv2.imwrite helper, returns the path if it succeeds, otherwise false.
+        Exists so that self.handle_save_result recieves filepath if save_job in
+        save_output_images is properly executed. This is necessary to build the
+        "self.recently_produced_images" list used in self.delete_previous_image
+        This could be cleaner, but it'll take a lot of reworking boss_worker.
+        """
+        if cv2.imwrite(new_file_name, im):
+            return new_file_name
+        else:
+            return False
+
+    def delete_previous_image(self):
+        """
+        called by pushButton_delPreviousImage, will remove the raw input image
+        and ALL derived images.
+        """
+        text = "PERMANENTLY DELETE the most recently captured image AND any images derived from it?"
+        title = "DELETE Last Image?"
+        # generate a textual, newline seperated list of items to be removed.
+        fileList = '\n' + '\n'.join(self.recently_produced_images)
+        detailText = f'This will permanently the following files:{fileList}'
+        user_agree = self.userAsk(text, title, detailText)
+        if user_agree:
+            for imgPath in self.recently_produced_images:
+                if os.path.isfile(imgPath):  # does it exist?
+                    os.remove(imgPath)  #  if so, remove the file
+                    print(f'removed {imgPath}')
+            # here we should probably deactivate the del button &  draw some
+            # graphical indication that this image (and derivates) are gone
+            # maybe just reset image preview & stats?
+            self.recently_produced_images = []
 
     def handle_blur_result(self, result):
         is_blurry = result['isblurry']
@@ -376,13 +414,15 @@ class appWindow(QMainWindow):
             self.userNotice(notice_text, notice_title, detail_text)
         self.is_blurry = is_blurry
         self.mainWindow.label_isBlurry.setText(str(is_blurry))
-        self.mainWindow.label_laplacian.setText(str(round(result['laplacian'], 3)))
-        self.mainWindow.label_imvar.setText(str(round(result['imVar'], 3)))
         self.mainWindow.label_lapnorm.setText(str(round(result['lapNorm'], 3)))
 
     def handle_save_result(self, result):
         """ called when the the save_worker finishes up """
-        # tick off one working_save_job 
+        # if result is a path to a new file...
+        if result:
+            # Add that path to the class variable storing the most recent products.
+            self.recently_produced_images.append(result)
+        # tick off one working_save_job
         self.working_save_jobs -= 1
         # if we're down to 0 then wrap up
         if self.working_save_jobs < 1:
@@ -1124,8 +1164,6 @@ class appWindow(QMainWindow):
         self.mainWindow.doubleSpinBox_focalDistance.setValue(doubleSpinBox_focalDistance)
         doubleSpinBox_blurThreshold = float(self.get('doubleSpinBox_blurThreshold', 0.008))
         self.mainWindow.doubleSpinBox_blurThreshold.setValue(doubleSpinBox_blurThreshold)
-        doubleSpinBox_gammaValue = float(self.get('doubleSpinBox_gammaValue', 2.20))
-        self.mainWindow.doubleSpinBox_gammaValue.setValue(doubleSpinBox_gammaValue)
 
         # slider
         #value_LogoScaling = int(self.get('value_LogoScaling', 100))
@@ -1257,8 +1295,6 @@ class appWindow(QMainWindow):
         self.settings.setValue('doubleSpinBox_focalDistance', doubleSpinBox_focalDistance)
         doubleSpinBox_blurThreshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
         self.settings.setValue('doubleSpinBox_blurThreshold', doubleSpinBox_blurThreshold)
-        doubleSpinBox_gammaValue = self.mainWindow.doubleSpinBox_gammaValue.value()
-        self.settings.setValue('doubleSpinBox_gammaValue', doubleSpinBox_gammaValue)
 
         # slider
         #value_LogoScaling = self.mainWindow.value_LogoScaling.value()

@@ -1,6 +1,8 @@
 ## Various commands to rebuild the UI classes after making changes in QT Designer.
 
-pyrcc5 -o Resources_rc.py ui/resources/Resources.qrc
-pyuic5 -o ui/postProcessingUI.py ui/postProcessingUI.ui
+### build main app form importing resource file from ui folder
+pyuic5 -o ui/postProcessingUI.py --import-from . ui/postProcessingUI.ui
+### generate resource file inside ui folder
+pyrcc5 -o ui/assets_rc.py ui/assets/assets.qrc
 pyuic5 -o ui/imageDialog.py ui/imageDialogUI.ui
 pyuic5 -o ui/noBcDialogUI.py ui/noBcDialogUI.ui

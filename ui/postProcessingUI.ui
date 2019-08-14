@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
+ <author>Caleb Powell</author>
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
   <property name="geometry">
@@ -7,7 +8,7 @@
     <x>0</x>
     <y>0</y>
     <width>632</width>
-    <height>606</height>
+    <height>642</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -67,7 +68,7 @@
          </layout>
         </item>
         <item row="1" column="0">
-         <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,1">
+         <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="0,1">
           <item>
            <widget class="QFrame" name="frame_diagnostics">
             <property name="frameShape">
@@ -110,7 +111,7 @@
                 </font>
                </property>
                <property name="text">
-                <string>process time</string>
+                <string/>
                </property>
               </widget>
              </item>
@@ -137,25 +138,11 @@
              <item row="3" column="1">
               <widget class="QLabel" name="label_barcodes">
                <property name="text">
-                <string>barcode(s)</string>
+                <string/>
                </property>
               </widget>
              </item>
              <item row="4" column="0">
-              <widget class="QLabel" name="label_27">
-               <property name="text">
-                <string># Rotations:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="1">
-              <widget class="QLabel" name="label_rotations">
-               <property name="text">
-                <string>bc rotations</string>
-               </property>
-              </widget>
-             </item>
-             <item row="5" column="0">
               <spacer name="verticalSpacer">
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
@@ -168,7 +155,7 @@
                </property>
               </spacer>
              </item>
-             <item row="6" column="0">
+             <item row="5" column="0">
               <widget class="QLabel" name="label_18">
                <property name="text">
                 <string>Is blurry:</string>
@@ -178,48 +165,14 @@
                </property>
               </widget>
              </item>
-             <item row="6" column="1">
+             <item row="5" column="1">
               <widget class="QLabel" name="label_isBlurry">
                <property name="text">
-                <string>is blurry t/f</string>
+                <string/>
                </property>
               </widget>
              </item>
-             <item row="7" column="0">
-              <widget class="QLabel" name="label_16">
-               <property name="text">
-                <string>Laplacian coef:</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="7" column="1">
-              <widget class="QLabel" name="label_laplacian">
-               <property name="text">
-                <string>laplacian val</string>
-               </property>
-              </widget>
-             </item>
-             <item row="8" column="0">
-              <widget class="QLabel" name="label_19">
-               <property name="text">
-                <string>Image variance:</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="8" column="1">
-              <widget class="QLabel" name="label_imvar">
-               <property name="text">
-                <string>img var</string>
-               </property>
-              </widget>
-             </item>
-             <item row="9" column="0">
+             <item row="6" column="0">
               <widget class="QLabel" name="label_21">
                <property name="text">
                 <string>Norm. Laplacian:</string>
@@ -229,14 +182,14 @@
                </property>
               </widget>
              </item>
-             <item row="9" column="1">
+             <item row="6" column="1">
               <widget class="QLabel" name="label_lapnorm">
                <property name="text">
-                <string>norm lap</string>
+                <string/>
                </property>
               </widget>
              </item>
-             <item row="10" column="0">
+             <item row="7" column="0">
               <spacer name="verticalSpacer_3">
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
@@ -249,7 +202,7 @@
                </property>
               </spacer>
              </item>
-             <item row="10" column="1">
+             <item row="7" column="1">
               <widget class="QLabel" name="label_17">
                <property name="enabled">
                 <bool>false</bool>
@@ -268,21 +221,21 @@
                </property>
               </widget>
              </item>
-             <item row="11" column="0">
+             <item row="8" column="0">
               <widget class="QLabel" name="label_24">
                <property name="text">
                 <string>CC runtime:</string>
                </property>
               </widget>
              </item>
-             <item row="11" column="1">
+             <item row="8" column="1">
               <widget class="QLabel" name="label_runtime">
                <property name="text">
-                <string>cc runtime</string>
+                <string/>
                </property>
               </widget>
              </item>
-             <item row="12" column="0">
+             <item row="9" column="0">
               <widget class="QLabel" name="label_26">
                <property name="text">
                 <string>CC quadrant:</string>
@@ -292,35 +245,28 @@
                </property>
               </widget>
              </item>
-             <item row="12" column="1">
+             <item row="9" column="1">
               <widget class="QLabel" name="label_quad">
                <property name="text">
-                <string>CC quad</string>
+                <string/>
                </property>
               </widget>
              </item>
-             <item row="13" column="0">
+             <item row="10" column="0">
               <widget class="QLabel" name="label_20">
                <property name="text">
                 <string>CC white rgb:</string>
                </property>
               </widget>
              </item>
-             <item row="13" column="1">
+             <item row="10" column="1">
               <widget class="QLabel" name="label_whitergb">
                <property name="text">
-                <string>[000],[000],[000]</string>
+                <string/>
                </property>
               </widget>
              </item>
-             <item row="14" column="0">
-              <widget class="QLabel" name="label_23">
-               <property name="text">
-                <string>Color checker:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="14" column="1">
+             <item row="11" column="1">
               <widget class="QLabel" name="label_cc_image">
                <property name="minimumSize">
                 <size>
@@ -336,18 +282,36 @@
                </property>
               </widget>
              </item>
-             <item row="15" column="0">
-              <spacer name="verticalSpacer_6">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
+             <item row="12" column="0" colspan="2">
+              <layout class="QHBoxLayout" name="horizontalLayout_7">
+               <item>
+                <spacer name="horizontalSpacer_8">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pushButton_delPreviousImage">
+                 <property name="autoFillBackground">
+                  <bool>false</bool>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="assets/assets.qrc">
+                   <normaloff>:/icon/trash-2.svg</normaloff>:/icon/trash-2.svg</iconset>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </widget>
@@ -385,7 +349,7 @@
              <x>0</x>
              <y>0</y>
              <width>598</width>
-             <height>472</height>
+             <height>513</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -614,9 +578,9 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>-227</y>
+               <y>0</y>
                <width>573</width>
-               <height>1087</height>
+               <height>1019</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -1247,57 +1211,6 @@
                </widget>
               </item>
               <item>
-               <widget class="QGroupBox" name="groupBox_gammaCorrection">
-                <property name="title">
-                 <string>Gamma correction</string>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_9">
-                 <item row="0" column="1">
-                  <widget class="QDoubleSpinBox" name="doubleSpinBox_gammaValue">
-                   <property name="focusPolicy">
-                    <enum>Qt::ClickFocus</enum>
-                   </property>
-                   <property name="minimum">
-                    <double>0.010000000000000</double>
-                   </property>
-                   <property name="maximum">
-                    <double>3.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.100000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>2.200000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_14">
-                   <property name="text">
-                    <string>Gamma value:</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="2">
-                  <spacer name="horizontalSpacer_8">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
                <widget class="QGroupBox" name="group_metaDataApplication">
                 <property name="enabled">
                  <bool>true</bool>
@@ -1547,7 +1460,6 @@
   <tabstop>group_verifyRotation</tabstop>
   <tabstop>checkBox_performWhiteBalance</tabstop>
   <tabstop>group_equipmentDetection</tabstop>
-  <tabstop>group_metaDataApplication</tabstop>
   <tabstop>plainTextEdit_collectionName</tabstop>
   <tabstop>pushButton_toggleMonitoring</tabstop>
   <tabstop>plainTextEdit_copywriteLicense</tabstop>
@@ -1557,7 +1469,9 @@
   <tabstop>plainTextEdit_contactName</tabstop>
   <tabstop>plainTextEdit_collectionURL</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="assets/assets.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>comboBox_dupNamingPolicy</sender>
@@ -1646,8 +1560,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>254</x>
-     <y>802</y>
+     <x>283</x>
+     <y>754</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -1663,7 +1577,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>530</x>
-     <y>829</y>
+     <y>810</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -1679,7 +1593,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>530</x>
-     <y>885</y>
+     <y>866</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -1695,7 +1609,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>530</x>
-     <y>941</y>
+     <y>922</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -1711,7 +1625,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>530</x>
-     <y>997</y>
+     <y>978</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -1727,7 +1641,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>530</x>
-     <y>1053</y>
+     <y>1034</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -1854,8 +1768,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>201</x>
-     <y>434</y>
+     <x>273</x>
+     <y>463</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -1870,8 +1784,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>201</x>
-     <y>527</y>
+     <x>273</x>
+     <y>563</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -1935,7 +1849,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>600</x>
-     <y>434</y>
+     <y>463</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -1951,7 +1865,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>600</x>
-     <y>527</y>
+     <y>563</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2046,8 +1960,8 @@
    <slot>testFunction()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>123</x>
-     <y>527</y>
+     <x>134</x>
+     <y>563</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2175,7 +2089,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>584</x>
-     <y>1121</y>
+     <y>1080</y>
     </hint>
     <hint type="destinationlabel">
      <x>604</x>
@@ -2200,18 +2114,18 @@
    </hints>
   </connection>
   <connection>
-   <sender>doubleSpinBox_gammaValue</sender>
-   <signal>editingFinished()</signal>
+   <sender>pushButton_delPreviousImage</sender>
+   <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
+   <slot>delete_previous_image()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>194</x>
-     <y>734</y>
+     <x>241</x>
+     <y>492</y>
     </hint>
     <hint type="destinationlabel">
-     <x>3</x>
-     <y>436</y>
+     <x>628</x>
+     <y>504</y>
     </hint>
    </hints>
   </connection>
@@ -2224,5 +2138,6 @@
   <slot>testFunction()</slot>
   <slot>updateEqSettings()</slot>
   <slot>reset_all_settings()</slot>
+  <slot>delete_previous_image()</slot>
  </slots>
 </ui>
