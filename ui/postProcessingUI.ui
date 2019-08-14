@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>632</width>
-    <height>642</height>
+    <width>685</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,19 +29,12 @@
         <string>Auto Post Processing</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_16">
-        <item row="2" column="0" colspan="2">
-         <widget class="QPushButton" name="pushButton_testFunction">
-          <property name="text">
-           <string>testFunction</string>
-          </property>
-         </widget>
-        </item>
         <item row="3" column="0" colspan="2">
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
-           <widget class="QPushButton" name="pushButton_close">
+           <widget class="QPushButton" name="pushButton_toggleMonitoring">
             <property name="text">
-             <string>Close</string>
+             <string>Begin Monitoring Folder</string>
             </property>
            </widget>
           </item>
@@ -59,9 +52,59 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_toggleMonitoring">
+           <widget class="QPushButton" name="pushButton_processMulti">
             <property name="text">
-             <string>Begin Monitoring Folder</string>
+             <string>Process Directory</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_12">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_processSingle">
+            <property name="text">
+             <string>   Process Image   </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_8">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QToolButton" name="toolButton_delPreviousImage">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="assets/assets.qrc">
+              <normaloff>:/icon/trash-2.svg</normaloff>:/icon/trash-2.svg</iconset>
             </property>
            </widget>
           </item>
@@ -70,261 +113,415 @@
         <item row="1" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="0,1">
           <item>
-           <widget class="QFrame" name="frame_diagnostics">
-            <property name="frameShape">
-             <enum>QFrame::StyledPanel</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-            <layout class="QFormLayout" name="formLayout">
-             <property name="labelAlignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_35">
-               <property name="text">
-                <string>Process time:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLabel" name="label_processtime">
-               <property name="font">
-                <font>
-                 <pointsize>16</pointsize>
-                 <weight>75</weight>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <spacer name="verticalSpacer_4">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="label_22">
-               <property name="text">
-                <string>Barcodes:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QLabel" name="label_barcodes">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="0">
-              <spacer name="verticalSpacer">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="5" column="0">
-              <widget class="QLabel" name="label_18">
-               <property name="text">
-                <string>Is blurry:</string>
-               </property>
-               <property name="alignment">
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <widget class="QGroupBox" name="gridGroupBox_sessionRates">
+              <property name="title">
+               <string>Save Session Rates</string>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+              <layout class="QFormLayout" name="formLayout_sessionData">
+               <property name="labelAlignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
-              </widget>
-             </item>
-             <item row="5" column="1">
-              <widget class="QLabel" name="label_isBlurry">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="6" column="0">
-              <widget class="QLabel" name="label_21">
-               <property name="text">
-                <string>Norm. Laplacian:</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="6" column="1">
-              <widget class="QLabel" name="label_lapnorm">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="7" column="0">
-              <spacer name="verticalSpacer_3">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="7" column="1">
-              <widget class="QLabel" name="label_17">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="font">
-                <font>
-                 <pointsize>10</pointsize>
-                 <italic>true</italic>
-                </font>
-               </property>
-               <property name="text">
-                <string>(higher is better)</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-               </property>
-              </widget>
-             </item>
-             <item row="8" column="0">
-              <widget class="QLabel" name="label_24">
-               <property name="text">
-                <string>CC runtime:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="8" column="1">
-              <widget class="QLabel" name="label_runtime">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="9" column="0">
-              <widget class="QLabel" name="label_26">
-               <property name="text">
-                <string>CC quadrant:</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="9" column="1">
-              <widget class="QLabel" name="label_quad">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="10" column="0">
-              <widget class="QLabel" name="label_20">
-               <property name="text">
-                <string>CC white rgb:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="10" column="1">
-              <widget class="QLabel" name="label_whitergb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="11" column="1">
-              <widget class="QLabel" name="label_cc_image">
-               <property name="minimumSize">
-                <size>
-                 <width>125</width>
-                 <height>125</height>
-                </size>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="12" column="0" colspan="2">
-              <layout class="QHBoxLayout" name="horizontalLayout_7">
-               <item>
-                <spacer name="horizontalSpacer_8">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item>
-                <widget class="QToolButton" name="toolButton_delPreviousImage">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="autoFillBackground">
-                  <bool>false</bool>
-                 </property>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_14">
                  <property name="text">
-                  <string/>
+                  <string>Technician:</string>
                  </property>
-                 <property name="icon">
-                  <iconset resource="assets/assets.qrc">
-                   <normaloff>:/icon/trash-2.svg</normaloff>:/icon/trash-2.svg</iconset>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <layout class="QHBoxLayout" name="horizontalLayout_6">
+                 <property name="spacing">
+                  <number>6</number>
+                 </property>
+                 <item>
+                  <widget class="QComboBox" name="comboBox_technician"/>
+                 </item>
+                 <item>
+                  <widget class="QToolButton" name="toolButton_editTechnicians">
+                   <property name="text">
+                    <string>...</string>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="assets/assets.qrc">
+                     <normaloff>:/icon/edit.svg</normaloff>:/icon/edit.svg</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="2" column="0" colspan="2">
+                <layout class="QGridLayout" name="gridLayout_20">
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_runTime">
+                   <property name="font">
+                    <font>
+                     <pointsize>15</pointsize>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>00:00</string>
+                   </property>
+                   <property name="scaledContents">
+                    <bool>true</bool>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                   <property name="textInteractionFlags">
+                    <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="2">
+                  <widget class="QLabel" name="label_rate">
+                   <property name="font">
+                    <font>
+                     <pointsize>15</pointsize>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>0.00 / min</string>
+                   </property>
+                   <property name="scaledContents">
+                    <bool>true</bool>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                   <property name="textInteractionFlags">
+                    <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QLabel" name="label_imgCount">
+                   <property name="font">
+                    <font>
+                     <pointsize>15</pointsize>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>0000</string>
+                   </property>
+                   <property name="scaledContents">
+                    <bool>true</bool>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                   <property name="textInteractionFlags">
+                    <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_29">
+                   <property name="text">
+                    <string>Session Time</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QLabel" name="label_31">
+                   <property name="text">
+                    <string>Image Count</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QLabel" name="label_32">
+                   <property name="text">
+                    <string>Rate</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="formGroupBox_sessionMetadata">
+              <property name="title">
+               <string>Apply Session Metadata</string>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+              <layout class="QFormLayout" name="formLayout_metaData">
+               <property name="labelAlignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_19">
+                 <property name="text">
+                  <string>Collector:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QLineEdit" name="lineEdit_collectorName"/>
+               </item>
+               <item row="1" column="1">
+                <widget class="QLineEdit" name="lineEdit_taxonName"/>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_16">
+                 <property name="text">
+                  <string>Taxon:</string>
                  </property>
                 </widget>
                </item>
               </layout>
-             </item>
-             <item row="0" column="0">
-              <spacer name="verticalSpacer_5">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QFrame" name="frame_diagnostics">
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QFormLayout" name="formLayout">
+               <property name="labelAlignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </widget>
+               <item row="0" column="0">
+                <spacer name="verticalSpacer_5">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_35">
+                 <property name="text">
+                  <string>Process time:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QLabel" name="label_processtime">
+                 <property name="font">
+                  <font>
+                   <pointsize>16</pointsize>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <spacer name="verticalSpacer_4">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_22">
+                 <property name="text">
+                  <string>Barcodes:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QLabel" name="label_barcodes">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <spacer name="verticalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="label_18">
+                 <property name="text">
+                  <string>Is blurry:</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="1">
+                <widget class="QLabel" name="label_isBlurry">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_21">
+                 <property name="text">
+                  <string>Norm. Laplacian:</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="1">
+                <widget class="QLabel" name="label_lapnorm">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="1">
+                <widget class="QLabel" name="label_17">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>10</pointsize>
+                   <italic>true</italic>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>(higher is better)</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLabel" name="label_24">
+                 <property name="text">
+                  <string>CC runtime:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="1">
+                <widget class="QLabel" name="label_runtime">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0">
+                <widget class="QLabel" name="label_26">
+                 <property name="text">
+                  <string>CC quadrant:</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="1">
+                <widget class="QLabel" name="label_quad">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="0">
+                <widget class="QLabel" name="label_20">
+                 <property name="text">
+                  <string>CC white rgb:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="1">
+                <widget class="QLabel" name="label_whitergb">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="1">
+                <widget class="QLabel" name="label_cc_image">
+                 <property name="minimumSize">
+                  <size>
+                   <width>75</width>
+                   <height>75</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
           </item>
           <item>
            <widget class="QLabel" name="label_imPreview">
             <property name="minimumSize">
              <size>
-              <width>300</width>
-              <height>0</height>
+              <width>1</width>
+              <height>1</height>
              </size>
             </property>
             <property name="font">
@@ -336,6 +533,9 @@
             </property>
             <property name="text">
              <string/>
+            </property>
+            <property name="scaledContents">
+             <bool>false</bool>
             </property>
            </widget>
           </item>
@@ -358,8 +558,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>598</width>
-             <height>513</height>
+             <width>643</width>
+             <height>586</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -589,7 +789,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>573</width>
+               <width>626</width>
                <height>1019</height>
               </rect>
              </property>
@@ -1426,7 +1626,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>632</width>
+     <width>685</width>
      <height>22</height>
     </rect>
    </property>
@@ -1471,10 +1671,9 @@
   <tabstop>checkBox_performWhiteBalance</tabstop>
   <tabstop>group_equipmentDetection</tabstop>
   <tabstop>plainTextEdit_collectionName</tabstop>
-  <tabstop>pushButton_toggleMonitoring</tabstop>
   <tabstop>plainTextEdit_copywriteLicense</tabstop>
   <tabstop>monitor_scrollArea</tabstop>
-  <tabstop>pushButton_close</tabstop>
+  <tabstop>pushButton_processMulti</tabstop>
   <tabstop>plainTextEdit_contactEmail</tabstop>
   <tabstop>plainTextEdit_contactName</tabstop>
   <tabstop>plainTextEdit_collectionURL</tabstop>
@@ -1666,8 +1865,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>45</x>
-     <y>187</y>
+     <x>56</x>
+     <y>273</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -1682,8 +1881,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>45</x>
-     <y>294</y>
+     <x>56</x>
+     <y>406</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1698,8 +1897,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>69</x>
-     <y>390</y>
+     <x>80</x>
+     <y>527</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -1714,8 +1913,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>62</x>
-     <y>494</y>
+     <x>73</x>
+     <y>657</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -1746,8 +1945,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>201</x>
-     <y>248</y>
+     <x>273</x>
+     <y>297</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -1762,8 +1961,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>201</x>
-     <y>341</y>
+     <x>273</x>
+     <y>414</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1778,8 +1977,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>273</x>
-     <y>463</y>
+     <x>345</x>
+     <y>532</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -1794,8 +1993,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>273</x>
-     <y>563</y>
+     <x>345</x>
+     <y>649</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -1827,7 +2026,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>600</x>
-     <y>248</y>
+     <y>297</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -1843,7 +2042,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>600</x>
-     <y>341</y>
+     <y>414</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -1859,7 +2058,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>600</x>
-     <y>463</y>
+     <y>532</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -1875,7 +2074,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>600</x>
-     <y>563</y>
+     <y>649</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -1960,22 +2159,6 @@
     <hint type="destinationlabel">
      <x>265</x>
      <y>22</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_testFunction</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>testFunction()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>134</x>
-     <y>563</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>631</x>
-     <y>542</y>
     </hint>
    </hints>
   </connection>
@@ -2123,6 +2306,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_processSingle</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>process_single_image()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>558</x>
+     <y>672</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>636</x>
+     <y>531</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_processMulti</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>process_multi_images()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>42</x>
+     <y>669</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>saveSettings()</slot>
@@ -2133,5 +2348,7 @@
   <slot>updateEqSettings()</slot>
   <slot>reset_all_settings()</slot>
   <slot>delete_previous_image()</slot>
+  <slot>process_single_image()</slot>
+  <slot>process_multi_images()</slot>
  </slots>
 </ui>

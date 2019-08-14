@@ -404,12 +404,10 @@ class appWindow(QMainWindow):
             self.mainWindow.toolButton_delPreviousImage.setEnabled(False)
             self.recently_produced_images = []
 
-    def set_preview_deleted(self):
+    def reset_diagnostic_details(self):
         """
-        resets the image specific GUI elements after a delete_previous_image.
+        resets the diagnostic texts.
         """
-        self.mainWindow.label_imPreview.clear()
-        self.mainWindow.label_cc_image.clear()
         self.mainWindow.label_processtime.setText('')
         self.mainWindow.label_barcodes.setText('')
         self.mainWindow.label_runtime.setText('')
@@ -417,6 +415,14 @@ class appWindow(QMainWindow):
         self.mainWindow.label_quad.setText('')
         self.mainWindow.label_isBlurry.setText('')
         self.mainWindow.label_lapnorm.setText('')
+
+    def set_preview_deleted(self):
+        """
+        resets the image specific GUI elements after a delete_previous_image.
+        """
+        self.mainWindow.label_imPreview.clear()
+        self.mainWindow.label_cc_image.clear()
+        self.reset_diagnostic_details()
 
     def handle_blur_result(self, result):
         is_blurry = result['isblurry']
@@ -596,6 +602,8 @@ class appWindow(QMainWindow):
         processing steps.
         """
         self.processing_image = True
+        # reset the diagnostic details
+        self.reset_diagnostic_details()
         self.Timer_Emitter.timerStart.emit()
         try:
             im = self.openImageFile(img_path)
@@ -707,7 +715,10 @@ class appWindow(QMainWindow):
     def update_preview_img(self, im):
         # trying smaller preview
         h, w = im.shape[0:2]
-        width = 300
+        preview_label = self.mainWindow.label_imPreview
+        width = preview_label.width()
+        height = preview_label.height()
+        #width = 300
         hpercent = (width/float(w))
         height = int((float(h)*float(hpercent)))
         size = (width, height)
@@ -717,17 +728,44 @@ class appWindow(QMainWindow):
         pixmap = QtGui.QPixmap.fromImage(qImg)
         pixmap_image = QtGui.QPixmap(pixmap)
         preview_label = self.mainWindow.label_imPreview
-        preview_label.setText("")
-        preview_label.setPixmap(pixmap_image)
+        #preview_label.setText("")
+        #preview_label.setPixmap(pixmap_image)
+        
+        preview_label.setPixmap(pixmap_image.scaled(
+                preview_label.size(), Qt.KeepAspectRatio,
+                Qt.SmoothTransformation))
 
     def save_finished(self):
         print(f'saving {self.img_path} has finished.')
 
-    def testFunction(self):
-        """ a development assistant function, connected to a GUI button
-        used to test various functions before complete GUI integration."""
+    def process_multi_images(self):
+        """ called by pushButton_processMulti to process a single folder."""
 
-        img_path, _ = QtWidgets.QFileDialog.getOpenFileName(None, "Open Sample Image")
+        dir_path = QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory")
+        raw_image_patterns = ['*.cr2', '*.CR2',
+                              '*.tiff', '*.TIFF',
+                              '*.nef', '*.NEF',
+                              '*.orf', '*.ORF']
+        to_process = []
+        for extension in raw_image_patterns:
+            files_to_add = glob.glob(f'{dir_path}//*{extension}')
+            # clear out empies
+            files_to_add = [x for x in files_to_add if x != []]
+            to_process.extend(files_to_add)
+        # queue up each item
+        qty_to_process = len(to_process)
+        if qty_to_process > 5:
+            text = f'Process ALL {qty_to_process} images in this directory?\n{dir_path}'
+            title = 'Process Entire Folder?'
+            user_agree = self.userAsk(text, title)
+            if user_agree:
+                for img_path in to_process:
+                    self.queue_image(img_path)
+
+    def process_single_image(self):
+        """ called by pushButton_processSingle to process a single image."""
+
+        img_path, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open Unprocessed Image")
         self.queue_image(img_path)
 
     def apply_corrections(self):
