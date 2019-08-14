@@ -78,7 +78,6 @@ class ImageDialog(QDialog):
 #        _translate = QtCore.QCoreApplication.translate
 #        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
 
-
 class BcDialog(QDialog):
     """
     a simple user dialog, for asking what the user to enter a barcode value.
@@ -190,6 +189,7 @@ class appWindow(QMainWindow):
         # setup static UI buttons
         self.mainWindow.toolButton_removePattern.pressed.connect(self.remove_pattern)
         self.mainWindow.toolButton_addPattern.pressed.connect(self.add_pattern)
+        self.mainWindow.toolButton_delPreviousImage.pressed.connect(self.delete_previous_image)
 
 #       self.versionCheck()
 
@@ -325,11 +325,13 @@ class appWindow(QMainWindow):
         keys as destination metadata tag names, values as key value.
         :type meta_data: dict
         """
+        # disable the toolButton_delPreviousImage button until this is done
+        self.mainWindow.toolButton_delPreviousImage.setEnabled(False)
+
         im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
         # reset recently_produced_images
         self.recently_produced_images = [orig_img_path]
         output_map = self.output_map
-
         # breakout output_map into a list of tuples containing (ext, path)
         to_save = [(x,y[1]) for x, y in output_map.items() if y[0]]
         # store how many save_jobs are expected to global variable
@@ -358,15 +360,16 @@ class appWindow(QMainWindow):
                             #  treat this process as if it was passed to boss_worker
                             self.handle_save_result(new_file_name)
                         except FileNotFoundError:
+                            # condition when multiple bcs try to move > once.
                             #  treat this process as if it was passed to boss_worker
                             self.handle_save_result(False)
-                            # condition when multiple bcs try to move > once.
-                            pass
                     else:
                         # if it a cv2 save function pass it to boss_worker
                         save_worker_data = SaveWorkerData(new_file_name, im)
                         save_job = Job('save_worker', save_worker_data, self._cv2_save)
                         self.boss_thread.request_job(save_job)
+        # re-enable the toolButton_delPreviousImage
+        self.mainWindow.toolButton_delPreviousImage.setEnabled(True)
 
     def _cv2_save(self, new_file_name, im):
         """
@@ -393,14 +396,28 @@ class appWindow(QMainWindow):
         detailText = f'This will permanently the following files:{fileList}'
         user_agree = self.userAsk(text, title, detailText)
         if user_agree:
+            self.set_preview_deleted()
             for imgPath in self.recently_produced_images:
                 if os.path.isfile(imgPath):  # does it exist?
                     os.remove(imgPath)  #  if so, remove the file
                     print(f'removed {imgPath}')
-            # here we should probably deactivate the del button &  draw some
-            # graphical indication that this image (and derivates) are gone
-            # maybe just reset image preview & stats?
+            # disable toolButton_delPreviousImage
+            self.mainWindow.toolButton_delPreviousImage.setEnabled(False)
             self.recently_produced_images = []
+
+    def set_preview_deleted(self):
+        """
+        resets the image specific GUI elements after a delete_previous_image.
+        """
+        self.mainWindow.label_imPreview.clear()
+        self.mainWindow.label_cc_image.clear()
+        self.mainWindow.label_processtime.setText('')
+        self.mainWindow.label_barcodes.setText('')
+        self.mainWindow.label_runtime.setText('')
+        self.mainWindow.label_whitergb.setText('')
+        self.mainWindow.label_quad.setText('')
+        self.mainWindow.label_isBlurry.setText('')
+        self.mainWindow.label_lapnorm.setText('')
 
     def handle_blur_result(self, result):
         is_blurry = result['isblurry']
@@ -701,6 +718,7 @@ class appWindow(QMainWindow):
         pixmap = QtGui.QPixmap.fromImage(qImg)
         pixmap_image = QtGui.QPixmap(pixmap)
         preview_label = self.mainWindow.label_imPreview
+        preview_label.setText("")
         preview_label.setPixmap(pixmap_image)
 
     def save_finished(self):
