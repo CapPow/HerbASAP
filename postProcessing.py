@@ -400,7 +400,6 @@ class appWindow(QMainWindow):
             for imgPath in self.recently_produced_images:
                 if os.path.isfile(imgPath):  # does it exist?
                     os.remove(imgPath)  #  if so, remove the file
-                    print(f'removed {imgPath}')
             # disable toolButton_delPreviousImage
             self.mainWindow.toolButton_delPreviousImage.setEnabled(False)
             self.recently_produced_images = []
