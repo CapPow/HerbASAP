@@ -47,7 +47,7 @@ import numpy as np
 from ui.postProcessingUI import Ui_MainWindow
 from ui.imageDialogUI import Ui_Dialog_image
 from ui.noBcDialogUI import Ui_Dialog_noBc
-from ui import assets_rc
+from ui.technicianNameDialogUI import Ui_technicianNameDialog
 from libs.bcRead import bcRead
 from libs.eqRead import eqRead
 from libs.blurDetect import blurDetect
@@ -74,9 +74,6 @@ class ImageDialog(QDialog):
         pixmap_image = QtGui.QPixmap(pixmap01)
         mb.label_Image.setPixmap(pixmap_image)
 
-#    def retranslateUi(self, Dialog):
-#        _translate = QtCore.QCoreApplication.translate
-#        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
 
 class BcDialog(QDialog):
     """
@@ -98,6 +95,67 @@ class BcDialog(QDialog):
             return result
         else:
             return None
+
+
+class TechnicianNameDialog(QDialog):
+    """
+    a UI element to display & and edit the list of stored technician names.
+    """
+    def __init__(self, nameList=[]):
+        super().__init__()
+        self.init_ui(nameList)
+
+    def init_ui(self, nameList):
+        self.dialog = Ui_technicianNameDialog()
+        self.dialog.setupUi(self)
+        self.dialog.lineEdit_newTechnician.setFocus(True)
+        # populate the listwidget with nameList passed on creation
+        listWidget_technicianNames = self.dialog.listWidget_technicianNames
+        for i, name in enumerate(nameList):
+            # save the item
+            listWidget_technicianNames.addItem(name)
+            # now that it exists set the flag as editable
+            item = listWidget_technicianNames.item(i)
+            item.setFlags(item.flags() | Qt.ItemIsEditable)
+
+    def edit_technician_list(self):
+        dialog = self.exec()
+        if dialog:
+            result = self.retrieve_technician_names()
+        else:
+            result = None
+        return result
+
+    def retrieve_technician_names(self):
+        """
+        harvests all unique technician names
+        """
+        listWidget_technicianNames = self.dialog.listWidget_technicianNames
+        # Is there no better way to get everything from a listWidget?
+        names = listWidget_technicianNames.findItems('', Qt.MatchContains)
+        # alphabetize unique values and return a list
+        names = list(set(x.text() for x in names))
+        if '' not in names:
+            names = [''] + names
+        return names
+
+    def add_item(self):
+        """ connected to pushButton_add """
+        listWidget_technicianNames = self.dialog.listWidget_technicianNames
+        lineEdit_newTechnician = self.dialog.lineEdit_newTechnician
+        newName = lineEdit_newTechnician.text()
+        if len(newName) > 0:  # if something is written add it to list
+            listWidget_technicianNames.addItem(newName)
+            lineEdit_newTechnician.clear()
+        else:  # otherwise, drop a hint: focus on lineEdit_newTechnician
+            self.dialog.lineEdit_newTechnician.setFocus(True)
+
+    def remove_item(self):
+        """ connected to pushButton_remove """
+        listWidget_technicianNames = self.dialog.listWidget_technicianNames
+        selection = listWidget_technicianNames.currentRow()
+        listWidget_technicianNames.takeItem(selection)
+        #item = None
 
 
 class Image_Complete_Emitter(QtCore.QObject):
@@ -190,7 +248,7 @@ class appWindow(QMainWindow):
         self.mainWindow.toolButton_removePattern.pressed.connect(self.remove_pattern)
         self.mainWindow.toolButton_addPattern.pressed.connect(self.add_pattern)
         self.mainWindow.toolButton_delPreviousImage.pressed.connect(self.delete_previous_image)
-
+        self.mainWindow.toolButton_editTechnicians.pressed.connect(self.edit_technician_list)
 #       self.versionCheck()
 
 #   when saving: quality="keep" the original quality is preserved
@@ -403,6 +461,10 @@ class appWindow(QMainWindow):
             # disable toolButton_delPreviousImage
             self.mainWindow.toolButton_delPreviousImage.setEnabled(False)
             self.recently_produced_images = []
+            if self.folder_watcher.is_monitoring:
+                # if the folder_watcher is on, subtract removed image from the count
+                self.folder_watcher.img_count -= 1
+                self.update_session_stats()
 
     def reset_diagnostic_details(self):
         """
@@ -695,6 +757,10 @@ class appWindow(QMainWindow):
         else:  # name based on base_file_name
             names = [self.base_file_name]
         self.save_output_images(self.im, names, self.img_path, self.ext)
+        # if the folder_watcher is operating, update session stats
+        if self.folder_watcher.is_monitoring:
+            self.folder_watcher.img_count += 1
+            self.update_session_stats()
 
     def update_cc_info(self, cc_position, cropped_cc, cc_crop_time, cc_avg_white):
         """
@@ -734,6 +800,44 @@ class appWindow(QMainWindow):
         preview_label.setPixmap(pixmap_image.scaled(
                 preview_label.size(), Qt.KeepAspectRatio,
                 Qt.SmoothTransformation))
+
+    def edit_technician_list(self):
+        """
+        called by toolButton_editTechnicians asks the user to edit/save a list
+        of technician names. Then saves the result to qSetting 'technicianList'
+        """
+        # be sure an empty string always preceeds the list.
+        nameList = self.get('technicianList', [''])
+        if '' not in nameList:
+            nameList = [''] + nameList
+        technicianDialog = TechnicianNameDialog(nameList)
+        result = technicianDialog.edit_technician_list()
+        if result:
+            self.settings.setValue('technicianList', result)
+            # update the comboBox_technician options
+            self.populate_technician_list()
+
+    def populate_technician_list(self):
+        # identify the target comboBox
+        tech_comboBox = self.mainWindow.comboBox_technician
+        # clear current items in the list
+        tech_comboBox.clear() 
+        # populate the list
+        nameList = self.get('technicianList', [])
+        tech_comboBox.addItems(nameList)
+        # reset setting to ''
+        tech_comboBox.setCurrentText('')
+
+    def update_session_stats(self):
+        """
+        updates the folder monitor session stats in gridGroupBox_sessionRates
+        """
+        run_time = self.folder_watcher.get_runtime()
+        self.mainWindow.label_runTime.setText(str(run_time))
+        img_count = self.folder_watcher.img_count
+        self.mainWindow.label_imgCount.setText(str(img_count))
+        rate = round(img_count / run_time, 3)
+        self.mainWindow.label_rate.setText(str(rate))
 
     def save_finished(self):
         print(f'saving {self.img_path} has finished.')
@@ -1125,7 +1229,10 @@ class appWindow(QMainWindow):
 
         # populate listWidget_patterns        
         self.fill_patterns(self.get('joinedPattern', ''))
-       
+
+        # populate technican_list
+        self.populate_technician_list()
+
         # QComboBox
         comboBox_colorCheckerPosition = self.get('comboBox_colorCheckerPosition', 'Upper right')
         self.populateQComboBoxSettings( self.mainWindow.comboBox_colorCheckerPosition, comboBox_colorCheckerPosition)

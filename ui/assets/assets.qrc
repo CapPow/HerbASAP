@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="icon">
+    <file>edit.svg</file>
+    <file>trash-2.svg</file>
+  </qresource>
+</RCC>

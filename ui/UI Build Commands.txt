@@ -6,3 +6,4 @@ pyuic5 -o ui/postProcessingUI.py --import-from . ui/postProcessingUI.ui
 pyrcc5 -o ui/assets_rc.py ui/assets/assets.qrc
 pyuic5 -o ui/imageDialog.py ui/imageDialogUI.ui
 pyuic5 -o ui/noBcDialogUI.py ui/noBcDialogUI.ui
+pyuic5 -o ui/technicianNameDialogUI.py ui/technicianNamesUI.ui
