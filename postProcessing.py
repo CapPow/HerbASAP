@@ -325,6 +325,7 @@ class appWindow(QMainWindow):
                 self.setup_Folder_Watcher()
             pushButton.setText(' Stop folder monitoring')
             self.folder_watcher.run()
+            self.update_session_stats()
 
 
     def setup_Output_Handler(self):
@@ -839,20 +840,25 @@ class appWindow(QMainWindow):
         run_time = self.folder_watcher.get_runtime()
         self.mainWindow.label_runTime.setText(str(run_time))
         img_count = self.folder_watcher.img_count
-        self.mainWindow.label_imgCount.setText(str(img_count))
-        rate = round(img_count / run_time, 3)
-        self.mainWindow.label_rate.setText(str(rate))
-        if img_count % 12 == 0: # every n images, refresh this
-            animalScore = min(4, int(rate))
-            animalList = [":/icon/turtle.png",
-                          ":/icon/human.png",
-                          ":/icon/rabbit.png",
-                          ":/icon/rabbit2.png",
-                          ":/icon/rabbit3.png"]
-            animal = QtGui.QPixmap(animalList[animalScore])
-            an_label = self.mainWindow.label_speedAnimal
-            an_label.setPixmap(animal.scaled(an_label.size(), Qt.KeepAspectRatio,
-                                             Qt.SmoothTransformation))
+        if img_count == 0:
+            self.mainWindow.label_speedAnimal.clear()
+            self.mainWindow.label_imgCount.setText('0')
+            self.mainWindow.label_rate.setText('0.00')
+        else:
+            self.mainWindow.label_imgCount.setText(str(img_count))
+            rate = round(img_count / run_time, 3)
+            self.mainWindow.label_rate.setText(str(rate))
+            if img_count % 12 == 0: # every n images, refresh this
+                animalScore = min(4, int(rate))
+                animalList = [":/icon/turtle.png",
+                              ":/icon/human.png",
+                              ":/icon/rabbit.png",
+                              ":/icon/rabbit2.png",
+                              ":/icon/rabbit3.png"]
+                animal = QtGui.QPixmap(animalList[animalScore])
+                an_label = self.mainWindow.label_speedAnimal
+                an_label.setPixmap(animal.scaled(an_label.size(), Qt.KeepAspectRatio,
+                                                 Qt.SmoothTransformation))
 
     def save_finished(self):
         print(f'saving {self.img_path} has finished.')
