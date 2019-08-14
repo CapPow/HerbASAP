@@ -644,19 +644,20 @@ class appWindow(QMainWindow):
         self.ext = None
         self.im = None
         self.cc_avg_white = None
-        try:
-            if self.raw_base:  # try extra hard to free up these resources.
-                print('manually forcing closure')
-                self.raw_base.close()
-        except AttributeError:
-            pass  # occasion where no raw images have been unpacked yet
-        self.raw_base = None
         self.bc_code = []
         self.is_blurry = None  # could be helpful for 'line item warnings'
         self.cc_quadrant = None
         self.cropped_cc = None
         self.working_save_jobs = 0
         self.processing_image = False
+        try:
+            if self.raw_base:  # try extra hard to free up these resources.
+                print('manually forcing closure')
+                self.raw_base.close()
+                # if some failure occurred attempt to restart the queue.
+        except AttributeError:
+            pass  # occasion where no raw images have been unpacked yet
+        self.raw_base = None
 
     def processImage(self, img_path):
         """
@@ -706,7 +707,7 @@ class appWindow(QMainWindow):
                 self.cropped_cc = cropped_cc
                 cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
                 self.cc_avg_white = cc_avg_white
-                print(f"CC | Position: {cc_position}, Quadrant: {self.cc_quadrant}")
+                #print(f"CC | Position: {cc_position}, Quadrant: {self.cc_quadrant}")
                 self.update_cc_info(self.cc_quadrant, cropped_cc, cc_crop_time, cc_avg_white)
             # apply corrections based on what is learned from the colorchipDetect
             except ColorChipError as e:
@@ -716,6 +717,8 @@ class appWindow(QMainWindow):
                 self.userNotice(notice_text, notice_title, detail_text)
                 # prepare to wipe the slate clean and exit
                 self.reset_working_variables()
+                # attempt to recover from the error
+                self.process_from_queue()
                 return
 
         if not self.mainWindow.checkBox_performWhiteBalance.isChecked():
@@ -768,10 +771,11 @@ class appWindow(QMainWindow):
         """
         height, width = cropped_cc.shape[0:2]
         bytesPerLine = 3 * width
+        cc_view_label = self.mainWindow.label_cc_image
         qImg = QtGui.QImage(cropped_cc, width, height, bytesPerLine, QtGui.QImage.Format_RGB888)#.rgbSwapped()
         pixmap = QtGui.QPixmap.fromImage(qImg)
         pixmap_image = QtGui.QPixmap(pixmap)
-        cc_view_label = self.mainWindow.label_cc_image
+        
         cc_view_label.setPixmap(pixmap_image)
         self.mainWindow.label_runtime.setText(str(cc_crop_time))
         # there has got to be a better way to convert this list of np.floats
@@ -813,7 +817,7 @@ class appWindow(QMainWindow):
         technicianDialog = TechnicianNameDialog(nameList)
         result = technicianDialog.edit_technician_list()
         if result:
-            self.settings.setValue('technicianList', result)
+            self.settings.setValue('technicianList', list(set(result)))
             # update the comboBox_technician options
             self.populate_technician_list()
 
@@ -838,13 +842,26 @@ class appWindow(QMainWindow):
         self.mainWindow.label_imgCount.setText(str(img_count))
         rate = round(img_count / run_time, 3)
         self.mainWindow.label_rate.setText(str(rate))
+        if img_count % 12 == 0: # every n images, refresh this
+            animalScore = min(4, int(rate))
+            animalList = [":/icon/turtle.png",
+                          ":/icon/human.png",
+                          ":/icon/rabbit.png",
+                          ":/icon/rabbit2.png",
+                          ":/icon/rabbit3.png"]
+            animal = QtGui.QPixmap(animalList[animalScore])
+            an_label = self.mainWindow.label_speedAnimal
+            an_label.setPixmap(animal.scaled(an_label.size(), Qt.KeepAspectRatio,
+                                             Qt.SmoothTransformation))
 
     def save_finished(self):
         print(f'saving {self.img_path} has finished.')
 
     def process_multi_images(self):
         """ called by pushButton_processMulti to process a single folder."""
-
+        # If folder monitoring is on turn it off
+        if self.folder_watcher.is_monitoring:
+            self.toggle_folder_monitoring()
         dir_path = QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory")
         raw_image_patterns = ['*.cr2', '*.CR2',
                               '*.tiff', '*.TIFF',
@@ -868,7 +885,9 @@ class appWindow(QMainWindow):
 
     def process_single_image(self):
         """ called by pushButton_processSingle to process a single image."""
-
+        # If folder monitoring is on turn it off
+        if self.folder_watcher.is_monitoring:
+            self.toggle_folder_monitoring()
         img_path, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open Unprocessed Image")
         self.queue_image(img_path)
 

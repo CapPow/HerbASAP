@@ -58,7 +58,6 @@ class Event_Handler(PatternMatchingEventHandler):
         event_type = event.event_type
         img_path = event.src_path
         # be sure the destination path is the focus
-        print(event_type)
         if event_type in ['renamed', 'moved']:
             img_path = event.dest_path
         # if it is leaving the self.watch_dir, set self.last_item = None
