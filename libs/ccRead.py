@@ -303,8 +303,15 @@ class ColorchipRead:
         original_width, original_height = original_size
 
         cv_image = cv2.cvtColor(nim, cv2.COLOR_BGR2HSV)
+        
+        partition_area = partition_size * partition_size
+        contour_area_floor = partition_area // 10
+        contour_area_ceiling = partition_area // 0.5
+        squares = self.find_squares(cv_image,
+                                    contour_area_floor=contour_area_floor,
+                                    contour_area_ceiling=contour_area_ceiling,
+                                    leap=17)
 
-        squares = self.find_squares(cv_image, contour_area_floor=5000, contour_area_ceiling=54000, leap=51)
         squares = np.array(squares)
 
         part_im = []
@@ -423,7 +430,7 @@ class ColorchipRead:
                 # determine a a min / max based on partition_size
                 partition_area = partition_size * partition_size
                 min_crop_area = partition_area // 10
-                max_crop_area = partition_area // 1.15
+                max_crop_area = partition_area // 1.2
                 # identify squares in the crop
                 squares = ColorchipRead.find_squares(cv_best_image,
                                                      contour_area_floor=min_crop_area,
