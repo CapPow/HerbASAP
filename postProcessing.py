@@ -194,6 +194,13 @@ class appWindow(QMainWindow):
         self.settings.setFallbacksEnabled(False)    # File only, no fallback to registry.
         # populate the settings based on the previous preferences
         self.populateSettings()
+        # restore window geometry & state.
+        saved_win_geom = self.get("geometry", "")
+        if saved_win_geom  != '':
+            self.restoreGeometry(saved_win_geom )
+        saved_win_state = self.get("windowState", "")
+        if saved_win_state  != '':
+            self.restoreGeometry(saved_win_state )
         ###
         # initalize the folder_watcher using current user inputs
         ###
@@ -242,7 +249,6 @@ class appWindow(QMainWindow):
         # start the boss thread's "event loop"
         # https://doc.qt.io/qt-5/qthread.html#start
         self.boss_thread.start()
-        print('boss thread started')
 
         # setup static UI buttons
         self.mainWindow.toolButton_removePattern.pressed.connect(self.remove_pattern)
@@ -286,6 +292,50 @@ class appWindow(QMainWindow):
 #                        webbrowser.open(link,autoraise=1)
 #            self.settings.saveSettings()  # save the new version check date
 
+    def closeEvent(self, event):
+        """
+        Reimplimentation of closeEvent handling. This will be run when the user
+        closes the program.
+        """
+        # check if any critical processes are running
+        len_queue = len(self.image_queue)
+        qty_save_jobs = self.working_save_jobs
+
+        criticalConditions = [len_queue  > 0,
+                              qty_save_jobs > 0,
+                              self.processing_image]
+        if any(criticalConditions):
+            # if anything important is running
+            if len_queue < 2:
+                # if the queue is short just wait for it to finish
+                while len_queue > 0:
+                    # could add a status bar update here if we use a status bar
+                    len_queue = len(self.image_queue)  # the update variable 
+                    time.sleep(1)  # a long wait time avoids slowing processing
+            else:
+                    # if the queue is longer then ask about force quitting.
+                text = 'Currently Processing Images! Interrupt the running tasks?'
+                title = "Halt Processing?"
+                detailText = (
+            'Closing will interrupt image processing for all queued tasks!\n'
+            f'Items queued for processing: {len_queue}\n'
+            f'Qty save jobs running: {qty_save_jobs}\n'
+            )
+                user_agree = self.userAsk(text, title, detailText)
+                if not user_agree:
+                    # user does not want to exit.
+                    return
+        # if above conditions did not prematurely return then start shutdown.
+        if self.folder_watcher.is_monitoring:
+            # if the folder watcher is running, go ahead and stop it.
+            self.toggle_folder_monitoring()
+        # save the current window state & location        
+        self.settings.setValue("geometry", self.saveGeometry())
+        self.settings.setValue("windowState", self.saveState())
+        # save the current settings
+        self.saveSettings()
+        QMainWindow.closeEvent(self, event)
+
     def start_timer(self):
         self.timer_start = time.time()
 
@@ -294,6 +344,9 @@ class appWindow(QMainWindow):
         run_time = round(end_time - self.timer_start, 3)
         self.mainWindow.label_processtime.setText(str(run_time))
         print(f'Elapsed runtime: {run_time}')
+
+        # give app a moment to update
+        app.processEvents()
 
     def setup_Folder_Watcher(self, raw_image_patterns=None):
         """
@@ -455,7 +508,7 @@ class appWindow(QMainWindow):
         detailText = f'This will permanently the following files:{fileList}'
         user_agree = self.userAsk(text, title, detailText)
         if user_agree:
-            self.set_preview_deleted()
+            self.reset_preview_details()
             for imgPath in self.recently_produced_images:
                 if os.path.isfile(imgPath):  # does it exist?
                     os.remove(imgPath)  #  if so, remove the file
@@ -479,9 +532,9 @@ class appWindow(QMainWindow):
         self.mainWindow.label_isBlurry.setText('')
         self.mainWindow.label_lapnorm.setText('')
 
-    def set_preview_deleted(self):
+    def reset_preview_details(self):
         """
-        resets the image specific GUI elements after a delete_previous_image.
+        resets the image specific GUI elements.
         """
         self.mainWindow.label_imPreview.clear()
         self.mainWindow.label_cc_image.clear()
@@ -490,6 +543,11 @@ class appWindow(QMainWindow):
     def handle_blur_result(self, result):
         is_blurry = result['isblurry']
         if is_blurry:
+            # update preview for the coming notice.
+            if not self.im:
+                self.update_preview_img(self.reduced_img)
+            else:
+                self.update_preview_img(self.im)
             notice_title = 'Blurry Image Warning'
             if self.bc_code:
                 notice_text = f'Warning, {self.bc_code} is blurry.'
@@ -522,6 +580,11 @@ class appWindow(QMainWindow):
  
     def handle_bc_result(self, result):
         if not result:
+            # update preview for the coming dialog.
+            if not self.im:
+                self.update_preview_img(self.reduced_img)
+            else:
+                self.update_preview_img(self.im)
             userDialog = BcDialog()
             result = [userDialog.ask_for_bc()]
         self.bc_code = result
@@ -531,9 +594,8 @@ class appWindow(QMainWindow):
         """ called when the results are in from bcRead."""
 
     def handle_eq_result(self, result):
-        # this is the corrected image array
+        # this is returning the corrected image array
         self.im = result
-        # should probably use this to store the updated image
 
     def alert_eq_finished(self):
         """ called when the results are in from eqRead."""
@@ -541,29 +603,17 @@ class appWindow(QMainWindow):
     # boss signal handlers
     def handle_boss_started(self, boss_signal_data):
         pass
-        #if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
-            #if boss_signal_data.signal_data is str:
+
 
     def handle_boss_finished(self, boss_signal_data):
         pass
-        #if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
-            #if boss_signal_data.signal_data is str:
 
     def handle_job_started(self, boss_signal_data):
         pass
-        #if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
-            #if isinstance(boss_signal_data.signal_data, WorkerSignalData):
-                #worker_signal_data = boss_signal_data.signal_data
-                # print(worker_signal_data.worker_name)
-                #print(worker_signal_data.signal_data)
 
     def handle_job_finished(self, boss_signal_data):
         pass
-#            if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
-#            if isinstance(boss_signal_data.signal_data, WorkerSignalData):
-#                worker_signal_data = boss_signal_data.signal_data
-#                print(worker_signal_data.worker_name)
-#                print(worker_signal_data.signal_data)
+
 
     def handle_job_result(self, boss_signal_data):
         if boss_signal_data is not None and isinstance(boss_signal_data, BossSignalData):
@@ -667,14 +717,18 @@ class appWindow(QMainWindow):
         """
         self.processing_image = True
         # reset the diagnostic details
-        self.reset_diagnostic_details()
+        self.reset_preview_details()
+        #self.reset_diagnostic_details()
+        self.mainWindow.label_imPreview.setText('...working')
+        # give app a moment to update
+        app.processEvents()
+
         self.Timer_Emitter.timerStart.emit()
         try:
             im = self.openImageFile(img_path)
         except (LibRawFatalError, LibRawNonFatalError) as e:
             self.reset_working_variables()
             return
-
         print(f'processing: {img_path}')
         self.img_path = img_path
         file_name, self.ext = os.path.splitext(img_path)
@@ -694,9 +748,9 @@ class appWindow(QMainWindow):
             blur_job = Job('blur_worker', blur_worker_data, self.blurDetect.blur_check)
             self.boss_thread.request_job(blur_job)
         
+        # reduce the image for the cnn, store it incase of problem dialogs
         original_size, reduced_img = self.scale_images_with_info(im)
-        # reduce the image for the cnn
-        self.reduced_img = reduced_img  # storing to use as preview later
+        self.reduced_img = reduced_img
         if self.mainWindow.group_colorCheckerDetection:
             # colorchecker functions
             try:
@@ -708,7 +762,6 @@ class appWindow(QMainWindow):
                 self.cropped_cc = cropped_cc
                 cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
                 self.cc_avg_white = cc_avg_white
-                #print(f"CC | Position: {cc_position}, Quadrant: {self.cc_quadrant}")
                 self.update_cc_info(self.cc_quadrant, cropped_cc, cc_crop_time, cc_avg_white)
             # apply corrections based on what is learned from the colorchipDetect
             except ColorChipError as e:
@@ -743,8 +796,11 @@ class appWindow(QMainWindow):
             self.flip_value = rotations[endPos]  # value at that position
         self.apply_corrections()
         # pass off what was learned and properly open image.
+
+        # add the (mostly) corrected image to the preview
+        # equipment corrections remain. let user look at this while that runs.
         self.update_preview_img(self.im)
-        
+
         if self.mainWindow.checkBox_lensCorrection.isChecked():
             # equipment corrections
             cm_distance = self.mainWindow.doubleSpinBox_focalDistance.value()
@@ -782,6 +838,9 @@ class appWindow(QMainWindow):
         # there has got to be a better way to convert this list of np.floats
         self.mainWindow.label_whitergb.setText(', '.join([str(int(x)) for x in cc_avg_white]))
         self.mainWindow.label_quad.setText(str(cc_position))
+        
+        # give app a moment to update
+        app.processEvents()
 
     def update_preview_img(self, im):
         # trying smaller preview
@@ -805,6 +864,9 @@ class appWindow(QMainWindow):
         preview_label.setPixmap(pixmap_image.scaled(
                 preview_label.size(), Qt.KeepAspectRatio,
                 Qt.SmoothTransformation))
+
+        # give app a moment to update
+        app.processEvents()
 
     def edit_technician_list(self):
         """
@@ -860,76 +922,100 @@ class appWindow(QMainWindow):
                 an_label.setPixmap(animal.scaled(an_label.size(), Qt.KeepAspectRatio,
                                                  Qt.SmoothTransformation))
 
+        # give app a moment to update
+        app.processEvents()
+
     def save_finished(self):
+        # I don't believe this ever triggers
         print(f'saving {self.img_path} has finished.')
 
-    def process_multi_images(self):
-        """ called by pushButton_processMulti to process a single folder."""
+    def process_selected_items(self, selection, selection_type):
+        """
+        Process selected files. Called by either process_image_directory or 
+        process_image_selection.
+        """
+        if selection_type == 'directory':
+            raw_image_patterns = ['*.cr2', '*.CR2',
+                                  '*.tiff', '*.TIFF',
+                                  '*.nef', '*.NEF',
+                                  '*.orf', '*.ORF']
+            to_process = []
+            for extension in raw_image_patterns:
+                files_to_add = glob.glob(f'{selection}//*{extension}')
+                # clear out empies
+                files_to_add = [x for x in files_to_add if x != []]
+                to_process.extend(files_to_add)
+        else:  # otherwise it must be a list of objects in which, attempt all
+            to_process = selection
+        # queue up each item
+        qty_to_process = len(to_process)
+        if qty_to_process > 5:
+            text = f'Process ALL {qty_to_process} images?'
+            title = f'Process {qty_to_process} Images?'
+            detail_text = 'Items to be processed:' + '\n\n'.join(to_process)
+            user_agree = self.userAsk(text, title, detail_text)
+            if not user_agree:  # if user 'nopes out' exit prematurely
+                return
+        # if above does not exit prematurely, process each item
+        for img_path in to_process:
+            self.queue_image(img_path)
+
+    def process_image_directory(self):
+        """
+        Called by pushButton_processMulti to process a single folder.
+        """
         # If folder monitoring is on turn it off
         if self.folder_watcher.is_monitoring:
             self.toggle_folder_monitoring()
         dir_path = QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory")
-        raw_image_patterns = ['*.cr2', '*.CR2',
-                              '*.tiff', '*.TIFF',
-                              '*.nef', '*.NEF',
-                              '*.orf', '*.ORF']
-        to_process = []
-        for extension in raw_image_patterns:
-            files_to_add = glob.glob(f'{dir_path}//*{extension}')
-            # clear out empies
-            files_to_add = [x for x in files_to_add if x != []]
-            to_process.extend(files_to_add)
-        # queue up each item
-        qty_to_process = len(to_process)
-        if qty_to_process > 5:
-            text = f'Process ALL {qty_to_process} images in this directory?\n{dir_path}'
-            title = 'Process Entire Folder?'
-            user_agree = self.userAsk(text, title)
-            if user_agree:
-                for img_path in to_process:
-                    self.queue_image(img_path)
+        # pass off the results to be processed
+        self.process_selected_items(dir_path, 'directory')
 
-    def process_single_image(self):
-        """ called by pushButton_processSingle to process a single image."""
+    def process_image_selection(self):
+        """
+        Called by pushButton_processSingle to process a selection of
+        images.
+        """
         # If folder monitoring is on turn it off
         if self.folder_watcher.is_monitoring:
             self.toggle_folder_monitoring()
-        img_path, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open Unprocessed Image")
-        self.queue_image(img_path)
+        img_path, _ = QtWidgets.QFileDialog.getOpenFileNames(self, "Open Unprocessed Image")
+        # pass off the results to be processed
+        self.process_selected_items(img_path, 'selection')
 
     def apply_corrections(self):
         """
         applies postprocessing to self.raw_base based on what was learned
         from the initial openImageFile object.
         """
-        if self.cc_avg_white: # if a cc_avg_white value was found
-            use_camera_wb=False
+        if self.cc_avg_white:  # if a cc_avg_white value was found
+            use_camera_wb = False
             # normalize each value by 255
             cc_avg_white = [255/x for x in self.cc_avg_white]
-            r,g,b = cc_avg_white
+            r, g, b = cc_avg_white
             g = g/2
             wb = [r, g, b, g]
-            use_camera_wb=False
-        else: # otherwise use as shot values
-            use_camera_wb=True
-            wb = [1,1,1,1]
+            use_camera_wb = False
+        else:  # otherwise use as shot values
+            use_camera_wb = True
+            wb = [1, 1, 1, 1]
 
         rgb_cor = self.raw_base.postprocess(demosaic_algorithm=rawpy.DemosaicAlgorithm.AHD,
-                                                  dcb_enhance = True,
-                                                  use_camera_wb=use_camera_wb,
-                                                  user_wb=wb,
-                                                  output_color=rawpy.ColorSpace.sRGB,
-                                                  output_bps=8,
-                                                  user_flip=self.flip_value,
-                                                  user_sat=None,
-                                                  auto_bright_thr=None,
-                                                  bright=1.0,
-                                                  exp_shift=None,
-                                                  chromatic_aberration= (1,1),
-                                                  exp_preserve_highlights=1.0,
-                                                  no_auto_scale=False,
-                                                  gamma=None
-                                                 )
+                                            dcb_enhance=True,
+                                            use_camera_wb=use_camera_wb,
+                                            user_wb=wb,
+                                            output_color=rawpy.ColorSpace.sRGB,
+                                            output_bps=8,
+                                            user_flip=self.flip_value,
+                                            user_sat=None,
+                                            auto_bright_thr=None,
+                                            bright=1.0,
+                                            exp_shift=None,
+                                            chromatic_aberration=(1, 1),
+                                            exp_preserve_highlights=1.0,
+                                            no_auto_scale=False,
+                                            gamma=None
+                                            )
         self.raw_base.close()
         del self.raw_base
         self.raw_base = None  # be extra sure we free the ram
@@ -1184,6 +1270,9 @@ class appWindow(QMainWindow):
             msg.setDetailedText(detailText)
         msg.setStandardButtons(QMessageBox.No | QMessageBox.Yes)
         msg.setDefaultButton(QMessageBox.No)
+        # give app a moment to update
+        app.processEvents()
+        
         reply = msg.exec_()
         if reply == QMessageBox.Yes:
             return True
@@ -1205,6 +1294,9 @@ class appWindow(QMainWindow):
             msg.setDetailedText(detailText)
         #msg.setInformativeText("This is additional information")
         msg.setWindowTitle(title)
+        # give app a moment to update
+        app.processEvents()
+        
         reply = msg.exec_()
         return reply
 

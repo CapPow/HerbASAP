@@ -450,7 +450,7 @@ class ColorchipRead:
         except Exception as e:
             raise InvalidStride
 
-        print(f"High precision took {time.time() - hpstart} seconds.")
+        #print(f"High precision took {time.time() - hpstart} seconds.")
         prop_x1, prop_y1, prop_x2, prop_y2 = x1 / image_width, y1 / image_height, x2 / image_width, y2 / image_height
 
         scaled_x1, scaled_y1, scaled_x2, scaled_y2 = prop_x1 * original_width, \
