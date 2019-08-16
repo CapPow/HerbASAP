@@ -544,7 +544,7 @@ class appWindow(QMainWindow):
         is_blurry = result['isblurry']
         if is_blurry:
             # update preview for the coming notice.
-            if not self.im:
+            if self.im is None:
                 self.update_preview_img(self.reduced_img)
             else:
                 self.update_preview_img(self.im)
@@ -581,7 +581,7 @@ class appWindow(QMainWindow):
     def handle_bc_result(self, result):
         if not result:
             # update preview for the coming dialog.
-            if not self.im:
+            if self.im is None:
                 self.update_preview_img(self.reduced_img)
             else:
                 self.update_preview_img(self.im)
@@ -642,7 +642,7 @@ class appWindow(QMainWindow):
                     print(f'value: {str(worker_error_data.value)}')
                     print(f'formatted exception: {str(worker_error_data.format_exc)}')
 
-    def scale_images_with_info(self, im, largest_dim=1875):
+    def scale_images_with_info(self, im, largest_dim=1875):#750
         """
         Function that scales images proportionally, and returns both the original image size as a tuple of image
         dimensions, and the scaled down image.
@@ -826,9 +826,21 @@ class appWindow(QMainWindow):
         """
         updates cc related diagnostic details.
         """
-        height, width = cropped_cc.shape[0:2]
-        bytesPerLine = 3 * width
         cc_view_label = self.mainWindow.label_cc_image
+        # resize the crop to fit the window
+        width = cc_view_label.width()
+        height = cc_view_label.height()
+        h, w = cropped_cc.shape[0:2]
+        if width < height:
+            hpercent = (width/float(w))
+            height = int((float(h)*float(hpercent)))
+        else:
+            wpercent = (height/float(h))
+            width = int((float(w)*float(wpercent)))      
+        size = (width, height)
+        cropped_cc = cv2.resize(cropped_cc, size, interpolation=cv2.INTER_NEAREST)
+        
+        bytesPerLine = 3 * width
         qImg = QtGui.QImage(cropped_cc, width, height, bytesPerLine, QtGui.QImage.Format_RGB888)#.rgbSwapped()
         pixmap = QtGui.QPixmap.fromImage(qImg)
         pixmap_image = QtGui.QPixmap(pixmap)
@@ -848,7 +860,6 @@ class appWindow(QMainWindow):
         preview_label = self.mainWindow.label_imPreview
         width = preview_label.width()
         height = preview_label.height()
-        #width = 300
         hpercent = (width/float(w))
         height = int((float(h)*float(hpercent)))
         size = (width, height)

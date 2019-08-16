@@ -51,21 +51,19 @@ class eqRead():
         imgDict = {}
         for ifd in ("0th", "Exif", "GPS", "1st"):
             for tag in exifDict[ifd]:
-                tagName = (piexif.TAGS[ifd][tag]["name"])#, exif_dict[ifd][tag])
-                #print(piexif.TAGS[ifd][tag]["name"], exifDict[ifd][tag])
-                if tagName.lower() in ('make','model','lensmodel','focallength','fnumber','colorspace'):
+                tagName = (piexif.TAGS[ifd][tag]["name"])
+                if tagName.lower() in ('make', 'model', 'lensmodel',
+                                       'focallength', 'fnumber', 'colorspace'):
                     imgDict[tagName.lower()] = exifDict[ifd][tag]
 
-        for k,v in imgDict.items():
+        for k, v in imgDict.items():
             if isinstance(v, bytes):
                 imgDict[k] = v.decode("utf-8")
-        #'Artist'
-        #'Copyright'
-        camMaker = imgDict.get('make','')
-        camModel = imgDict.get('model','')
-        lensModel = imgDict.get('lensmodel','')[0]
-        focalLength = imgDict.get('focallength','')[0]
-        apertureValue = imgDict.get('fnumber','')[0]
+        camMaker = imgDict.get('make', '')
+        camModel = imgDict.get('model', '')
+        lensModel = imgDict.get('lensmodel', [''])[0]
+        focalLength = imgDict.get('focallength', [''])[0]
+        apertureValue = imgDict.get('fnumber', [''])[0]
 
         # load the equipment database
         db = self.db

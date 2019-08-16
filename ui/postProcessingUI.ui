@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>571</width>
-    <height>606</height>
+    <width>640</width>
+    <height>675</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -384,7 +384,7 @@
                <enum>QTabWidget::Rounded</enum>
               </property>
               <property name="currentIndex">
-               <number>1</number>
+               <number>0</number>
               </property>
               <property name="elideMode">
                <enum>Qt::ElideNone</enum>
@@ -686,8 +686,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>547</width>
-             <height>557</height>
+             <width>489</width>
+             <height>551</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -1001,7 +1001,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>530</width>
+               <width>523</width>
                <height>911</height>
               </rect>
              </property>

@@ -13,7 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(571, 606)
+        MainWindow.resize(640, 675)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -286,7 +286,7 @@ class Ui_MainWindow(object):
         self.monitor_scrollArea.setWidgetResizable(True)
         self.monitor_scrollArea.setObjectName("monitor_scrollArea")
         self.scrollAreaWidgetContents_4 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_4.setGeometry(QtCore.QRect(0, 0, 547, 557))
+        self.scrollAreaWidgetContents_4.setGeometry(QtCore.QRect(0, 0, 489, 551))
         self.scrollAreaWidgetContents_4.setObjectName("scrollAreaWidgetContents_4")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents_4)
         self.verticalLayout_3.setContentsMargins(3, 3, 3, 3)
@@ -405,7 +405,7 @@ class Ui_MainWindow(object):
         self.preferences_ScrollArea.setWidgetResizable(True)
         self.preferences_ScrollArea.setObjectName("preferences_ScrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 530, 911))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 523, 911))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_2.setContentsMargins(3, 3, 3, 3)
@@ -741,7 +741,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
-        self.gridTabWidget_sessionMonitor.setCurrentIndex(1)
+        self.gridTabWidget_sessionMonitor.setCurrentIndex(0)
         self.comboBox_bcBackend.setCurrentIndex(1)
         self.comboBox_dupNamingPolicy.currentIndexChanged['QString'].connect(MainWindow.saveSettings)
         self.comboBox_colorCheckerPosition.currentTextChanged['QString'].connect(MainWindow.saveSettings)
