@@ -178,11 +178,13 @@ class ColorchipRead:
                     x1, y1 = c * stride, r * stride
                     x2, y2 = x1 + partition_size, y1 + partition_size
                     partitioned_im_hsv = im_hsv.crop((x1, y1, x2, y2))
+                    partitioned_im_hsv = partitioned_im_hsv.resize((125, 125))
                     extrema = partitioned_im_hsv.getextrema()
                     extrema = extrema[1][1]
                     if whole_extrema - hard_cut_value < extrema:
                         possible_positions.append((x1, y1, x2, y2))
                         partitioned_im = im.crop((x1, y1, x2, y2))
+                        partitioned_im = partitioned_im.resize((125, 125))
                         hists_rgb.append(partitioned_im.histogram())
                         hists_hsv.append(partitioned_im_hsv.histogram())
 
@@ -314,8 +316,9 @@ class ColorchipRead:
             cX = int(M["m10"] / M["m00"])
             cY = int(M["m01"] / M["m00"])
 
-            location = (cX - 62, cY - 62, cX + 63, cY + 63)
+            location = (cX - (partition_size // 2), cY - (partition_size // 2), cX + (partition_size // 2), cY + (partition_size // 2))
             part_image = im.crop(location)
+            part_image = part_image.resize((125, 125))
             extrema = part_image.convert("HSV").getextrema()
             extrema = extrema[1][1]
             if whole_extrema - hard_cut_value < extrema:
