@@ -67,7 +67,7 @@ class ImageDialog(QDialog):
     def init_ui(self, img_array_object):
         mb = Ui_Dialog_image()
         mb.setupUi(self)
-        width, height = img_array_object.size
+        width, height = img_array_object.shape[0:2]
         bytesPerLine = 3 * width
         qImg = QtGui.QImage(np.array(img_array_object), width, height, bytesPerLine, QtGui.QImage.Format_RGB888)
         pixmap01 = QtGui.QPixmap.fromImage(qImg)
@@ -380,7 +380,6 @@ class appWindow(QMainWindow):
             self.folder_watcher.run()
             self.update_session_stats()
 
-
     def setup_Output_Handler(self):
         """
         initiates self.save_output_handler with user inputs.
@@ -642,7 +641,7 @@ class appWindow(QMainWindow):
                     print(f'value: {str(worker_error_data.value)}')
                     print(f'formatted exception: {str(worker_error_data.format_exc)}')
 
-    def scale_images_with_info(self, im, largest_dim=1875):#750
+    def scale_images_with_info(self, im, largest_dim=1875):
         """
         Function that scales images proportionally, and returns both the original image size as a tuple of image
         dimensions, and the scaled down image.
@@ -836,10 +835,10 @@ class appWindow(QMainWindow):
             height = int((float(h)*float(hpercent)))
         else:
             wpercent = (height/float(h))
-            width = int((float(w)*float(wpercent)))      
+            width = int((float(w)*float(wpercent)))
         size = (width, height)
         cropped_cc = cv2.resize(cropped_cc, size, interpolation=cv2.INTER_NEAREST)
-        
+
         bytesPerLine = 3 * width
         qImg = QtGui.QImage(cropped_cc, width, height, bytesPerLine, QtGui.QImage.Format_RGB888)#.rgbSwapped()
         pixmap = QtGui.QPixmap.fromImage(qImg)
@@ -921,7 +920,7 @@ class appWindow(QMainWindow):
             self.mainWindow.label_imgCount.setText(str(img_count))
             rate = round(img_count / run_time, 3)
             self.mainWindow.label_rate.setText(str(rate))
-            if img_count % 12 == 0: # every n images, refresh this
+            if img_count % 12 == 0:  # every n images, refresh this
                 animalScore = min(4, int(rate))
                 animalList = [":/icon/turtle.png",
                               ":/icon/human.png",
@@ -942,7 +941,7 @@ class appWindow(QMainWindow):
 
     def process_selected_items(self, selection, selection_type):
         """
-        Process selected files. Called by either process_image_directory or 
+        Process selected files. Called by either process_image_directory or
         process_image_selection.
         """
         if selection_type == 'directory':
@@ -1059,17 +1058,25 @@ class appWindow(QMainWindow):
         return im
 
     def testFeatureCompatability(self):
-        """ called by the "pushButton_selectTestImage."
+        """
+        called by the "pushButton_selectTestImage."
 
-            given image path input from the user, calls testFeature() for
-            each process class. Enabling passing groups, while disabling
-            failing groups.
+        given image path input from the user, calls testFeature() for
+        each process class. Enabling passing groups, while disabling
+        failing groups.
 
-            Ideally, the user will select an example image from their
-            imaging setup and the available features will become available."""
+        Ideally, the user will select an example image from their
+        imaging setup and the available features will become available.
+        """
+        # be sure we start with a clean slate
+        self.reset_working_variables()
+        # If folder monitoring is on turn it off
+        if self.folder_watcher.is_monitoring:
+            self.toggle_folder_monitoring()
 
+        # ask the user for an example image file
         imgPath, _ = QtWidgets.QFileDialog.getOpenFileName(
-                None, "Open Sample Image", QtCore.QDir.homePath())
+                None, "Open Sample Image")
         if imgPath == '':
             return
         try:
@@ -1123,13 +1130,14 @@ class appWindow(QMainWindow):
             ccStatus = False
             print('ccStatus returned exception:')
             print(e)
-        try:
-            eqStatus = self.eqRead.testFeature(imgPath)
-        except Exception as e:
-            eqStatus = False
-            print('eqStatus returned exception:')
-            print(e)
+#        try:
+#            eqStatus = self.eqRead.testFeature(imgPath)
+#        except Exception as e:
+#            eqStatus = False
+#            print('eqStatus returned exception:')
+#            print(e)
         # each relevant feature, and the associated status
+        eqStatus = True
         features = {self.mainWindow.group_barcodeDetection: bcStatus,
                     self.mainWindow.group_renameByBarcode: bcStatus,
                     self.mainWindow.group_blurDetection: blurStatus,
@@ -1142,11 +1150,15 @@ class appWindow(QMainWindow):
 
         for feature, status in features.items():
             feature.setEnabled(status)
-            #if not status:
+            # if not status:
             feature.setChecked(status)
 
         # store the discovered settings
         self.saveSettings()
+        # reset working variables
+        self.reset_working_variables()
+        # restart the folder watcher with any changes made
+        self.setup_Folder_Watcher()
 
     def fill_patterns(self, joinedPattern):
         """
@@ -1452,7 +1464,7 @@ class appWindow(QMainWindow):
         # QDoubleSpinBox
         doubleSpinBox_focalDistance = float(self.get('doubleSpinBox_focalDistance', 25.5))
         self.mainWindow.doubleSpinBox_focalDistance.setValue(doubleSpinBox_focalDistance)
-        doubleSpinBox_blurThreshold = float(self.get('doubleSpinBox_blurThreshold', 0.008))
+        doubleSpinBox_blurThreshold = float(self.get('doubleSpinBox_blurThreshold', 0.045))
         self.mainWindow.doubleSpinBox_blurThreshold.setValue(doubleSpinBox_blurThreshold)
 
         # slider
