@@ -75,7 +75,7 @@ class Event_Handler(PatternMatchingEventHandler):
                 # This solution could be improved
                 time.sleep(.1)
                 #print(f'you had to wait {waits} times')
-                waits += 1
+                #waits += 1
 
             self._emitter.new_image_signal.emit(img_path)
         elif (event_type in self._removeEvents) and (img_path != self.last_item):
