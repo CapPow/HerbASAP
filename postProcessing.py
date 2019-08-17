@@ -725,8 +725,16 @@ class appWindow(QMainWindow):
         try:
             im = self.openImageFile(img_path)
         except (LibRawFatalError, LibRawNonFatalError) as e:
+            # prepare to wipe the slate clean and exit (this function)
             self.reset_working_variables()
+            # attempt to recover from the error
+            self.process_from_queue()
+            # if the folder_watcher is operating, update session stats
+            if self.folder_watcher.is_monitoring:
+                self.folder_watcher.img_count += 1
+                self.update_session_stats()
             return
+
         print(f'processing: {img_path}')
         self.img_path = img_path
         file_name, self.ext = os.path.splitext(img_path)
