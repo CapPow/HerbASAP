@@ -8,7 +8,7 @@
     <x>0</x>
     <y>0</y>
     <width>712</width>
-    <height>638</height>
+    <height>635</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -392,33 +392,7 @@
                 <property name="bottomMargin">
                  <number>3</number>
                 </property>
-                <item row="2" column="0">
-                 <widget class="QPushButton" name="pushButton_toggleMonitoring">
-                  <property name="text">
-                   <string>Begin Monitoring Folder</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="2">
-                 <widget class="QLabel" name="label_speedAnimal">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="scaledContents">
-                   <bool>false</bool>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="0" colspan="3">
+                <item row="0" column="0" colspan="5">
                  <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,2,0">
                   <property name="spacing">
                    <number>6</number>
@@ -452,7 +426,7 @@
                   </item>
                  </layout>
                 </item>
-                <item row="1" column="0" colspan="3">
+                <item row="1" column="0" colspan="5">
                  <layout class="QGridLayout" name="gridLayout_20" columnstretch="1,0,0,0">
                   <item row="1" column="3">
                    <widget class="QLabel" name="label_rate">
@@ -549,6 +523,30 @@
                   </item>
                  </layout>
                 </item>
+                <item row="2" column="0">
+                 <layout class="QVBoxLayout" name="verticalLayout_6">
+                  <item>
+                   <widget class="QPushButton" name="pushButton_toggleMonitoring">
+                    <property name="text">
+                     <string>Begin Monitoring Folder</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="verticalSpacer_4">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
                 <item row="2" column="1">
                  <spacer name="verticalSpacer_3">
                   <property name="orientation">
@@ -561,6 +559,25 @@
                    </size>
                   </property>
                  </spacer>
+                </item>
+                <item row="2" column="2">
+                 <widget class="QLabel" name="label_speedAnimal">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="scaledContents">
+                   <bool>false</bool>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -688,8 +705,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>698</width>
-             <height>582</height>
+             <width>688</width>
+             <height>576</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -1016,7 +1033,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>681</width>
+               <width>671</width>
                <height>955</height>
               </rect>
              </property>

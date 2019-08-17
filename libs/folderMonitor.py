@@ -62,11 +62,21 @@ class Event_Handler(PatternMatchingEventHandler):
             img_path = event.dest_path
         # if it is leaving the self.watch_dir, set self.last_item = None
         if (path.dirname(img_path) != self.watch_dir) or event.event_type in self._removeEvents:
-            # if a file is moved out out self.watch_dir:
+            # if a file is moved out of self.watch_dir:
             if img_path == self.last_item:
                 self.last_item = None
         # if the event is an emit event and has not been seen emit it.
         if (event_type in self._emitEvents) and (img_path != self.last_item):
+            # first be sure it has finished arriving to the destination folder
+            historicalSize = -1
+            #waits = 1
+            while (historicalSize != path.getsize(img_path)):
+                historicalSize = path.getsize(img_path)
+                # This solution could be improved
+                time.sleep(.1)
+                #print(f'you had to wait {waits} times')
+                waits += 1
+
             self._emitter.new_image_signal.emit(img_path)
         elif (event_type in self._removeEvents) and (img_path != self.last_item):
             # handle when the last image was removed for recapture
