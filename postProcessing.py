@@ -527,7 +527,6 @@ class appWindow(QMainWindow):
         self.mainWindow.label_barcodes.setText('')
         self.mainWindow.label_runtime.setText('')
         self.mainWindow.label_whitergb.setText('')
-        self.mainWindow.label_quad.setText('')
         self.mainWindow.label_isBlurry.setText('')
         self.mainWindow.label_lapnorm.setText('')
 
@@ -848,7 +847,6 @@ class appWindow(QMainWindow):
         self.mainWindow.label_runtime.setText(str(cc_crop_time))
         # there has got to be a better way to convert this list of np.floats
         self.mainWindow.label_whitergb.setText(', '.join([str(int(x)) for x in cc_avg_white]))
-        self.mainWindow.label_quad.setText(str(cc_position))
         
         # give app a moment to update
         app.processEvents()

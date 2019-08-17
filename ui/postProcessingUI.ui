@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>714</width>
-    <height>685</height>
+    <width>712</width>
+    <height>638</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -61,11 +61,14 @@
         <item row="0" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="0,1">
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_4" stretch="1,2,1,1">
+           <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,1,0,1">
+            <property name="sizeConstraint">
+             <enum>QLayout::SetDefaultConstraint</enum>
+            </property>
             <item>
              <widget class="QFrame" name="frame_diagnostics">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -99,6 +102,11 @@
                </property>
                <item row="0" column="0">
                 <widget class="QLabel" name="label_35">
+                 <property name="font">
+                  <font>
+                   <pointsize>14</pointsize>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>Process time:</string>
                  </property>
@@ -161,6 +169,13 @@
                </item>
                <item row="3" column="1">
                 <widget class="QLabel" name="label_lapnorm">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
                  <property name="text">
                   <string/>
                  </property>
@@ -199,34 +214,17 @@
                  </property>
                 </widget>
                </item>
-               <item row="6" column="0">
-                <widget class="QLabel" name="label_26">
-                 <property name="text">
-                  <string>CC quadrant:</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                 </property>
-                </widget>
-               </item>
                <item row="6" column="1">
-                <widget class="QLabel" name="label_quad">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="0">
-                <widget class="QLabel" name="label_20">
-                 <property name="text">
-                  <string>CC white rgb:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="1">
                 <widget class="QLabel" name="label_whitergb">
                  <property name="text">
                   <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_20">
+                 <property name="text">
+                  <string>CC white rgb:</string>
                  </property>
                 </widget>
                </item>
@@ -279,7 +277,7 @@
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>75</height>
+                  <height>50</height>
                  </size>
                 </property>
                 <property name="text">
@@ -295,7 +293,7 @@
             <item>
              <widget class="QGroupBox" name="formGroupBox_sessionMetadata">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -372,6 +370,12 @@
                <bool>false</bool>
               </property>
               <widget class="QWidget" name="gridTabWidget_sessionSelect">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <attribute name="title">
                 <string>Monitor Folder</string>
                </attribute>
@@ -388,7 +392,33 @@
                 <property name="bottomMargin">
                  <number>3</number>
                 </property>
-                <item row="0" column="0" colspan="2">
+                <item row="2" column="0">
+                 <widget class="QPushButton" name="pushButton_toggleMonitoring">
+                  <property name="text">
+                   <string>Begin Monitoring Folder</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="2">
+                 <widget class="QLabel" name="label_speedAnimal">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="scaledContents">
+                   <bool>false</bool>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0" colspan="3">
                  <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,2,0">
                   <property name="spacing">
                    <number>6</number>
@@ -422,21 +452,8 @@
                   </item>
                  </layout>
                 </item>
-                <item row="2" column="1">
-                 <widget class="QLabel" name="label_speedAnimal">
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="scaledContents">
-                   <bool>false</bool>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="0" colspan="2">
-                 <layout class="QGridLayout" name="gridLayout_20" columnstretch="1,1,1,0">
+                <item row="1" column="0" colspan="3">
+                 <layout class="QGridLayout" name="gridLayout_20" columnstretch="1,0,0,0">
                   <item row="1" column="3">
                    <widget class="QLabel" name="label_rate">
                     <property name="font">
@@ -446,37 +463,6 @@
                     </property>
                     <property name="text">
                      <string>0.00</string>
-                    </property>
-                    <property name="scaledContents">
-                     <bool>true</bool>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                    <property name="textInteractionFlags">
-                     <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QLabel" name="label_31">
-                    <property name="text">
-                     <string>Image Count</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="1">
-                   <widget class="QLabel" name="label_imgCount">
-                    <property name="font">
-                     <font>
-                      <pointsize>15</pointsize>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>0</string>
                     </property>
                     <property name="scaledContents">
                      <bool>true</bool>
@@ -530,14 +516,51 @@
                     </property>
                    </widget>
                   </item>
+                  <item row="1" column="1">
+                   <widget class="QLabel" name="label_imgCount">
+                    <property name="font">
+                     <font>
+                      <pointsize>15</pointsize>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>0</string>
+                    </property>
+                    <property name="scaledContents">
+                     <bool>true</bool>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                    <property name="textInteractionFlags">
+                     <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="label_31">
+                    <property name="text">
+                     <string>Image Count</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
                  </layout>
                 </item>
-                <item row="2" column="0">
-                 <widget class="QPushButton" name="pushButton_toggleMonitoring">
-                  <property name="text">
-                   <string>Begin Monitoring Folder</string>
+                <item row="2" column="1">
+                 <spacer name="verticalSpacer_3">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
                   </property>
-                 </widget>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
                 </item>
                </layout>
               </widget>
@@ -665,8 +688,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>690</width>
-             <height>626</height>
+             <width>698</width>
+             <height>582</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -993,7 +1016,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>673</width>
+               <width>681</width>
                <height>955</height>
               </rect>
              </property>
