@@ -1,0 +1,11 @@
+<RCC>
+  <qresource prefix="icon">
+    <file>rabbit3.png</file>
+    <file>rabbit2.png</file>
+    <file>human.png</file>
+    <file>edit.svg</file>
+    <file>rabbit.png</file>
+    <file>turtle.png</file>
+    <file>trash-2.svg</file>
+  </qresource>
+</RCC>

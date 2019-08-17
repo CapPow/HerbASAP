@@ -305,8 +305,15 @@ class ColorchipRead:
         original_width, original_height = original_size
 
         cv_image = cv2.cvtColor(nim, cv2.COLOR_BGR2HSV)
+        
+        partition_area = partition_size * partition_size
+        contour_area_floor = partition_area // 10
+        contour_area_ceiling = partition_area // 0.5
+        squares = self.find_squares(cv_image,
+                                    contour_area_floor=contour_area_floor,
+                                    contour_area_ceiling=contour_area_ceiling,
+                                    leap=17)
 
-        squares = self.find_squares(cv_image, contour_area_floor=5000, contour_area_ceiling=54000, leap=51)
         squares = np.array(squares)
 
         part_im = []
@@ -426,7 +433,7 @@ class ColorchipRead:
                 # determine a a min / max based on partition_size
                 partition_area = partition_size * partition_size
                 min_crop_area = partition_area // 10
-                max_crop_area = partition_area // 1.15
+                max_crop_area = partition_area // 1.2
                 # identify squares in the crop
                 squares = ColorchipRead.find_squares(cv_best_image,
                                                      contour_area_floor=min_crop_area,
@@ -446,7 +453,7 @@ class ColorchipRead:
         except Exception as e:
             raise InvalidStride
 
-        print(f"High precision took {time.time() - hpstart} seconds.")
+        #print(f"High precision took {time.time() - hpstart} seconds.")
         prop_x1, prop_y1, prop_x2, prop_y2 = x1 / image_width, y1 / image_height, x2 / image_width, y2 / image_height
 
         scaled_x1, scaled_y1, scaled_x2, scaled_y2 = prop_x1 * original_width, \

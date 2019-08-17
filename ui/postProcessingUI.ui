@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>685</width>
-    <height>700</height>
+    <width>640</width>
+    <height>675</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,7 +16,19 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="1">
+    <property name="leftMargin">
+     <number>6</number>
+    </property>
+    <property name="topMargin">
+     <number>3</number>
+    </property>
+    <property name="rightMargin">
+     <number>6</number>
+    </property>
+    <property name="bottomMargin">
+     <number>6</number>
+    </property>
+    <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
        <number>0</number>
@@ -24,282 +36,29 @@
       <property name="usesScrollButtons">
        <bool>true</bool>
       </property>
-      <widget class="QWidget" name="autoPostProcessingTab">
+      <widget class="QWidget" name="folderMonitorTab">
        <attribute name="title">
-        <string>Auto Post Processing</string>
+        <string>Process Images</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_16">
-        <item row="3" column="0" colspan="2">
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <widget class="QPushButton" name="pushButton_toggleMonitoring">
-            <property name="text">
-             <string>Begin Monitoring Folder</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_7">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton_processMulti">
-            <property name="text">
-             <string>Process Directory</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_12">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton_processSingle">
-            <property name="text">
-             <string>   Process Image   </string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_8">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QToolButton" name="toolButton_delPreviousImage">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="autoFillBackground">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="assets/assets.qrc">
-              <normaloff>:/icon/trash-2.svg</normaloff>:/icon/trash-2.svg</iconset>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="1" column="0">
+       <layout class="QGridLayout" name="gridLayout_22">
+        <property name="leftMargin">
+         <number>3</number>
+        </property>
+        <property name="topMargin">
+         <number>3</number>
+        </property>
+        <property name="rightMargin">
+         <number>3</number>
+        </property>
+        <property name="bottomMargin">
+         <number>3</number>
+        </property>
+        <item row="0" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="0,1">
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
-             <widget class="QGroupBox" name="gridGroupBox_sessionRates">
-              <property name="title">
-               <string>Save Session Rates</string>
-              </property>
-              <property name="flat">
-               <bool>false</bool>
-              </property>
-              <property name="checkable">
-               <bool>true</bool>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
-              </property>
-              <layout class="QFormLayout" name="formLayout_sessionData">
-               <property name="labelAlignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_14">
-                 <property name="text">
-                  <string>Technician:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <layout class="QHBoxLayout" name="horizontalLayout_6">
-                 <property name="spacing">
-                  <number>6</number>
-                 </property>
-                 <item>
-                  <widget class="QComboBox" name="comboBox_technician"/>
-                 </item>
-                 <item>
-                  <widget class="QToolButton" name="toolButton_editTechnicians">
-                   <property name="text">
-                    <string>...</string>
-                   </property>
-                   <property name="icon">
-                    <iconset resource="assets/assets.qrc">
-                     <normaloff>:/icon/edit.svg</normaloff>:/icon/edit.svg</iconset>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="2" column="0" colspan="2">
-                <layout class="QGridLayout" name="gridLayout_20">
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="label_runTime">
-                   <property name="font">
-                    <font>
-                     <pointsize>15</pointsize>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>00:00</string>
-                   </property>
-                   <property name="scaledContents">
-                    <bool>true</bool>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                   <property name="textInteractionFlags">
-                    <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="2">
-                  <widget class="QLabel" name="label_rate">
-                   <property name="font">
-                    <font>
-                     <pointsize>15</pointsize>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>0.00 / min</string>
-                   </property>
-                   <property name="scaledContents">
-                    <bool>true</bool>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                   <property name="textInteractionFlags">
-                    <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QLabel" name="label_imgCount">
-                   <property name="font">
-                    <font>
-                     <pointsize>15</pointsize>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>0000</string>
-                   </property>
-                   <property name="scaledContents">
-                    <bool>true</bool>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                   <property name="textInteractionFlags">
-                    <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_29">
-                   <property name="text">
-                    <string>Session Time</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QLabel" name="label_31">
-                   <property name="text">
-                    <string>Image Count</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="2">
-                  <widget class="QLabel" name="label_32">
-                   <property name="text">
-                    <string>Rate</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="formGroupBox_sessionMetadata">
-              <property name="title">
-               <string>Apply Session Metadata</string>
-              </property>
-              <property name="checkable">
-               <bool>true</bool>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
-              </property>
-              <layout class="QFormLayout" name="formLayout_metaData">
-               <property name="labelAlignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_19">
-                 <property name="text">
-                  <string>Collector:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <widget class="QLineEdit" name="lineEdit_collectorName"/>
-               </item>
-               <item row="1" column="1">
-                <widget class="QLineEdit" name="lineEdit_taxonName"/>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_16">
-                 <property name="text">
-                  <string>Taxon:</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <spacer name="verticalSpacer_2">
+             <spacer name="verticalSpacer_3">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
               </property>
@@ -323,31 +82,30 @@
                <property name="labelAlignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
+               <property name="leftMargin">
+                <number>3</number>
+               </property>
+               <property name="topMargin">
+                <number>3</number>
+               </property>
+               <property name="rightMargin">
+                <number>3</number>
+               </property>
+               <property name="bottomMargin">
+                <number>3</number>
+               </property>
                <item row="0" column="0">
-                <spacer name="verticalSpacer_5">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="1" column="0">
                 <widget class="QLabel" name="label_35">
                  <property name="text">
                   <string>Process time:</string>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="1">
+               <item row="0" column="1">
                 <widget class="QLabel" name="label_processtime">
                  <property name="font">
                   <font>
-                   <pointsize>16</pointsize>
+                   <pointsize>12</pointsize>
                    <weight>75</weight>
                    <bold>true</bold>
                   </font>
@@ -357,47 +115,21 @@
                  </property>
                 </widget>
                </item>
-               <item row="2" column="0">
-                <spacer name="verticalSpacer_4">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="3" column="0">
+               <item row="1" column="0">
                 <widget class="QLabel" name="label_22">
                  <property name="text">
                   <string>Barcodes:</string>
                  </property>
                 </widget>
                </item>
-               <item row="3" column="1">
+               <item row="1" column="1">
                 <widget class="QLabel" name="label_barcodes">
                  <property name="text">
                   <string/>
                  </property>
                 </widget>
                </item>
-               <item row="4" column="0">
-                <spacer name="verticalSpacer">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="5" column="0">
+               <item row="2" column="0">
                 <widget class="QLabel" name="label_18">
                  <property name="text">
                   <string>Is blurry:</string>
@@ -407,14 +139,14 @@
                  </property>
                 </widget>
                </item>
-               <item row="5" column="1">
+               <item row="2" column="1">
                 <widget class="QLabel" name="label_isBlurry">
                  <property name="text">
                   <string/>
                  </property>
                 </widget>
                </item>
-               <item row="6" column="0">
+               <item row="3" column="0">
                 <widget class="QLabel" name="label_21">
                  <property name="text">
                   <string>Norm. Laplacian:</string>
@@ -424,14 +156,14 @@
                  </property>
                 </widget>
                </item>
-               <item row="6" column="1">
+               <item row="3" column="1">
                 <widget class="QLabel" name="label_lapnorm">
                  <property name="text">
                   <string/>
                  </property>
                 </widget>
                </item>
-               <item row="7" column="1">
+               <item row="4" column="1">
                 <widget class="QLabel" name="label_17">
                  <property name="enabled">
                   <bool>false</bool>
@@ -450,21 +182,21 @@
                  </property>
                 </widget>
                </item>
-               <item row="8" column="0">
+               <item row="5" column="0">
                 <widget class="QLabel" name="label_24">
                  <property name="text">
                   <string>CC runtime:</string>
                  </property>
                 </widget>
                </item>
-               <item row="8" column="1">
+               <item row="5" column="1">
                 <widget class="QLabel" name="label_runtime">
                  <property name="text">
                   <string/>
                  </property>
                 </widget>
                </item>
-               <item row="9" column="0">
+               <item row="6" column="0">
                 <widget class="QLabel" name="label_26">
                  <property name="text">
                   <string>CC quadrant:</string>
@@ -474,28 +206,75 @@
                  </property>
                 </widget>
                </item>
-               <item row="9" column="1">
+               <item row="6" column="1">
                 <widget class="QLabel" name="label_quad">
                  <property name="text">
                   <string/>
                  </property>
                 </widget>
                </item>
-               <item row="10" column="0">
+               <item row="7" column="0">
                 <widget class="QLabel" name="label_20">
                  <property name="text">
                   <string>CC white rgb:</string>
                  </property>
                 </widget>
                </item>
-               <item row="10" column="1">
+               <item row="7" column="1">
                 <widget class="QLabel" name="label_whitergb">
                  <property name="text">
                   <string/>
                  </property>
                 </widget>
                </item>
-               <item row="11" column="1">
+               <item row="8" column="0">
+                <layout class="QGridLayout" name="gridLayout_16">
+                 <item row="0" column="0">
+                  <spacer name="verticalSpacer_2">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QToolButton" name="toolButton_delPreviousImage">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="autoFillBackground">
+                    <bool>false</bool>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="assets/assets.qrc">
+                     <normaloff>:/icon/trash-2.svg</normaloff>:/icon/trash-2.svg</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <spacer name="horizontalSpacer_7">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
+               <item row="8" column="1">
                 <widget class="QLabel" name="label_cc_image">
                  <property name="minimumSize">
                   <size>
@@ -514,21 +293,352 @@
               </layout>
              </widget>
             </item>
+            <item>
+             <spacer name="verticalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="formGroupBox_sessionMetadata">
+              <property name="title">
+               <string>Apply Session Metadata</string>
+              </property>
+              <property name="flat">
+               <bool>true</bool>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+              <layout class="QFormLayout" name="formLayout_metaData">
+               <property name="labelAlignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+               <property name="leftMargin">
+                <number>3</number>
+               </property>
+               <property name="topMargin">
+                <number>3</number>
+               </property>
+               <property name="rightMargin">
+                <number>3</number>
+               </property>
+               <property name="bottomMargin">
+                <number>3</number>
+               </property>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_16">
+                 <property name="text">
+                  <string>Taxon:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QLineEdit" name="lineEdit_taxonName"/>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_19">
+                 <property name="text">
+                  <string>Collector:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QLineEdit" name="lineEdit_collectorName"/>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_5">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QTabWidget" name="gridTabWidget_sessionMonitor">
+              <property name="autoFillBackground">
+               <bool>false</bool>
+              </property>
+              <property name="tabPosition">
+               <enum>QTabWidget::North</enum>
+              </property>
+              <property name="tabShape">
+               <enum>QTabWidget::Rounded</enum>
+              </property>
+              <property name="currentIndex">
+               <number>0</number>
+              </property>
+              <property name="elideMode">
+               <enum>Qt::ElideNone</enum>
+              </property>
+              <property name="documentMode">
+               <bool>false</bool>
+              </property>
+              <widget class="QWidget" name="gridTabWidget_sessionSelect">
+               <attribute name="title">
+                <string>Monitor Folder</string>
+               </attribute>
+               <layout class="QGridLayout" name="gridLayout_23">
+                <property name="leftMargin">
+                 <number>3</number>
+                </property>
+                <property name="topMargin">
+                 <number>3</number>
+                </property>
+                <property name="rightMargin">
+                 <number>3</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>3</number>
+                </property>
+                <item row="0" column="0" colspan="2">
+                 <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,2,0">
+                  <property name="spacing">
+                   <number>6</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_14">
+                    <property name="text">
+                     <string>Technician:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="comboBox_technician"/>
+                  </item>
+                  <item>
+                   <widget class="QToolButton" name="toolButton_editTechnicians">
+                    <property name="text">
+                     <string>...</string>
+                    </property>
+                    <property name="icon">
+                     <iconset resource="assets/assets.qrc">
+                      <normaloff>:/icon/edit.svg</normaloff>:/icon/edit.svg</iconset>
+                    </property>
+                    <property name="popupMode">
+                     <enum>QToolButton::InstantPopup</enum>
+                    </property>
+                    <property name="autoRaise">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QLabel" name="label_speedAnimal">
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="scaledContents">
+                   <bool>false</bool>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0" colspan="2">
+                 <layout class="QGridLayout" name="gridLayout_20" columnstretch="1,1,1,0">
+                  <item row="1" column="3">
+                   <widget class="QLabel" name="label_rate">
+                    <property name="font">
+                     <font>
+                      <pointsize>15</pointsize>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>0.00</string>
+                    </property>
+                    <property name="scaledContents">
+                     <bool>true</bool>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                    <property name="textInteractionFlags">
+                     <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="label_31">
+                    <property name="text">
+                     <string>Image Count</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QLabel" name="label_imgCount">
+                    <property name="font">
+                     <font>
+                      <pointsize>15</pointsize>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>0</string>
+                    </property>
+                    <property name="scaledContents">
+                     <bool>true</bool>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                    <property name="textInteractionFlags">
+                     <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="3">
+                   <widget class="QLabel" name="label_32">
+                    <property name="text">
+                     <string>Rate (per min)</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="2">
+                   <widget class="QLabel" name="label_29">
+                    <property name="text">
+                     <string>Session Minutes</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="2">
+                   <widget class="QLabel" name="label_runTime">
+                    <property name="font">
+                     <font>
+                      <pointsize>15</pointsize>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>0.00</string>
+                    </property>
+                    <property name="scaledContents">
+                     <bool>true</bool>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                    <property name="textInteractionFlags">
+                     <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QPushButton" name="pushButton_toggleMonitoring">
+                  <property name="text">
+                   <string>Begin Monitoring Folder</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="tab">
+               <attribute name="title">
+                <string>Select Image(s)</string>
+               </attribute>
+               <layout class="QGridLayout" name="gridLayout_21">
+                <property name="leftMargin">
+                 <number>3</number>
+                </property>
+                <property name="topMargin">
+                 <number>3</number>
+                </property>
+                <property name="rightMargin">
+                 <number>3</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>3</number>
+                </property>
+                <item row="0" column="1">
+                 <spacer name="verticalSpacer">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QPushButton" name="pushButton_processMulti">
+                  <property name="text">
+                   <string>Process Entire Directory</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QPushButton" name="pushButton_processSingle">
+                  <property name="text">
+                   <string>Process Select Image(s)</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <spacer name="horizontalSpacer_13">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </widget>
+             </widget>
+            </item>
            </layout>
           </item>
           <item>
            <widget class="QLabel" name="label_imPreview">
             <property name="minimumSize">
              <size>
-              <width>1</width>
+              <width>100</width>
               <height>1</height>
              </size>
             </property>
             <property name="font">
              <font>
-              <pointsize>48</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
+              <pointsize>28</pointsize>
+              <weight>50</weight>
+              <italic>true</italic>
+              <bold>false</bold>
              </font>
             </property>
             <property name="text">
@@ -537,17 +647,35 @@
             <property name="scaledContents">
              <bool>false</bool>
             </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::NoTextInteraction</set>
+            </property>
            </widget>
           </item>
          </layout>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="monitorFolderTab">
+      <widget class="QWidget" name="imgPathsTab">
        <attribute name="title">
-        <string>Image Locations</string>
+        <string>Image Paths</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_15">
+        <property name="leftMargin">
+         <number>3</number>
+        </property>
+        <property name="topMargin">
+         <number>3</number>
+        </property>
+        <property name="rightMargin">
+         <number>3</number>
+        </property>
+        <property name="bottomMargin">
+         <number>3</number>
+        </property>
         <item row="0" column="0">
          <widget class="QScrollArea" name="monitor_scrollArea">
           <property name="widgetResizable">
@@ -558,11 +686,23 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>643</width>
-             <height>586</height>
+             <width>489</width>
+             <height>551</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
+            <property name="leftMargin">
+             <number>3</number>
+            </property>
+            <property name="topMargin">
+             <number>3</number>
+            </property>
+            <property name="rightMargin">
+             <number>3</number>
+            </property>
+            <property name="bottomMargin">
+             <number>3</number>
+            </property>
             <item>
              <widget class="QGroupBox" name="group_inputSettings">
               <property name="title">
@@ -572,20 +712,22 @@
                <bool>false</bool>
               </property>
               <layout class="QGridLayout" name="gridLayout_11">
+               <property name="leftMargin">
+                <number>3</number>
+               </property>
+               <property name="topMargin">
+                <number>3</number>
+               </property>
+               <property name="rightMargin">
+                <number>3</number>
+               </property>
+               <property name="bottomMargin">
+                <number>3</number>
+               </property>
                <item row="1" column="1">
                 <widget class="QLineEdit" name="lineEdit_inputPath">
                  <property name="enabled">
                   <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0" colspan="2">
-                <widget class="QLabel" name="label_3">
-                 <property name="text">
-                  <string>Input folder path (the location to monitor for newly captured photos)</string>
-                 </property>
-                 <property name="buddy">
-                  <cstring>label_3</cstring>
                  </property>
                 </widget>
                </item>
@@ -603,6 +745,16 @@
                  </property>
                 </widget>
                </item>
+               <item row="0" column="0" colspan="3">
+                <widget class="QLabel" name="label_3">
+                 <property name="text">
+                  <string>Input folder path (the location to monitor for newly captured photos)</string>
+                 </property>
+                 <property name="buddy">
+                  <cstring>label_3</cstring>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </widget>
             </item>
@@ -615,13 +767,18 @@
                <bool>true</bool>
               </property>
               <layout class="QGridLayout" name="gridLayout_10">
-               <item row="0" column="0" colspan="2">
-                <widget class="QLabel" name="label_4">
-                 <property name="text">
-                  <string>Destination folder path (the location to save unprocessed archive format images)</string>
-                 </property>
-                </widget>
-               </item>
+               <property name="leftMargin">
+                <number>3</number>
+               </property>
+               <property name="topMargin">
+                <number>3</number>
+               </property>
+               <property name="rightMargin">
+                <number>3</number>
+               </property>
+               <property name="bottomMargin">
+                <number>3</number>
+               </property>
                <item row="1" column="0">
                 <widget class="QLabel" name="label_7">
                  <property name="text">
@@ -643,6 +800,13 @@
                  </property>
                 </widget>
                </item>
+               <item row="0" column="0" colspan="3">
+                <widget class="QLabel" name="label_4">
+                 <property name="text">
+                  <string>Destination folder path (the location to save unprocessed archive format images)</string>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </widget>
             </item>
@@ -655,6 +819,18 @@
                <bool>true</bool>
               </property>
               <layout class="QGridLayout" name="gridLayout_13">
+               <property name="leftMargin">
+                <number>3</number>
+               </property>
+               <property name="topMargin">
+                <number>3</number>
+               </property>
+               <property name="rightMargin">
+                <number>3</number>
+               </property>
+               <property name="bottomMargin">
+                <number>3</number>
+               </property>
                <item row="1" column="0">
                 <widget class="QLabel" name="label_9">
                  <property name="text">
@@ -676,7 +852,7 @@
                  </property>
                 </widget>
                </item>
-               <item row="0" column="0" colspan="2">
+               <item row="0" column="0" colspan="3">
                 <widget class="QLabel" name="label_11">
                  <property name="text">
                   <string>Destination folder path (the location to save processed images as JPG files)</string>
@@ -695,17 +871,22 @@
                <bool>true</bool>
               </property>
               <layout class="QGridLayout" name="gridLayout_12">
+               <property name="leftMargin">
+                <number>3</number>
+               </property>
+               <property name="topMargin">
+                <number>3</number>
+               </property>
+               <property name="rightMargin">
+                <number>3</number>
+               </property>
+               <property name="bottomMargin">
+                <number>3</number>
+               </property>
                <item row="1" column="1">
                 <widget class="QLineEdit" name="lineEdit_pathProcessedTIFF">
                  <property name="enabled">
                   <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0" colspan="2">
-                <widget class="QLabel" name="label_5">
-                 <property name="text">
-                  <string>Destination folder path (the location to save processed images as TIFF files)</string>
                  </property>
                 </widget>
                </item>
@@ -723,6 +904,13 @@
                  </property>
                 </widget>
                </item>
+               <item row="0" column="0" colspan="3">
+                <widget class="QLabel" name="label_5">
+                 <property name="text">
+                  <string>Destination folder path (the location to save processed images as TIFF files)</string>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </widget>
             </item>
@@ -735,6 +923,18 @@
                <bool>true</bool>
               </property>
               <layout class="QGridLayout" name="gridLayout_14">
+               <property name="leftMargin">
+                <number>3</number>
+               </property>
+               <property name="topMargin">
+                <number>3</number>
+               </property>
+               <property name="rightMargin">
+                <number>3</number>
+               </property>
+               <property name="bottomMargin">
+                <number>3</number>
+               </property>
                <item row="1" column="1">
                 <widget class="QLineEdit" name="lineEdit_pathProcessedPng">
                  <property name="enabled">
@@ -756,7 +956,7 @@
                  </property>
                 </widget>
                </item>
-               <item row="0" column="0" colspan="2">
+               <item row="0" column="0" colspan="3">
                 <widget class="QLabel" name="label_12">
                  <property name="text">
                   <string>Destination folder path (the location to save processed images as PNG files)</string>
@@ -772,11 +972,23 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="preferencesTab">
+      <widget class="QWidget" name="settingsTab">
        <attribute name="title">
-        <string>Processes</string>
+        <string>Settings</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
+        <property name="leftMargin">
+         <number>3</number>
+        </property>
+        <property name="topMargin">
+         <number>3</number>
+        </property>
+        <property name="rightMargin">
+         <number>3</number>
+        </property>
+        <property name="bottomMargin">
+         <number>3</number>
+        </property>
         <item row="0" column="0">
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
@@ -789,11 +1001,23 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>626</width>
-               <height>1019</height>
+               <width>523</width>
+               <height>911</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_2">
+              <property name="leftMargin">
+               <number>3</number>
+              </property>
+              <property name="topMargin">
+               <number>3</number>
+              </property>
+              <property name="rightMargin">
+               <number>3</number>
+              </property>
+              <property name="bottomMargin">
+               <number>3</number>
+              </property>
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_3">
                 <item>
@@ -840,6 +1064,18 @@
                  <bool>false</bool>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_6">
+                 <property name="leftMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>3</number>
+                 </property>
                  <item row="1" column="0" colspan="2">
                   <widget class="QGroupBox" name="group_renameByBarcode">
                    <property name="enabled">
@@ -855,6 +1091,18 @@
                     <bool>true</bool>
                    </property>
                    <layout class="QGridLayout" name="gridLayout_3">
+                    <property name="leftMargin">
+                     <number>3</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>3</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>3</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>3</number>
+                    </property>
                     <item row="0" column="2">
                      <widget class="QLabel" name="label_digits">
                       <property name="enabled">
@@ -1116,6 +1364,18 @@
                  <string>Blur detection</string>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_8">
+                 <property name="leftMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>3</number>
+                 </property>
                  <item row="2" column="0" colspan="2">
                   <widget class="QLabel" name="label_15">
                    <property name="enabled">
@@ -1211,6 +1471,18 @@
                  <bool>false</bool>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_4">
+                 <property name="leftMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>3</number>
+                 </property>
                  <item row="0" column="0">
                   <widget class="QGroupBox" name="groupBox_colorCheckerSize">
                    <property name="enabled">
@@ -1220,6 +1492,18 @@
                     <string>Color checker size</string>
                    </property>
                    <layout class="QGridLayout" name="gridLayout_17">
+                    <property name="leftMargin">
+                     <number>3</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>3</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>3</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>3</number>
+                    </property>
                     <item row="0" column="0">
                      <widget class="QRadioButton" name="radioButton_colorCheckerSmall">
                       <property name="text">
@@ -1268,6 +1552,18 @@
                     <bool>true</bool>
                    </property>
                    <layout class="QGridLayout" name="gridLayout_5">
+                    <property name="leftMargin">
+                     <number>3</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>3</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>3</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>3</number>
+                    </property>
                     <item row="0" column="2">
                      <spacer name="horizontalSpacer_2">
                       <property name="orientation">
@@ -1358,6 +1654,18 @@
                  <bool>false</bool>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_7">
+                 <property name="leftMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>3</number>
+                 </property>
                  <item row="4" column="1">
                   <layout class="QHBoxLayout" name="horizontalLayout">
                    <item>
@@ -1432,6 +1740,18 @@
                  <bool>false</bool>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_19" columnstretch="0,3,0">
+                 <property name="leftMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>3</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>3</number>
+                 </property>
                  <item row="1" column="1">
                   <widget class="QPlainTextEdit" name="plainTextEdit_collectionName">
                    <property name="sizePolicy">
@@ -1621,35 +1941,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>685</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuFolder">
-    <property name="title">
-     <string>Folder</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuHelp">
-    <property name="title">
-     <string>Help</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuSettings">
-    <property name="title">
-     <string>Settings</string>
-    </property>
-   </widget>
-   <addaction name="menuFolder"/>
-   <addaction name="menuSettings"/>
-   <addaction name="menuHelp"/>
-  </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <tabstops>
   <tabstop>lineEdit_inputPath</tabstop>
@@ -1673,7 +1964,6 @@
   <tabstop>plainTextEdit_collectionName</tabstop>
   <tabstop>plainTextEdit_copywriteLicense</tabstop>
   <tabstop>monitor_scrollArea</tabstop>
-  <tabstop>pushButton_processMulti</tabstop>
   <tabstop>plainTextEdit_contactEmail</tabstop>
   <tabstop>plainTextEdit_contactName</tabstop>
   <tabstop>plainTextEdit_collectionURL</tabstop>
@@ -1689,8 +1979,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>349</x>
-     <y>201</y>
+     <x>318</x>
+     <y>172</y>
     </hint>
     <hint type="destinationlabel">
      <x>503</x>
@@ -1705,8 +1995,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>381</x>
-     <y>560</y>
+     <x>350</x>
+     <y>483</y>
     </hint>
     <hint type="destinationlabel">
      <x>255</x>
@@ -1721,8 +2011,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>201</x>
-     <y>535</y>
+     <x>221</x>
+     <y>488</y>
     </hint>
     <hint type="destinationlabel">
      <x>341</x>
@@ -1737,8 +2027,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>275</x>
-     <y>601</y>
+     <x>324</x>
+     <y>515</y>
     </hint>
     <hint type="destinationlabel">
      <x>158</x>
@@ -1753,8 +2043,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>222</x>
-     <y>667</y>
+     <x>201</x>
+     <y>569</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -1769,8 +2059,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>283</x>
-     <y>754</y>
+     <x>332</x>
+     <y>624</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -1785,8 +2075,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>530</x>
-     <y>810</y>
+     <x>490</x>
+     <y>680</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -1801,8 +2091,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>530</x>
-     <y>866</y>
+     <x>490</x>
+     <y>736</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -1817,8 +2107,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>530</x>
-     <y>922</y>
+     <x>490</x>
+     <y>792</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -1833,8 +2123,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>530</x>
-     <y>978</y>
+     <x>490</x>
+     <y>848</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -1849,8 +2139,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>530</x>
-     <y>1034</y>
+     <x>490</x>
+     <y>904</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -1865,8 +2155,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>56</x>
-     <y>273</y>
+     <x>64</x>
+     <y>256</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -1881,8 +2171,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>56</x>
-     <y>406</y>
+     <x>75</x>
+     <y>367</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1897,8 +2187,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>80</x>
-     <y>527</y>
+     <x>99</x>
+     <y>479</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -1913,8 +2203,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>73</x>
-     <y>657</y>
+     <x>92</x>
+     <y>590</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -1929,8 +2219,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>201</x>
-     <y>155</y>
+     <x>336</x>
+     <y>139</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1945,8 +2235,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>273</x>
-     <y>297</y>
+     <x>408</x>
+     <y>251</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -1961,8 +2251,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>273</x>
-     <y>414</y>
+     <x>408</x>
+     <y>362</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1977,8 +2267,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>345</x>
-     <y>532</y>
+     <x>461</x>
+     <y>474</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -1993,8 +2283,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>345</x>
-     <y>649</y>
+     <x>461</x>
+     <y>585</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -2009,8 +2299,8 @@
    <slot>setFolderPath()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>600</x>
-     <y>155</y>
+     <x>552</x>
+     <y>139</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2025,8 +2315,8 @@
    <slot>setFolderPath()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>600</x>
-     <y>297</y>
+     <x>552</x>
+     <y>251</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2041,8 +2331,8 @@
    <slot>setFolderPath()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>600</x>
-     <y>414</y>
+     <x>552</x>
+     <y>362</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2057,8 +2347,8 @@
    <slot>setFolderPath()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>600</x>
-     <y>532</y>
+     <x>552</x>
+     <y>474</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2073,8 +2363,8 @@
    <slot>setFolderPath()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>600</x>
-     <y>649</y>
+     <x>552</x>
+     <y>585</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2089,8 +2379,8 @@
    <slot>updateCatalogNumberPreviews()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>256</x>
-     <y>167</y>
+     <x>225</x>
+     <y>142</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2105,8 +2395,8 @@
    <slot>updateCatalogNumberPreviews()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>349</x>
-     <y>168</y>
+     <x>318</x>
+     <y>141</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2121,8 +2411,8 @@
    <slot>updateCatalogNumberPreviews()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>349</x>
-     <y>201</y>
+     <x>318</x>
+     <y>172</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2137,8 +2427,8 @@
    <slot>testFeatureCompatability()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>310</x>
-     <y>82</y>
+     <x>295</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2169,8 +2459,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>543</x>
-     <y>665</y>
+     <x>522</x>
+     <y>572</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2185,12 +2475,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>202</x>
-     <y>355</y>
+     <x>181</x>
+     <y>305</y>
     </hint>
     <hint type="destinationlabel">
-     <x>274</x>
-     <y>382</y>
+     <x>253</x>
+     <y>337</y>
     </hint>
    </hints>
   </connection>
@@ -2201,12 +2491,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>202</x>
-     <y>355</y>
+     <x>181</x>
+     <y>305</y>
     </hint>
     <hint type="destinationlabel">
-     <x>202</x>
-     <y>382</y>
+     <x>181</x>
+     <y>337</y>
     </hint>
    </hints>
   </connection>
@@ -2217,8 +2507,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>194</x>
-     <y>497</y>
+     <x>167</x>
+     <y>429</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -2233,8 +2523,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>126</x>
-     <y>497</y>
+     <x>99</x>
+     <y>429</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -2249,8 +2539,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>403</x>
-     <y>276</y>
+     <x>372</x>
+     <y>249</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2265,8 +2555,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>552</x>
-     <y>276</y>
+     <x>518</x>
+     <y>249</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2281,8 +2571,8 @@
    <slot>reset_all_settings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>584</x>
-     <y>1080</y>
+     <x>538</x>
+     <y>944</y>
     </hint>
     <hint type="destinationlabel">
      <x>604</x>
@@ -2297,8 +2587,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>349</x>
-     <y>278</y>
+     <x>318</x>
+     <y>249</y>
     </hint>
     <hint type="destinationlabel">
      <x>627</x>
@@ -2307,34 +2597,34 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_processSingle</sender>
+   <sender>pushButton_processMulti</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>process_single_image()</slot>
+   <slot>process_image_directory()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>558</x>
-     <y>672</y>
+     <x>229</x>
+     <y>538</y>
     </hint>
     <hint type="destinationlabel">
-     <x>636</x>
-     <y>531</y>
+     <x>568</x>
+     <y>492</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_processMulti</sender>
+   <sender>pushButton_processSingle</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>process_multi_images()</slot>
+   <slot>process_image_selection()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>42</x>
-     <y>669</y>
+     <x>262</x>
+     <y>571</y>
     </hint>
     <hint type="destinationlabel">
-     <x>6</x>
-     <y>584</y>
+     <x>573</x>
+     <y>536</y>
     </hint>
    </hints>
   </connection>
@@ -2348,7 +2638,7 @@
   <slot>updateEqSettings()</slot>
   <slot>reset_all_settings()</slot>
   <slot>delete_previous_image()</slot>
-  <slot>process_single_image()</slot>
-  <slot>process_multi_images()</slot>
+  <slot>process_image_directory()</slot>
+  <slot>process_image_selection()</slot>
  </slots>
 </ui>

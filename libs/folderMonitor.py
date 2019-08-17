@@ -65,11 +65,12 @@ class Event_Handler(PatternMatchingEventHandler):
             # if a file is moved out out self.watch_dir:
             if img_path == self.last_item:
                 self.last_item = None
-            pass
         # if the event is an emit event and has not been seen emit it.
         if (event_type in self._emitEvents) and (img_path != self.last_item):
-        #(img_path not in self.parent.existing_files):
             self._emitter.new_image_signal.emit(img_path)
+        elif (event_type in self._removeEvents) and (img_path != self.last_item):
+            # handle when the last image was removed for recapture
+            self.last_item = ''
         # remember this was the last object seen.
         self.last_item = img_path
         return
@@ -93,8 +94,22 @@ class Folder_Watcher:
         else:
             self.observer = Observer(timeout=0.2)
             self.is_monitoring = True
+            # store the start time timer for use with get_runtime
+            self.start_time = time.time()
+            self.img_count = 0
             self.observer.schedule(self.event_handler, self.watch_dir)
             self.observer.start()
+
+    def get_runtime(self):
+        """
+        If self.is_monitoring, returns the runtime in decimal minutes,
+        otherwise returns 0.00
+        """
+        if self.is_monitoring:
+            result = round((time.time() - self.start_time) / 60, 2)
+        else:
+            result = 0.00
+        return result
 
     def stop(self):
         while (self.observer.event_queue.unfinished_tasks != 0):

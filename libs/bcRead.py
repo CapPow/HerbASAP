@@ -394,10 +394,11 @@ class bcRead():
             merged_lines_shape = merged_lines.shape
             #print(f'merged_lines shape = {merged_lines_shape}')
             z = zbar_decode(merged_lines, y_density=0, x_density=1)
-            if len(z) < 1 & retry:
+            # this block was necessary for testing a sample of jpgs (probably due to white balancing)
+            #if len(z) < 1 & retry:
                 # if it failed, try once more after darkening it a lot
-                gray = self.adjust_gamma(gray, 0.4)
-                return self.extract_by_squares(gray, retry=False)
+            #    gray = self.adjust_gamma(gray, 0.4)
+            #    return self.extract_by_squares(gray, retry=False)
         return z
 
     def testFeature(self, img):
