@@ -30,42 +30,9 @@ from math import radians
 import site
 from shutil import copyfile
 from platform import system
-
-# Modified pyzbar check
-#site_packages_dir = site.getsitepackages()
-#pyzbar_file = None
-#pyzbar_loc = None
-#try:
-#    if system() == 'Windows':
-#        for potential_dirs in site_packages_dir:
-#            try:
-#                pyzbar_file = open(f"{potential_dirs}\\pyzbar\\pyzbar.py")
-#                pyzbar_loc = f"{potential_dirs}\\pyzbar\\pyzbar.py"
-#            except:
-#                continue
-#    else:
-#        for potential_dirs in site_packages_dir:
-#            try:
-#                pyzbar_file = open(f"{potential_dirs}/pyzbar/pyzbar.py")
-#                pyzbar_loc = f"{potential_dirs}/pyzbar/pyzbar.py"
-#            except:
-#                continue
-#except:
-#    print("Need to install the modified pyzbar.py manually as I don't know where your pyzbar is located at. Program may crash.")
-#
-#if pyzbar_file is not None:
-#    pzfile_start = pyzbar_file.readlines()[0]
-#    if pzfile_start != "# autoPostProcessing":
-#        try:
-#            if system() == 'Windows':
-#                copyfile("libs/deps/pyzbar.py", f"{pyzbar_loc}")
-#            else:
-#                copyfile("libs/deps/pyzbar.py", f"{pyzbar_loc}")
-#        except:
-#            print("Need to install the modified pyzbar.py manually or run this program with sudo/admin! Program may crash.")
-
-from .deps.pyzbar.pyzbar import decode as zbar_decode
 from pylibdmtx.pylibdmtx import decode as libdmtx_decode
+# import the pyzbar fork (local)
+from .deps.pyzbar.pyzbar import decode as zbar_decode
 
 ###
 # Developer note: the libraries: re, pyzbar, and pylibdmtx all have a "decode"
