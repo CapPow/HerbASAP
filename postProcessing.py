@@ -403,7 +403,8 @@ class appWindow(QMainWindow):
 
         group_saveProcessedPng = self.mainWindow.group_saveProcessedPng.isChecked()
         lineEdit_pathProcessedPng = self.mainWindow.lineEdit_pathProcessedPng.text()
-        # each value is a tuple containing (bool if checked, path, extension)
+        # each key is a file extension
+        # each value is a tuple containing (bool if checked, dst path)
         self.output_map = {
                 '.tif': (group_saveProcessedTIFF, lineEdit_pathProcessedTIFF),
                 '.png': (group_saveProcessedPng, lineEdit_pathProcessedPng),
@@ -449,6 +450,7 @@ class appWindow(QMainWindow):
         im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
         # reset recently_produced_images
         self.recently_produced_images = [orig_img_path]
+        # see setup_Output_Handler() for details concerning self.output_map
         output_map = self.output_map
         # breakout output_map into a list of tuples containing (ext, path)
         to_save = [(x, y[1]) for x, y in output_map.items() if y[0]]
