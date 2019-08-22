@@ -6,13 +6,14 @@ import sys
 import pickle
 from optparse import OptionParser
 import time
-from libs.keras_frcnn import frcnn_config
+from libs.deps.keras_frcnn import frcnn_config
 from keras import backend as K
 from keras.layers import Input
 from keras.models import Model
-from libs.keras_frcnn import roi_helpers
-import libs.keras_frcnn.vgg as nn
+from libs.deps.keras_frcnn import roi_helpers
+import libs.deps.keras_frcnn.vgg as nn
 from PIL import Image
+from libs.deps.keras_frcnn.config import Config
 
 sys.setrecursionlimit(40000)
 
@@ -31,8 +32,12 @@ parser.add_option("--network", dest="network", help="Base network to use. Suppor
 # if not options.test_path:   # if filename is not given
 	# parser.error('Error: path to test data must be specified. Pass --path to command line')
 
-with open("libs/keras_frcnn/config.pickle", 'rb') as f_in:
-	C = pickle.load(f_in)
+# with open("libs/deps/keras_frcnn/config.pickle", 'rb') as f_in:
+# 	C = pickle.load(f_in)
+
+C = Config()
+
+print(C.class_mapping)
 
 config_output_filename = options.config_filename
 
@@ -87,7 +92,7 @@ def get_real_coordinates(ratio, x1, y1, x2, y2):
 
 	return (real_x1, real_y1, real_x2 ,real_y2)
 
-class_mapping = C.class_mapping
+class_mapping = {'0': 0, '1': 1, 'bg': 2}
 
 if 'bg' not in class_mapping:
 	class_mapping['bg'] = len(class_mapping)
@@ -97,10 +102,7 @@ print(class_mapping)
 class_to_color = {class_mapping[v]: np.random.randint(0, 255, 3) for v in class_mapping}
 C.num_rois = int(options.num_rois)
 
-if C.network == 'resnet50':
-	num_features = 1024
-elif C.network == 'vgg':
-	num_features = 128
+num_features = 128
 
 if K.image_dim_ordering() == 'th':
 	input_shape_img = (3, None, None)
