@@ -18,8 +18,13 @@ from PIL import Image
 import cv2
 import time
 import tensorflow as tf
-from tensorflow.keras.models import load_model
-from tensorflow.keras import backend as K
+import keras
+from keras.models import load_model
+from keras import backend as K
+
+if keras.backend.backend() != 'tensorflow':
+    raise RuntimeError(f"Please set your keras.json to use Tensorflow. It is currently using {keras.backend.backend()}")
+
 from libs.test_frcnn import process_image_frcnn
 
 class ColorChipError(Exception):

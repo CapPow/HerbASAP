@@ -37,8 +37,6 @@ parser.add_option("--network", dest="network", help="Base network to use. Suppor
 
 C = Config()
 
-print(C.class_mapping)
-
 config_output_filename = options.config_filename
 
 # turn off any data augmentation at test time
@@ -98,7 +96,6 @@ if 'bg' not in class_mapping:
 	class_mapping['bg'] = len(class_mapping)
 
 class_mapping = {v: k for k, v in class_mapping.items()}
-print(class_mapping)
 class_to_color = {class_mapping[v]: np.random.randint(0, 255, 3) for v in class_mapping}
 C.num_rois = int(options.num_rois)
 
@@ -213,8 +210,6 @@ def process_image_frcnn(img):
 			probs[cls_name].append(np.max(P_cls[0, ii, :]))
 
 	all_dets = []
-
-	print(bboxes['0'])
 	if len(bboxes.keys()) == 0:
 		return 0, 0, 0, 0
 
