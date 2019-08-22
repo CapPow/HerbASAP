@@ -877,7 +877,7 @@ class appWindow(QMainWindow):
         width = cc_view_label.width()
         height = cc_view_label.height()
         h, w = cropped_cc.shape[0:2]
-        if width < height:
+        if width > height:
             hpercent = (width/float(w))
             height = int((float(h)*float(hpercent)))
         else:
@@ -1692,8 +1692,10 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     w = appWindow()
     # check if there are theme settings
-    app.setStyle("plastique")
+    #app.setStyle("plastique")
+    #app.setStyle("fusion")
     if w.get('value_DarkTheme', False):
         w.setStyleSheet(darkorange.getStyleSheet())
+
     w.show()
     sys.exit(app.exec_())
