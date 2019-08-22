@@ -12,6 +12,7 @@ from keras.layers import Input
 from keras.models import Model
 from libs.keras_frcnn import roi_helpers
 import libs.keras_frcnn.vgg as nn
+from PIL import Image
 
 sys.setrecursionlimit(40000)
 
@@ -133,7 +134,8 @@ model_classifier.load_weights("libs/models/f_rcnn_lcc.hdf5", by_name=True)
 
 model_rpn.compile(optimizer='sgd', loss='mse')
 model_classifier.compile(optimizer='sgd', loss='mse')
-
+model_rpn.summary()
+model_classifier.summary()
 all_imgs = []
 
 classes = {}
@@ -209,14 +211,15 @@ def process_image_frcnn(img):
 
 	all_dets = []
 
-	print(len(bboxes.keys()))
+	print(bboxes['0'])
 	if len(bboxes.keys()) == 0:
 		return 0, 0, 0, 0
+
 
 	for key in bboxes:
 		bbox = np.array(bboxes[key])
 
-		new_boxes, new_probs = roi_helpers.non_max_suppression_fast(bbox, np.array(probs[key]), overlap_thresh=0.5)
+		new_boxes, new_probs = roi_helpers.non_max_suppression_fast(bbox, np.array(probs[key]), overlap_thresh=1)
 		for jk in range(new_boxes.shape[0]):
 			(x1, y1, x2, y2) = new_boxes[jk,:]
 
@@ -233,11 +236,15 @@ def process_image_frcnn(img):
 			cv2.rectangle(img, (textOrg[0] - 5, textOrg[1]+baseLine - 5), (textOrg[0]+retval[0] + 5, textOrg[1]-retval[1] - 5), (0, 0, 0), 2)
 			cv2.rectangle(img, (textOrg[0] - 5,textOrg[1]+baseLine - 5), (textOrg[0]+retval[0] + 5, textOrg[1]-retval[1] - 5), (255, 255, 255), -1)
 			cv2.putText(img, textLabel, textOrg, cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 1)
-			if key == 0:
-				return real_x1, real_x2, real_y1, real_y2
-		else:
 
-			return 0, 0, 0, 0
+			pim = Image.fromarray(img)
+			pim.show()
+
+
+		# 	if key == '0':
+		# 		return real_x1, real_y1, real_x2, real_y2
+		# else:
+		# 	return 0, 0, 0, 0
 
 
 	# imS = cv2.resize(img, (625, 938))
