@@ -20,7 +20,7 @@ import time
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras import backend as K
-
+from libs.test_frcnn import process_image_frcnn
 
 class ColorChipError(Exception):
     def __init__(self, msg='ColorChipError', *args, **kwargs):
@@ -46,6 +46,12 @@ class DiscriminatorFailed(ColorChipError):
         super().__init__(default_message)
 
 
+class FRCNNLCCFailed(ColorChipError):
+    def __init__(self):
+        default_message = 'F-RCNN could not find the colorchip within this image.'
+        super().__init__(default_message)
+
+
 class ColorchipRead:
     def __init__(self, parent=None, *args):
         super(ColorchipRead, self).__init__()
@@ -58,7 +64,7 @@ class ColorchipRead:
         self.K_position_model = load_model("libs/models/mlp_proposal_k.hdf5")
         self.position_function = K.function([self.K_position_model.layers[0].input, self.K_position_model.layers[1].input, K.learning_phase()],
         [self.K_position_model.layers[-1].output])
-        
+
         self.discriminator_model = tf.lite.Interpreter(model_path="libs/models/discriminator.tflite")
         self.discriminator_model.allocate_tensors()
         self.discriminator_input_details = self.discriminator_model.get_input_details()
@@ -69,7 +75,7 @@ class ColorchipRead:
         self.large_colorchip_input_details = self.large_colorchip_regressor_model.get_input_details()
         self.large_colorchip_output_details = self.large_colorchip_regressor_model.get_output_details()
 
-        self.large_colorchip_regressor_model_k = load_model("libs/models/lcc_regressor.hdf5")
+        # self.large_colorchip_regressor_model_k = load_model("libs/models/lcc_regressor.hdf5")
 
 
     def ocv_to_pil(self, im):
@@ -97,7 +103,7 @@ class ColorchipRead:
         prediction = result.mean(axis=0)
         return prediction, uncertainty
 
-    def process_colorchip_big(self, im, full_tf=True):
+    def process_colorchip_big(self, im):
         """
         Processes big colorchips using a minimally-modified Google MobileNetV2 neural network model. The model predicts
         the bounding box within a shrunken 256x256 image. Most large colorchips should be accurately predicted, as long
@@ -108,27 +114,18 @@ class ColorchipRead:
         :rtype: tuple
         """
         start = time.time()
-        im = self.ocv_to_pil(im)
-        original_image_width, original_image_height = im.size
+        pim = self.ocv_to_pil(im)
+        # original_image_width, original_image_height = im.size
 
-        resized_im = im.resize((256, 256))
-        im_np = np.array(resized_im) / 255
+        # resized_im = im.resize((256, 256))
+        # im_np = np.array(resized_im) / 255
+        scaled_x1, scaled_y1, scaled_x2, scaled_y2 = process_image_frcnn(im)
+        # print(scaled_x1, scaled_y1, scaled_x2, scaled_y2)
+        if max(scaled_x1, scaled_y1, scaled_x2, scaled_y2) == 0:
+            raise FRCNNLCCFailed
 
-        if full_tf:
-            crop_vals = self.large_colorchip_regressor_model.predict(np.array([im_np]))[0]
-        else:
-            self.large_colorchip_regressor_model.set_tensor(self.large_colorchip_input_details[0]['index'], np.array([im_np]))
-            self.large_colorchip_regressor_model.invoke()
-            crop_vals = self.large_colorchip_regressor_model.get_tensor(self.large_colorchip_regressor_model[0]['index']) [0]
-        
-        prop_crop_vals = np.array(crop_vals) / 256
-        prop_x1, prop_y1, prop_x2, prop_y2 = prop_crop_vals[0], prop_crop_vals[1], prop_crop_vals[2], prop_crop_vals[3]
-        scaled_x1, scaled_x2 = prop_x1 * original_image_width, prop_x2 * original_image_width
-        scaled_y1, scaled_y2 = prop_y1 * original_image_height, prop_x2 * original_image_height
-
-        cropped_im = im.crop((scaled_x1, scaled_y1, scaled_x2, scaled_y2))
-        cropped_im = np.array(cropped_im, np.uint8)  # return it as a numpy array
-
+        cropped_im = pim.crop((scaled_x1, scaled_y1, scaled_x2, scaled_y2))
+        cropped_im = np.array(cropped_im, dtype=np.uint8)
         try:
             return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), cropped_im, time.time() - start
         except SystemError as e:
@@ -305,7 +302,7 @@ class ColorchipRead:
         original_width, original_height = original_size
 
         cv_image = cv2.cvtColor(nim, cv2.COLOR_BGR2HSV)
-        
+
         partition_area = partition_size * partition_size
         contour_area_floor = partition_area // 10
         contour_area_ceiling = partition_area // 0.5
@@ -438,7 +435,7 @@ class ColorchipRead:
                 squares = ColorchipRead.find_squares(cv_best_image,
                                                      contour_area_floor=min_crop_area,
                                                      contour_area_ceiling=max_crop_area)
-                
+
                 # identify the largest area among contours
                 biggest_square = max(squares, key = cv2.contourArea)
                 # convert contour into a PIL friendly format
@@ -499,7 +496,7 @@ class ColorchipRead:
     @staticmethod
     def predict_color_chip_whitevals(cropped_cc):
         """
-        Takes a cropped CC image and determines the average RGB values of the 
+        Takes a cropped CC image and determines the average RGB values of the
         whitest portion.
 
         :param cropped_cc: The cropped color chip image
