@@ -36,9 +36,6 @@ parser.add_option("--network", dest="network", help="Base network to use. Suppor
 # 	C = pickle.load(f_in)
 
 C = Config()
-
-print(C.class_mapping)
-
 config_output_filename = options.config_filename
 
 # turn off any data augmentation at test time
@@ -98,19 +95,13 @@ if 'bg' not in class_mapping:
 	class_mapping['bg'] = len(class_mapping)
 
 class_mapping = {v: k for k, v in class_mapping.items()}
-print(class_mapping)
 class_to_color = {class_mapping[v]: np.random.randint(0, 255, 3) for v in class_mapping}
 C.num_rois = int(options.num_rois)
 
 num_features = 128
 
-if K.image_dim_ordering() == 'th':
-	input_shape_img = (3, None, None)
-	input_shape_features = (num_features, None, None)
-else:
-	input_shape_img = (None, None, 3)
-	input_shape_features = (None, None, num_features)
-
+input_shape_img = (None, None, 3)
+input_shape_features = (None, None, num_features)
 
 img_input = Input(shape=input_shape_img)
 roi_input = Input(shape=(C.num_rois, 4))
@@ -154,13 +145,12 @@ def process_image_frcnn(img):
 
 	X, ratio = format_img(img, C)
 
-	if K.image_dim_ordering() == 'tf':
-		X = np.transpose(X, (0, 2, 3, 1))
+	X = np.transpose(X, (0, 2, 3, 1))
 
 	# get the feature maps and output from the RPN
 	[Y1, Y2, F] = model_rpn.predict(X)
 
-	R = roi_helpers.rpn_to_roi(Y1, Y2, C, K.image_dim_ordering(), overlap_thresh=0.7)
+	R = roi_helpers.rpn_to_roi(Y1, Y2, C, 'tf', overlap_thresh=0.7)
 
 	# convert from (x1,y1,x2,y2) to (x,y,w,h)
 	R[:, 2] -= R[:, 0]
@@ -214,7 +204,6 @@ def process_image_frcnn(img):
 
 	all_dets = []
 
-	print(bboxes['0'])
 	if len(bboxes.keys()) == 0:
 		return 0, 0, 0, 0
 

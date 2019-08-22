@@ -17,16 +17,20 @@ import numpy as np
 from PIL import Image
 import cv2
 import time
+import os
 import tensorflow as tf
-from tensorflow.keras.models import load_model
-from tensorflow.keras import backend as K
+import keras
+from keras.models import load_model
+from keras import backend as K
 from libs.test_frcnn import process_image_frcnn
+
+if keras.backend.backend() != 'tensorflow':
+    raise RuntimeError(f"Please set your keras.json to use Tensorflow. It is currently using {keras.backend.backend()}")
 
 class ColorChipError(Exception):
     def __init__(self, msg='ColorChipError', *args, **kwargs):
         super().__init__(msg, *args, **kwargs)
     pass
-
 
 class InvalidStride(ColorChipError):
     def __init__(self):
@@ -50,7 +54,6 @@ class FRCNNLCCFailed(ColorChipError):
     def __init__(self):
         default_message = 'F-RCNN could not find the colorchip within this image.'
         super().__init__(default_message)
-
 
 class ColorchipRead:
     def __init__(self, parent=None, *args):
