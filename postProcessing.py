@@ -44,6 +44,7 @@ from rawpy import LibRawNonFatalError, LibRawFatalError
 import cv2
 import numpy as np
 # internal libs
+from ui.styles import darkorange
 from ui.postProcessingUI import Ui_MainWindow
 from ui.imageDialogUI import Ui_Dialog_image
 from ui.noBcDialogUI import Ui_Dialog_noBc
@@ -1531,10 +1532,10 @@ class appWindow(QMainWindow):
         #self.scalingChanged(value_LogoScaling)
 
         # radiobutton
-        #value_DarkTheme = self.get('value_DarkTheme', False)
-        #self.settings.value_DarkTheme.setChecked(value_DarkTheme)
-        #value_LightTheme = self.get('value_LightTheme', True)
-        #self.settings.value_LightTheme.setChecked(value_LightTheme)
+        value_DarkTheme = self.get('value_DarkTheme', False)
+        self.mainWindow.value_DarkTheme.setChecked(value_DarkTheme)
+        value_LightTheme = self.get('value_LightTheme', True)
+        self.mainWindow.value_LightTheme.setChecked(value_LightTheme)
         radioButton_colorCheckerSmall =  self.convertCheckState(self.get('radioButton_colorCheckerSmall', 'true'))
         self.mainWindow.radioButton_colorCheckerSmall.setChecked(radioButton_colorCheckerSmall)
         radioButton_colorCheckerLarge =  self.convertCheckState(self.get('radioButton_colorCheckerLarge', 'false'))
@@ -1661,10 +1662,10 @@ class appWindow(QMainWindow):
         #self.settings.setValue('value_LogoScaling', value_LogoScaling)
 
         # radiobutton
-        #value_DarkTheme = self.mainWindow.value_DarkTheme.isChecked()
-        #self.settings.setValue('value_DarkTheme', value_DarkTheme)
-        #value_LightTheme = self.mainWindow.value_LightTheme.isChecked()
-        #self.settings.setValue('value_LightTheme', value_LightTheme)
+        value_DarkTheme = self.mainWindow.value_DarkTheme.isChecked()
+        self.settings.setValue('value_DarkTheme', value_DarkTheme)
+        value_LightTheme = self.mainWindow.value_LightTheme.isChecked()
+        self.settings.setValue('value_LightTheme', value_LightTheme)
         radioButton_colorCheckerLarge = self.mainWindow.radioButton_colorCheckerLarge.isChecked()
         self.settings.setValue('radioButton_colorCheckerLarge', radioButton_colorCheckerLarge)
         radioButton_colorCheckerSmall = self.mainWindow.radioButton_colorCheckerSmall.isChecked()
@@ -1691,8 +1692,8 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     w = appWindow()
     # check if there are theme settings
-    #if w.settings.get('value_DarkTheme', False):
-    #    app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+    app.setStyle("plastique")
+    if w.get('value_DarkTheme', False):
+        w.setStyleSheet(darkorange.getStyleSheet())
     w.show()
-
     sys.exit(app.exec_())

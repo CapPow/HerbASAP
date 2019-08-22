@@ -1032,9 +1032,9 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>0</y>
+               <y>-504</y>
                <width>671</width>
-               <height>955</height>
+               <height>1078</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -1932,6 +1932,51 @@
                    </property>
                    <property name="tabChangesFocus">
                     <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QGroupBox" name="groupBox_themes">
+                <property name="title">
+                 <string>Theme</string>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_5">
+                 <item>
+                  <widget class="QRadioButton" name="value_DarkTheme">
+                   <property name="text">
+                    <string>Dark theme</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QRadioButton" name="value_LightTheme">
+                   <property name="text">
+                    <string>Default System Settings</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_23">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <pointsize>11</pointsize>
+                     <italic>true</italic>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>(changes will be applied the next time the program opens)</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
                    </property>
                   </widget>
                  </item>

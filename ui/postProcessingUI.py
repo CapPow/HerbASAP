@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/postProcessingUI.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.0
+# Created by: PyQt5 UI code generator 5.12.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -439,7 +439,7 @@ class Ui_MainWindow(object):
         self.preferences_ScrollArea.setWidgetResizable(True)
         self.preferences_ScrollArea.setObjectName("preferences_ScrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 671, 955))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, -504, 671, 1078))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_2.setContentsMargins(3, 3, 3, 3)
@@ -758,6 +758,27 @@ class Ui_MainWindow(object):
         self.gridLayout_19.addWidget(self.plainTextEdit_collectionURL, 2, 1, 1, 1)
         self.gridLayout_19.setColumnStretch(1, 3)
         self.verticalLayout_2.addWidget(self.group_metaDataApplication)
+        self.groupBox_themes = QtWidgets.QGroupBox(self.scrollAreaWidgetContents)
+        self.groupBox_themes.setObjectName("groupBox_themes")
+        self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.groupBox_themes)
+        self.verticalLayout_5.setObjectName("verticalLayout_5")
+        self.value_DarkTheme = QtWidgets.QRadioButton(self.groupBox_themes)
+        self.value_DarkTheme.setChecked(True)
+        self.value_DarkTheme.setObjectName("value_DarkTheme")
+        self.verticalLayout_5.addWidget(self.value_DarkTheme)
+        self.value_LightTheme = QtWidgets.QRadioButton(self.groupBox_themes)
+        self.value_LightTheme.setObjectName("value_LightTheme")
+        self.verticalLayout_5.addWidget(self.value_LightTheme)
+        self.label_23 = QtWidgets.QLabel(self.groupBox_themes)
+        self.label_23.setEnabled(False)
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        font.setItalic(True)
+        self.label_23.setFont(font)
+        self.label_23.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.label_23.setObjectName("label_23")
+        self.verticalLayout_5.addWidget(self.label_23)
+        self.verticalLayout_2.addWidget(self.groupBox_themes)
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         spacerItem14 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -937,6 +958,10 @@ class Ui_MainWindow(object):
         self.label_collectionIURL.setText(_translate("MainWindow", "Collection URL:"))
         self.label_contactName.setText(_translate("MainWindow", "Contact name:"))
         self.checkBox_metaDataApplication.setText(_translate("MainWindow", "Apply metadata to images"))
+        self.groupBox_themes.setTitle(_translate("MainWindow", "Theme"))
+        self.value_DarkTheme.setText(_translate("MainWindow", "Dark theme"))
+        self.value_LightTheme.setText(_translate("MainWindow", "Default System Settings"))
+        self.label_23.setText(_translate("MainWindow", "(changes will be applied the next time the program opens)"))
         self.pushButton_resetSettings.setText(_translate("MainWindow", "Reset ALL Settings"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.settingsTab), _translate("MainWindow", "Settings"))
 from . import assets_rc
