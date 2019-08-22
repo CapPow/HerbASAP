@@ -93,7 +93,7 @@ class eqRead():
 
         cam = equip.get('cam','')
         lens = equip.get('lens','')
-        equip_list = [cam, lens]
+        equip_list = [cam, lens, height, width]
         self.equip_list = equip_list
         # setup equipment variables
         mod = lensfunpy.Modifier(equip['lens'],
@@ -116,7 +116,8 @@ class eqRead():
         equip = self.detImagingEquipment(imgPath)
         cam = equip.get('cam','')
         lens = equip.get('lens','')
-        equip_list = [cam, lens]
+        equip_list = [cam, lens, height, width]
+
         if equip_list != self.equip_list:
             # if the image equipment is different than the previous images
             # generate a new pixel map
