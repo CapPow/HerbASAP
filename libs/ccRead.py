@@ -132,7 +132,8 @@ class ColorchipRead:
         cropped_im = pim.crop((scaled_x1, scaled_y1, scaled_x2, scaled_y2))
         cropped_im = np.array(cropped_im, dtype=np.uint8)
         try:
-            return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), cropped_im, time.time() - start
+            cc_crop_time = round(time.time() - start, 3)
+            return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), cropped_im, cc_crop_time
         except SystemError as e:
             raise ColorChipError("System error: {e}")
 
