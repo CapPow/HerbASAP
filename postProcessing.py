@@ -261,9 +261,6 @@ class appWindow(QMainWindow):
         self.mainWindow.toolButton_editTechnicians.pressed.connect(self.edit_technician_list)
 #       self.versionCheck()
 
-#   when saving: quality="keep" the original quality is preserved
-#   The optimize=True "attempts to losslessly reduce image size
-
 #    def versionCheck(self):
 #        """ checks the github repo's latest release version number against
 #        local and offers the user to visit the new release page if different"""
@@ -855,8 +852,16 @@ class appWindow(QMainWindow):
             self.boss_thread.request_job(eq_job)
             # equipment corrections should set self.im
         wait_event = QEventLoop()
-        self.boss_thread.signals.clear_to_save.connect(wait_event.quit)
-        wait_event.exec()
+        # if there are any worker threads working then wait on them to finish
+        if any([
+                
+                self.boss_thread._Boss__is_bc_worker_running,
+                self.boss_thread._Boss__is_blur_worker_running,
+                self.boss_thread._Boss__is_eq_worker_running]):
+
+            self.boss_thread.signals.clear_to_save.connect(wait_event.quit)
+            wait_event.exec()
+        # now that it appears all workers are wrapped up, bundle the save ops.
         if len(self.bc_code) > 0:
             names = self.bc_code
         else:  # name based on base_file_name
