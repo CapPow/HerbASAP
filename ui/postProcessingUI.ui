@@ -2060,8 +2060,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>318</x>
-     <y>172</y>
+     <x>428</x>
+     <y>-310</y>
     </hint>
     <hint type="destinationlabel">
      <x>503</x>
@@ -2076,8 +2076,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>350</x>
-     <y>483</y>
+     <x>435</x>
+     <y>17</y>
     </hint>
     <hint type="destinationlabel">
      <x>255</x>
@@ -2092,8 +2092,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>221</x>
-     <y>488</y>
+     <x>241</x>
+     <y>22</y>
     </hint>
     <hint type="destinationlabel">
      <x>341</x>
@@ -2108,8 +2108,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>324</x>
-     <y>515</y>
+     <x>344</x>
+     <y>53</y>
     </hint>
     <hint type="destinationlabel">
      <x>158</x>
@@ -2124,8 +2124,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>201</x>
-     <y>569</y>
+     <x>221</x>
+     <y>111</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -2140,8 +2140,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>332</x>
-     <y>624</y>
+     <x>352</x>
+     <y>170</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -2156,8 +2156,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>490</x>
-     <y>680</y>
+     <x>631</x>
+     <y>226</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2172,8 +2172,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>490</x>
-     <y>736</y>
+     <x>631</x>
+     <y>282</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2188,8 +2188,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>490</x>
-     <y>792</y>
+     <x>631</x>
+     <y>338</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2204,8 +2204,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>490</x>
-     <y>848</y>
+     <x>631</x>
+     <y>394</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2220,8 +2220,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>490</x>
-     <y>904</y>
+     <x>631</x>
+     <y>450</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2236,8 +2236,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>64</x>
-     <y>256</y>
+     <x>72</x>
+     <y>219</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -2252,8 +2252,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>75</x>
-     <y>367</y>
+     <x>83</x>
+     <y>307</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -2268,8 +2268,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>99</x>
-     <y>479</y>
+     <x>107</x>
+     <y>395</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -2300,8 +2300,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>336</x>
-     <y>139</y>
+     <x>409</x>
+     <y>126</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -2316,8 +2316,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>408</x>
-     <y>251</y>
+     <x>481</x>
+     <y>214</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -2332,8 +2332,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>408</x>
-     <y>362</y>
+     <x>481</x>
+     <y>302</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -2348,8 +2348,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>461</x>
-     <y>474</y>
+     <x>534</x>
+     <y>390</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -2364,8 +2364,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>461</x>
-     <y>585</y>
+     <x>534</x>
+     <y>478</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -2380,8 +2380,8 @@
    <slot>setFolderPath()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>552</x>
-     <y>139</y>
+     <x>693</x>
+     <y>126</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2396,8 +2396,8 @@
    <slot>setFolderPath()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>552</x>
-     <y>251</y>
+     <x>693</x>
+     <y>214</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2412,8 +2412,8 @@
    <slot>setFolderPath()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>552</x>
-     <y>362</y>
+     <x>693</x>
+     <y>302</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2428,8 +2428,8 @@
    <slot>setFolderPath()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>552</x>
-     <y>474</y>
+     <x>693</x>
+     <y>390</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2444,8 +2444,8 @@
    <slot>setFolderPath()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>552</x>
-     <y>585</y>
+     <x>693</x>
+     <y>478</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2460,8 +2460,8 @@
    <slot>updateCatalogNumberPreviews()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>225</x>
-     <y>142</y>
+     <x>322</x>
+     <y>-344</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2476,8 +2476,8 @@
    <slot>updateCatalogNumberPreviews()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>318</x>
-     <y>141</y>
+     <x>428</x>
+     <y>-345</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2492,8 +2492,8 @@
    <slot>updateCatalogNumberPreviews()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>318</x>
-     <y>172</y>
+     <x>428</x>
+     <y>-310</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2508,8 +2508,8 @@
    <slot>testFeatureCompatability()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>295</x>
-     <y>69</y>
+     <x>352</x>
+     <y>-421</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2524,8 +2524,8 @@
    <slot>updateCatalogNumberPreviews()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>270</x>
-     <y>142</y>
+     <x>290</x>
+     <y>-305</y>
     </hint>
     <hint type="destinationlabel">
      <x>265</x>
@@ -2540,8 +2540,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>522</x>
-     <y>572</y>
+     <x>547</x>
+     <y>114</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2556,12 +2556,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>181</x>
-     <y>305</y>
+     <x>201</x>
+     <y>-173</y>
     </hint>
     <hint type="destinationlabel">
-     <x>253</x>
-     <y>337</y>
+     <x>292</x>
+     <y>-137</y>
     </hint>
    </hints>
   </connection>
@@ -2572,12 +2572,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>181</x>
-     <y>305</y>
+     <x>201</x>
+     <y>-173</y>
     </hint>
     <hint type="destinationlabel">
-     <x>181</x>
-     <y>337</y>
+     <x>201</x>
+     <y>-137</y>
     </hint>
    </hints>
   </connection>
@@ -2588,8 +2588,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>167</x>
-     <y>429</y>
+     <x>184</x>
+     <y>-41</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -2604,8 +2604,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>99</x>
-     <y>429</y>
+     <x>108</x>
+     <y>-41</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -2620,8 +2620,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>372</x>
-     <y>249</y>
+     <x>489</x>
+     <y>-233</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2636,8 +2636,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>518</x>
-     <y>249</y>
+     <x>659</x>
+     <y>-233</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -2652,8 +2652,8 @@
    <slot>reset_all_settings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>538</x>
-     <y>944</y>
+     <x>679</x>
+     <y>586</y>
     </hint>
     <hint type="destinationlabel">
      <x>604</x>
@@ -2668,8 +2668,8 @@
    <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>318</x>
-     <y>249</y>
+     <x>428</x>
+     <y>-233</y>
     </hint>
     <hint type="destinationlabel">
      <x>627</x>
@@ -2684,8 +2684,8 @@
    <slot>process_image_directory()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>229</x>
-     <y>538</y>
+     <x>341</x>
+     <y>578</y>
     </hint>
     <hint type="destinationlabel">
      <x>568</x>
@@ -2700,12 +2700,60 @@
    <slot>process_image_selection()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>262</x>
-     <y>571</y>
+     <x>341</x>
+     <y>616</y>
     </hint>
     <hint type="destinationlabel">
      <x>573</x>
      <y>536</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_technician</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>update_metadata()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>138</x>
+     <y>492</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>432</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lineEdit_taxonName</sender>
+   <signal>textEdited(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>update_metadata()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>135</x>
+     <y>384</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>372</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lineEdit_collectorName</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>update_metadata()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>221</x>
+     <y>410</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>355</x>
+     <y>317</y>
     </hint>
    </hints>
   </connection>
@@ -2721,5 +2769,6 @@
   <slot>delete_previous_image()</slot>
   <slot>process_image_directory()</slot>
   <slot>process_image_selection()</slot>
+  <slot>update_metadata()</slot>
  </slots>
 </ui>

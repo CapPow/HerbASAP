@@ -14,14 +14,14 @@
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 """
-
-    AYUP (as of yet unnamed program) performs post processing steps on raw 
-    format images of natural history specimens. Specifically designed for 
+    AYUP (as of yet unnamed program) performs post processing steps on raw
+    format images of natural history specimens. Specifically designed for
     Herbarium sheet images.
-
 """
 
 import piexif
+import json
+import copy
 
 
 class MetaRead:
@@ -33,36 +33,61 @@ class MetaRead:
         # piexif's transplant function may be useful if the exif is dumped in
         # the saving process.
         # See https://piexif.readthedocs.io/en/latest/functions.html#transplant
+        # static_exif is a dict with the  UI harvested metadata details.
+        self.static_exif = {}
 
-    def set_exif(self, imgPath):
-        """ given an image file path, attempts to determine
-        the make/model of the camera body and lens. """
+    def update_static_exif(self, exif_dict):
+        """
+        Given an input dictionary, prepares it for storage as self.static_exif
+        see: https://github.com/hMatoba/Piexif/blob/master/piexif/_exif.py
+        """
+        static_exif = {
+                305:exif_dict.get('version', ''),
+                315:exif_dict.get('collectionName', ''),
+                33432: exif_dict.get('copywriteLicense', '')
+                }
+        # jsonize the entire passed in exif_dict
+        
+        #user_comments = json.dumps(exif_dict)
+        
+        # apply jsonized user_comments to static_exif[270], "ImageDescription"
+        static_exif[270] = exif_dict
+        # save the static_exif object as a class variable
+        self.static_exif = static_exif
+        
+    def retrieve_src_exif(self, src, addtl_user_comments):
+        """
+        Given an input source (src) image file path, returns an dictionary
+        containing the source exif data, updated with the static_exif data.
+        """
+        # prepare the user_comments
+        static_exif = copy.deepcopy(self.static_exif)
+        static_exif[270].update(addtl_user_comments)
+        user_comments = json.dumps(static_exif[270])
+        static_exif[270] = user_comments
+
         # extract exif data as dict
-        exifDict = piexif.load(imgPath)
-        imgDict = {}
-        for ifd in ("0th", "Exif", "GPS", "1st"):
-            for tag in exifDict[ifd]:
-                tagName = (piexif.TAGS[ifd][tag]["name"])  # , exif_dict[ifd][tag])
-                # print(piexif.TAGS[ifd][tag]["name"], exifDict[ifd][tag])
-                if tagName.lower() in (
-                'make', 'model', 'lensmaker', 'lensmodel', 'focallength', 'fnumber', 'colorspace'):
-                    imgDict[tagName.lower()] = exifDict[ifd][tag]
-        self.exif = imgDict
-        self.value = imgDict['colorspace']
+        exifDict = piexif.load(src)
+        # update the input dict with the static_exif info
+        exifDict['0th'].update(static_exif)
+        # have to remove makerNotes or else it crashes with CR2s
+        exifDict['Exif'].pop(37500, None)
+        # dump exifDict to bytes
+        exif_bytes = piexif.dump(exifDict)
+        return exif_bytes
 
-    def get_exif(self):
-        if self.exif is None:
-            print("Exif not set!")
-            return
-        else:
-            return self.exif
-
-    def get_colorspace(self):
-        if self.exif is None:
-            print("Exif not set!")
-            return
-        else:
-            return self.exif['colorspace']
+    def set_dst_exif(self, exif_dict, dst):
+        """
+        Given an exif object and a destination image, attempts to insert the
+        exif metadata into the destination image.
+        """
+        piexif.insert(exif_dict, dst)
+    
+    def transplant_meta(src, dst):
+        """
+        transplants unmodified metadata from one file to another.
+        """
+        piexif.transplant(src, dst)
 
     # def testFeature(self, imgPath):
     #     """Returns bool condition, if this module functions on a test input."""

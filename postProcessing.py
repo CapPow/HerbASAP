@@ -28,6 +28,7 @@ __version__ = 'v0.0.1-alpha'
 
 import time
 import os
+import platform
 import sys
 import string
 import glob
@@ -236,7 +237,10 @@ class appWindow(QMainWindow):
         self.blurDetect = blurDetect(parent=self.mainWindow)
         self.colorchipDetect = ColorchipRead(parent=self.mainWindow)
         self.eqRead = eqRead(parent=self.mainWindow)
+        
         self.metaRead = MetaRead(parent=self.mainWindow)
+        # populate self.static_exif
+        self.update_metadata()
 
         self.reset_working_variables()
         ###
@@ -424,6 +428,25 @@ class appWindow(QMainWindow):
         else:
             self.suffix_lookup = False
 
+    def update_metadata(self):
+        
+        exif_dict = {
+                # the program's name and verison number
+                'software': f'Herb-ImP, {__version__} ({platform.system()})',
+                # settings metadata
+                'collectionName': self.mainWindow.plainTextEdit_collectionName.toPlainText(),
+                'collectionURL': self.mainWindow.plainTextEdit_collectionURL.toPlainText(),
+                'contactEmail': self.mainWindow.plainTextEdit_contactEmail.toPlainText(),
+                'contactName': self.mainWindow.plainTextEdit_contactName.toPlainText(),
+                'copywriteLicense': self.mainWindow.plainTextEdit_copywriteLicense.toPlainText(),
+                # session metadata
+                'scientificName': self.mainWindow.lineEdit_taxonName.text(),
+                'recordedBy': self.mainWindow.lineEdit_collectorName.text(),
+                'imagedBy': self.mainWindow.comboBox_technician.currentText()
+                }
+
+        self.metaRead.update_static_exif(exif_dict)
+
     def save_output_images(self, im, im_base_names, orig_img_path, orig_im_ext,
                            meta_data=None):
         """
@@ -454,6 +477,18 @@ class appWindow(QMainWindow):
         to_save = [(x, y[1]) for x, y in output_map.items() if y[0]]
         # store how many save_jobs are expected to global variable
         self.working_save_jobs = len(im_base_names) * len(to_save)
+
+        # retrieve the source image exif data
+        # add Additional user comment details for the metadata            
+        addtl_user_comments = {
+                'avgWhiteRGB': str(self.cc_avg_white),
+                'barcodeValues':self.bc_code,
+                'isBlurry':str(self.is_blurry),
+                'ccQuadrant':str(self.cc_quadrant)
+                }
+
+        self.meta_data = self.metaRead.retrieve_src_exif(orig_img_path,
+                                                         addtl_user_comments)
         if self.working_save_jobs < 1:  # condition when no outputs saved
             #  treat this process as if it was passed to boss_worker
             self.handle_save_result(orig_img_path)
@@ -585,12 +620,18 @@ class appWindow(QMainWindow):
         if result:
             # Add that path to the class variable storing the most recent products.
             self.recently_produced_images.append(result)
+
+            # Apply the metadata to that saved object            
+            self.metaRead.set_dst_exif(self.meta_data,
+                                       result)
         # tick off one working_save_job
         self.working_save_jobs -= 1
         # if we're down to 0 then wrap up
         if self.working_save_jobs < 1:
             # inform the app when image processing is complete
             self.processing_image = False
+            # reset the stored meta_data 
+            self.meta_data = None
             # these are happening too soon
             self.Image_Complete_Emitter.completed.emit()
             self.Timer_Emitter.timerStop.emit()
@@ -1678,6 +1719,7 @@ class appWindow(QMainWindow):
         # cleanup, after changes are made, should re-initalize some classes
         self.setup_Folder_Watcher()
         self.setup_Output_Handler()
+        self.update_metadata()
 
     def reset_all_settings(self):
         """
