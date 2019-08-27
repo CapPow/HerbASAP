@@ -618,12 +618,13 @@ class appWindow(QMainWindow):
         """ called when the the save_worker finishes up """
         # if result is a path to a new file...
         if result:
-            # Add that path to the class variable storing the most recent products.
-            self.recently_produced_images.append(result)
-
-            # Apply the metadata to that saved object            
-            self.metaRead.set_dst_exif(self.meta_data,
-                                       result)
+            # for now can only save meta data on jpgs
+            if result.lower().endswith('.jpg'):
+                # Add that path to the class variable storing the most recent products.
+                self.recently_produced_images.append(result)
+                # Apply the metadata to that saved object            
+                self.metaRead.set_dst_exif(self.meta_data,
+                                           result)
         # tick off one working_save_job
         self.working_save_jobs -= 1
         # if we're down to 0 then wrap up
