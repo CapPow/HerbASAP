@@ -15,13 +15,14 @@
 
 """
 
-    AYUP (as of yet unnamed program) performs post processing steps on raw
-    format images of natural history specimens. Specifically designed for
-    Herbarium sheet images.
+    HerbASAP - Herbarium Application for Specimen Auto-Processing
+    performs post processing steps on raw format images of natural history
+    specimens. Specifically designed for Herbarium sheet images.
 
 """
-__author__ = "Caleb Powell, Joey Shaw"
-__credits__ = ["Caleb Powell, Joey Shaw"]
+__author__ = "Caleb Powell, Dakila Ledesma, Jacob Motley, Jason Best"
+__credits__ = ["Caleb Powell", "Dakila Ledesma", "Jacob Motley", "Jason Best",
+               "Hong Qin", "Joey Shaw"]
 __email__ = "calebadampowell@gmail.com"
 __status__ = "Alpha"
 __version__ = 'v0.0.1-alpha'
@@ -432,7 +433,7 @@ class appWindow(QMainWindow):
         
         exif_dict = {
                 # the program's name and verison number
-                'software': f'Herb-ImP, {__version__} ({platform.system()})',
+                'software': f'HerbASAP, {__version__} ({platform.system()})',
                 # settings metadata
                 'collectionName': self.mainWindow.plainTextEdit_collectionName.toPlainText(),
                 'collectionURL': self.mainWindow.plainTextEdit_collectionURL.toPlainText(),
@@ -808,7 +809,6 @@ class appWindow(QMainWindow):
                 self.folder_watcher.img_count += 1
                 self.update_session_stats()
             return
-
         print(f'processing: {img_path}')
         self.img_path = img_path
         file_name, self.ext = os.path.splitext(img_path)
@@ -820,7 +820,6 @@ class appWindow(QMainWindow):
             bc_worker_data = BCWorkerData(grey)
             bc_job = Job('bc_worker', bc_worker_data, self.bcRead.decodeBC)
             self.boss_thread.request_job(bc_job)
-
         if self.mainWindow.checkBox_blurDetection.isChecked():
             # test for bluryness
             blur_threshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
@@ -828,7 +827,6 @@ class appWindow(QMainWindow):
             blur_job = Job('blur_worker',
                            blur_worker_data, self.blurDetect.blur_check)
             self.boss_thread.request_job(blur_job)
-
         # reduce the image for the cnn, store it incase of problem dialogs
         original_size, reduced_img = self.scale_images_with_info(im)
         self.reduced_img = reduced_img
@@ -880,11 +878,9 @@ class appWindow(QMainWindow):
             self.flip_value = rotations[endPos]  # value at that position
         self.apply_corrections()
         # pass off what was learned and properly open image.
-
         # add the (mostly) corrected image to the preview
         # equipment corrections remain. let user look at this while that runs.
         self.update_preview_img(self.im)
-
         if self.mainWindow.checkBox_lensCorrection.isChecked():
             # equipment corrections
             cm_distance = self.mainWindow.doubleSpinBox_focalDistance.value()

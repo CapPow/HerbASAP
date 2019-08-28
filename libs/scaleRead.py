@@ -1,3 +1,9 @@
+"""
+    HerbASAP - Herbarium Application for Specimen Auto-Processing
+    performs post processing steps on raw format images of natural history
+    specimens. Specifically designed for Herbarium sheet images.
+"""
+
 import cv2
 import numpy as np
 from PIL import Image

@@ -14,11 +14,9 @@
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 """
-
-    AYUP (as of yet unnamed program) performs post processing steps on raw 
-    format images of natural history specimens. Specifically designed for 
-    Herbarium sheet images.
-
+    HerbASAP - Herbarium Application for Specimen Auto-Processing
+    performs post processing steps on raw format images of natural history
+    specimens. Specifically designed for Herbarium sheet images.
 """
 # imports here
 import string

@@ -14,9 +14,9 @@
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 """
-    AYUP (as of yet unnamed program) performs post processing steps on raw
-    format images of natural history specimens. Specifically designed for
-    Herbarium sheet images.
+    HerbASAP - Herbarium Application for Specimen Auto-Processing
+    performs post processing steps on raw format images of natural history
+    specimens. Specifically designed for Herbarium sheet images.
 """
 
 import piexif
@@ -46,11 +46,7 @@ class MetaRead:
                 315:exif_dict.get('collectionName', ''),
                 33432: exif_dict.get('copywriteLicense', '')
                 }
-        # jsonize the entire passed in exif_dict
-        
-        #user_comments = json.dumps(exif_dict)
-        
-        # apply jsonized user_comments to static_exif[270], "ImageDescription"
+
         static_exif[270] = exif_dict
         # save the static_exif object as a class variable
         self.static_exif = static_exif
@@ -63,16 +59,17 @@ class MetaRead:
         # prepare the user_comments
         static_exif = copy.deepcopy(self.static_exif)
         static_exif[270].update(addtl_user_comments)
+        # jsonize the user_comments
         user_comments = json.dumps(static_exif[270])
+        # apply jsonized user_comments to static_exif[270], "ImageDescription"
         static_exif[270] = user_comments
-
-        # extract exif data as dict
+        # extract source file's exif data as dict (has camera stored values)
         exifDict = piexif.load(src)
-        # update the input dict with the static_exif info
+        # update the input dict with the static_exif info @ ['0th']
         exifDict['0th'].update(static_exif)
-        # have to remove makerNotes or else it crashes with CR2s
+        # have to remove makerNotes or else it crashes when using CR2s
         exifDict['Exif'].pop(37500, None)
-        # dump exifDict to bytes
+        # dump resulting exifDict to bytes & return them
         exif_bytes = piexif.dump(exifDict)
         return exif_bytes
 
