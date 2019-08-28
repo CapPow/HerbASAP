@@ -127,7 +127,7 @@ class Boss(QThread):
             bc_worker.signals.error.connect(self.worker_error_handler)
             bc_worker.signals.result.connect(self.worker_result_handler)
             bc_worker.signals.finished.connect(self.worker_finished_handler)
-            self.__thread_pool.start(bc_worker)  # start bc_worker thread
+            self.__thread_pool.start(bc_worker, priority=QThread.TimeCriticalPriority)  # start bc_worker thread
         elif job.job_name == 'blur_worker' and job.job_data is not None and job.job_function is not None:
             self.__is_blur_worker_running = True
             blur_worker = Worker(job.job_function, job.job_data.grey_image, job.job_data.blur_threshold, job.job_data.return_details)
@@ -136,7 +136,7 @@ class Boss(QThread):
             blur_worker.signals.error.connect(self.worker_error_handler)
             blur_worker.signals.result.connect(self.worker_result_handler)
             blur_worker.signals.finished.connect(self.worker_finished_handler)
-            self.__thread_pool.start(blur_worker)  # start blur_worker thread
+            self.__thread_pool.start(blur_worker, priority=QThread.TimeCriticalPriority)  # start blur_worker thread
         elif job.job_name == 'eq_worker' and job.job_data is not None and job.job_function is not None:
             self.__is_eq_worker_running = True
             eq_worker = Worker(job.job_function, job.job_data.im, job.job_data.img_path, job.job_data.mDistance)
@@ -145,7 +145,7 @@ class Boss(QThread):
             eq_worker.signals.error.connect(self.worker_error_handler)
             eq_worker.signals.result.connect(self.worker_result_handler)
             eq_worker.signals.finished.connect(self.worker_finished_handler)
-            self.__thread_pool.start(eq_worker)  # start eq_worker thread
+            self.__thread_pool.start(eq_worker, priority=QThread.TimeCriticalPriority)  # start eq_worker thread
             # in this case, job_data should be None
         elif job.job_name == 'save_worker' and job.job_data is not None and job.job_function is not None:
             save_worker = Worker(job.job_function, job.job_data.new_file_name, job.job_data.im)
@@ -154,7 +154,7 @@ class Boss(QThread):
             save_worker.signals.error.connect(self.worker_error_handler)
             save_worker.signals.result.connect(self.worker_result_handler)
             save_worker.signals.finished.connect(self.worker_finished_handler)
-            self.__thread_pool.start(save_worker)  # start eq_worker thread
+            self.__thread_pool.start(save_worker, priority=QThread.TimeCriticalPriority)  # start eq_worker thread
         else:
             print('no my son')
 

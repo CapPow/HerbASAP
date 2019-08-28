@@ -14,12 +14,11 @@
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 """
-
     HerbASAP - Herbarium Application for Specimen Auto-Processing
     performs post processing steps on raw format images of natural history
     specimens. Specifically designed for Herbarium sheet images.
-
 """
+
 __author__ = "Caleb Powell, Dakila Ledesma, Jacob Motley, Jason Best"
 __credits__ = ["Caleb Powell", "Dakila Ledesma", "Jacob Motley", "Jason Best",
                "Hong Qin", "Joey Shaw"]
@@ -196,7 +195,7 @@ class appWindow(QMainWindow):
               f"{self.threadPool.maxThreadCount()} threads")
         # initiate the persistant settings
         # todo update this when name is decided on
-        self.settings = QSettings('AYUP', 'AYUP')
+        self.settings = QSettings('HerbASAP', 'HerbASAP')
         self.settings.setFallbacksEnabled(False)  # File only, no fallback to registry.
         # populate the settings based on the previous preferences
         self.populateSettings()
@@ -257,7 +256,7 @@ class appWindow(QMainWindow):
         self.boss_thread.signals.job_error.connect(self.handle_job_error)
         # start the boss thread's "event loop"
         # https://doc.qt.io/qt-5/qthread.html#start
-        self.boss_thread.start()
+        self.boss_thread.start(priority=QtCore.QThread.TimeCriticalPriority)
 
         # setup static UI buttons
         self.mainWindow.toolButton_removePattern.pressed.connect(self.remove_pattern)
