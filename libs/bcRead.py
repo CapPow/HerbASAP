@@ -14,12 +14,11 @@
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 """
-
-    AYUP (as of yet unnamed program) performs post processing steps on raw 
-    format images of natural history specimens. Specifically designed for 
-    Herbarium sheet images.
-
+    HerbASAP - Herbarium Application for Specimen Auto-Processing
+    performs post processing steps on raw format images of natural history
+    specimens. Specifically designed for Herbarium sheet images.
 """
+
 import re
 import numpy as np
 import cv2
@@ -130,37 +129,7 @@ class bcRead():
         bcRawData = [x.data.decode('utf-8') for x in code_reader(img)]
         if verifyPattern:  # limit the results to those matching rePattern
             bcRawData = [x for x in bcRawData if self.rePattern.match(x)]
-        #rot_deg = 0  # in case we don't rotate but want the 
-        #rev_mat = None  # variable to hold the reverse matrix
-        #len_bc = len(bcRawData)
-        #if len_bc < 1:
-        #    for deg in self.rotation_list:
-        #        rot_deg += deg
-        #        rotated_img, rev_mat = self.rotateImg(img, rot_deg, return_details)
-        #        # decode each code found from bytes to utf-8
-        #        bcRawData = [x.data.decode('utf-8') for x in code_reader(rotated_img)]
-        #        if verifyPattern:  # limit the results to those matching rePattern
-        #            bcRawData = [x for x in bcRawData if self.rePattern.match(x)]
-        #        len_bc = len(bcRawData)
-        #        if len_bc > 0:
-        #            break
-        #    else:  # if the rotation_list is exhausted, return None
-        #        return None
-        #if return_details:
-        #    bcData = []
-        #    for result in bcRawData:
-        #        bcValue = result.data.decode("utf-8")
-        #        bcBox = result.rect
-        #        max_dim = max([bcBox.width, bcBox.height])
-        #        center = self.det_bc_center(bcBox, rev_mat)
-        #        bcType = result.type
-        #        resultDict = {'value':bcValue,
-        #                      'center':center,
-        #                      'max_dim':max_dim,
-        #                      'type':bcType}
-        #        bcData.append(resultDict)
-        #    return bcData
-        #else:
+
         return bcRawData
 
     def rotateImg(self, img, angle, reversible=False):
@@ -239,7 +208,8 @@ class bcRead():
         ret,img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
         img = cv2.GaussianBlur(img, (3, 3), 3)
         img = cv2.erode(img, None)
-        img = cv2.dilate(img, None)
+        img = cv2.dilate(img, None, iterations=2)
+
         squares = []
         for thrs in range(0, 255, 51):
             if thrs == 0:
@@ -323,23 +293,31 @@ class bcRead():
         pix_coords = y, x
         return pix_coords
 
-    def extract_by_squares(self, gray, retry=True):
+    def extract_by_squares(self, gray, retry=True, extension=6):
         """
         given a numpy array image attempts to identify all barcodes using
         vector extraction.
         """
+        # apparently this does not generalize well for very large resolutions
+        h, w = gray.shape[0:2]
+        if max(w,h) > 6800:
+            new_size = (int(w*0.8), int(h*0.8))
+            w, h = new_size
+            gray = cv2.resize(gray, new_size, interpolation=cv2.INTER_NEAREST)
+
         # ID squares
         squares = self.find_squares(gray)
+        #print(f'found {len(squares)} squares.')
         if len(squares) < 1:
             z = zbar_decode(gray, y_density=3, x_density=3)
         else:
             # iterate over each and det their midpoint intersects
-            h, w = gray.shape[0:2]
-            h -=1
-            w -=1
+
+            h -= 1
+            w -= 1
             line_data = []
             # extension happens in both directions, therefore effectively doubled.
-            extend = min(h,w) // 6
+            extend = min(h, w) // extension
             for square in squares:
                 a, b, c, d = square
                 ab_mid = self.det_midpoint(a, b)
@@ -358,14 +336,52 @@ class bcRead():
                 line_data.append(zi)
         
             merged_lines = self.merge_proposals(line_data)
-            merged_lines_shape = merged_lines.shape
             #print(f'merged_lines shape = {merged_lines_shape}')
             z = zbar_decode(merged_lines, y_density=0, x_density=1)
-            # this block was necessary for testing a sample of jpgs (probably due to white balancing)
-            #if len(z) < 1 & retry:
-                # if it failed, try once more after darkening it a lot
-            #    gray = self.adjust_gamma(gray, 0.4)
-            #    return self.extract_by_squares(gray, retry=False)
+            if len(z) < 1:
+                # first try darkening it
+                merged_lines = self.adjust_gamma(merged_lines, 0.8)
+                z = zbar_decode(merged_lines, y_density=0, x_density=1)
+                if len(z) < 1:
+                    very_gamma_lines = self.adjust_gamma(merged_lines, 0.4)
+                    z = zbar_decode(very_gamma_lines, y_density=0, x_density=1)
+                    if len(z) < 1:
+                        # if that fails try sharpening it
+                        blurred = cv2.GaussianBlur(merged_lines, (0, 0), 10)
+                        merged_lines = cv2.addWeighted(merged_lines, 2, blurred, -1, 0)
+                        z = zbar_decode(merged_lines, y_density=0, x_density=1)
+                        #cv2.imwrite('sharp_merged_lines.jpg', merged_lines)
+                        #if len(z) > 0:
+                        #    print('sharpening worked')
+                    #else:
+                        #print('very gamma worked')
+                    if len(z) < 1 & retry:
+                        # if all that fails squares again but with a darker img
+                        gray = self.adjust_gamma(gray, 0.4)
+                        z = self.extract_by_squares(gray, retry=False)
+                        if len(z) < 1 & retry:
+                            # if that fails, try squares on shrunk img
+                            o_h, o_w = gray.shape[0:2]
+                            new_size = (int(o_h * 0.8), int(o_w * 0.8))
+                            gray = cv2.resize(gray, new_size)
+                            #print(f'retrying with size {new_size}')
+                            z = self.extract_by_squares(gray, retry=False)
+                        #else:
+                        #    print('retrying with gamma worked')
+                #else:
+                #    print('gamma worked')
+                    
+                # if it failed, try once more after darkening (a lot)
+                #gray = self.adjust_gamma(gray, 0.4)
+                # then sharpening it
+                #blurred = cv2.GaussianBlur(gray, (0, 0), 10)
+                #gray = cv2.addWeighted(gray, 3, blurred, -1, 0)
+                #return self.extract_by_squares(gray, retry=False)
+                
+        #cv2.imwrite('output.jpg', gray)
+        #if len(z) > 0:
+        #    if not retry:
+        #        print('retrying worked')
         return z
 
     def testFeature(self, img):
