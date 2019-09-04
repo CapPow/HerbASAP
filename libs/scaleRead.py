@@ -71,21 +71,20 @@ class ScaleRead:
 
         pixels_per_mm = []
         for desired_color in desired_colors:
-            seed = None
             h, w, chn = im.shape
 
-            found_desired_color = False
-            for hi, height in enumerate(im):
-                for wi, width in enumerate(height):
-                    if desired_color[0] - thresh < width[0] < desired_color[0] + thresh and \
-                            desired_color[1] - thresh * 2 < width[1] < desired_color[1] + thresh * 2 and \
-                            desired_color[2] - thresh * 2 < width[2] < desired_color[2] + thresh * 2:
-                        seed = (wi, hi)
-                        found_desired_color = True
-                        break
-                if found_desired_color:
-                    break
+            # Function is used in order to break out of the entire nested loop.
+            def find_seed():
+                for hi, height in enumerate(im):
+                    for wi, width in enumerate(height):
+                        if desired_color[0] - thresh < width[0] < desired_color[0] + thresh and \
+                                desired_color[1] - thresh * 2 < width[1] < desired_color[1] + thresh * 2 and \
+                                desired_color[2] - thresh * 2 < width[2] < desired_color[2] + thresh * 2:
+                            return wi, hi
+                else:
+                    return None
 
+            seed = find_seed()
             mask = np.zeros((h + 2, w + 2), np.uint8)
 
             floodflags = 4
