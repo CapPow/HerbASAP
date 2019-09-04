@@ -923,33 +923,22 @@ class appWindow(QMainWindow):
         updates cc related diagnostic details.
         """
         cc_view_label = self.mainWindow.label_cc_image
-        # resize the crop to fit the window
-        width = cc_view_label.width()
-        height = cc_view_label.height()
+        # if the crop is vertically oriented... rotate it
         h, w = cropped_cc.shape[0:2]
-        # if it is vertically oriented... rotate it
         if h > w:
             cropped_cc = np.rot90(cropped_cc, 1)
-            newh = w
-            w = h
-            h = newh
-        if width > height:
-            hpercent = (width/float(w))
-            height = int((float(h)*float(hpercent)))
-        else:
-            wpercent = (height/float(h))
-            width = int((float(w)*float(wpercent)))
-        size = (width, height)
-        cropped_cc = cv2.resize(cropped_cc, size,
-                                interpolation=cv2.INTER_NEAREST)
-
-        bytesPerLine = 3 * width
-        qImg = QtGui.QImage(cropped_cc, width, height, bytesPerLine,
-                            QtGui.QImage.Format_RGB888)
+            h, w = w, h  # swamp the variables after rotating
+        bytesPerLine = 3 * w
+        qImg = QtGui.QImage(cropped_cc, w, h,
+                            bytesPerLine, QtGui.QImage.Format_RGB888)
         pixmap = QtGui.QPixmap.fromImage(qImg)
-        pixmap_image = QtGui.QPixmap(pixmap)
+        width = cc_view_label.width()
+        height = cc_view_label.height()
+        pixmap = pixmap.scaled(width, height,
+                               QtCore.Qt.KeepAspectRatio,
+                               Qt.FastTransformation)
+        cc_view_label.setPixmap(pixmap)
 
-        cc_view_label.setPixmap(pixmap_image)
         self.mainWindow.label_runtime.setText(str(cc_crop_time))
         # there has got to be a better way to convert this list of np.floats
         self.mainWindow.label_whitergb.setText(
@@ -959,28 +948,18 @@ class appWindow(QMainWindow):
         app.processEvents()
 
     def update_preview_img(self, im):
-        # trying smaller preview
         h, w = im.shape[0:2]
         preview_label = self.mainWindow.label_imPreview
+        bytesPerLine = 3 * w
+        qImg = QtGui.QImage(im, w, h, bytesPerLine,
+                            QtGui.QImage.Format_RGB888)
+        pixmap = QtGui.QPixmap.fromImage(qImg)
         width = preview_label.width()
         height = preview_label.height()
-        hpercent = (width/float(w))
-        height = int((float(h)*float(hpercent)))
-        size = (width, height)
-        im = cv2.resize(im, size, interpolation=cv2.INTER_NEAREST)
-        bytesPerLine = 3 * width
-        qImg = QtGui.QImage(im, width, height, bytesPerLine,
-                            QtGui.QImage.Format_RGB888)  #.rgbSwapped()
-        pixmap = QtGui.QPixmap.fromImage(qImg)
-        pixmap_image = QtGui.QPixmap(pixmap)
-        preview_label = self.mainWindow.label_imPreview
-        #preview_label.setText("")
-        #preview_label.setPixmap(pixmap_image)
-        
-        preview_label.setPixmap(pixmap_image.scaled(
-                preview_label.size(), Qt.KeepAspectRatio,
-                Qt.SmoothTransformation))
-
+        pixmap = pixmap.scaled(width, height,
+                               QtCore.Qt.KeepAspectRatio,
+                               Qt.FastTransformation)
+        preview_label.setPixmap(pixmap)
         # give app a moment to update
         app.processEvents()
 
