@@ -127,7 +127,7 @@ model_classifier_only = Model([feature_map_input, roi_input], classifier)
 
 model_classifier = Model([feature_map_input, roi_input], classifier)
 
-print('Loading weights from {}'.format("libs/models/f_rcnn_lcc.hdf5"))
+# print('Loading weights from {}'.format("libs/models/f_rcnn_lcc.hdf5"))
 model_rpn.load_weights("libs/models/f_rcnn_lcc.hdf5", by_name=True)
 model_classifier.load_weights("libs/models/f_rcnn_lcc.hdf5", by_name=True)
 

@@ -11,12 +11,19 @@ import numpy as np
 from PIL import Image
 import cv2
 import time
+import os
+
+# Importing TensorFlow within debug messages
 import tensorflow as tf
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+# Importing Keras and making sure that Keras uses TensorFlow instead of some other backend.
+import keras
 from keras.models import load_model
 from keras import backend as K
-
 if K.backend() != 'tensorflow':
-    raise RuntimeError(f"Please set your keras.json to use Tensorflow. It is currently using {keras.backend.backend()}")
+    raise RuntimeError(f"Please set your keras.json to use TensorFlow. It is currently using {keras.backend.backend()}")
 
 from libs.test_frcnn import process_image_frcnn
 
