@@ -917,7 +917,7 @@ class appWindow(QMainWindow):
             self.folder_watcher.img_count += 1
             self.update_session_stats()
 
- def update_cc_info(self, cc_position, cropped_cc, cc_crop_time,
+    def update_cc_info(self, cc_position, cropped_cc, cc_crop_time,
                        cc_avg_white):
         """
         updates cc related diagnostic details.
@@ -927,7 +927,7 @@ class appWindow(QMainWindow):
         width = cc_view_label.width()
         height = cc_view_label.height()
         h, w = cropped_cc.shape[0:2]
-        # if it is vertically oriented... rotate it 
+        # if it is vertically oriented... rotate it
         if h > w:
             cropped_cc = np.rot90(cropped_cc, 1)
             newh = w
