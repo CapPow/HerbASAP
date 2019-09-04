@@ -841,7 +841,7 @@ class appWindow(QMainWindow):
                     pim = Image.fromarray(im)
                     crc = pim.crop(cc_position)
                     pixels_per_mm = ScaleRead.find_scale(crc)
-                    print(pixels_per_mm)
+                    print(f"Pixels per mm for {os.path.basename(img_path)}: {int(pixels_per_mm)}")
                 else:
                     cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
                 self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)

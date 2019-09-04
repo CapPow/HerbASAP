@@ -42,26 +42,20 @@ class ScaleRead:
         return squares
 
     @staticmethod
-    def find_scale(im):
+    def find_scale(im, thresh=5, patch_mm_size=3.17, find_squares=True):
         '''
-        Currently only works for nano CRCs
+        Finds the pixels to millimeter of image using the CRC patch size. Currently only works ISA ColorGauge Target
+        CRCs (micro, nano, and pico versions)
         :param im: Image to be determined
         :type im: PIL.Image
         :param scale: scale of the original image to the processing size (1250, 1875)
-        :return: Returns the pixels per millimeter *average*
+        :return: Returns the pixels per millimeter *average* rounded to the nearest whole number
         '''
+        # Converting to HSV as it performs better during floodfill
         im = im.convert("HSV")
         im = np.array(im)
-        thresh = 5
 
-        # RGB Colors (here for reference)
-        # desired_colors = [[247, 142, 50],
-        #                   [105, 135, 71],
-        #                   [25, 165, 195],
-        #                   [204, 86, 82],
-        #                   [220, 102, 182]]
-
-        # HSV
+        # HSV, calibrated for saturated (already processed) images
         # desired_colors = [[20, 204, 247],
         #                   [62, 120, 135],
         #                   [135, 222, 196],
@@ -80,13 +74,17 @@ class ScaleRead:
             seed = None
             h, w, chn = im.shape
 
+            found_desired_color = False
             for hi, height in enumerate(im):
                 for wi, width in enumerate(height):
                     if desired_color[0] - thresh < width[0] < desired_color[0] + thresh and \
                             desired_color[1] - thresh * 2 < width[1] < desired_color[1] + thresh * 2 and \
                             desired_color[2] - thresh * 2 < width[2] < desired_color[2] + thresh * 2:
                         seed = (wi, hi)
+                        found_desired_color = True
                         break
+                if found_desired_color:
+                    break
 
             mask = np.zeros((h + 2, w + 2), np.uint8)
 
@@ -94,34 +92,27 @@ class ScaleRead:
             floodflags |= cv2.FLOODFILL_MASK_ONLY
             floodflags |= (255 << 8)
 
-            _, _, _, _ = cv2.floodFill(im, mask, seed, (255, 0, 0), (15 - thresh, 15 - thresh * 2, 15 - thresh * 2),
+            _, _, mask, rect = cv2.floodFill(im, mask, seed, (255, 0, 0), (15 - thresh, 15 - thresh * 2, 15 - thresh * 2),
                                                 (15 + thresh, 15 + thresh * 2, 15 + thresh * 2), floodflags)
-            # pixels_per_mm.append((((rect[2] + rect[3]) / 2) / 3.17))
-            np_best_image = np.array(mask)
 
-            cv_best_image = cv2.cvtColor(np_best_image, cv2.COLOR_GRAY2RGB)
-            cv_best_image = cv2.cvtColor(cv_best_image, cv2.COLOR_RGB2HSV)
-            squares = ScaleRead.find_squares(cv_best_image, contour_area_floor=100, contour_area_ceiling=10000)
+            if find_squares:
+                color_patch_mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2RGB)
+                color_patch_mask = cv2.cvtColor(color_patch_mask, cv2.COLOR_RGB2HSV)
+                squares = ScaleRead.find_squares(color_patch_mask, contour_area_floor=100, contour_area_ceiling=10000)
 
-            if len(squares) > 0:
-                biggest_square = max(squares, key=cv2.contourArea)
-                xs = biggest_square[..., 0]
-                ys = biggest_square[..., 1]
-                length = max(xs) - min(xs)
-                length2 = max(ys) - min(ys)
-                pixels_per_mm.append((((length + length2) / 2) / 3.17))
-                cv2.drawContours(im, [biggest_square], -1, (0, 255, 0), 1)
+                if len(squares) > 0:
+                    biggest_square = max(squares, key=cv2.contourArea)
+                    xs = biggest_square[..., 0]
+                    ys = biggest_square[..., 1]
+                    square_width = max(xs) - min(xs)
+                    square_height = max(ys) - min(ys)
+                    pixels_per_mm.append((((square_width + square_height) / 2) / patch_mm_size))
+            else:
+                pixels_per_mm.append((((rect[2] + rect[3]) / 2) / patch_mm_size))
 
         if len(pixels_per_mm) > 0:
-            # print(pixels_per_mm)
             pixels_per_mm_avg = sum(pixels_per_mm) / len(pixels_per_mm)
         else:
             pixels_per_mm_avg = 0
-        # print(f"Pixels per millimeter: {round(pixels_per_mm_avg)}")
 
-        # Code for returning back the image, if wanted/needed.
-        # im = Image.fromarray(im)
-        # im = im.convert('RGB')
-        # im.show()
-        # im.save(f"scale_cc_test_images/results/{os.path.basename(fp)}-{pixels_per_mm_avg}.jpg")
-        return pixels_per_mm_avg
+        return round(pixels_per_mm_avg)
