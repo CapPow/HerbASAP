@@ -443,7 +443,8 @@ class ColorchipRead:
                 x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
                 biggest_square = (x1, y1, x2, y2)
                 best_image = best_image.crop(biggest_square)
-                x1, y1, x2, y2 = best_location[0] + biggest_square[0], best_location[1] + biggest_square[1], best_location[2] + biggest_square[0], best_location[3] + biggest_square[1]
+                x1, y1, x2, y2 = best_location[0] + biggest_square[0], best_location[1] + biggest_square[1], \
+                                 best_location[2] + biggest_square[0], best_location[3] + biggest_square[1]
             else:
                 x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
         except Exception as e:
@@ -461,6 +462,7 @@ class ColorchipRead:
         print(f"Color chip cropping took: {end - start} seconds using {inference_type} proposal.")
         best_image = np.array(best_image, dtype=np.uint8)
         cc_crop_time = round(end - start, 3)
+
         return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image, cc_crop_time
 
     @staticmethod

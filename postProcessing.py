@@ -61,6 +61,10 @@ from libs.boss_worker import (Boss, BCWorkerData, BlurWorkerData, EQWorkerData,
                               WorkerErrorData, SaveWorkerData)
 from libs.metaRead import MetaRead
 
+
+from libs.scaleRead import ScaleRead
+from PIL import Image
+
 class ImageDialog(QDialog):
     def __init__(self, img_array_object):
         super().__init__()
@@ -834,6 +838,10 @@ class appWindow(QMainWindow):
             try:
                 if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
                     cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_small(reduced_img, original_size, stride_style='whole', high_precision=True)
+                    pim = Image.fromarray(im)
+                    crc = pim.crop(cc_position)
+                    pixels_per_mm = ScaleRead.find_scale(crc)
+                    print(pixels_per_mm)
                 else:
                     cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
                 self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
