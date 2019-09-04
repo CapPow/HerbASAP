@@ -67,18 +67,15 @@ class ColorchipRead:
         self.position_output_details = self.position_model.get_output_details()
 
         self.K_position_model = load_model("libs/models/mlp_proposal_k.hdf5")
-        self.position_function = K.function([self.K_position_model.layers[0].input, self.K_position_model.layers[1].input, K.learning_phase()],
+        self.position_function = K.function([self.K_position_model.layers[0].input,
+                                             self.K_position_model.layers[1].input,
+                                             K.learning_phase()],
         [self.K_position_model.layers[-1].output])
 
         self.discriminator_model = tf.lite.Interpreter(model_path="libs/models/discriminator.tflite")
         self.discriminator_model.allocate_tensors()
         self.discriminator_input_details = self.discriminator_model.get_input_details()
         self.discriminator_output_details = self.discriminator_model.get_output_details()
-
-        self.large_colorchip_regressor_model = tf.lite.Interpreter(model_path="libs/models/discriminator.tflite")
-        self.large_colorchip_regressor_model.allocate_tensors()
-        self.large_colorchip_input_details = self.large_colorchip_regressor_model.get_input_details()
-        self.large_colorchip_output_details = self.large_colorchip_regressor_model.get_output_details()
 
         # self.large_colorchip_regressor_model_k = load_model("libs/models/lcc_regressor.hdf5")
 
