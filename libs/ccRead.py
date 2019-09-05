@@ -431,39 +431,41 @@ class ColorchipRead:
         hpstart = time.time()
         try:
             if high_precision:
-                np_best_image = np.array(best_image)
-                cv_best_image = cv2.cvtColor(np_best_image, cv2.COLOR_RGB2HSV)
-                # determine a a min / max based on partition_size
-                partition_area = partition_size * partition_size
-                min_crop_area = partition_area // 10
-                max_crop_area = partition_area // 1.2
-                # identify squares in the crop
-                squares = ColorchipRead.find_squares(cv_best_image,
-                                                     contour_area_floor=min_crop_area,
-                                                     contour_area_ceiling=max_crop_area)
-
-                # identify the largest area among contours
-                biggest_square = max(squares, key = cv2.contourArea)
-                # convert contour into a PIL friendly format
-                x_arr = biggest_square[..., 0]
-                y_arr = biggest_square[..., 1]
-                x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
-                biggest_square = (x1, y1, x2, y2)
-                best_image = best_image.crop(biggest_square)
+#                np_best_image = np.array(best_image)
+#                cv_best_image = cv2.cvtColor(np_best_image, cv2.COLOR_RGB2HSV)
+#                # determine a a min / max based on partition_size
+#                partition_area = partition_size * partition_size
+#                min_crop_area = partition_area // 10
+#                max_crop_area = partition_area // 1.2
+#                # identify squares in the crop
+#                squares = ColorchipRead.find_squares(cv_best_image,
+#                                                     contour_area_floor=min_crop_area,
+#                                                     contour_area_ceiling=max_crop_area)
+#
+#                # identify the largest area among contours
+#                biggest_square = max(squares, key = cv2.contourArea)
+#                # convert contour into a PIL friendly format
+#                x_arr = biggest_square[..., 0]
+#                y_arr = biggest_square[..., 1]
+#                x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
+#                biggest_square = (x1, y1, x2, y2)
+#                best_image = best_image.crop(biggest_square)
+                best_image, biggest_square = ColorchipRead.high_precision_cc_crop(best_image, return_biggest=True)
                 x1, y1, x2, y2 = best_location[0] + biggest_square[0], best_location[1] + biggest_square[1], \
                                  best_location[2] + biggest_square[0], best_location[3] + biggest_square[1]
             else:
                 x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
         except Exception as e:
+            print(e)
             raise InvalidStride
 
         #print(f"High precision took {time.time() - hpstart} seconds.")
         prop_x1, prop_y1, prop_x2, prop_y2 = x1 / image_width, y1 / image_height, x2 / image_width, y2 / image_height
 
-        scaled_x1, scaled_y1, scaled_x2, scaled_y2 = prop_x1 * original_width, \
-                                                     prop_y1 * original_height, \
-                                                     prop_x2 * original_width, \
-                                                     prop_y2 * original_height
+        scaled_x1, scaled_y1, scaled_x2, scaled_y2 = int(prop_x1 * original_width), \
+                                                     int(prop_y1 * original_height), \
+                                                     int(prop_x2 * original_width), \
+                                                     int(prop_y2 * original_height)
 
         end = time.time()
         print(f"Color chip cropping took: {end - start} seconds using {inference_type} proposal.")
@@ -471,6 +473,34 @@ class ColorchipRead:
         cc_crop_time = round(end - start, 3)
 
         return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image, cc_crop_time
+
+    @staticmethod
+    def high_precision_cc_crop(input_img, return_biggest=False):
+
+        np_image = np.array(input_img)
+        cv_image = cv2.cvtColor(np_image, cv2.COLOR_RGB2HSV)
+        h, w = np_image.shape[0:2]
+        area = h*w
+        min_crop_area = area // 10
+        max_crop_area = area // 1.2
+
+        # identify squares in the crop
+        squares = ColorchipRead.find_squares(cv_image,
+                                             contour_area_floor=min_crop_area,
+                                             contour_area_ceiling=max_crop_area)
+
+        # identify the largest area among contours
+        biggest_square = max(squares, key=cv2.contourArea)
+        x_arr = biggest_square[..., 0]
+        y_arr = biggest_square[..., 1]
+        x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
+        biggest_square = (x1, y1, x2, y2)
+        cropped_img = np_image[y1:y2, x1:x2]
+        
+        if return_biggest:
+            return cropped_img, biggest_square
+        else:
+            return cropped_img
 
     @staticmethod
     def predict_color_chip_quadrant(original_size, scaled_crop_location):

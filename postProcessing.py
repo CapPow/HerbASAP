@@ -488,7 +488,9 @@ class appWindow(QMainWindow):
                 'avgWhiteRGB': str(self.cc_avg_white),
                 'barcodeValues':self.bc_code,
                 'isBlurry':str(self.is_blurry),
-                'ccQuadrant':str(self.cc_quadrant)
+                'ccQuadrant':str(self.cc_quadrant),
+                'pixelPerMM':str(self.ppmm),
+                'pixelPerMMUncertainty':str(self.ppmm_uncertainty)
                 }
 
         self.meta_data = self.metaRead.retrieve_src_exif(orig_img_path,
@@ -777,6 +779,9 @@ class appWindow(QMainWindow):
         self.cropped_cc = None
         self.working_save_jobs = 0
         self.processing_image = False
+        self.ppmm = 'N/A'
+        self.ppmm_uncertainty = 'N/A'
+        
         try:
             if self.raw_base:  # try extra hard to free up these resources.
                 print('manually forcing closure')
@@ -838,10 +843,17 @@ class appWindow(QMainWindow):
             try:
                 if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
                     cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_small(reduced_img, original_size, stride_style='whole', high_precision=True)
-                    pim = Image.fromarray(im)
-                    crc = pim.crop(cc_position)
-                    pixels_per_mm = ScaleRead.find_scale(crc)
-                    print(f"Pixels per mm for {os.path.basename(img_path)}: {int(pixels_per_mm)}")
+                    # debugging scale DET!
+                    # set a timer for scale
+                    s_timer = time.time()
+                    x1, y1, x2, y2  = cc_position
+                    full_res_cc = im[y1:y2, x1:x2]
+                    full_res_cc = ColorchipRead.high_precision_cc_crop(full_res_cc)
+                    self.ppmm, self.ppmm_uncertainty = ScaleRead.find_scale(full_res_cc)
+                    
+                    
+                    print(f"Pixels per mm for {os.path.basename(img_path)}: {self.ppmm}, +/- {self.ppmm_uncertainty}")
+                    print(f'Scale DET! time = {time.time() - s_timer}')
                 else:
                     cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
                 self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
@@ -943,7 +955,6 @@ class appWindow(QMainWindow):
         # there has got to be a better way to convert this list of np.floats
         self.mainWindow.label_whitergb.setText(
                 ', '.join([str(int(x)) for x in cc_avg_white]))
-
         # give app a moment to update
         app.processEvents()
 
