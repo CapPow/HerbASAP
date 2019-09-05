@@ -489,8 +489,8 @@ class appWindow(QMainWindow):
                 'barcodeValues':self.bc_code,
                 'isBlurry':str(self.is_blurry),
                 'ccQuadrant':str(self.cc_quadrant),
-                'pixelPerMM':str(self.ppmm),
-                'pixelPerMMUncertainty':str(self.ppmm_uncertainty)
+                'pixelsPerMM':str(self.ppmm),
+                'pixelsPerMMConfidence':str(self.ppmm_uncertainty)
                 }
 
         self.meta_data = self.metaRead.retrieve_src_exif(orig_img_path,

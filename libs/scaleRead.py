@@ -50,53 +50,18 @@ class ScaleRead:
         :param im: Image to be determined
         :type im: CV2.Image
         :param patch_mm_size: the expected patchsize
-        :return: Returns the pixels per millimeter *average* rounded to the nearest whole number
+        :return: Returns the rounded pixels per millimeter and 95% CI.
         '''
         # Converting to HSV as it performs better during floodfill
-        #im = im.convert("HSV")
-        #im = np.array(im)
-        #cv2.imwrite('crc.jpg', im)
-        #xcorrection, ycorrection = correction # correction=(x, y)
-
-        # HSV, calibrated for saturated (already processed) images
-        # desired_colors = [[20, 204, 247],
-        #                   [62, 120, 135],
-        #                   [135, 222, 196],
-        #                   [2, 153, 204],
-        #                   [226, 138, 219]]
-
-        # HSV Colors, desaturated for RAW image processing
-#        desired_colors = [[18, 135, 120],
-#                          [77, 64, 92],
-#                          [162, 153, 92],
-#                          [2, 122, 85],
-#                          [149, 125, 117]]
-#
-#        pixels_per_mm = []
-        #for desired_color in desired_colors:
-#            h, w, chn = im.shape
-#
-#            # Function is used in order to break out of the entire nested loop.
-#            def find_seed():
-#                for hi, height in enumerate(im):
-#                    for wi, width in enumerate(height):
-#                        if desired_color[0] - thresh < width[0] < desired_color[0] + thresh and \
-#                                desired_color[1] - thresh * 2 < width[1] < desired_color[1] + thresh * 2 and \
-#                                desired_color[2] - thresh * 2 < width[2] < desired_color[2] + thresh * 2:
-#                            return wi, hi
-#                else:
-#                    return None
-#
-#            seed = find_seed()
-        # convert the input to HSV
         im = cv2.cvtColor(im, cv2.COLOR_RGB2HSV)
         h, w = im.shape[0:2]
+        pts = 12  # the number of seed points (-2) to take per axis
         # calculate a series of seed positions to start floodfilling
-        sample_hs = np.linspace(0, h, 10).astype(int)[2:-2]
-        anchor_hs = np.tile([h//10, h - (h//10)], 3)
+        sample_hs = np.linspace(0, h, pts).astype(int)[1:-1]
+        anchor_hs = np.tile([h//10, h - (h//10)], len(sample_hs)//2)
 
-        sample_ws = np.linspace(0, w, 10).astype(int)[2:-2]
-        anchor_ws = np.tile([w - (w//10), w//10], 3)
+        sample_ws = np.linspace(0, w, pts).astype(int)[1:-1]
+        anchor_ws = np.tile([w - (w//10), w//10], len(sample_ws)//2)
 
         h_seeds = tuple(zip(anchor_ws, sample_hs))
         w_seeds = tuple(zip(sample_ws, anchor_hs))
@@ -106,10 +71,10 @@ class ScaleRead:
         area = h*w
         contour_area_floor = area // 50
         contour_area_ceiling = area // 4
-        # determine reasonable lower, upper thresholds
+        # determine reasonable lower, upper thresholds, 5% of lum range
         minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(cv2.cvtColor(im,cv2.COLOR_RGB2LAB)[..., 0])
-        var_threshold = int((maxVal-minVal) * .05)
-        # container to hold the results from each seed
+        var_threshold = int((maxVal-minVal) * 0.05)
+        # container to hold the results from each seed's floodfill
         pixels_per_mm = []
         orig_mask = np.zeros((h + 2, w + 2), np.uint8)
         for i, seed in enumerate(seed_pts):
@@ -134,23 +99,25 @@ class ScaleRead:
                 biggest_square = max(squares, key=cv2.contourArea)
                 xs = biggest_square[..., 0]
                 ys = biggest_square[..., 1]
-                square_width = (max(xs) - min(xs)) #* ycorrection
-                square_height = (max(ys) - min(ys))# * xcorrection
+                square_width = (max(xs) - min(xs))
+                square_height = (max(ys) - min(ys))
                 pixels_per_mm.append((((square_width + square_height) / 2) / patch_mm_size))
+            # using the rectangles returned from floodfill
             # It appears the bounding postion is inclusive to the object.
             # adding 1px to each side of h and w (+2) should correct this.
             #x,y,w,h = rect
             pixels_per_mm.append((((rect[2]+2 + rect[3]+2) / 2) / patch_mm_size))
         # require a minimum measurements before proceeding
         if len(pixels_per_mm) > 9:
-            outlier_thresh = np.std(pixels_per_mm) * 1#.5
+            ppm_std = np.std(pixels_per_mm)
             pixel_mean = np.mean(pixels_per_mm)
-            lower_bounds = pixel_mean - outlier_thresh
-            upper_bounds = pixel_mean + outlier_thresh
+            lower_bounds = pixel_mean - ppm_std # keep results within +/- 1 std
+            upper_bounds = pixel_mean + ppm_std
             pixels_per_mm = [x for x in pixels_per_mm if lower_bounds< x < upper_bounds]
-
             pixels_per_mm_avg = round(np.mean(pixels_per_mm), 1)
-            ppm_uncertainty = max( round(np.max(pixels_per_mm) - np.min(pixels_per_mm), 2), 1)
+            # determine CI @ 95% : 1.96 SE = std / sqrt(len(array))
+            ppm_uncertainty = round(1.96 * (np.std(pixels_per_mm)/ np.sqrt(len(pixels_per_mm))), 1)
+            #ppm_uncertainty = round(np.max(pixels_per_mm) - np.min(pixels_per_mm), 1)
         else:
             pixels_per_mm_avg = 0
             ppm_uncertainty = max(h,w)  # be really sure they get the point.

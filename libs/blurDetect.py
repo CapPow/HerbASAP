@@ -22,6 +22,7 @@
 import numpy as np
 import cv2
 
+
 class blurDetect():
     """A blur detection function wrapped up in a class.
     """
