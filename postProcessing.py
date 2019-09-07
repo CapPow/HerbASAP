@@ -844,29 +844,19 @@ class appWindow(QMainWindow):
             try:
                 if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
                     cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_small(reduced_img, original_size, stride_style='whole', high_precision=True)
-                    # debugging scale DET!
-                    # set a timer for scale
-                    s_timer = time.time()
-                    x1, y1, x2, y2  = cc_position
-                    full_res_cc = im[y1:y2, x1:x2]
-                    full_res_cc = ColorchipRead.high_precision_cc_crop(full_res_cc)
-                    self.ppmm, self.ppmm_uncertainty = ScaleRead.find_scale(full_res_cc)
-
-                    print(f"Pixels per mm for {os.path.basename(img_path)}: {self.ppmm}, +/- {self.ppmm_uncertainty}")
-                    print(f'Scale DET! time = {time.time() - s_timer}')
                 else:
                     cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
-                    
-                    s_timer = time.time()
-                    x1, y1, x2, y2  = cc_position
-                    full_res_cc = im[y1:y2, x1:x2]
-                    full_res_cc = ColorchipRead.high_precision_cc_crop(full_res_cc)
-                    #cv2.imwrite('full_res_cc.jpg', full_res_cc)
-                    self.ppmm, self.ppmm_uncertainty = ScaleRead.find_scale(full_res_cc)
+                # scale determination code
+                # set a timer for scale
+                s_timer = time.time()
+                x1, y1, x2, y2  = cc_position
+                full_res_cc = im[y1:y2, x1:x2]
+                full_res_cc = ColorchipRead.high_precision_cc_crop(full_res_cc)
+                self.ppmm, self.ppmm_uncertainty = ScaleRead.find_scale(full_res_cc)
+                print(f"Pixels per mm for {os.path.basename(img_path)}: {self.ppmm}, +/- {self.ppmm_uncertainty}")
+                print(f'Scale DET! time = {time.time() - s_timer}')
+                # end scale determination code
 
-                    print(f"Pixels per mm for {os.path.basename(img_path)}: {self.ppmm}, +/- {self.ppmm_uncertainty}")
-                    print(f'Scale DET! time = {time.time() - s_timer}')
-                    
                 self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
                 self.cropped_cc = cropped_cc
                 cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
