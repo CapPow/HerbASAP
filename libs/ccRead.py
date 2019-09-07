@@ -25,7 +25,7 @@ from keras import backend as K
 if K.backend() != 'tensorflow':
     raise RuntimeError(f"Please set your keras.json to use TensorFlow. It is currently using {keras.backend.backend()}")
 
-from libs.test_frcnn import process_image_frcnn
+from models.keras_frcnn.useFRCNN import process_image_frcnn
 
 class ColorChipError(Exception):
     def __init__(self, msg='ColorChipError', *args, **kwargs):
@@ -78,7 +78,6 @@ class ColorchipRead:
         self.discriminator_output_details = self.discriminator_model.get_output_details()
 
         # self.large_colorchip_regressor_model_k = load_model("libs/models/lcc_regressor.hdf5")
-
 
     def ocv_to_pil(self, im):
         """
@@ -495,16 +494,18 @@ class ColorchipRead:
 
         original_width, original_height = original_size
         x1, y1, x2, y2 = scaled_crop_location
+        cx = (x1 + x2) / 2
+        cy = (y1 + y2) / 2
         half_width = original_width / 2
         half_height = original_height / 2
 
-        if x1 < half_width and y1 < half_height:
+        if cx < half_width and cy < half_height:
             return 4
-        elif x1 > half_width and y1 < half_height:
+        elif cx > half_width and cy < half_height:
             return 1
-        elif x1 > half_width and y1 > half_height:
+        elif cx > half_width and cy > half_height:
             return 2
-        elif x1 < half_width and y1 > half_height:
+        elif cx < half_width and cy > half_height:
             return 3
         else:
             return None
