@@ -805,6 +805,10 @@ class appWindow(QMainWindow):
         app.processEvents()
 
         self.Timer_Emitter.timerStart.emit()
+
+        self.img_path = img_path
+        file_name, self.ext = os.path.splitext(img_path)
+        self.base_file_name = os.path.basename(file_name)        
         try:
             im = self.openImageFile(img_path)
         except (LibRawFatalError, LibRawNonFatalError) as e:
@@ -818,9 +822,6 @@ class appWindow(QMainWindow):
                 self.update_session_stats()
             return
         print(f'processing: {img_path}')
-        self.img_path = img_path
-        file_name, self.ext = os.path.splitext(img_path)
-        self.base_file_name = os.path.basename(file_name)        
         # converting to greyscale
         grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
         if self.mainWindow.group_renameByBarcode.isChecked():
@@ -850,12 +851,22 @@ class appWindow(QMainWindow):
                     full_res_cc = im[y1:y2, x1:x2]
                     full_res_cc = ColorchipRead.high_precision_cc_crop(full_res_cc)
                     self.ppmm, self.ppmm_uncertainty = ScaleRead.find_scale(full_res_cc)
-                    
-                    
+
                     print(f"Pixels per mm for {os.path.basename(img_path)}: {self.ppmm}, +/- {self.ppmm_uncertainty}")
                     print(f'Scale DET! time = {time.time() - s_timer}')
                 else:
                     cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
+                    
+                    s_timer = time.time()
+                    x1, y1, x2, y2  = cc_position
+                    full_res_cc = im[y1:y2, x1:x2]
+                    full_res_cc = ColorchipRead.high_precision_cc_crop(full_res_cc)
+                    #cv2.imwrite('full_res_cc.jpg', full_res_cc)
+                    self.ppmm, self.ppmm_uncertainty = ScaleRead.find_scale(full_res_cc)
+
+                    print(f"Pixels per mm for {os.path.basename(img_path)}: {self.ppmm}, +/- {self.ppmm_uncertainty}")
+                    print(f'Scale DET! time = {time.time() - s_timer}')
+                    
                 self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
                 self.cropped_cc = cropped_cc
                 cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
@@ -1135,15 +1146,21 @@ class appWindow(QMainWindow):
         """ given an image path, attempts to return a numpy array image object
         """
         # first open an unadulterated reference version of the image
+        #if self.ext.lower() == '.cr2':
+        ext_wb = [1, 0.5, 1, 0]
+        #else:
+        #    print('here')
+        #    ext_wb = [1, 1, 1, 0]
         try:  # use rawpy to convert raw to openCV
             self.raw_base = rawpy.imread(imgPath)
             im = self.raw_base.postprocess(output_color=rawpy.ColorSpace.raw,
                                       #half_size=True,
                                       use_auto_wb=False,
-                                      user_wb=[1, 0.5, 1, 0],
-                                      no_auto_bright=True,
+                                      user_wb=ext_wb,
+                                      #no_auto_bright=True,
                                       demosaic_algorithm=rawpy.DemosaicAlgorithm.LINEAR
                                       )
+            cv2.imwrite('rawImg.jpg', im)
 
         # pretty much must be a raw format image
         except (LibRawFatalError, LibRawNonFatalError) as e:

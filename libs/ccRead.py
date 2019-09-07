@@ -467,6 +467,13 @@ class ColorchipRead:
                                              contour_area_floor=min_crop_area,
                                              contour_area_ceiling=max_crop_area)
 
+        # if, somehow no proper squares were identified, return the entire img
+        if len(squares) < 1:
+            if return_biggest:
+                whole_img_cont = (0, 0, w, h)
+                return input_img, whole_img_cont
+            else:
+                return input_img
         # identify the largest area among contours
         biggest_square = max(squares, key=cv2.contourArea)
         x_arr = biggest_square[..., 0]
