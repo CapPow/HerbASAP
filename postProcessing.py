@@ -1157,10 +1157,10 @@ class appWindow(QMainWindow):
                                       #half_size=True,
                                       use_auto_wb=False,
                                       user_wb=ext_wb,
-                                      #no_auto_bright=True,
+                                      no_auto_bright=True,
                                       demosaic_algorithm=rawpy.DemosaicAlgorithm.LINEAR
                                       )
-            cv2.imwrite('rawImg.jpg', im)
+            #cv2.imwrite('rawImg.jpg', im)
 
         # pretty much must be a raw format image
         except (LibRawFatalError, LibRawNonFatalError) as e:
