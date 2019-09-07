@@ -43,6 +43,23 @@ class ScaleRead:
         return squares
 
     @staticmethod
+    def det_isa_nano_seeds(h, w, pts=12):
+        #pts = 12  # the number of seed points (-2) to take per axis
+        sample_hs = np.linspace(0, h, pts).astype(int)[1:-1]
+        anchor_hs = np.tile([h//10, h - (h//10)], len(sample_hs)//2)
+
+        sample_ws = np.linspace(0, w, pts).astype(int)[1:-1]
+        anchor_ws = np.tile([w - (w//10), w//10], len(sample_ws)//2)
+
+        h_seeds = tuple(zip(anchor_ws, sample_hs))
+        w_seeds = tuple(zip(sample_ws, anchor_hs))
+        # the result is a series of staggered points along border of the image.
+        seed_pts = h_seeds + w_seeds
+        
+        return seed_pts
+        
+
+    @staticmethod
     def find_scale(im, patch_mm_size=3.17):
         '''
         Finds the pixels to millimeter of image using the CRC patch size. Currently only works ISA ColorGauge Target
@@ -55,18 +72,8 @@ class ScaleRead:
         # Converting to HSV as it performs better during floodfill
         im = cv2.cvtColor(im, cv2.COLOR_RGB2HSV)
         h, w = im.shape[0:2]
-        pts = 12  # the number of seed points (-2) to take per axis
         # calculate a series of seed positions to start floodfilling
-        sample_hs = np.linspace(0, h, pts).astype(int)[1:-1]
-        anchor_hs = np.tile([h//10, h - (h//10)], len(sample_hs)//2)
-
-        sample_ws = np.linspace(0, w, pts).astype(int)[1:-1]
-        anchor_ws = np.tile([w - (w//10), w//10], len(sample_ws)//2)
-
-        h_seeds = tuple(zip(anchor_ws, sample_hs))
-        w_seeds = tuple(zip(sample_ws, anchor_hs))
-        # the result is a series of staggered points along border of the image.
-        seed_pts = h_seeds + w_seeds
+        seed_pts = ScaleRead.det_isa_nano_seeds(h, w)
         # determine reasonable area limits for squares
         area = h*w
         contour_area_floor = area // 50
@@ -87,6 +94,17 @@ class ScaleRead:
             _, _, mask, rect = cv2.floodFill(im, mask, seed, (255,0,0),
                                              (var_threshold,)*3,
                                              (var_threshold,)*3, floodflags)
+
+            # if any of the mask is along the img edge, assume it is incomplete
+            # and omit the results of this seed from analysis.
+            mask_edge_vectors = [
+                    mask[2, :],   # first row adjusting for mask expansion
+                    mask[-3, :],  # last row adjusting for mask expansion
+                    mask[:, 2],  # first col adjusting for mask expansion
+                    mask[:, -3]   # last col adjusting for mask expansion
+                    ]
+            if any([255 in x for x in mask_edge_vectors]):
+                continue
 
             # useful for debugging odd scal values generation
             #cv2.imwrite(f'{i}_mask.jpg', mask)
@@ -114,9 +132,12 @@ class ScaleRead:
             lower_bounds = pixel_mean - ppm_std # keep results within +/- 1 std
             upper_bounds = pixel_mean + ppm_std
             pixels_per_mm = [x for x in pixels_per_mm if lower_bounds< x < upper_bounds]
-            pixels_per_mm_avg = round(np.mean(pixels_per_mm), 1)
             # determine CI @ 95% : 1.96 SE = std / sqrt(len(array))
-            ppm_uncertainty = round(1.96 * (np.std(pixels_per_mm)/ np.sqrt(len(pixels_per_mm))), 1)
+            ppm_uncertainty = round(1.96 * (np.std(pixels_per_mm)/ np.sqrt(len(pixels_per_mm))), 2)
+            pixels_per_mm_avg = round(np.mean(pixels_per_mm), 2)
+            # no way to justify this, but just adding the ppm_uncertainty tends
+            # to make the overall output better
+            #pixels_per_mm_avg = round(np.mean(pixels_per_mm), 2) + ppm_uncertainty
             #ppm_uncertainty = round(np.max(pixels_per_mm) - np.min(pixels_per_mm), 1)
         else:
             pixels_per_mm_avg = 0
