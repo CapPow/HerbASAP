@@ -6,10 +6,20 @@
 
 import cv2
 import numpy as np
-from itertools import cycle
 
 
 class ScaleRead:
+
+    def __init__(self, parent=None, *args):
+        super(ScaleRead, self).__init__()
+        ###
+        # setup the scale parameter lookup dict. Organized as color checker
+        # names as keys and a tuple of (area in mm, seed det! function)
+        ###        
+        self.scale_params = {
+                'CameraTrax 24 ColorCard (2" x 3")':(115.5625, self.det_large_crc_seeds),
+                'ISA ColorGauge Nano':(10.0489, self.det_isa_nano_seeds)
+                }
 
     @staticmethod
     def angle_cos(p0, p1, p2):
@@ -43,12 +53,25 @@ class ScaleRead:
         return squares
 
     @staticmethod
+    def det_large_crc_seeds(h, w, pts=24):
+        """
+        Generalized seed determination method which choosed randomly positions
+        without replacement.
+        """
+        h_buffer = h//15
+        w_buffer = w//15
+        random_hs = np.random.choice(range(h_buffer, h - h_buffer), pts, replace=False)
+        random_ws = np.random.choice(range(w_buffer, w - w_buffer), pts, replace=False)
+        seed_pts = tuple(zip(random_ws, random_hs))
+        return seed_pts
+        
+    @staticmethod
     def det_isa_nano_seeds(h, w, pts=12):
-        #pts = 12  # the number of seed points (-2) to take per axis
-        sample_hs = np.linspace(0, h, pts).astype(int)[1:-1]
+        #pts are the number of seed points to take per axis
+        sample_hs = np.linspace(0, h, pts+2).astype(int)[1:-1]
         anchor_hs = np.tile([h//10, h - (h//10)], len(sample_hs)//2)
 
-        sample_ws = np.linspace(0, w, pts).astype(int)[1:-1]
+        sample_ws = np.linspace(0, w, pts+2).astype(int)[1:-1]
         anchor_ws = np.tile([w - (w//10), w//10], len(sample_ws)//2)
 
         h_seeds = tuple(zip(anchor_ws, sample_hs))
@@ -57,27 +80,29 @@ class ScaleRead:
         seed_pts = h_seeds + w_seeds
         
         return seed_pts
-        
+
 
     @staticmethod
-    def find_scale(im, patch_mm_size=3.17):
+    def find_scale(im, patch_mm_area, seed_func):
         '''
         Finds the pixels to millimeter of image using the CRC patch size. Currently only works ISA ColorGauge Target
         CRCs (micro, nano, and pico versions)
         :param im: Image to be determined
         :type im: CV2.Image
-        :param patch_mm_size: the expected patchsize
+        :param patch_mm_area: the expected patch w * h
         :return: Returns the rounded pixels per millimeter and 95% CI.
         '''
         # Converting to HSV as it performs better during floodfill
+        print(patch_mm_area)
         im = cv2.cvtColor(im, cv2.COLOR_RGB2HSV)
         h, w = im.shape[0:2]
+        print(h,w)
         # calculate a series of seed positions to start floodfilling
-        seed_pts = ScaleRead.det_isa_nano_seeds(h, w)
+        seed_pts = seed_func(h, w)
         # determine reasonable area limits for squares
         area = h*w
         contour_area_floor = area // 50
-        contour_area_ceiling = area // 4
+        contour_area_ceiling = area // 10
         # determine reasonable lower, upper thresholds, 5% of lum range
         minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(cv2.cvtColor(im,cv2.COLOR_RGB2LAB)[..., 0])
         var_threshold = int((maxVal-minVal) * 0.05)
@@ -95,6 +120,13 @@ class ScaleRead:
                                              (var_threshold,)*3,
                                              (var_threshold,)*3, floodflags)
 
+            x1, y1, patch_w, patch_h = rect
+            patch_hw = [patch_w, patch_h]
+
+            aspect_condition = (max(patch_hw) / min(patch_hw)) > 2
+            area_condition = not (contour_area_floor < (patch_w * patch_h) < contour_area_ceiling)
+            if aspect_condition or area_condition:
+                continue
             # if any of the mask is along the img edge, assume it is incomplete
             # and omit the results of this seed from analysis.
             mask_edge_vectors = [
@@ -105,40 +137,45 @@ class ScaleRead:
                     ]
             if any([255 in x for x in mask_edge_vectors]):
                 continue
-
-            # useful for debugging odd scal values generation
-            #cv2.imwrite(f'{i}_mask.jpg', mask)
-
+            
             squares = ScaleRead.find_squares(mask,
                                 contour_area_floor=contour_area_floor,
                                 contour_area_ceiling=contour_area_ceiling)
 
             if len(squares) > 0:
                 biggest_square = max(squares, key=cv2.contourArea)
-                xs = biggest_square[..., 0]
-                ys = biggest_square[..., 1]
-                square_width = (max(xs) - min(xs))
-                square_height = (max(ys) - min(ys))
-                pixels_per_mm.append((((square_width + square_height) / 2) / patch_mm_size))
+                #xs = biggest_square[..., 0]
+                #ys = biggest_square[..., 1]
+                #square_width = (max(xs) - min(xs))
+                #square_height = (max(ys) - min(ys))
+                square_area = cv2.contourArea(biggest_square)
+                pixels_per_mm.append( np.sqrt(square_area / patch_mm_area))
             # using the rectangles returned from floodfill
-            # It appears the bounding postion is inclusive to the object.
-            # adding 1px to each side of h and w (+2) should correct this.
             #x,y,w,h = rect
-            pixels_per_mm.append((((rect[2]+2 + rect[3]+2) / 2) / patch_mm_size))
+            
+            #x2 = (x1+patch_h)-2
+            #y2 = (y1+patch_w)-2
+            # if any of the rects are along the image edge, assume it is
+            # an incomplete crop, and omit from results
+            #if (x1 <= 3) or (y1 <=3) or (x2 >= h) or (patch_h < 5) or (y2 >= w) or (patch_w < 5):
+            #    continue
+            rect_area = np.sqrt(((patch_w+2) * (patch_h+2)) / patch_mm_area)
+            pixels_per_mm.append(rect_area)
+            
+            # useful for debugging odd scal values generation
+            #cv2.imwrite(f'{i}_mask.jpg', mask)
+        #print(pixels_per_mm)
         # require a minimum measurements before proceeding
-        if len(pixels_per_mm) > 9:
+        if len(pixels_per_mm) > 6:
             ppm_std = np.std(pixels_per_mm)
             pixel_mean = np.mean(pixels_per_mm)
             lower_bounds = pixel_mean - ppm_std # keep results within +/- 1 std
             upper_bounds = pixel_mean + ppm_std
             pixels_per_mm = [x for x in pixels_per_mm if lower_bounds< x < upper_bounds]
+            #print(pixels_per_mm)
             # determine CI @ 95% : 1.96 SE = std / sqrt(len(array))
             ppm_uncertainty = round(1.96 * (np.std(pixels_per_mm)/ np.sqrt(len(pixels_per_mm))), 2)
             pixels_per_mm_avg = round(np.mean(pixels_per_mm), 2)
-            # no way to justify this, but just adding the ppm_uncertainty tends
-            # to make the overall output better
-            #pixels_per_mm_avg = round(np.mean(pixels_per_mm), 2) + ppm_uncertainty
-            #ppm_uncertainty = round(np.max(pixels_per_mm) - np.min(pixels_per_mm), 1)
         else:
             pixels_per_mm_avg = 0
             ppm_uncertainty = max(h,w)  # be really sure they get the point.

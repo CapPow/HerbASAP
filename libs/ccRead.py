@@ -25,7 +25,7 @@ from keras import backend as K
 if K.backend() != 'tensorflow':
     raise RuntimeError(f"Please set your keras.json to use TensorFlow. It is currently using {keras.backend.backend()}")
 
-from models.keras_frcnn.useFRCNN import process_image_frcnn
+from libs.models.keras_frcnn.useFRCNN import process_image_frcnn
 
 class ColorChipError(Exception):
     def __init__(self, msg='ColorChipError', *args, **kwargs):

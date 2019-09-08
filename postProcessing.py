@@ -60,8 +60,6 @@ from libs.boss_worker import (Boss, BCWorkerData, BlurWorkerData, EQWorkerData,
                               Job, BossSignalData, WorkerSignalData,
                               WorkerErrorData, SaveWorkerData)
 from libs.metaRead import MetaRead
-
-
 from libs.scaleRead import ScaleRead
 from PIL import Image
 
@@ -241,11 +239,15 @@ class appWindow(QMainWindow):
         self.blurDetect = blurDetect(parent=self.mainWindow)
         self.colorchipDetect = ColorchipRead(parent=self.mainWindow)
         self.eqRead = eqRead(parent=self.mainWindow)
-        
+        ###
+        # setup metadata reading/writing class
+        ###
         self.metaRead = MetaRead(parent=self.mainWindow)
         # populate self.static_exif
+        self.scaleRead = ScaleRead(parent=self.mainWindow)
+        
         self.update_metadata()
-
+       # Establish base working condition
         self.reset_working_variables()
         ###
         # job manaager "boss_thread", it starts itself and is running the __boss_function
@@ -786,6 +788,8 @@ class appWindow(QMainWindow):
             if self.raw_base:  # try extra hard to free up these resources.
                 print('manually forcing closure')
                 self.raw_base.close()
+                # reset the image preview text
+                self.mainWindow.label_imPreview.setText('')
                 # if some failure occurred attempt to restart the queue.
         except AttributeError:
             pass  # occasion where no raw images have been unpacked yet
@@ -846,16 +850,25 @@ class appWindow(QMainWindow):
                     cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_small(reduced_img, original_size, stride_style='whole', high_precision=True)
                 else:
                     cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
-                # scale determination code
-                # set a timer for scale
-                s_timer = time.time()
-                x1, y1, x2, y2  = cc_position
-                full_res_cc = im[y1:y2, x1:x2]
-                full_res_cc = ColorchipRead.high_precision_cc_crop(full_res_cc)
-                self.ppmm, self.ppmm_uncertainty = ScaleRead.find_scale(full_res_cc)
-                print(f"Pixels per mm for {os.path.basename(img_path)}: {self.ppmm}, +/- {self.ppmm_uncertainty}")
-                print(f'Scale DET! time = {time.time() - s_timer}')
-                # end scale determination code
+                if self.mainWindow.group_scaleDetermination.isChecked():
+                    # scale determination code
+                    # set a timer for scale
+                    s_timer = time.time()
+                    x1, y1, x2, y2  = cc_position
+                    full_res_cc = im[y1:y2, x1:x2]
+                    full_res_cc = ColorchipRead.high_precision_cc_crop(full_res_cc)
+                    # usful for debugging
+                    #cv2.imwrite('full_res_cc.jpg', full_res_cc)
+                    # lookup the patch area and seed function
+                    patch_mm_area, seed_func = self.scaleRead.scale_params.get(
+                            self.mainWindow.comboBox_crcType.currentText(),
+                            (10.0489, self.scaleRead.det_isa_nano_seeds))
+
+                    self.ppmm, self.ppmm_uncertainty = self.scaleRead.find_scale(full_res_cc,
+                                                                            patch_mm_area,
+                                                                            seed_func)
+                    print(f"Pixels per mm for {os.path.basename(img_path)}: {self.ppmm}, +/- {self.ppmm_uncertainty}")
+                    print(f'Scale DET! time = {time.time() - s_timer}')
 
                 self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
                 self.cropped_cc = cropped_cc
@@ -1252,6 +1265,7 @@ class appWindow(QMainWindow):
                     self.mainWindow.group_verifyRotation: ccStatus,
                     self.mainWindow.checkBox_performWhiteBalance: ccStatus,
                     self.mainWindow.groupBox_colorCheckerSize: ccStatus,
+                    self.mainWindow.groupBox_scaleDetermination: ccStatus,
                     self.mainWindow.group_equipmentDetection: eqStatus,
                     self.mainWindow.checkBox_lensCorrection: eqStatus}
 
@@ -1492,6 +1506,8 @@ class appWindow(QMainWindow):
         self.populateQComboBoxSettings( self.mainWindow.comboBox_dupNamingPolicy, comboBox_dupNamingPolicy)
         comboBox_bcBackend = self.get('comboBox_bcBackend', 'zbar')
         self.populateQComboBoxSettings( self.mainWindow.comboBox_bcBackend, comboBox_bcBackend)
+        comboBox_crcType = self.get('comboBox_crcType', 'ISA ColorGauge Nano')
+        self.populateQComboBoxSettings( self.mainWindow.comboBox_crcType, comboBox_crcType)
 
         # QLineEdit
         lineEdit_catalogNumberPrefix = self.get('lineEdit_catalogNumberPrefix','')
@@ -1565,6 +1581,8 @@ class appWindow(QMainWindow):
         self.mainWindow.group_verifyRotation.setEnabled(group_verifyRotation)
         group_equipmentDetection = self.convertEnabledState(self.get('group_equipmentDetection','true'))
         self.mainWindow.group_equipmentDetection.setEnabled(group_equipmentDetection)
+        group_scaleDetermination = self.convertEnabledState(self.get('group_scaleDetermination', 'true'))
+        self.mainWindow.group_scaleDetermination.setEnabled(group_scaleDetermination)
         # metaDataApplication should always be an option
         #group_metaDataApplication = self.convertEnabledState(self.get('group_metaDataApplication','true'))
         #self.mainWindow.group_metaDataApplication.setEnabled(group_metaDataApplication)
@@ -1624,6 +1642,8 @@ class appWindow(QMainWindow):
         self.settings.setValue('comboBox_dupNamingPolicy', comboBox_dupNamingPolicy)
         comboBox_bcBackend = self.mainWindow.comboBox_bcBackend.currentText()
         self.settings.setValue('comboBox_bcBackend', comboBox_bcBackend)
+        comboBox_crcType = self.mainWindow.comboBox_crcType.currentText()
+        self.settings.setValue('comboBox_crcType', comboBox_crcType)
 
         # QLineEdit
         lineEdit_catalogNumberPrefix = self.mainWindow.lineEdit_catalogNumberPrefix.text()
@@ -1682,6 +1702,9 @@ class appWindow(QMainWindow):
         self.settings.setValue('group_saveProcessedPng',group_saveProcessedPng)
         group_verifyRotation_checkstate = self.mainWindow.group_verifyRotation.isChecked()
         self.settings.setValue('group_verifyRotation_checkstate', group_verifyRotation_checkstate)
+        group_scaleDetermination = self.mainWindow.group_scaleDetermination.isChecked()
+        self.settings.setValue('group_scaleDetermination', group_scaleDetermination)
+        
         
         # QGroupbox (enablestate)
         group_renameByBarcode_enabled = self.mainWindow.group_renameByBarcode.isEnabled()
@@ -1696,6 +1719,8 @@ class appWindow(QMainWindow):
         self.settings.setValue('group_verifyRotation',group_verifyRotation)
         group_equipmentDetection = self.mainWindow.group_equipmentDetection.isEnabled()
         self.settings.setValue('group_equipmentDetection',group_equipmentDetection)
+        group_scaleDetermination_enabled = self.mainWindow.group_scaleDetermination.isEnabled()
+        self.settings.setValue('group_scaleDetermination_enabled', group_scaleDetermination_enabled)
         # metaDataApplication should always be an option
         #group_metaDataApplication = self.mainWindow.group_metaDataApplication.isEnabled()
         #self.settings.setValue('group_metaDataApplication',group_metaDataApplication)
