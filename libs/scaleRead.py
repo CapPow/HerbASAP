@@ -15,10 +15,17 @@ class ScaleRead:
         ###
         # setup the scale parameter lookup dict. Organized as color checker
         # names as keys and a tuple of (area in mm, seed det! function)
-        ###        
+        ###
+        # Tiffen Q-13 scale was manually measured from images
+        # X-Rite ColorChecker Passport was manually measured from images
+        # X-Rite Colorchecker Classic was manually measured from images
+        ###
         self.scale_params = {
-                'CameraTrax 24 ColorCard (2" x 3")':(115.5625, self.det_large_crc_seeds),
-                'ISA ColorGauge Nano':(10.0489, self.det_isa_nano_seeds)
+                'CameraTrax 24 ColorCard (2" x 3")':(115.5625, self.det_large_crc_seeds, True),
+                'ISA ColorGauge Nano':(10.0489, self.det_isa_nano_seeds, True),
+                'Tiffen / Kodak Q-13  (8")':(386.6379, self.det_large_crc_seeds, False),
+                'X-Rite ColorChecker Passport':(164.3652, self.det_large_crc_seeds, True),
+                'X-Rite ColorChecker Classic':(361.00, self.det_large_crc_seeds, True)
                 }
 
     @staticmethod
@@ -53,26 +60,83 @@ class ScaleRead:
         return squares
 
     @staticmethod
+    def high_precision_cc_crop(input_img):
+
+        np_image = np.array(input_img)
+        cv_image = cv2.cvtColor(np_image, cv2.COLOR_RGB2HSV)
+        h, w = np_image.shape[0:2]
+        area = h*w
+        min_crop_area = area // 10
+        max_crop_area = area // 1.2
+
+        # identify squares in the crop
+        squares = ScaleRead.find_squares(cv_image,
+                                             contour_area_floor=min_crop_area,
+                                             contour_area_ceiling=max_crop_area)
+
+        # if, somehow no proper squares were identified, return the entire img
+        if len(squares) < 1:
+            return input_img
+        # identify the largest area among contours
+        biggest_square = max(squares, key=cv2.contourArea)
+        x_arr = biggest_square[..., 0]
+        y_arr = biggest_square[..., 1]
+        x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
+        biggest_square = (x1, y1, x2, y2)
+        cropped_img = np_image[y1:y2, x1:x2]
+
+        return cropped_img
+
+    @staticmethod
     def det_large_crc_seeds(h, w, pts=24):
         """
         Generalized seed determination method which choosed randomly positions
         without replacement.
         """
+        # determine how to split the points among x / y axes
+        h_w_combined = h+w
+        # establish a no-sample buffer zone along edges
         h_buffer = h//15
         w_buffer = w//15
-        random_hs = np.random.choice(range(h_buffer, h - h_buffer), pts, replace=False)
-        random_ws = np.random.choice(range(w_buffer, w - w_buffer), pts, replace=False)
-        seed_pts = tuple(zip(random_ws, random_hs))
+        if h < w:
+            h_ratio = h / h_w_combined
+            h_pts = max(int(pts * h_ratio), 2)
+            w_pts = pts - h_pts
+            # determine the points to sample along crop img width 
+            w_samples = np.linspace(0, w, w_pts+2).astype(int)[1:-1]
+            # determine the points to sample along crop img height
+            h_anchors = np.linspace(0, h, h_pts+2).astype(int)[1:-1]
+            # repeate the given points for each 
+            h_anchors = np.tile(h_anchors, len(w_samples)//len(h_anchors))
+            seed_pts = tuple(zip(w_samples, h_anchors))
+
+        else:
+            w_ratio = w / h_w_combined
+            w_pts = max(int(pts * w_ratio), 2)
+            h_pts = pts - w_pts
+            # determine the points to sample along crop img width 
+            h_samples = np.linspace(0, w, h_pts+2).astype(int)[1:-1]
+            # determine the points to sample along crop img height
+            w_anchors = np.linspace(0, h, w_pts+2).astype(int)[1:-1]
+            # repeate the given points for each 
+            w_anchors = np.tile(w_anchors, len(h_samples)//len(w_anchors))
+            seed_pts = tuple(zip(h_samples, w_anchors))
+
         return seed_pts
-        
+
     @staticmethod
     def det_isa_nano_seeds(h, w, pts=12):
+        
+        # establish a no-sample buffer zone        
+        h_buffer = h//10
+        w_buffer = w//10
+        
         #pts are the number of seed points to take per axis
         sample_hs = np.linspace(0, h, pts+2).astype(int)[1:-1]
-        anchor_hs = np.tile([h//10, h - (h//10)], len(sample_hs)//2)
+        anchor_hs = np.tile([h_buffer, h - (h_buffer)], len(sample_hs)//2)
 
         sample_ws = np.linspace(0, w, pts+2).astype(int)[1:-1]
-        anchor_ws = np.tile([w - (w//10), w//10], len(sample_ws)//2)
+        anchor_ws = np.tile([w - (w_buffer), w_buffer], len(sample_ws)//2)
 
         h_seeds = tuple(zip(anchor_ws, sample_hs))
         w_seeds = tuple(zip(sample_ws, anchor_hs))
@@ -83,20 +147,27 @@ class ScaleRead:
 
 
     @staticmethod
-    def find_scale(im, patch_mm_area, seed_func):
+    def find_scale(im, patch_mm_area, seed_func, to_crop):
         '''
         Finds the pixels to millimeter of image using the CRC patch size. Currently only works ISA ColorGauge Target
         CRCs (micro, nano, and pico versions)
         :param im: Image to be determined
         :type im: CV2.Image
         :param patch_mm_area: the expected patch w * h
+        :param seed_func: the function to use for seed position determination.
+        :type seed_func: a scaleRead seed method
+        :param to_crop: Boolean condition if a high precision crop is called for.
+        :type to_crop: bool
         :return: Returns the rounded pixels per millimeter and 95% CI.
         '''
         # Converting to HSV as it performs better during floodfill
-        print(patch_mm_area)
         im = cv2.cvtColor(im, cv2.COLOR_RGB2HSV)
+        # if the color reference card benefits from a high precision crop
+        # in the Q-13s, the partial crop detection is too aggressive after high
+        # precision cropping.
+        if to_crop:
+            im = ScaleRead.high_precision_cc_crop(im)
         h, w = im.shape[0:2]
-        print(h,w)
         # calculate a series of seed positions to start floodfilling
         seed_pts = seed_func(h, w)
         # determine reasonable area limits for squares
@@ -115,7 +186,7 @@ class ScaleRead:
             floodflags = 4
             floodflags |= (255 << 8)
             floodflags |= cv2.FLOODFILL_MASK_ONLY
-            	#retval, image, mask, rect	
+            # retval, image, mask, rect
             _, _, mask, rect = cv2.floodFill(im, mask, seed, (255,0,0),
                                              (var_threshold,)*3,
                                              (var_threshold,)*3, floodflags)
@@ -137,42 +208,31 @@ class ScaleRead:
                     ]
             if any([255 in x for x in mask_edge_vectors]):
                 continue
-            
+
             squares = ScaleRead.find_squares(mask,
                                 contour_area_floor=contour_area_floor,
                                 contour_area_ceiling=contour_area_ceiling)
 
             if len(squares) > 0:
                 biggest_square = max(squares, key=cv2.contourArea)
-                #xs = biggest_square[..., 0]
-                #ys = biggest_square[..., 1]
-                #square_width = (max(xs) - min(xs))
-                #square_height = (max(ys) - min(ys))
                 square_area = cv2.contourArea(biggest_square)
                 pixels_per_mm.append( np.sqrt(square_area / patch_mm_area))
-            # using the rectangles returned from floodfill
+
+            # Option to use the rectangles returned from floodfill operation
             #x,y,w,h = rect
-            
-            #x2 = (x1+patch_h)-2
-            #y2 = (y1+patch_w)-2
-            # if any of the rects are along the image edge, assume it is
-            # an incomplete crop, and omit from results
-            #if (x1 <= 3) or (y1 <=3) or (x2 >= h) or (patch_h < 5) or (y2 >= w) or (patch_w < 5):
-            #    continue
             rect_area = np.sqrt(((patch_w+2) * (patch_h+2)) / patch_mm_area)
             pixels_per_mm.append(rect_area)
-            
+
             # useful for debugging odd scal values generation
             #cv2.imwrite(f'{i}_mask.jpg', mask)
-        #print(pixels_per_mm)
-        # require a minimum measurements before proceeding
+
+        # require a minimum qty of measurements before proceeding
         if len(pixels_per_mm) > 6:
             ppm_std = np.std(pixels_per_mm)
             pixel_mean = np.mean(pixels_per_mm)
             lower_bounds = pixel_mean - ppm_std # keep results within +/- 1 std
             upper_bounds = pixel_mean + ppm_std
             pixels_per_mm = [x for x in pixels_per_mm if lower_bounds< x < upper_bounds]
-            #print(pixels_per_mm)
             # determine CI @ 95% : 1.96 SE = std / sqrt(len(array))
             ppm_uncertainty = round(1.96 * (np.std(pixels_per_mm)/ np.sqrt(len(pixels_per_mm))), 2)
             pixels_per_mm_avg = round(np.mean(pixels_per_mm), 2)

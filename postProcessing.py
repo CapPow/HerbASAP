@@ -856,17 +856,17 @@ class appWindow(QMainWindow):
                     s_timer = time.time()
                     x1, y1, x2, y2  = cc_position
                     full_res_cc = im[y1:y2, x1:x2]
-                    full_res_cc = ColorchipRead.high_precision_cc_crop(full_res_cc)
                     # usful for debugging
                     #cv2.imwrite('full_res_cc.jpg', full_res_cc)
                     # lookup the patch area and seed function
-                    patch_mm_area, seed_func = self.scaleRead.scale_params.get(
+                    patch_mm_area, seed_func, to_crop = self.scaleRead.scale_params.get(
                             self.mainWindow.comboBox_crcType.currentText(),
                             (10.0489, self.scaleRead.det_isa_nano_seeds))
 
                     self.ppmm, self.ppmm_uncertainty = self.scaleRead.find_scale(full_res_cc,
                                                                             patch_mm_area,
-                                                                            seed_func)
+                                                                            seed_func,
+                                                                            to_crop)
                     print(f"Pixels per mm for {os.path.basename(img_path)}: {self.ppmm}, +/- {self.ppmm_uncertainty}")
                     print(f'Scale DET! time = {time.time() - s_timer}')
 
@@ -875,7 +875,7 @@ class appWindow(QMainWindow):
                 cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
                 self.cc_avg_white = cc_avg_white
                 self.update_cc_info(self.cc_quadrant, cropped_cc,
-                                    cc_crop_time,cc_avg_white)
+                                    cc_crop_time, cc_avg_white)
             # apply corrections based on what is learned from the colorchipDetect
             except ColorChipError as e:
                 notice_title = 'Error Determining Color Chip Location'
@@ -925,7 +925,7 @@ class appWindow(QMainWindow):
         wait_event = QEventLoop()
         # if there are any worker threads working then wait on them to finish
         if any([
-                
+
                 self.boss_thread._Boss__is_bc_worker_running,
                 self.boss_thread._Boss__is_blur_worker_running,
                 self.boss_thread._Boss__is_eq_worker_running]):
@@ -955,8 +955,10 @@ class appWindow(QMainWindow):
             cropped_cc = np.rot90(cropped_cc, 1)
             h, w = w, h  # swamp the variables after rotating
         bytesPerLine = 3 * w
-        qImg = QtGui.QImage(cropped_cc, w, h,
-                            bytesPerLine, QtGui.QImage.Format_RGB888)
+        # odd bug here, must use .copy() to avoid a mem error.
+        # see: https://stackoverflow.com/questions/48639185/pyqt5-qimage-from-numpy-array
+        qImg = QtGui.QImage(cropped_cc.copy(), w, h, bytesPerLine,
+                            QtGui.QImage.Format_RGB888)
         pixmap = QtGui.QPixmap.fromImage(qImg)
         width = cc_view_label.width()
         height = cc_view_label.height()

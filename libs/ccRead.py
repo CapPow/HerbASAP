@@ -115,18 +115,12 @@ class ColorchipRead:
         :rtype: tuple
         """
         start = time.time()
-        pim = self.ocv_to_pil(im)
-        # original_image_width, original_image_height = im.size
 
-        # resized_im = im.resize((256, 256))
-        # im_np = np.array(resized_im) / 255
         scaled_x1, scaled_y1, scaled_x2, scaled_y2 = process_image_frcnn(im)
-        # print(scaled_x1, scaled_y1, scaled_x2, scaled_y2)
         if max(scaled_x1, scaled_y1, scaled_x2, scaled_y2) == 0:
             raise FRCNNLCCFailed
 
-        cropped_im = pim.crop((scaled_x1, scaled_y1, scaled_x2, scaled_y2))
-        cropped_im = np.array(cropped_im, dtype=np.uint8)
+        cropped_im = im[scaled_y1:scaled_y2, scaled_x1:scaled_x2]
         try:
             cc_crop_time = round(time.time() - start, 3)
             return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), cropped_im, cc_crop_time
@@ -427,7 +421,7 @@ class ColorchipRead:
         hpstart = time.time()
         try:
             if high_precision:
-                best_image, biggest_square = ColorchipRead.high_precision_cc_crop(best_image, return_biggest=True)
+                best_image, biggest_square = ColorchipRead.high_precision_cc_crop(best_image)
                 x1, y1, x2, y2 = best_location[0] + biggest_square[0], best_location[1] + biggest_square[1], \
                                  best_location[2] + biggest_square[0], best_location[3] + biggest_square[1]
             else:
@@ -452,7 +446,7 @@ class ColorchipRead:
         return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image, cc_crop_time
 
     @staticmethod
-    def high_precision_cc_crop(input_img, return_biggest=False):
+    def high_precision_cc_crop(input_img):
 
         np_image = np.array(input_img)
         cv_image = cv2.cvtColor(np_image, cv2.COLOR_RGB2HSV)
@@ -480,11 +474,8 @@ class ColorchipRead:
         x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
         biggest_square = (x1, y1, x2, y2)
         cropped_img = np_image[y1:y2, x1:x2]
-        
-        if return_biggest:
-            return cropped_img, biggest_square
-        else:
-            return cropped_img
+
+        return cropped_img, biggest_square
 
     @staticmethod
     def predict_color_chip_quadrant(original_size, scaled_crop_location):
