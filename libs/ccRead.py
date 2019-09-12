@@ -248,7 +248,7 @@ class ColorchipRead:
     def _square_first_regions(self):
         pass
 
-    def process_colorchip_small(self, im, original_size, stride_style='quick',
+    def process_colorchip_small(self, im, original_size, stride_style='whole',
                                 stride=25, partition_size=125,
                                 over_crop=0, hard_cut_value=50, high_precision=False, full_tf=True):
         """
@@ -452,7 +452,7 @@ class ColorchipRead:
         return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image, cc_crop_time
 
     @staticmethod
-    def high_precision_cc_crop(input_img, return_biggest=False):
+    def high_precision_cc_crop(input_img):
         np_image = np.array(input_img)
         cv_image = cv2.cvtColor(np_image, cv2.COLOR_RGB2HSV)
         h, w = np_image.shape[0:2]
@@ -467,11 +467,8 @@ class ColorchipRead:
 
         # if, somehow no proper squares were identified, return the entire img
         if len(squares) < 1:
-            if return_biggest:
-                whole_img_cont = (0, 0, w, h)
-                return input_img, whole_img_cont
-            else:
-                return input_img
+            whole_img_cont = (0, 0, w, h)
+            return input_img, whole_img_cont
         # identify the largest area among contours
         biggest_square = max(squares, key=cv2.contourArea)
         x_arr = biggest_square[..., 0]

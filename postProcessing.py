@@ -847,7 +847,10 @@ class appWindow(QMainWindow):
             # colorchecker functions
             try:
                 if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
-                    cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_small(reduced_img, original_size, stride_style='whole', high_precision=True)
+                    cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_small(reduced_img,
+                                                                                                         original_size,
+                                                                                                         stride_style='whole',
+                                                                                                         high_precision=True)
                 else:
                     cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
                 if self.mainWindow.group_scaleDetermination.isChecked():
@@ -861,7 +864,8 @@ class appWindow(QMainWindow):
                     # lookup the patch area and seed function
                     patch_mm_area, seed_func, to_crop = self.scaleRead.scale_params.get(
                             self.mainWindow.comboBox_crcType.currentText(),
-                            (10.0489, self.scaleRead.det_isa_nano_seeds))
+                            (10.0489, self.scaleRead.det_isa_nano_seeds, True))
+                    # if setting not found, use isa nano settings
 
                     self.ppmm, self.ppmm_uncertainty = self.scaleRead.find_scale(full_res_cc,
                                                                             patch_mm_area,

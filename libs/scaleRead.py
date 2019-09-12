@@ -62,17 +62,15 @@ class ScaleRead:
     @staticmethod
     def high_precision_cc_crop(input_img):
 
-        np_image = np.array(input_img)
-        cv_image = cv2.cvtColor(np_image, cv2.COLOR_RGB2HSV)
-        h, w = np_image.shape[0:2]
+        h, w = input_img.shape[0:2]
         area = h*w
         min_crop_area = area // 10
         max_crop_area = area // 1.2
 
         # identify squares in the crop
-        squares = ScaleRead.find_squares(cv_image,
-                                             contour_area_floor=min_crop_area,
-                                             contour_area_ceiling=max_crop_area)
+        squares = ScaleRead.find_squares(input_img,
+                                         contour_area_floor=min_crop_area,
+                                         contour_area_ceiling=max_crop_area)
 
         # if, somehow no proper squares were identified, return the entire img
         if len(squares) < 1:
@@ -83,7 +81,7 @@ class ScaleRead:
         y_arr = biggest_square[..., 1]
         x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
         biggest_square = (x1, y1, x2, y2)
-        cropped_img = np_image[y1:y2, x1:x2]
+        cropped_img = input_img[y1:y2, x1:x2]
 
         return cropped_img
 
