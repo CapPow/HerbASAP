@@ -854,7 +854,7 @@ class appWindow(QMainWindow):
                     # scale determination code
                     # set a timer for scale
                     s_timer = time.time()
-                    x1, y1, x2, y2  = cc_position
+                    x1, y1, x2, y2 = cc_position
                     full_res_cc = im[y1:y2, x1:x2]
                     # usful for debugging
                     #cv2.imwrite('full_res_cc.jpg', full_res_cc)

@@ -397,7 +397,7 @@ class ColorchipRead:
         else:
             for i in indices:
                 # im.crop(possible_positions[indices[i]]).show()
-                highest_prob_images.append(np.array(im.crop(possible_positions[i])))
+                highest_prob_images.append(np.array(im.crop(possible_positions[i]).resize((125, 125))))
                 highest_prob_positions.append(possible_positions[i])
 
         highest_prob_images_pred = np.array(highest_prob_images, dtype=np.float32) / 255
@@ -418,7 +418,7 @@ class ColorchipRead:
             else:
                 raise DiscriminatorFailed
 
-        hpstart = time.time()
+        # hpstart = time.time()
         try:
             if high_precision:
                 best_image, biggest_square = ColorchipRead.high_precision_cc_crop(best_image)
@@ -429,8 +429,14 @@ class ColorchipRead:
         except Exception as e:
             print(e)
             raise InvalidStride
+        # print(f"High precision took {time.time() - hpstart} seconds.")
 
-        #print(f"High precision took {time.time() - hpstart} seconds.")
+        xc = np.array([x1, x2])
+        yc = np.array([y1, y2])
+        xc = np.clip(xc, 0, original_size[0])
+        yc = np.clip(yc, 0, original_size[1])
+        x1, y1, x2, y2 = xc[0], yc[0], xc[1], yc[1]
+
         prop_x1, prop_y1, prop_x2, prop_y2 = x1 / image_width, y1 / image_height, x2 / image_width, y2 / image_height
 
         scaled_x1, scaled_y1, scaled_x2, scaled_y2 = int(prop_x1 * original_width), \
@@ -446,8 +452,7 @@ class ColorchipRead:
         return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image, cc_crop_time
 
     @staticmethod
-    def high_precision_cc_crop(input_img):
-
+    def high_precision_cc_crop(input_img, return_biggest=False):
         np_image = np.array(input_img)
         cv_image = cv2.cvtColor(np_image, cv2.COLOR_RGB2HSV)
         h, w = np_image.shape[0:2]
