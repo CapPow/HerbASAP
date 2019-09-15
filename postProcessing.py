@@ -36,7 +36,7 @@ import re
 from shutil import move as shutil_move
 # UI libs
 from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtWidgets import QMainWindow, QMessageBox, QDialog
+from PyQt5.QtWidgets import QMainWindow, QMessageBox, QDialog, QWizard, QSizePolicy
 from PyQt5.QtCore import (QSettings, Qt, QObject, QThreadPool, QEventLoop,
                           QMimeData)
 # image libs
@@ -61,7 +61,8 @@ from libs.boss_worker import (Boss, BCWorkerData, BlurWorkerData, EQWorkerData,
                               WorkerErrorData, SaveWorkerData)
 from libs.metaRead import MetaRead
 from libs.scaleRead import ScaleRead
-from PIL import Image
+from ui.settingsWizardUI import Ui_Wizard
+#from PIL import Image
 
 class ImageDialog(QDialog):
     def __init__(self, img_array_object):
@@ -79,6 +80,97 @@ class ImageDialog(QDialog):
         pixmap01 = QtGui.QPixmap.fromImage(qImg)
         pixmap_image = QtGui.QPixmap(pixmap01)
         mb.label_Image.setPixmap(pixmap_image)
+
+
+class Canvas(QtWidgets.QLabel):
+
+    def __init__(self, im):
+        super().__init__()
+        #pixmap = QtGui.QPixmap(600, 300)
+        #self.setPixmap(pixmap)
+        self.backDrop, self.correction = self.genPixBackDrop(im)
+        self.setPixmap(self.backDrop)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.begin = QtCore.QPoint()
+        self.end = QtCore.QPoint()
+        # the box_size, is the point of the entire canvas.
+        # The scale corrected larger dim of the annotated rect
+        self.scaled_begin = (0, 0)
+        self.scaled_end = (0, 0)
+
+    def genPixBackDrop(self, im):
+
+        h, w = im.shape[0:2]
+        if h < w:
+            im = np.rot90(im, 1)
+            h, w = w, h  # swamp the variables after rotating
+        bytesPerLine = 3 * w
+        # odd bug here, must use .copy() to avoid a mem error.
+        # see: https://stackoverflow.com/questions/48639185/pyqt5-qimage-from-numpy-array
+        qImg = QtGui.QImage(im.copy(), w, h, bytesPerLine,
+                            QtGui.QImage.Format_RGB888)
+        pixmap = QtGui.QPixmap.fromImage(qImg)
+        width = self.width()
+        height = self.height()
+        pixmap = pixmap.scaled(width, height,
+                               QtCore.Qt.KeepAspectRatio,
+                               Qt.FastTransformation)
+        # corrections are doubled due to display image bieng opened at half res
+        h_correction = (2*h) / height
+        w_correction = (2*w) / width
+        correction = (w_correction, h_correction)
+        return pixmap, correction
+
+    def paintEvent(self, event):
+        qp = QtGui.QPainter(self)
+        qp.drawPixmap(self.rect(), self.backDrop)
+        # set brush to a lime green
+        br = QtGui.QBrush(QtGui.QColor('#03EA00'))
+        qp.setBrush(br)
+        qp.drawRect(QtCore.QRect(self.begin, self.end))
+
+    def mousePressEvent(self, event):
+        self.begin = event.pos()
+        self.end = event.pos()
+        self.update()
+
+    def mouseMoveEvent(self, event):
+        self.end = event.pos()
+        self.update()
+
+    def mouseReleaseEvent(self, event):
+        self.end = event.pos()
+        self.update()
+        self.updateBoxSize()
+        
+    def updateBoxSize(self):
+        # qpoint is formatted as (xpos, ypos)
+        # x col, y row
+        # save the scale corrected start / end points
+        x_corr, y_corr = self.correction
+        b_x = self.begin.x()
+        b_y = self.begin.y()
+        e_x = self.end.x()
+        e_y = self.end.y()
+        self.scaled_begin = (int(b_x * x_corr), int(b_y * y_corr))
+        self.scaled_end = (int(e_x * x_corr), int(e_y * y_corr))
+        print(f'starting & ending pts: {self.scaled_begin}, {self.scaled_end}')
+
+class SettingsDialog(QWizard):
+    def __init__(self, im):
+        super().__init__()
+        self.init_ui(im)
+        
+    def init_ui(self, im):
+        self.wiz = Ui_Wizard()
+        self.wiz.setupUi(self)
+        #ccRead_layout = self.wiz.gridLayout
+        ccRead_layout = self.wiz.crc_annotation_layout
+        canvas = Canvas(im)
+        ccRead_layout.addWidget(canvas)
+
+    def run_wizard(self):
+        wiz_window = self.exec()
 
 
 class BcDialog(QDialog):
@@ -850,7 +942,8 @@ class appWindow(QMainWindow):
                     cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_small(reduced_img,
                                                                                                          original_size,
                                                                                                          stride_style='whole',
-                                                                                                         high_precision=True)
+                                                                                                         high_precision=True,
+                                                                                                         partition_size=125)
                 else:
                     cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
                 if self.mainWindow.group_scaleDetermination.isChecked():
@@ -1183,6 +1276,31 @@ class appWindow(QMainWindow):
             raise  # Pass this up to the process function for halting
         return im
 
+    def openDisplayImage(self, imgPath):
+        """
+        given an image path, attempts to return a numpy array image object
+        suitable for immediate display, while not totally accurate
+        is used for displaying example images in setupWizard.
+        """
+        try:  # use rawpy to convert raw to openCV
+            with rawpy.imread(imgPath) as raw:
+                im = raw.postprocess(output_color=rawpy.ColorSpace.raw,
+                                               half_size=True,
+                                               use_auto_wb=True,
+                                               demosaic_algorithm=rawpy.DemosaicAlgorithm.LINEAR
+                                               )
+                return im
+        # pretty much must be a raw format image
+        except (LibRawFatalError, LibRawNonFatalError) as e:
+            if imgPath != '':
+                title = 'Error opening file'
+                text = 'Corrupted or incompatible image file.'
+                detail_text = (f"LibRawError opening: {imgPath}\nUsually this "
+                               "indicates a corrupted or incompatible image."
+                               "\n{e}")
+                self.userNotice(text, title, detail_text)
+            raise  # Pass this up to the process function for halting
+
     def testFeatureCompatability(self):
         """
         called by the "pushButton_selectTestImage."
@@ -1195,6 +1313,7 @@ class appWindow(QMainWindow):
         imaging setup and the available features will become available.
         """
         # be sure we start with a clean slate
+
         self.reset_working_variables()
         # If folder monitoring is on turn it off
         if self.folder_watcher.is_monitoring:
@@ -1202,60 +1321,63 @@ class appWindow(QMainWindow):
 
         # ask the user for an example image file
         imgPath, _ = QtWidgets.QFileDialog.getOpenFileName(
-                None, "Open Sample Image")
+                None, "Open an Example Image")
         if imgPath == '':
             return
         try:
-            im = self.openImageFile(imgPath)
+            im = self.openDisplayImage(imgPath)
         except LibRawFatalError:
             return
-        original_size, reduced_img = self.scale_images_with_info(im)
-        grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-        bcStatus = self.bcRead.testFeature(grey)
-        if not bcStatus:
-            # if first try fails, swap backend and retry
-            backend = self.mainWindow.comboBox_bcBackend.currentText()
-            if backend == 'zbar':
-                backend = 'libdmtx'
-                self.bcRead.backend = backend
-            elif backend == 'libdmtx':
-                backend = 'zbar'
-                self.bcRead.backend = backend
-                # try with alternative backend
-            print(f'trying with {backend}')
-            bcStatus = self.bcRead.testFeature(grey)
-            if bcStatus:  # if it worked, change the comboBox
-                self.populateQComboBoxSettings(self.mainWindow.comboBox_bcBackend, backend)
-        try:
-            blurStatus = self.blurDetect.testFeature(grey)
-        except Exception as e:
-            blurStatus = False
-            print('blurStatus returned exception:')
-            print(e)
-        try:
-            # If the size determiner becomes more useful we can use it to make this choice
-            # for now iterate over both big and small options.
-            for cc_size, ui_radio_element in {'small':self.mainWindow.radioButton_colorCheckerSmall,
-                                              'big':self.mainWindow.radioButton_colorCheckerLarge}.items():
-                
-                ccStatus, cropped_img = self.colorchipDetect.test_feature(reduced_img, original_size, cc_size)
-                # if result seems appropriate, use the image dialog box to ask
-                # the user if it properly detected the color chip.
-                if ccStatus:
-                    mb = ImageDialog(cropped_img)
-                    if mb.exec():
-                        ccStatus = True
-                        ui_radio_element.setChecked(True)
-                        break
-                    else:
-                        ui_radio_element.setChecked(False)
-            else:  # if the user agrees to neither, then deactivate cc functions.
-                ccStatus = False
-                
-        except Exception as e:
-            ccStatus = False
-            print('ccStatus returned exception:')
-            print(e)
+
+        sd = SettingsDialog(im)
+        sd.run_wizard()
+#        original_size, reduced_img = self.scale_images_with_info(im)
+#        grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+#        bcStatus = self.bcRead.testFeature(grey)
+#        if not bcStatus:
+#            # if first try fails, swap backend and retry
+#            backend = self.mainWindow.comboBox_bcBackend.currentText()
+#            if backend == 'zbar':
+#                backend = 'libdmtx'
+#                self.bcRead.backend = backend
+#            elif backend == 'libdmtx':
+#                backend = 'zbar'
+#                self.bcRead.backend = backend
+#                # try with alternative backend
+#            print(f'trying with {backend}')
+#            bcStatus = self.bcRead.testFeature(grey)
+#            if bcStatus:  # if it worked, change the comboBox
+#                self.populateQComboBoxSettings(self.mainWindow.comboBox_bcBackend, backend)
+#        try:
+#            blurStatus = self.blurDetect.testFeature(grey)
+#        except Exception as e:
+#            blurStatus = False
+#            print('blurStatus returned exception:')
+#            print(e)
+#        try:
+#            # If the size determiner becomes more useful we can use it to make this choice
+#            # for now iterate over both big and small options.
+#            for cc_size, ui_radio_element in {'small':self.mainWindow.radioButton_colorCheckerSmall,
+#                                              'big':self.mainWindow.radioButton_colorCheckerLarge}.items():
+#                
+#                ccStatus, cropped_img = self.colorchipDetect.test_feature(reduced_img, original_size, cc_size)
+#                # if result seems appropriate, use the image dialog box to ask
+#                # the user if it properly detected the color chip.
+#                if ccStatus:
+#                    mb = ImageDialog(cropped_img)
+#                    if mb.exec():
+#                        ccStatus = True
+#                        ui_radio_element.setChecked(True)
+#                        break
+#                    else:
+#                        ui_radio_element.setChecked(False)
+#            else:  # if the user agrees to neither, then deactivate cc functions.
+#                ccStatus = False
+#                
+#        except Exception as e:
+#            ccStatus = False
+#            print('ccStatus returned exception:')
+#            print(e)
 #        try:
 #            eqStatus = self.eqRead.testFeature(imgPath)
 #        except Exception as e:
@@ -1263,29 +1385,29 @@ class appWindow(QMainWindow):
 #            print('eqStatus returned exception:')
 #            print(e)
         # each relevant feature, and the associated status
-        eqStatus = True
-        features = {self.mainWindow.group_barcodeDetection: bcStatus,
-                    self.mainWindow.group_renameByBarcode: bcStatus,
-                    self.mainWindow.group_blurDetection: blurStatus,
-                    self.mainWindow.group_colorCheckerDetection: ccStatus,
-                    self.mainWindow.group_verifyRotation: ccStatus,
-                    self.mainWindow.checkBox_performWhiteBalance: ccStatus,
-                    self.mainWindow.groupBox_colorCheckerSize: ccStatus,
-                    self.mainWindow.groupBox_scaleDetermination: ccStatus,
-                    self.mainWindow.group_equipmentDetection: eqStatus,
-                    self.mainWindow.checkBox_lensCorrection: eqStatus}
-
-        for feature, status in features.items():
-            feature.setEnabled(status)
-            # if not status:
-            feature.setChecked(status)
-
-        # store the discovered settings
-        self.saveSettings()
-        # reset working variables
-        self.reset_working_variables()
-        # restart the folder watcher with any changes made
-        self.setup_Folder_Watcher()
+#        eqStatus = True
+#        features = {self.mainWindow.group_barcodeDetection: bcStatus,
+#                    self.mainWindow.group_renameByBarcode: bcStatus,
+#                    self.mainWindow.group_blurDetection: blurStatus,
+#                    self.mainWindow.group_colorCheckerDetection: ccStatus,
+#                    self.mainWindow.group_verifyRotation: ccStatus,
+#                    self.mainWindow.checkBox_performWhiteBalance: ccStatus,
+#                    self.mainWindow.groupBox_colorCheckerSize: ccStatus,
+#                    self.mainWindow.groupBox_scaleDetermination: ccStatus,
+#                    self.mainWindow.group_equipmentDetection: eqStatus,
+#                    self.mainWindow.checkBox_lensCorrection: eqStatus}
+#
+#        for feature, status in features.items():
+#            feature.setEnabled(status)
+#            # if not status:
+#            feature.setChecked(status)
+#
+#        # store the discovered settings
+#        self.saveSettings()
+#        # reset working variables
+#        self.reset_working_variables()
+#        # restart the folder watcher with any changes made
+#        self.setup_Folder_Watcher()
 
     def fill_patterns(self, joinedPattern):
         """
