@@ -36,9 +36,8 @@ import re
 from shutil import move as shutil_move
 # UI libs
 from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtWidgets import QMainWindow, QMessageBox, QDialog, QWizard, QSizePolicy
-from PyQt5.QtCore import (QSettings, Qt, QObject, QThreadPool, QEventLoop,
-                          QMimeData)
+from PyQt5.QtWidgets import QMainWindow, QMessageBox, QDialog
+from PyQt5.QtCore import (QSettings, Qt, QObject, QThreadPool, QEventLoop)
 # image libs
 import rawpy
 from rawpy import LibRawNonFatalError, LibRawFatalError
@@ -47,7 +46,7 @@ import numpy as np
 # internal libs
 from ui.styles import darkorange
 from ui.postProcessingUI import Ui_MainWindow
-from ui.imageDialogUI import Ui_Dialog_image
+
 from ui.noBcDialogUI import Ui_Dialog_noBc
 from ui.technicianNameDialogUI import Ui_technicianNameDialog
 from libs.bcRead import bcRead
@@ -61,116 +60,7 @@ from libs.boss_worker import (Boss, BCWorkerData, BlurWorkerData, EQWorkerData,
                               WorkerErrorData, SaveWorkerData)
 from libs.metaRead import MetaRead
 from libs.scaleRead import ScaleRead
-from ui.settingsWizardUI import Ui_Wizard
-#from PIL import Image
-
-class ImageDialog(QDialog):
-    def __init__(self, img_array_object):
-        super().__init__()
-        self.init_ui(img_array_object)
-
-    def init_ui(self, img_array_object):
-        mb = Ui_Dialog_image()
-        mb.setupUi(self)
-        width, height = img_array_object.shape[0:2]
-        bytesPerLine = 3 * width
-        qImg = QtGui.QImage(np.array(img_array_object),
-                            width, height, bytesPerLine,
-                            QtGui.QImage.Format_RGB888)
-        pixmap01 = QtGui.QPixmap.fromImage(qImg)
-        pixmap_image = QtGui.QPixmap(pixmap01)
-        mb.label_Image.setPixmap(pixmap_image)
-
-
-class Canvas(QtWidgets.QLabel):
-
-    def __init__(self, im):
-        super().__init__()
-        #pixmap = QtGui.QPixmap(600, 300)
-        #self.setPixmap(pixmap)
-        self.backDrop, self.correction = self.genPixBackDrop(im)
-        self.setPixmap(self.backDrop)
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.begin = QtCore.QPoint()
-        self.end = QtCore.QPoint()
-        # the box_size, is the point of the entire canvas.
-        # The scale corrected larger dim of the annotated rect
-        self.scaled_begin = (0, 0)
-        self.scaled_end = (0, 0)
-
-    def genPixBackDrop(self, im):
-
-        h, w = im.shape[0:2]
-        if h < w:
-            im = np.rot90(im, 1)
-            h, w = w, h  # swamp the variables after rotating
-        bytesPerLine = 3 * w
-        # odd bug here, must use .copy() to avoid a mem error.
-        # see: https://stackoverflow.com/questions/48639185/pyqt5-qimage-from-numpy-array
-        qImg = QtGui.QImage(im.copy(), w, h, bytesPerLine,
-                            QtGui.QImage.Format_RGB888)
-        pixmap = QtGui.QPixmap.fromImage(qImg)
-        width = self.width()
-        height = self.height()
-        pixmap = pixmap.scaled(width, height,
-                               QtCore.Qt.KeepAspectRatio,
-                               Qt.FastTransformation)
-        # corrections are doubled due to display image bieng opened at half res
-        h_correction = (2*h) / height
-        w_correction = (2*w) / width
-        correction = (w_correction, h_correction)
-        return pixmap, correction
-
-    def paintEvent(self, event):
-        qp = QtGui.QPainter(self)
-        qp.drawPixmap(self.rect(), self.backDrop)
-        # set brush to a lime green
-        br = QtGui.QBrush(QtGui.QColor('#03EA00'))
-        qp.setBrush(br)
-        qp.drawRect(QtCore.QRect(self.begin, self.end))
-
-    def mousePressEvent(self, event):
-        self.begin = event.pos()
-        self.end = event.pos()
-        self.update()
-
-    def mouseMoveEvent(self, event):
-        self.end = event.pos()
-        self.update()
-
-    def mouseReleaseEvent(self, event):
-        self.end = event.pos()
-        self.update()
-        self.updateBoxSize()
-        
-    def updateBoxSize(self):
-        # qpoint is formatted as (xpos, ypos)
-        # x col, y row
-        # save the scale corrected start / end points
-        x_corr, y_corr = self.correction
-        b_x = self.begin.x()
-        b_y = self.begin.y()
-        e_x = self.end.x()
-        e_y = self.end.y()
-        self.scaled_begin = (int(b_x * x_corr), int(b_y * y_corr))
-        self.scaled_end = (int(e_x * x_corr), int(e_y * y_corr))
-        print(f'starting & ending pts: {self.scaled_begin}, {self.scaled_end}')
-
-class SettingsDialog(QWizard):
-    def __init__(self, im):
-        super().__init__()
-        self.init_ui(im)
-        
-    def init_ui(self, im):
-        self.wiz = Ui_Wizard()
-        self.wiz.setupUi(self)
-        #ccRead_layout = self.wiz.gridLayout
-        ccRead_layout = self.wiz.crc_annotation_layout
-        canvas = Canvas(im)
-        ccRead_layout.addWidget(canvas)
-
-    def run_wizard(self):
-        wiz_window = self.exec()
+from libs.settingsWizard import SettingsWizard
 
 
 class BcDialog(QDialog):
@@ -941,7 +831,7 @@ class appWindow(QMainWindow):
                 if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
                     cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_small(reduced_img,
                                                                                                          original_size,
-                                                                                                         stride_style='whole',
+                                                                                                         stride_style='quick',
                                                                                                          high_precision=True,
                                                                                                          partition_size=125)
                 else:
@@ -1213,9 +1103,9 @@ class appWindow(QMainWindow):
         if self.cc_avg_white:  # if a cc_avg_white value was found
             use_camera_wb = False
             # normalize each value by 255
-            cc_avg_white = [255/x for x in self.cc_avg_white]
+            cc_avg_white = [255//x for x in self.cc_avg_white]
             r, g, b = cc_avg_white
-            g = g/2
+            g = g//2
             wb = [r, g, b, g]
             use_camera_wb = False
         else:  # otherwise use as shot values
@@ -1276,31 +1166,6 @@ class appWindow(QMainWindow):
             raise  # Pass this up to the process function for halting
         return im
 
-    def openDisplayImage(self, imgPath):
-        """
-        given an image path, attempts to return a numpy array image object
-        suitable for immediate display, while not totally accurate
-        is used for displaying example images in setupWizard.
-        """
-        try:  # use rawpy to convert raw to openCV
-            with rawpy.imread(imgPath) as raw:
-                im = raw.postprocess(output_color=rawpy.ColorSpace.raw,
-                                               half_size=True,
-                                               use_auto_wb=True,
-                                               demosaic_algorithm=rawpy.DemosaicAlgorithm.LINEAR
-                                               )
-                return im
-        # pretty much must be a raw format image
-        except (LibRawFatalError, LibRawNonFatalError) as e:
-            if imgPath != '':
-                title = 'Error opening file'
-                text = 'Corrupted or incompatible image file.'
-                detail_text = (f"LibRawError opening: {imgPath}\nUsually this "
-                               "indicates a corrupted or incompatible image."
-                               "\n{e}")
-                self.userNotice(text, title, detail_text)
-            raise  # Pass this up to the process function for halting
-
     def testFeatureCompatability(self):
         """
         called by the "pushButton_selectTestImage."
@@ -1318,18 +1183,7 @@ class appWindow(QMainWindow):
         # If folder monitoring is on turn it off
         if self.folder_watcher.is_monitoring:
             self.toggle_folder_monitoring()
-
-        # ask the user for an example image file
-        imgPath, _ = QtWidgets.QFileDialog.getOpenFileName(
-                None, "Open an Example Image")
-        if imgPath == '':
-            return
-        try:
-            im = self.openDisplayImage(imgPath)
-        except LibRawFatalError:
-            return
-
-        sd = SettingsDialog(im)
+        sd = SettingsWizard()
         sd.run_wizard()
 #        original_size, reduced_img = self.scale_images_with_info(im)
 #        grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
@@ -1413,7 +1267,7 @@ class appWindow(QMainWindow):
         """
         Populates the listWidget_patterns with saved patterns.
         """
-        patterns = self.retrieve_bc_patterns()
+        #patterns = self.retrieve_bc_patterns()
         patterns = joinedPattern.split('|')
         listWidget_patterns = self.mainWindow.listWidget_patterns
         listWidget_patterns.clear()
@@ -1448,7 +1302,6 @@ class appWindow(QMainWindow):
         item = listWidget_patterns.item(item_pos)
         item.setFlags(item.flags() | Qt.ItemIsEditable)
         self.set_bc_pattern()
-        
 
     def remove_pattern(self):
         """
@@ -1459,7 +1312,7 @@ class appWindow(QMainWindow):
         item = listWidget_patterns.takeItem(selection)
         item = None
         self.set_bc_pattern()
-    
+
     def retrieve_bc_patterns(self):
         """
         harvests all pattern strings in the listWidget_patterns and returns

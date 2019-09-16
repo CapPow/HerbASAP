@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>633</width>
-    <height>645</height>
+    <height>721</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -24,37 +24,24 @@
   <property name="windowTitle">
    <string>HerbASAP profile setup</string>
   </property>
+  <property name="options">
+   <set>QWizard::NoBackButtonOnStartPage</set>
+  </property>
   <widget class="QWizardPage" name="intro_Page">
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="title">
+    <string>HerbASAP Profile Setup</string>
+   </property>
+   <property name="subTitle">
+    <string>Profile Settings Wizard</string>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout_7">
-    <item>
-     <widget class="QLabel" name="label_31">
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Profile Settings Wizard</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <spacer name="verticalSpacer_2">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>40</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
     <item>
      <widget class="QLabel" name="label_32">
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Herbarium Application for Specimen Auto-Processing (HerbASAP) was developed to automate the steps required to create web ready derivative images from &amp;quot;Raw&amp;quot; specimen images, so called post-processing.&lt;/p&gt;&lt;p&gt;HerbASAP has many features, this wizard will guide you through configuring a profile to store settings. Profiles may be configured for multiple projects.&lt;/p&gt;&lt;p&gt;Throughout the wizard, optional features may be enabled or disabled using checkboxes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Herbarium Application for Specimen Auto-Processing (HerbASAP) was developed to automate the steps required to create web ready derivative images from &amp;quot;Raw&amp;quot; specimen images, so called post-processing.&lt;/p&gt;&lt;p&gt;HerbASAP has many features, this wizard will guide you through creating a project profile to store settings specific to an imaging project. Unique profiles may be configured for separate projects. Throughout the wizard, optional features may be enabled or disabled using checkboxes.&lt;/p&gt;&lt;p&gt;To get started, select an example &amp;quot;Raw&amp;quot; image file which was captured under conditions similar to those expected.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -74,22 +61,48 @@
       </property>
      </spacer>
     </item>
-   </layout>
-  </widget>
-  <widget class="QWizardPage" name="path_setup_page">
-   <layout class="QVBoxLayout" name="verticalLayout_6">
     <item>
-     <widget class="QLabel" name="label">
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-       </font>
-      </property>
+     <widget class="QPushButton" name="pushButton_selectExampleImage">
       <property name="text">
-       <string>Input / Output Settings</string>
+       <string>Select Example Image File</string>
       </property>
      </widget>
     </item>
+    <item>
+     <widget class="QLabel" name="label_loadedExampleFile">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="verticalSpacer_5">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWizardPage" name="path_setup_page">
+   <property name="title">
+    <string>HerbASAP Profile Setup</string>
+   </property>
+   <property name="subTitle">
+    <string>Input / Output Settings</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_6">
     <item>
      <widget class="QLabel" name="label_3">
       <property name="font">
@@ -115,8 +128,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>595</width>
-         <height>447</height>
+         <width>609</width>
+         <height>512</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -420,23 +433,17 @@
    </layout>
   </widget>
   <widget class="QWizardPage" name="bcRead_setup_page">
+   <property name="title">
+    <string>HerbASAP Profile Setup</string>
+   </property>
+   <property name="subTitle">
+    <string>File Naming by Barcode / DataMatrix Value</string>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <widget class="QLabel" name="label_14">
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>File Naming by Barcode / DataMatrix Value</string>
-      </property>
-     </widget>
-    </item>
     <item>
      <widget class="QLabel" name="label_16">
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HerbASAP can name processed image derivatives based on catalog numbers found as barcodes or data matrices in the input image. If multiple distinct codes are found in an image, a copy is saved for each code.&lt;/p&gt;&lt;p&gt;Undesired or partial reads are filtered using &amp;quot;regular expression&amp;quot; (regex) patterns. To use this feature you'll need to enter details concerning the expected catalog number. Use the &amp;quot;Preview&amp;quot; text to view the type of pattern expected based on your inputs.&lt;/p&gt;&lt;p&gt;- The Decoder backend determines what underlying software will be used to decode values in the image. Barcodes should be decoded using &amp;quot;zbar.&amp;quot; Data matrices should be decoded using &amp;quot;libdmtx.&amp;quot;&lt;/p&gt;&lt;p&gt;- Entering an empty &amp;quot;Catalog Number Prefix&amp;quot; with 0 &amp;quot;Digits,&amp;quot; will result in all values being acceptable.&lt;/p&gt;&lt;p&gt;- Multiple patterns can used simultaneously. The &amp;quot;Add&amp;quot; / &amp;quot;Remove&amp;quot; buttons edit which patterns are acceptable.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HerbASAP can name processed image derivatives based on catalog numbers found as barcodes or data matrices in the input image. If multiple distinct codes are found in an image, a copy is saved for each code.&lt;/p&gt;&lt;p&gt;Undesired or partial reads are filtered using &amp;quot;regular expression&amp;quot; (regex) patterns. To use this feature you'll need to enter details concerning the expected catalog number. Use the &amp;quot;Preview&amp;quot; text to view the type of pattern expected based on your inputs.&lt;/p&gt;&lt;p&gt;- The Decoder backend determines what underlying software will be used to decode values in the image. Barcodes should be decoded using &amp;quot;zbar.&amp;quot; Data matrices should be decoded using &amp;quot;libdmtx.&amp;quot;&lt;/p&gt;&lt;p&gt;- Multiple patterns can used simultaneously. The &amp;quot;Add&amp;quot; / &amp;quot;Remove&amp;quot; buttons edit which patterns are acceptable.&lt;/p&gt;&lt;p&gt;- Using an empty list of patterns will result in all values being acceptable.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -737,29 +744,43 @@
          </layout>
         </widget>
        </item>
+       <item row="2" column="0">
+        <widget class="QPushButton" name="pushButton">
+         <property name="text">
+          <string>Test Barcode / DataMatrix Reading</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="label_bcRead_results">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
    </layout>
   </widget>
   <widget class="QWizardPage" name="blurDetect_setup_page">
+   <property name="title">
+    <string>HerbASAP Profile Setup</string>
+   </property>
+   <property name="subTitle">
+    <string>Blur Detection</string>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
-    <item>
-     <widget class="QLabel" name="label_17">
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Blur Detection</string>
-      </property>
-     </widget>
-    </item>
     <item>
      <widget class="QLabel" name="label_18">
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HerbASAP can to a limited degree, verify that images are in focus. &lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;To do this it calculates the variance of the Laplace Operator (Laplacian) for the image. The Laplacian is normalized using the image variance to account for image &amp;quot;busyness&amp;quot; (e.g., dissected leaves as compared to simple leaves). To use this feature, a threshold value must be set. If the normalized Laplacian is lower than the threshold value, a notice dialog will be provided.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;- Lower values are more blur tolerant.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HerbASAP can to a limited degree, verify that images are in focus. &lt;/p&gt;&lt;p&gt;To do this it calculates the variance of the Laplace Operator (Laplacian) for the image. The Laplacian is normalized using the image variance to account for image &amp;quot;busyness&amp;quot; (e.g., dissected leaves as compared to simple leaves). To use this feature, a threshold value must be set. If the normalized Laplacian is lower than the threshold value, a notice dialog will be provided.&lt;/p&gt;&lt;p&gt;- Lower values are more blur tolerant.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -768,7 +789,7 @@
     </item>
     <item>
      <widget class="QFrame" name="group_blurDetection">
-      <layout class="QGridLayout" name="gridLayout_8">
+      <layout class="QGridLayout" name="gridLayout_8" columnstretch="1,1,1,0">
        <property name="leftMargin">
         <number>3</number>
        </property>
@@ -781,6 +802,62 @@
        <property name="bottomMargin">
         <number>3</number>
        </property>
+       <item row="3" column="3">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="3" column="0" colspan="2" alignment="Qt::AlignBottom">
+        <widget class="QPushButton" name="pushButton_testBlurDetection">
+         <property name="text">
+          <string>Test Blur Detection</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <spacer name="horizontalSpacer_6">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="3" column="2">
+        <widget class="QLabel" name="label_blurDetect_results">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QCheckBox" name="checkBox_blurDetection">
+         <property name="text">
+          <string>Check images for blur</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
        <item row="1" column="1">
         <widget class="QDoubleSpinBox" name="doubleSpinBox_blurThreshold">
          <property name="enabled">
@@ -819,28 +896,18 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="2">
-        <spacer name="horizontalSpacer_6">
+       <item row="2" column="0">
+        <spacer name="verticalSpacer_7">
          <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+          <enum>Qt::Vertical</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>40</width>
-           <height>20</height>
+           <width>20</width>
+           <height>40</height>
           </size>
          </property>
         </spacer>
-       </item>
-       <item row="0" column="0">
-        <widget class="QCheckBox" name="checkBox_blurDetection">
-         <property name="text">
-          <string>Check images for blur</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
        </item>
       </layout>
      </widget>
@@ -848,9 +915,74 @@
    </layout>
   </widget>
   <widget class="QWizardPage" name="ccRead_setup_page1">
-   <layout class="QGridLayout" name="gridLayout_9">
-    <item row="2" column="0">
-     <layout class="QGridLayout" name="gridLayout_2">
+   <property name="title">
+    <string>HerbASAP Profile Setup</string>
+   </property>
+   <property name="subTitle">
+    <string>Color Reference Chart Detection Setup</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_9" columnstretch="2,3,0" columnminimumwidth="0,0,0">
+    <item row="3" column="1" rowspan="4">
+     <layout class="QVBoxLayout" name="crc_canvas_layout"/>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLabel" name="label_24">
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Draw a box over the CRC in the frame below</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="label_crcDetection_results">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="4" column="0">
+     <widget class="QPushButton" name="pushButton_testCRCDetection">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>Test CRC detection</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0" colspan="2">
+     <widget class="QLabel" name="label_33">
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HerbASAP has several features which depend the presence of a color reference chart (CRC).&lt;/p&gt;&lt;p&gt;CRC location is determined using the methods described by Ledesma et al. 2019. To use these features, you must select which CRC type is expected and draw a box the approximate size of the CRC (anywhere) in the image. The box is used to set the window size to consider for region proposals.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="2">
+     <layout class="QGridLayout" name="gridLayout_2" columnstretch="0,0">
       <item row="0" column="1">
        <widget class="QComboBox" name="comboBox_crcType">
         <property name="sizePolicy">
@@ -898,8 +1030,28 @@
       </item>
      </layout>
     </item>
-    <item row="4" column="1">
-     <spacer name="verticalSpacer_4">
+   </layout>
+  </widget>
+  <widget class="QWizardPage" name="ccRead_setup_page2">
+   <property name="title">
+    <string>HerbASAP Profile Setup</string>
+   </property>
+   <property name="subTitle">
+    <string>Color Reference Chart Features</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout" columnstretch="1,1">
+    <item row="0" column="0" colspan="2">
+     <widget class="QLabel" name="label_19">
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HerbASAP has several features which depend the presence of a color reference chart (CRC).&lt;/p&gt;&lt;p&gt;To use these features, you must have succeeeded the test on the previous page (pressing the &amp;quot;back&amp;quot; button will not clear progress).&lt;/p&gt;&lt;p&gt;- Image scale determination: A pixel to mm ratio is determined using the internal area of CRC color patches. This ratio is annotated in the metadata of the derivative images. &lt;span style=&quot; font-weight:600;&quot;&gt;Assumes CRC is flat on the focal surface.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- Image rotation: derivative images can be rotated to place the CRC a the specified position (e.g., &amp;quot;Lower Right&amp;quot;).&lt;/p&gt;&lt;p&gt;- White balance: The whitest color patch of the CRC is used as a point reference for white balanceing image derivatives.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <spacer name="verticalSpacer_8">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
@@ -911,95 +1063,36 @@
       </property>
      </spacer>
     </item>
-    <item row="3" column="0">
-     <widget class="QLabel" name="label_24">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Draw a box over the CRC in the frame below</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="1">
-     <spacer name="horizontalSpacer_4">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="0" column="0" colspan="2">
-     <widget class="QLabel" name="label_34">
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Color Reference Chart Detection Setup</string>
-      </property>
-     </widget>
-    </item>
     <item row="1" column="0" colspan="2">
-     <widget class="QLabel" name="label_33">
-      <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HerbASAP has several features which depend the presence of a color reference chart (CRC).&lt;/p&gt;&lt;p&gt;CRC location is determined using the methods described by Ledesma et al. 2019. To use these features, you must select which CRC type is expected, and draw a box over the CRC in the example image.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <widget class="QGroupBox" name="group_scaleDetermination">
+      <property name="title">
+       <string>Determine image scale using known color patch sizes</string>
       </property>
-      <property name="wordWrap">
+      <property name="checkable">
        <bool>true</bool>
       </property>
+      <layout class="QGridLayout" name="gridLayout_10">
+       <item row="1" column="0">
+        <widget class="QPushButton" name="pushButton_test_scaleDet">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Test scale determination</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="label_scaleDet_results">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
-    <item row="4" column="0">
-     <widget class="QFrame" name="crc_annotation_layout_2">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <layout class="QVBoxLayout" name="crc_annotation_layout"/>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWizardPage" name="ccRead_setup_page2">
-   <layout class="QGridLayout" name="gridLayout" columnstretch="1,0">
-    <item row="0" column="0" colspan="2">
-     <widget class="QLabel" name="label_15">
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Color Reference Chart Features</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0" colspan="2">
-     <widget class="QLabel" name="label_19">
-      <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HerbASAP has several features which depend the presence of a color reference chart (CRC).&lt;/p&gt;&lt;p&gt;Features dependent on the CRC are explained below.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
+    <item row="3" column="0" colspan="2">
      <widget class="QGroupBox" name="group_verifyRotation">
       <property name="enabled">
        <bool>true</bool>
@@ -1026,6 +1119,19 @@
        <property name="bottomMargin">
         <number>3</number>
        </property>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_colorCheckerPosition">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>Desired CRC Position</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="2">
         <spacer name="horizontalSpacer_2">
          <property name="orientation">
@@ -1072,77 +1178,10 @@
          </item>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_colorCheckerPosition">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="text">
-          <string>Correct CRC Position</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0" colspan="3">
-        <widget class="QLabel" name="label_29">
-         <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;- Image rotation: derivative images can be rotated to place the CRC a the specified position (e.g., &amp;quot;Lower Right&amp;quot;).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
       </layout>
      </widget>
     </item>
-    <item row="5" column="0">
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>40</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="2" column="0">
-     <widget class="QGroupBox" name="group_scaleDetermination">
-      <property name="title">
-       <string>Determine image scale using known color patch sizes</string>
-      </property>
-      <property name="checkable">
-       <bool>true</bool>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_10">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_27">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-           <italic>false</italic>
-          </font>
-         </property>
-         <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;- Image scale determination: A pixel to mm ratio is determined using the internal area of CRC color patches. This ratio is annotated in the metadata of the derivative images. &lt;span style=&quot; font-weight:600;&quot;&gt;Assumes CRC is flat on the focal surface.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="4" column="0">
+    <item row="2" column="0" colspan="2">
      <widget class="QGroupBox" name="groupBox_performWhiteBalance">
       <property name="title">
        <string>Perform white balance using color checker</string>
@@ -1151,13 +1190,20 @@
        <bool>true</bool>
       </property>
       <layout class="QGridLayout" name="gridLayout_4">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_30">
-         <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;- White balance: The whitest color patch of the CRC is used as a point reference for white balanceing image derivatives.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="pushButton_test_whiteBalance">
+         <property name="enabled">
+          <bool>false</bool>
          </property>
-         <property name="wordWrap">
-          <bool>true</bool>
+         <property name="text">
+          <string>Test white balance</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="label_whiteBalance_results">
+         <property name="text">
+          <string/>
          </property>
         </widget>
        </item>
@@ -1167,19 +1213,13 @@
    </layout>
   </widget>
   <widget class="QWizardPage" name="eqRead_setup_page">
+   <property name="title">
+    <string>HerbASAP Profile Setup</string>
+   </property>
+   <property name="subTitle">
+    <string>Distortion Corrections</string>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout_4">
-    <item>
-     <widget class="QLabel" name="label_20">
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Distortion Corrections</string>
-      </property>
-     </widget>
-    </item>
     <item>
      <widget class="QLabel" name="label_21">
       <property name="text">
@@ -1279,19 +1319,13 @@
    </layout>
   </widget>
   <widget class="QWizardPage" name="metaRead_setup_page">
+   <property name="title">
+    <string>HerbASAP Profile Setup</string>
+   </property>
+   <property name="subTitle">
+    <string>Metadata</string>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout_5">
-    <item>
-     <widget class="QLabel" name="label_22">
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Metadata</string>
-      </property>
-     </widget>
-    </item>
     <item>
      <widget class="QLabel" name="label_23">
       <property name="text">
@@ -1460,5 +1494,159 @@
   </widget>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButton_selectExampleImage</sender>
+   <signal>clicked()</signal>
+   <receiver>Wizard</receiver>
+   <slot>openDisplayImage()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>434</x>
+     <y>411</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>622</x>
+     <y>416</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lineEdit_catalogNumberPrefix</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>Wizard</receiver>
+   <slot>update_CatalogNumber_Preview()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>228</x>
+     <y>378</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>629</x>
+     <y>405</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_catalogDigits</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>Wizard</receiver>
+   <slot>update_CatalogNumber_Preview()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>341</x>
+     <y>375</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>636</x>
+     <y>457</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_dupNamingPolicy</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>Wizard</receiver>
+   <slot>update_CatalogNumber_Preview()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>272</x>
+     <y>408</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>628</x>
+     <y>498</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toolButton_removePattern</sender>
+   <signal>clicked()</signal>
+   <receiver>Wizard</receiver>
+   <slot>remove_pattern()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>578</x>
+     <y>569</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>629</x>
+     <y>555</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toolButton_addPattern</sender>
+   <signal>clicked()</signal>
+   <receiver>Wizard</receiver>
+   <slot>add_pattern()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>416</x>
+     <y>572</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>632</x>
+     <y>538</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Wizard</receiver>
+   <slot>test_bcRead()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>263</x>
+     <y>607</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>630</x>
+     <y>588</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_testBlurDetection</sender>
+   <signal>clicked()</signal>
+   <receiver>Wizard</receiver>
+   <slot>test_blurDetect()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>201</x>
+     <y>356</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>645</x>
+     <y>304</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_testCRCDetection</sender>
+   <signal>clicked()</signal>
+   <receiver>Wizard</receiver>
+   <slot>test_crcDetection()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>72</x>
+     <y>212</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>213</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>openDisplayImage()</slot>
+  <slot>update_CatalogNumber_Preview()</slot>
+  <slot>remove_pattern()</slot>
+  <slot>add_pattern()</slot>
+  <slot>test_bcRead()</slot>
+  <slot>test_blurDetect()</slot>
+  <slot>test_crcDetection()</slot>
+ </slots>
 </ui>
