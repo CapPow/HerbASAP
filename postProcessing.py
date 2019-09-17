@@ -1220,6 +1220,7 @@ class appWindow(QMainWindow):
         if not selected_profile:
             selected_profile = self.mainWindow.comboBox_profiles.currentText()
         self.setValue('selected_profile', selected_profile)
+        self.update_profile_settings()
 
     def populate_profile_list(self):
         """
