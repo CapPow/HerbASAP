@@ -7,7 +7,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>712</width>
+    <width>763</width>
     <height>635</height>
    </rect>
   </property>
@@ -681,332 +681,6 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="imgPathsTab">
-       <attribute name="title">
-        <string>Image Paths</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_15">
-        <property name="leftMargin">
-         <number>3</number>
-        </property>
-        <property name="topMargin">
-         <number>9</number>
-        </property>
-        <property name="rightMargin">
-         <number>3</number>
-        </property>
-        <property name="bottomMargin">
-         <number>3</number>
-        </property>
-        <item row="0" column="0">
-         <widget class="QScrollArea" name="monitor_scrollArea">
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents_4">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>590</width>
-             <height>446</height>
-            </rect>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_3">
-            <property name="leftMargin">
-             <number>3</number>
-            </property>
-            <property name="topMargin">
-             <number>3</number>
-            </property>
-            <property name="rightMargin">
-             <number>3</number>
-            </property>
-            <property name="bottomMargin">
-             <number>3</number>
-            </property>
-            <item>
-             <widget class="QGroupBox" name="group_inputSettings">
-              <property name="title">
-               <string>Input settings</string>
-              </property>
-              <property name="checkable">
-               <bool>false</bool>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_11">
-               <property name="leftMargin">
-                <number>3</number>
-               </property>
-               <property name="topMargin">
-                <number>3</number>
-               </property>
-               <property name="rightMargin">
-                <number>3</number>
-               </property>
-               <property name="bottomMargin">
-                <number>3</number>
-               </property>
-               <item row="1" column="1">
-                <widget class="QLineEdit" name="lineEdit_inputPath">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_6">
-                 <property name="text">
-                  <string>Folder</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="2">
-                <widget class="QPushButton" name="pushButton_inputPath">
-                 <property name="text">
-                  <string>Browse</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0" colspan="3">
-                <widget class="QLabel" name="label_3">
-                 <property name="text">
-                  <string>Input folder path (the location to monitor for newly captured photos)</string>
-                 </property>
-                 <property name="buddy">
-                  <cstring>label_3</cstring>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="group_keepUnalteredRaw">
-              <property name="title">
-               <string>Move unaltered original images after processing</string>
-              </property>
-              <property name="checkable">
-               <bool>true</bool>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_10">
-               <property name="leftMargin">
-                <number>3</number>
-               </property>
-               <property name="topMargin">
-                <number>3</number>
-               </property>
-               <property name="rightMargin">
-                <number>3</number>
-               </property>
-               <property name="bottomMargin">
-                <number>3</number>
-               </property>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_7">
-                 <property name="text">
-                  <string>Folder</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QLineEdit" name="lineEdit_pathUnalteredRaw">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="2">
-                <widget class="QPushButton" name="pushButton_pathUnalteredRaw">
-                 <property name="text">
-                  <string>Browse</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0" colspan="3">
-                <widget class="QLabel" name="label_4">
-                 <property name="text">
-                  <string>Destination folder path (the location to save unprocessed archive format images)</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="group_saveProcessedJpg">
-              <property name="title">
-               <string>Save processed Images as JPG</string>
-              </property>
-              <property name="checkable">
-               <bool>true</bool>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_13">
-               <property name="leftMargin">
-                <number>3</number>
-               </property>
-               <property name="topMargin">
-                <number>3</number>
-               </property>
-               <property name="rightMargin">
-                <number>3</number>
-               </property>
-               <property name="bottomMargin">
-                <number>3</number>
-               </property>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_9">
-                 <property name="text">
-                  <string>Folder</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QLineEdit" name="lineEdit_pathProcessedJpg">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="2">
-                <widget class="QPushButton" name="pushButton_pathProcessedJpg">
-                 <property name="text">
-                  <string>Browse</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0" colspan="3">
-                <widget class="QLabel" name="label_11">
-                 <property name="text">
-                  <string>Destination folder path (the location to save processed images as JPG files)</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="group_saveProcessedTIFF">
-              <property name="title">
-               <string>Save processed Images as TIFF</string>
-              </property>
-              <property name="checkable">
-               <bool>true</bool>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_12">
-               <property name="leftMargin">
-                <number>3</number>
-               </property>
-               <property name="topMargin">
-                <number>3</number>
-               </property>
-               <property name="rightMargin">
-                <number>3</number>
-               </property>
-               <property name="bottomMargin">
-                <number>3</number>
-               </property>
-               <item row="1" column="1">
-                <widget class="QLineEdit" name="lineEdit_pathProcessedTIFF">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_8">
-                 <property name="text">
-                  <string>Folder</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="2">
-                <widget class="QPushButton" name="pushButton_pathProcessedTIFF">
-                 <property name="text">
-                  <string>Browse</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0" colspan="3">
-                <widget class="QLabel" name="label_5">
-                 <property name="text">
-                  <string>Destination folder path (the location to save processed images as TIFF files)</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="group_saveProcessedPng">
-              <property name="title">
-               <string>Save processed Images as PNG</string>
-              </property>
-              <property name="checkable">
-               <bool>true</bool>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_14">
-               <property name="leftMargin">
-                <number>3</number>
-               </property>
-               <property name="topMargin">
-                <number>3</number>
-               </property>
-               <property name="rightMargin">
-                <number>3</number>
-               </property>
-               <property name="bottomMargin">
-                <number>3</number>
-               </property>
-               <item row="1" column="1">
-                <widget class="QLineEdit" name="lineEdit_pathProcessedPng">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="2">
-                <widget class="QPushButton" name="pushButton_pathProcessedPng">
-                 <property name="text">
-                  <string>Browse</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_10">
-                 <property name="text">
-                  <string>Folder</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0" colspan="3">
-                <widget class="QLabel" name="label_12">
-                 <property name="text">
-                  <string>Destination folder path (the location to save processed images as PNG files)</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <spacer name="verticalSpacer_6">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </widget>
-        </item>
-       </layout>
-      </widget>
       <widget class="QWidget" name="settingsTab">
        <attribute name="title">
         <string>Settings</string>
@@ -1024,1086 +698,119 @@
         <property name="bottomMargin">
          <number>3</number>
         </property>
-        <item row="0" column="0">
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <item>
-           <widget class="QScrollArea" name="preferences_ScrollArea">
-            <property name="widgetResizable">
-             <bool>true</bool>
-            </property>
-            <widget class="QWidget" name="scrollAreaWidgetContents">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>-427</y>
-               <width>671</width>
-               <height>1991</height>
-              </rect>
+        <item row="2" column="0" colspan="2">
+         <widget class="QGroupBox" name="groupBox">
+          <property name="title">
+           <string>Settings Profiles</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_3" columnstretch="0,0,0,0">
+           <item row="0" column="1" colspan="2">
+            <widget class="QComboBox" name="comboBox_profiles"/>
+           </item>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="pushButton_deleteCurrentProfile">
+             <property name="text">
+              <string>Delete current profile</string>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_2">
-              <property name="leftMargin">
-               <number>3</number>
-              </property>
-              <property name="topMargin">
-               <number>3</number>
-              </property>
-              <property name="rightMargin">
-               <number>3</number>
-              </property>
-              <property name="bottomMargin">
-               <number>3</number>
-              </property>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_3">
-                <item>
-                 <widget class="QLabel" name="label">
-                  <property name="text">
-                   <string>Test feature compatability</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="pushButton_selectTestImage">
-                  <property name="text">
-                   <string>Select test image</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_5">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <widget class="QGroupBox" name="group_barcodeDetection">
-                <property name="autoFillBackground">
-                 <bool>false</bool>
-                </property>
-                <property name="title">
-                 <string>Barcode detection</string>
-                </property>
-                <property name="flat">
-                 <bool>false</bool>
-                </property>
-                <property name="checkable">
-                 <bool>false</bool>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_6">
-                 <property name="leftMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>3</number>
-                 </property>
-                 <item row="1" column="0" colspan="2">
-                  <widget class="QGroupBox" name="group_renameByBarcode">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
-                   <property name="title">
-                    <string>Rename images by barcode number</string>
-                   </property>
-                   <property name="checkable">
-                    <bool>true</bool>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                   <layout class="QGridLayout" name="gridLayout_3">
-                    <property name="leftMargin">
-                     <number>3</number>
-                    </property>
-                    <property name="topMargin">
-                     <number>3</number>
-                    </property>
-                    <property name="rightMargin">
-                     <number>3</number>
-                    </property>
-                    <property name="bottomMargin">
-                     <number>3</number>
-                    </property>
-                    <item row="0" column="2">
-                     <widget class="QLabel" name="label_digits">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="text">
-                       <string>Digits</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="3">
-                     <widget class="QSpinBox" name="spinBox_catalogDigits">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="frame">
-                       <bool>true</bool>
-                      </property>
-                      <property name="minimum">
-                       <number>0</number>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="1">
-                     <widget class="QLineEdit" name="lineEdit_catalogNumberPrefix">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="placeholderText">
-                       <string>ABCD</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="0">
-                     <widget class="QLabel" name="label_25">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="text">
-                       <string>Decoder backend </string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="label_dupNamingPolicy">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="text">
-                       <string>Duplicate naming policy</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="label_dupPreview">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="text">
-                       <string>Preview</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="1" colspan="3">
-                     <widget class="QComboBox" name="comboBox_bcBackend">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="currentIndex">
-                       <number>1</number>
-                      </property>
-                      <item>
-                       <property name="text">
-                        <string>libdmtx</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>zbar</string>
-                       </property>
-                      </item>
-                     </widget>
-                    </item>
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="label_catalogNumberPrefix">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="text">
-                       <string>Catalog Number Prefix</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="1" colspan="3">
-                     <widget class="QLabel" name="label_dupPreviewDisplay">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="8">
-                     <spacer name="horizontalSpacer">
-                      <property name="orientation">
-                       <enum>Qt::Horizontal</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>40</width>
-                        <height>20</height>
-                       </size>
-                      </property>
-                     </spacer>
-                    </item>
-                    <item row="1" column="1" colspan="3">
-                     <widget class="QComboBox" name="comboBox_dupNamingPolicy">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="sizeAdjustPolicy">
-                       <enum>QComboBox::AdjustToMinimumContentsLength</enum>
-                      </property>
-                      <item>
-                       <property name="text">
-                        <string>LOWER case letter</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>UPPER case letter</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Number with underscore</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>OVERWRITE original</string>
-                       </property>
-                      </item>
-                     </widget>
-                    </item>
-                    <item row="0" column="7" rowspan="4">
-                     <widget class="QFrame" name="frame_patterns">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <layout class="QGridLayout" name="gridLayout_18">
-                       <property name="topMargin">
-                        <number>0</number>
-                       </property>
-                       <property name="bottomMargin">
-                        <number>0</number>
-                       </property>
-                       <item row="4" column="2">
-                        <widget class="QToolButton" name="toolButton_removePattern">
-                         <property name="enabled">
-                          <bool>true</bool>
-                         </property>
-                         <property name="text">
-                          <string>remove</string>
-                         </property>
-                         <property name="checkable">
-                          <bool>false</bool>
-                         </property>
-                         <property name="autoRaise">
-                          <bool>false</bool>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="1" column="0" colspan="3">
-                        <widget class="QListWidget" name="listWidget_patterns">
-                         <property name="enabled">
-                          <bool>true</bool>
-                         </property>
-                         <property name="autoScroll">
-                          <bool>false</bool>
-                         </property>
-                         <property name="selectionRectVisible">
-                          <bool>false</bool>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="4" column="0">
-                        <widget class="QToolButton" name="toolButton_addPattern">
-                         <property name="enabled">
-                          <bool>true</bool>
-                         </property>
-                         <property name="text">
-                          <string>add </string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="4" column="1">
-                        <spacer name="horizontalSpacer_11">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>40</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                       <item row="0" column="0" colspan="3">
-                        <widget class="QLabel" name="label_28">
-                         <property name="enabled">
-                          <bool>false</bool>
-                         </property>
-                         <property name="font">
-                          <font>
-                           <pointsize>12</pointsize>
-                           <italic>true</italic>
-                          </font>
-                         </property>
-                         <property name="text">
-                          <string>barcode regex patterns</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignCenter</set>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </widget>
-                    </item>
-                   </layout>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QGroupBox" name="group_blurDetection">
-                <property name="title">
-                 <string>Blur detection</string>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_8">
-                 <property name="leftMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>3</number>
-                 </property>
-                 <item row="2" column="0" colspan="2">
-                  <widget class="QLabel" name="label_15">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <pointsize>10</pointsize>
-                     <italic>true</italic>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>(lower is more blur tolerant)</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="0">
-                  <widget class="QCheckBox" name="checkBox_blurDetection">
-                   <property name="text">
-                    <string>Check images for blur</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QDoubleSpinBox" name="doubleSpinBox_blurThreshold">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
-                   <property name="focusPolicy">
-                    <enum>Qt::ClickFocus</enum>
-                   </property>
-                   <property name="decimals">
-                    <number>3</number>
-                   </property>
-                   <property name="minimum">
-                    <double>0.001000000000000</double>
-                   </property>
-                   <property name="maximum">
-                    <double>9.990000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.001000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>0.045000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="2">
-                  <spacer name="horizontalSpacer_6">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="label_13">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
-                   <property name="text">
-                    <string>Laplacian threshold</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QGroupBox" name="group_colorCheckerDetection">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="title">
-                 <string>Color checker detection</string>
-                </property>
-                <property name="checkable">
-                 <bool>false</bool>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_4">
-                 <property name="leftMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>3</number>
-                 </property>
-                 <item row="0" column="0">
-                  <widget class="QGroupBox" name="groupBox_colorCheckerSize">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
-                   <property name="title">
-                    <string>Color checker size</string>
-                   </property>
-                   <layout class="QGridLayout" name="gridLayout_17">
-                    <property name="leftMargin">
-                     <number>3</number>
-                    </property>
-                    <property name="topMargin">
-                     <number>3</number>
-                    </property>
-                    <property name="rightMargin">
-                     <number>3</number>
-                    </property>
-                    <property name="bottomMargin">
-                     <number>3</number>
-                    </property>
-                    <item row="0" column="0">
-                     <widget class="QRadioButton" name="radioButton_colorCheckerSmall">
-                      <property name="text">
-                       <string>Small</string>
-                      </property>
-                      <property name="checked">
-                       <bool>true</bool>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="2">
-                     <spacer name="horizontalSpacer_9">
-                      <property name="orientation">
-                       <enum>Qt::Horizontal</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>40</width>
-                        <height>20</height>
-                       </size>
-                      </property>
-                     </spacer>
-                    </item>
-                    <item row="0" column="1">
-                     <widget class="QRadioButton" name="radioButton_colorCheckerLarge">
-                      <property name="text">
-                       <string>Large</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QGroupBox" name="group_verifyRotation">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
-                   <property name="title">
-                    <string>Verify image rotation using color checker position</string>
-                   </property>
-                   <property name="checkable">
-                    <bool>true</bool>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                   <layout class="QGridLayout" name="gridLayout_5">
-                    <property name="leftMargin">
-                     <number>3</number>
-                    </property>
-                    <property name="topMargin">
-                     <number>3</number>
-                    </property>
-                    <property name="rightMargin">
-                     <number>3</number>
-                    </property>
-                    <property name="bottomMargin">
-                     <number>3</number>
-                    </property>
-                    <item row="0" column="2">
-                     <spacer name="horizontalSpacer_2">
-                      <property name="orientation">
-                       <enum>Qt::Horizontal</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>40</width>
-                        <height>20</height>
-                       </size>
-                      </property>
-                     </spacer>
-                    </item>
-                    <item row="0" column="1">
-                     <widget class="QComboBox" name="comboBox_colorCheckerPosition">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <item>
-                       <property name="text">
-                        <string>Upper right</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Lower right</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Lower left</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Upper left</string>
-                       </property>
-                      </item>
-                     </widget>
-                    </item>
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="label_colorCheckerPosition">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="text">
-                       <string>Color checker Position</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QCheckBox" name="checkBox_performWhiteBalance">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
-                   <property name="text">
-                    <string>Perform white balance using color checker</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="0">
-                  <widget class="QGroupBox" name="group_scaleDetermination">
-                   <property name="title">
-                    <string>Determine image scale using known color patch sizes</string>
-                   </property>
-                   <property name="checkable">
-                    <bool>true</bool>
-                   </property>
-                   <layout class="QGridLayout" name="gridLayout_9">
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="label_26">
-                      <property name="text">
-                       <string>Color checker Type</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="1">
-                     <widget class="QComboBox" name="comboBox_crcType">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="currentIndex">
-                       <number>1</number>
-                      </property>
-                      <item>
-                       <property name="text">
-                        <string>CameraTrax 24 ColorCard (2&quot; x 3&quot;)</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>ISA ColorGauge Nano</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Tiffen / Kodak Q-13  (8&quot;)</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>X-Rite ColorChecker Passport</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>X-Rite ColorChecker Classic</string>
-                       </property>
-                      </item>
-                     </widget>
-                    </item>
-                    <item row="0" column="2">
-                     <spacer name="horizontalSpacer_7">
-                      <property name="orientation">
-                       <enum>Qt::Horizontal</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>40</width>
-                        <height>20</height>
-                       </size>
-                      </property>
-                     </spacer>
-                    </item>
-                    <item row="1" column="1" colspan="2">
-                     <widget class="QLabel" name="label_27">
-                      <property name="enabled">
-                       <bool>false</bool>
-                      </property>
-                      <property name="font">
-                       <font>
-                        <pointsize>10</pointsize>
-                        <italic>true</italic>
-                       </font>
-                      </property>
-                      <property name="text">
-                       <string>(scale determination assumes color checker is flat on the focal surface)</string>
-                      </property>
-                      <property name="wordWrap">
-                       <bool>true</bool>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QGroupBox" name="group_equipmentDetection">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="title">
-                 <string>Equipment detection</string>
-                </property>
-                <property name="checkable">
-                 <bool>false</bool>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_7">
-                 <property name="leftMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>3</number>
-                 </property>
-                 <item row="4" column="1">
-                  <layout class="QHBoxLayout" name="horizontalLayout">
-                   <item>
-                    <widget class="QLabel" name="label_2">
-                     <property name="enabled">
-                      <bool>true</bool>
-                     </property>
-                     <property name="text">
-                      <string>Approximate focal distance</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QDoubleSpinBox" name="doubleSpinBox_focalDistance">
-                     <property name="enabled">
-                      <bool>true</bool>
-                     </property>
-                     <property name="suffix">
-                      <string>cm</string>
-                     </property>
-                     <property name="minimum">
-                      <double>10.000000000000000</double>
-                     </property>
-                     <property name="maximum">
-                      <double>999.990000000000009</double>
-                     </property>
-                     <property name="value">
-                      <double>25.500000000000000</double>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <spacer name="horizontalSpacer_3">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>40</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                  </layout>
-                 </item>
-                 <item row="4" column="0">
-                  <widget class="QCheckBox" name="checkBox_lensCorrection">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
-                   <property name="text">
-                    <string>Perform Lens corrections</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QGroupBox" name="group_metaDataApplication">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="title">
-                 <string>Metadata application</string>
-                </property>
-                <property name="checkable">
-                 <bool>false</bool>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_19" columnstretch="0,3,0">
-                 <property name="leftMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>3</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>3</number>
-                 </property>
-                 <item row="1" column="1">
-                  <widget class="QPlainTextEdit" name="plainTextEdit_collectionName">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>50</height>
-                    </size>
-                   </property>
-                   <property name="tabChangesFocus">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="5" column="0">
-                  <widget class="QLabel" name="label_copywriteLicense">
-                   <property name="text">
-                    <string>Copywrite License:</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="label_collectionName">
-                   <property name="text">
-                    <string>Collection name:</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="1">
-                  <widget class="QPlainTextEdit" name="plainTextEdit_contactName">
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>50</height>
-                    </size>
-                   </property>
-                   <property name="tabChangesFocus">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="0">
-                  <widget class="QLabel" name="label_contactEmail">
-                   <property name="text">
-                    <string>Contact Email:</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="2">
-                  <spacer name="horizontalSpacer_10">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="label_collectionIURL">
-                   <property name="text">
-                    <string>Collection URL:</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="5" column="1">
-                  <widget class="QPlainTextEdit" name="plainTextEdit_copywriteLicense">
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>50</height>
-                    </size>
-                   </property>
-                   <property name="tabChangesFocus">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="1">
-                  <widget class="QPlainTextEdit" name="plainTextEdit_contactEmail">
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>50</height>
-                    </size>
-                   </property>
-                   <property name="inputMethodHints">
-                    <set>Qt::ImhEmailCharactersOnly|Qt::ImhMultiLine</set>
-                   </property>
-                   <property name="tabChangesFocus">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QLabel" name="label_contactName">
-                   <property name="text">
-                    <string>Contact name:</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="0" colspan="2">
-                  <widget class="QCheckBox" name="checkBox_metaDataApplication">
-                   <property name="text">
-                    <string>Apply metadata to images</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="1">
-                  <widget class="QPlainTextEdit" name="plainTextEdit_collectionURL">
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>50</height>
-                    </size>
-                   </property>
-                   <property name="inputMethodHints">
-                    <set>Qt::ImhMultiLine|Qt::ImhUrlCharactersOnly</set>
-                   </property>
-                   <property name="tabChangesFocus">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QGroupBox" name="groupBox_themes">
-                <property name="title">
-                 <string>Theme</string>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout_5">
-                 <item>
-                  <widget class="QRadioButton" name="value_DarkTheme">
-                   <property name="text">
-                    <string>Dark theme</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QRadioButton" name="value_LightTheme">
-                   <property name="text">
-                    <string>Default System Settings</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="label_23">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <pointsize>11</pointsize>
-                     <italic>true</italic>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>(changes will be applied the next time the program opens)</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_4">
-                <item>
-                 <spacer name="horizontalSpacer_4">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="pushButton_resetSettings">
-                  <property name="text">
-                   <string>Reset ALL Settings</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-             </layout>
             </widget>
-           </widget>
-          </item>
-         </layout>
+           </item>
+           <item row="2" column="1">
+            <widget class="QPushButton" name="pushButton_createNewProfile">
+             <property name="text">
+              <string>Create new Profile</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Current Profile:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="pushButton_editCurrentProfile">
+             <property name="text">
+              <string>Edit current profile</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="3" column="0" colspan="2">
+         <widget class="QGroupBox" name="groupBox_themes">
+          <property name="title">
+           <string>UI Theme</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <widget class="QRadioButton" name="value_DarkTheme">
+             <property name="text">
+              <string>Dark theme</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="value_LightTheme">
+             <property name="text">
+              <string>Default System Settings</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_23">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>11</pointsize>
+               <italic>true</italic>
+              </font>
+             </property>
+             <property name="text">
+              <string>(changes will be applied the next time the program opens)</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_5">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -2112,673 +819,23 @@
    </layout>
   </widget>
  </widget>
- <tabstops>
-  <tabstop>lineEdit_inputPath</tabstop>
-  <tabstop>pushButton_inputPath</tabstop>
-  <tabstop>group_keepUnalteredRaw</tabstop>
-  <tabstop>lineEdit_pathUnalteredRaw</tabstop>
-  <tabstop>pushButton_pathUnalteredRaw</tabstop>
-  <tabstop>lineEdit_pathProcessedTIFF</tabstop>
-  <tabstop>pushButton_pathProcessedTIFF</tabstop>
-  <tabstop>lineEdit_pathProcessedJpg</tabstop>
-  <tabstop>pushButton_pathProcessedJpg</tabstop>
-  <tabstop>lineEdit_pathProcessedPng</tabstop>
-  <tabstop>pushButton_pathProcessedPng</tabstop>
-  <tabstop>preferences_ScrollArea</tabstop>
-  <tabstop>group_barcodeDetection</tabstop>
-  <tabstop>group_renameByBarcode</tabstop>
-  <tabstop>group_colorCheckerDetection</tabstop>
-  <tabstop>group_verifyRotation</tabstop>
-  <tabstop>checkBox_performWhiteBalance</tabstop>
-  <tabstop>group_equipmentDetection</tabstop>
-  <tabstop>plainTextEdit_collectionName</tabstop>
-  <tabstop>plainTextEdit_copywriteLicense</tabstop>
-  <tabstop>monitor_scrollArea</tabstop>
-  <tabstop>plainTextEdit_contactEmail</tabstop>
-  <tabstop>plainTextEdit_contactName</tabstop>
-  <tabstop>plainTextEdit_collectionURL</tabstop>
- </tabstops>
  <resources>
   <include location="assets/assets.qrc"/>
  </resources>
  <connections>
   <connection>
-   <sender>comboBox_dupNamingPolicy</sender>
-   <signal>currentIndexChanged(QString)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>428</x>
-     <y>-260</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>503</x>
-     <y>29</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>comboBox_colorCheckerPosition</sender>
+   <sender>comboBox_technician</sender>
    <signal>currentTextChanged(QString)</signal>
    <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
+   <slot>update_metadata()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>435</x>
-     <y>178</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>255</x>
-     <y>28</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>group_verifyRotation</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>261</x>
-     <y>159</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>341</x>
-     <y>26</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>checkBox_performWhiteBalance</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>364</x>
-     <y>217</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>158</x>
-     <y>22</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>checkBox_lensCorrection</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>235</x>
-     <y>367</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>3</x>
-     <y>333</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>checkBox_metaDataApplication</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>372</x>
-     <y>426</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>5</x>
-     <y>379</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>plainTextEdit_collectionName</sender>
-   <signal>textChanged()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>631</x>
-     <y>457</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>631</x>
-     <y>322</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>plainTextEdit_collectionURL</sender>
-   <signal>textChanged()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>631</x>
-     <y>655</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>631</x>
-     <y>372</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>plainTextEdit_contactName</sender>
-   <signal>textChanged()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>631</x>
-     <y>853</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>631</x>
-     <y>431</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>plainTextEdit_contactEmail</sender>
-   <signal>textChanged()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>631</x>
-     <y>1051</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>631</x>
-     <y>490</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>plainTextEdit_copywriteLicense</sender>
-   <signal>textChanged()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>631</x>
-     <y>1249</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>631</x>
-     <y>533</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>group_keepUnalteredRaw</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>72</x>
-     <y>219</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>2</x>
-     <y>201</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>group_saveProcessedJpg</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>83</x>
-     <y>307</y>
+     <x>205</x>
+     <y>504</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
-     <y>273</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>group_saveProcessedTIFF</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>107</x>
-     <y>395</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>3</x>
-     <y>404</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>group_saveProcessedPng</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>100</x>
-     <y>489</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>2</x>
-     <y>496</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>lineEdit_inputPath</sender>
-   <signal>textChanged(QString)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>114</x>
-     <y>79</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>4</x>
-     <y>152</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>lineEdit_pathUnalteredRaw</sender>
-   <signal>textChanged(QString)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>114</x>
-     <y>167</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>6</x>
-     <y>232</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>lineEdit_pathProcessedJpg</sender>
-   <signal>textChanged(QString)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>114</x>
-     <y>255</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>4</x>
-     <y>320</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>lineEdit_pathProcessedTIFF</sender>
-   <signal>textChanged(QString)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>114</x>
-     <y>343</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>6</x>
-     <y>446</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>lineEdit_pathProcessedPng</sender>
-   <signal>textChanged(QString)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>114</x>
-     <y>431</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>3</x>
-     <y>544</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_inputPath</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setFolderPath()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>114</x>
-     <y>79</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>631</x>
-     <y>139</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_pathUnalteredRaw</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setFolderPath()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>114</x>
-     <y>167</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>631</x>
-     <y>250</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_pathProcessedJpg</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setFolderPath()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>114</x>
-     <y>255</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>631</x>
-     <y>357</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_pathProcessedTIFF</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setFolderPath()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>114</x>
-     <y>343</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>631</x>
-     <y>453</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_pathProcessedPng</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setFolderPath()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>114</x>
-     <y>431</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>631</x>
-     <y>558</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>lineEdit_catalogNumberPrefix</sender>
-   <signal>editingFinished()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>updateCatalogNumberPreviews()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>322</x>
-     <y>-298</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>631</x>
-     <y>209</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_catalogDigits</sender>
-   <signal>editingFinished()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>updateCatalogNumberPreviews()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>428</x>
-     <y>-297</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>631</x>
-     <y>192</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>comboBox_dupNamingPolicy</sender>
-   <signal>currentIndexChanged(QString)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>updateCatalogNumberPreviews()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>428</x>
-     <y>-260</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>631</x>
-     <y>240</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_selectTestImage</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>testFeatureCompatability()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>352</x>
-     <y>-375</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>631</x>
-     <y>116</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>group_renameByBarcode</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>updateCatalogNumberPreviews()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>290</x>
-     <y>-305</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>265</x>
-     <y>22</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>doubleSpinBox_focalDistance</sender>
-   <signal>editingFinished()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>547</x>
-     <y>365</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>631</x>
-     <y>288</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>checkBox_blurDetection</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>doubleSpinBox_blurThreshold</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>211</x>
-     <y>-9</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>292</x>
-     <y>22</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>checkBox_blurDetection</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>label_13</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>211</x>
-     <y>-9</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>211</x>
-     <y>22</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButton_colorCheckerLarge</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>184</x>
-     <y>123</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>2</x>
-     <y>263</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButton_colorCheckerSmall</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>108</x>
-     <y>123</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>4</x>
-     <y>307</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>toolButton_addPattern</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>489</x>
-     <y>-74</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>631</x>
-     <y>292</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>toolButton_removePattern</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>659</x>
-     <y>-74</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>631</x>
-     <y>346</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_resetSettings</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>reset_all_settings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>679</x>
-     <y>1576</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>604</x>
-     <y>547</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>comboBox_bcBackend</sender>
-   <signal>currentTextChanged(QString)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>428</x>
-     <y>-72</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>627</x>
-     <y>279</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_processMulti</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>process_image_directory()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>107</x>
-     <y>60</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>568</x>
-     <y>492</y>
+     <y>432</y>
     </hint>
    </hints>
   </connection>
@@ -2789,44 +846,12 @@
    <slot>process_image_selection()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>107</x>
-     <y>72</y>
+     <x>245</x>
+     <y>616</y>
     </hint>
     <hint type="destinationlabel">
      <x>573</x>
      <y>536</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>comboBox_technician</sender>
-   <signal>currentTextChanged(QString)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>update_metadata()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>113</x>
-     <y>78</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>4</x>
-     <y>432</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>lineEdit_taxonName</sender>
-   <signal>textEdited(QString)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>update_metadata()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>110</x>
-     <y>75</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>5</x>
-     <y>372</y>
     </hint>
    </hints>
   </connection>
@@ -2837,8 +862,8 @@
    <slot>update_metadata()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>110</x>
-     <y>75</y>
+     <x>207</x>
+     <y>426</y>
     </hint>
     <hint type="destinationlabel">
      <x>355</x>
@@ -2847,33 +872,113 @@
    </hints>
   </connection>
   <connection>
-   <sender>comboBox_crcType</sender>
-   <signal>currentTextChanged(QString)</signal>
+   <sender>pushButton_processMulti</sender>
+   <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>saveSettings()</slot>
+   <slot>process_image_directory()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>394</x>
-     <y>286</y>
+     <x>245</x>
+     <y>578</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>568</x>
+     <y>492</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lineEdit_taxonName</sender>
+   <signal>textEdited(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>update_metadata()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>207</x>
+     <y>388</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>372</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_editCurrentProfile</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>edit_current_profile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>243</x>
+     <y>134</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>713</x>
+     <y>130</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_deleteCurrentProfile</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>delete_current_profile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>403</x>
+     <y>134</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>709</x>
+     <y>156</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_createNewProfile</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>create_profile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>243</x>
+     <y>172</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>709</x>
+     <y>111</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_profiles</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>update_currently_selected_profile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>243</x>
+     <y>98</y>
     </hint>
     <hint type="destinationlabel">
      <x>707</x>
-     <y>347</y>
+     <y>82</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <slots>
   <slot>saveSettings()</slot>
-  <slot>setFolderPath()</slot>
-  <slot>updateCatalogNumberPreviews()</slot>
-  <slot>testFeatureCompatability()</slot>
   <slot>testFunction()</slot>
-  <slot>updateEqSettings()</slot>
   <slot>reset_all_settings()</slot>
   <slot>delete_previous_image()</slot>
   <slot>process_image_directory()</slot>
   <slot>process_image_selection()</slot>
   <slot>update_metadata()</slot>
+  <slot>edit_current_profile()</slot>
+  <slot>delete_current_profile()</slot>
+  <slot>create_profile()</slot>
+  <slot>update_currently_selected_profile()</slot>
  </slots>
 </ui>

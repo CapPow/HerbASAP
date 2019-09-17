@@ -182,7 +182,7 @@ class appWindow(QMainWindow):
         self.settings = QSettings('HerbASAP', 'HerbASAP')
         self.settings.setFallbacksEnabled(False)  # File only, no fallback to registry.
         # populate the settings based on the previous preferences
-        self.populateSettings()
+        self.populateSettings() # this also loads in the settings profile
         # restore window geometry & state.
         saved_win_geom = self.get("geometry", "")
         if saved_win_geom != '':
@@ -190,11 +190,6 @@ class appWindow(QMainWindow):
         saved_win_state = self.get("windowState", "")
         if saved_win_state != '':
             self.restoreGeometry(saved_win_state)
-        ###
-        # initalize the folder_watcher using current user inputs
-        ###
-        self.setup_Folder_Watcher()
-        self.setup_Output_Handler()
         ###
         # signaling for the to process image queue
         ###
@@ -207,28 +202,6 @@ class appWindow(QMainWindow):
         self.Timer_Emitter.timerStart.connect(self.start_timer)
         self.Timer_Emitter.timerStop.connect(self.stop_timer)
         self.timer_start = time.time()
-        ####
-        #set up bcRead & associated ui
-        ###
-        self.updateCatalogNumberPreviews()
-        patterns = self.retrieve_bc_patterns()
-        self.fill_patterns(patterns)
-        backend = self.mainWindow.comboBox_bcBackend.currentText()
-        self.bcRead = bcRead(patterns, backend, parent=self.mainWindow)
-        ###
-        #
-        ###
-        self.blurDetect = blurDetect(parent=self.mainWindow)
-        self.colorchipDetect = ColorchipRead(parent=self.mainWindow)
-        self.eqRead = eqRead(parent=self.mainWindow)
-        ###
-        # setup metadata reading/writing class
-        ###
-        self.metaRead = MetaRead(parent=self.mainWindow)
-        # populate self.static_exif
-        self.scaleRead = ScaleRead(parent=self.mainWindow)
-        
-        self.update_metadata()
        # Establish base working condition
         self.reset_working_variables()
         ###
@@ -247,8 +220,6 @@ class appWindow(QMainWindow):
         self.boss_thread.start(priority=QtCore.QThread.TimeCriticalPriority)
 
         # setup static UI buttons
-        self.mainWindow.toolButton_removePattern.pressed.connect(self.remove_pattern)
-        self.mainWindow.toolButton_addPattern.pressed.connect(self.add_pattern)
         self.mainWindow.toolButton_delPreviousImage.pressed.connect(self.delete_previous_image)
         self.mainWindow.toolButton_editTechnicians.pressed.connect(self.edit_technician_list)
 #       self.versionCheck()
@@ -352,9 +323,9 @@ class appWindow(QMainWindow):
                                   '*.nef', '*.NEF',
                                   '*.orf', '*.ORF']
 
-        lineEdit_inputPath = self.mainWindow.lineEdit_inputPath.text()
-        self.folder_watcher = Folder_Watcher(
-                lineEdit_inputPath, raw_image_patterns)
+        lineEdit_inputPath = self.profile.get('inputPath', '')
+        self.folder_watcher = Folder_Watcher(lineEdit_inputPath,
+                                             raw_image_patterns)
 
         self.folder_watcher.emitter.new_image_signal.connect(self.queue_image)
 
@@ -366,13 +337,9 @@ class appWindow(QMainWindow):
         if self.folder_watcher.is_monitoring:
             pushButton.setText('Begin folder monitoring')
             self.folder_watcher.stop()
-        else:  # if no input path, ask the user for it.
-            if self.mainWindow.lineEdit_inputPath.text() == '':
-                self.mainWindow.pushButton_inputPath.click()
-                # if they insist on an empty path give up on folder monitoring.
-                if self.mainWindow.lineEdit_inputPath.text() == '':
-                    return
-                self.setup_Folder_Watcher()
+        else:  # if somehow no input path, end early.
+            if self.profile.get('inputPath', '') == '':
+                return
             pushButton.setText(' Stop folder monitoring')
             self.folder_watcher.run()
             self.update_session_stats()
@@ -381,26 +348,12 @@ class appWindow(QMainWindow):
         """
         initiates self.save_output_handler with user inputs.
         """
-
-        group_keepUnalteredRaw = self.mainWindow.group_keepUnalteredRaw.isChecked()
-        lineEdit_pathUnalteredRaw = self.mainWindow.lineEdit_pathUnalteredRaw.text()
-
-        group_saveProcessedJpg = self.mainWindow.group_saveProcessedJpg.isChecked()
-        lineEdit_pathProcessedJpg = self.mainWindow.lineEdit_pathProcessedJpg.text()
-
-        group_saveProcessedTIFF = self.mainWindow.group_saveProcessedTIFF.isChecked()
-        lineEdit_pathProcessedTIFF = self.mainWindow.lineEdit_pathProcessedTIFF.text()
-
-        group_saveProcessedPng = self.mainWindow.group_saveProcessedPng.isChecked()
-        lineEdit_pathProcessedPng = self.mainWindow.lineEdit_pathProcessedPng.text()
         # each key is a file extension
         # each value is a tuple containing (bool if checked, dst path)
         self.output_map = {
-                '.tif': (group_saveProcessedTIFF, lineEdit_pathProcessedTIFF),
-                '.png': (group_saveProcessedPng, lineEdit_pathProcessedPng),
-                '.jpg': (group_saveProcessedJpg, lineEdit_pathProcessedJpg),
-                '.raw': (group_keepUnalteredRaw, lineEdit_pathUnalteredRaw)}
-        dupNamingPolicy = self.mainWindow.comboBox_dupNamingPolicy.currentText()
+                '.jpg': (self.get('saveProcessedJpg', False), self.get('pathProcessedJpg', '')),
+                '.raw': (self.get('keepUnalteredRaw', False), self.get('pathUnalteredRaw', ''))}
+        dupNamingPolicy = self.get('dupNamingPolicy')
 
         # establish self.suffix_lookup according to dupNamingPolicy
         # given an int (count of how many files have exact matching names,
@@ -422,11 +375,11 @@ class appWindow(QMainWindow):
                 # the program's name and verison number
                 'software': f'HerbASAP, {__version__} ({platform.system()})',
                 # settings metadata
-                'collectionName': self.mainWindow.plainTextEdit_collectionName.toPlainText(),
-                'collectionURL': self.mainWindow.plainTextEdit_collectionURL.toPlainText(),
-                'contactEmail': self.mainWindow.plainTextEdit_contactEmail.toPlainText(),
-                'contactName': self.mainWindow.plainTextEdit_contactName.toPlainText(),
-                'copywriteLicense': self.mainWindow.plainTextEdit_copywriteLicense.toPlainText(),
+                'collectionName': self.profile.get('collectionName', ''),
+                'collectionURL': self.profile.get('collectionURL', ''),
+                'contactEmail': self.profile.get('contactEmail', ''),
+                'contactName': self.profile.get('contactName', ''),
+                'copywriteLicense': self.profile.get('copywriteLicense', ''),
                 # session metadata
                 'scientificName': self.mainWindow.lineEdit_taxonName.text(),
                 'recordedBy': self.mainWindow.lineEdit_collectorName.text(),
@@ -810,14 +763,14 @@ class appWindow(QMainWindow):
         print(f'processing: {img_path}')
         # converting to greyscale
         grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-        if self.mainWindow.group_renameByBarcode.isChecked():
+        if self.profile.get('renameByBarcode', True):
             # retrieve the barcode values from image
             bc_worker_data = BCWorkerData(grey)
             bc_job = Job('bc_worker', bc_worker_data, self.bcRead.decodeBC)
             self.boss_thread.request_job(bc_job)
-        if self.mainWindow.checkBox_blurDetection.isChecked():
+        if self.profile.get('blurDetection', True):
             # test for bluryness
-            blur_threshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
+            blur_threshold = self.profile.get('blurThreshold', 0.045)
             blur_worker_data = BlurWorkerData(grey, blur_threshold, True)
             blur_job = Job('blur_worker',
                            blur_worker_data, self.blurDetect.blur_check)
@@ -825,18 +778,20 @@ class appWindow(QMainWindow):
         # reduce the image for the cnn, store it incase of problem dialogs
         original_size, reduced_img = self.scale_images_with_info(im)
         self.reduced_img = reduced_img
-        if self.mainWindow.group_colorCheckerDetection:
+        if self.profile.get('colorCheckerDetection', True):
             # colorchecker functions
             try:
-                if self.mainWindow.radioButton_colorCheckerSmall.isChecked():
+                crc_type = self.profile.get('crcType', "ISA ColorGauge Nano")
+                if crc_type == "ISA ColorGauge Nano":  # aka small crc
+                    partition_size = self.profile.get('partition_size', 125)
                     cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_small(reduced_img,
                                                                                                          original_size,
                                                                                                          stride_style='quick',
                                                                                                          high_precision=True,
-                                                                                                         partition_size=125)
+                                                                                                         partition_size=partition_size)
                 else:
                     cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
-                if self.mainWindow.group_scaleDetermination.isChecked():
+                if self.profile.get('scaleDetermination', True):
                     # scale determination code
                     # set a timer for scale
                     s_timer = time.time()
@@ -845,11 +800,8 @@ class appWindow(QMainWindow):
                     # usful for debugging
                     #cv2.imwrite('full_res_cc.jpg', full_res_cc)
                     # lookup the patch area and seed function
-                    patch_mm_area, seed_func, to_crop = self.scaleRead.scale_params.get(
-                            self.mainWindow.comboBox_crcType.currentText(),
-                            (10.0489, self.scaleRead.det_isa_nano_seeds, True))
-                    # if setting not found, use isa nano settings
-
+                    
+                    patch_mm_area, seed_func, to_crop = self.scaleRead.scale_params.get(crc_type)
                     self.ppmm, self.ppmm_uncertainty = self.scaleRead.find_scale(full_res_cc,
                                                                             patch_mm_area,
                                                                             seed_func,
@@ -877,11 +829,11 @@ class appWindow(QMainWindow):
                 self.process_from_queue()
                 return
 
-        if not self.mainWindow.checkBox_performWhiteBalance.isChecked():
+        if not self.profile.get('performWhiteBalance', True):
             self.cc_avg_white = None
 
-        if self.mainWindow.group_verifyRotation.isChecked():
-            user_def_loc = self.mainWindow.comboBox_colorCheckerPosition.currentText()
+        if self.profile.get('verifyRotation', True):
+            user_def_loc = self.profile.get('colorCheckerPosition', 'Upper right')
             quad_map = ['Upper right',
                         'Lower right',
                         'Lower left',
@@ -901,9 +853,9 @@ class appWindow(QMainWindow):
         # add the (mostly) corrected image to the preview
         # equipment corrections remain. let user look at this while that runs.
         self.update_preview_img(self.im)
-        if self.mainWindow.checkBox_lensCorrection.isChecked():
+        if self.profile.get('lensCorrection', True):
             # equipment corrections
-            cm_distance = self.mainWindow.doubleSpinBox_focalDistance.value()
+            cm_distance = self.profile.get('focalDistance', 25.5)
             m_distance = round(cm_distance / 100, 5)
             eq_worker_data = EQWorkerData(self.im, self.img_path, m_distance)
             eq_job = Job('eq_worker', eq_worker_data, self.eqRead.lensCorrect)
@@ -1166,163 +1118,130 @@ class appWindow(QMainWindow):
             raise  # Pass this up to the process function for halting
         return im
 
-    def testFeatureCompatability(self):
+    def create_profile(self):
         """
-        called by the "pushButton_selectTestImage."
-
-        given image path input from the user, calls testFeature() for
-        each process class. Enabling passing groups, while disabling
-        failing groups.
-
-        Ideally, the user will select an example image from their
-        imaging setup and the available features will become available.
+        Called by user, or if no profiles are present on start up. Creates a 
+        settings profile.
         """
         # be sure we start with a clean slate
+        self.reset_working_variables()
+        # If folder monitoring is on turn it off
+        try:
+            if self.folder_watcher.is_monitoring:
+                self.toggle_folder_monitoring()
+        except AttributeError:
+            # may be first time the program opened
+            pass
+        sd = SettingsWizard(parent=self)
+        sd.run_wizard()
 
+    def edit_current_profile(self):
+        """
+        calls the setupWizard to edit the currently selected profile
+        """
+        # be sure we start with a clean slate
         self.reset_working_variables()
         # If folder monitoring is on turn it off
         if self.folder_watcher.is_monitoring:
             self.toggle_folder_monitoring()
-        sd = SettingsWizard()
+
+        selectedProfile = self.mainWindow.comboBox_profiles.currentText()
+        # first get the profiles
+        profiles = self.get('profiles', {})
+        # then get the selected profiles
+        profile = profiles.get(selectedProfile, {})
+        profile['profileName'] = selectedProfile
+        sd = SettingsWizard(wiz_dict=profile, parent=self)
         sd.run_wizard()
-#        original_size, reduced_img = self.scale_images_with_info(im)
-#        grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-#        bcStatus = self.bcRead.testFeature(grey)
-#        if not bcStatus:
-#            # if first try fails, swap backend and retry
-#            backend = self.mainWindow.comboBox_bcBackend.currentText()
-#            if backend == 'zbar':
-#                backend = 'libdmtx'
-#                self.bcRead.backend = backend
-#            elif backend == 'libdmtx':
-#                backend = 'zbar'
-#                self.bcRead.backend = backend
-#                # try with alternative backend
-#            print(f'trying with {backend}')
-#            bcStatus = self.bcRead.testFeature(grey)
-#            if bcStatus:  # if it worked, change the comboBox
-#                self.populateQComboBoxSettings(self.mainWindow.comboBox_bcBackend, backend)
-#        try:
-#            blurStatus = self.blurDetect.testFeature(grey)
-#        except Exception as e:
-#            blurStatus = False
-#            print('blurStatus returned exception:')
-#            print(e)
-#        try:
-#            # If the size determiner becomes more useful we can use it to make this choice
-#            # for now iterate over both big and small options.
-#            for cc_size, ui_radio_element in {'small':self.mainWindow.radioButton_colorCheckerSmall,
-#                                              'big':self.mainWindow.radioButton_colorCheckerLarge}.items():
-#                
-#                ccStatus, cropped_img = self.colorchipDetect.test_feature(reduced_img, original_size, cc_size)
-#                # if result seems appropriate, use the image dialog box to ask
-#                # the user if it properly detected the color chip.
-#                if ccStatus:
-#                    mb = ImageDialog(cropped_img)
-#                    if mb.exec():
-#                        ccStatus = True
-#                        ui_radio_element.setChecked(True)
-#                        break
-#                    else:
-#                        ui_radio_element.setChecked(False)
-#            else:  # if the user agrees to neither, then deactivate cc functions.
-#                ccStatus = False
-#                
-#        except Exception as e:
-#            ccStatus = False
-#            print('ccStatus returned exception:')
-#            print(e)
-#        try:
-#            eqStatus = self.eqRead.testFeature(imgPath)
-#        except Exception as e:
-#            eqStatus = False
-#            print('eqStatus returned exception:')
-#            print(e)
-        # each relevant feature, and the associated status
-#        eqStatus = True
-#        features = {self.mainWindow.group_barcodeDetection: bcStatus,
-#                    self.mainWindow.group_renameByBarcode: bcStatus,
-#                    self.mainWindow.group_blurDetection: blurStatus,
-#                    self.mainWindow.group_colorCheckerDetection: ccStatus,
-#                    self.mainWindow.group_verifyRotation: ccStatus,
-#                    self.mainWindow.checkBox_performWhiteBalance: ccStatus,
-#                    self.mainWindow.groupBox_colorCheckerSize: ccStatus,
-#                    self.mainWindow.groupBox_scaleDetermination: ccStatus,
-#                    self.mainWindow.group_equipmentDetection: eqStatus,
-#                    self.mainWindow.checkBox_lensCorrection: eqStatus}
-#
-#        for feature, status in features.items():
-#            feature.setEnabled(status)
-#            # if not status:
-#            feature.setChecked(status)
-#
-#        # store the discovered settings
-#        self.saveSettings()
-#        # reset working variables
-#        self.reset_working_variables()
-#        # restart the folder watcher with any changes made
-#        self.setup_Folder_Watcher()
 
-    def fill_patterns(self, joinedPattern):
+    def delete_current_profile(self):
         """
-        Populates the listWidget_patterns with saved patterns.
+        removes the currently selected profile (after asking)
         """
-        #patterns = self.retrieve_bc_patterns()
-        patterns = joinedPattern.split('|')
-        listWidget_patterns = self.mainWindow.listWidget_patterns
-        listWidget_patterns.clear()
-        for i, pattern in enumerate(patterns):
-            # save the item
-            listWidget_patterns.addItem(pattern)
-            # now that it exists set the flag as editable
-            item = listWidget_patterns.item(i)
-            item.setFlags(item.flags() | Qt.ItemIsEditable)
-
-    def add_pattern(self):
-        """
-        called when toolButton_addPattern is pressed
-        """
-        prefix = self.mainWindow.lineEdit_catalogNumberPrefix.text()
-        digits = int(self.mainWindow.spinBox_catalogDigits.value())
-        if digits == 0:
-            collRegEx = rf'^({prefix}.*)\D*'
-        else:
-            collRegEx = rf'^({prefix}\d{{{digits}}})\D*'
-        try:  # test compile the new pattern
-            re.compile(collRegEx)
-        except re.error:
-            notice_title = 'Regex Pattern Error'
-            notice_text = f'Warning, improper regex pattern.'
-            detail_text = f'Regex patterns failed to compile.\n{collRegEx}'
-            self.userNotice(notice_text, notice_title, detail_text)
+        # identify the selected profile
+        selectedProfile = self.mainWindow.comboBox_profiles.currentText()
+        if selectedProfile == '':
+            # if it is empty, exit early.
             return
-        listWidget_patterns = self.mainWindow.listWidget_patterns
-        listWidget_patterns.addItem(collRegEx)
-        item_pos = listWidget_patterns.count() - 1
-        item = listWidget_patterns.item(item_pos)
-        item.setFlags(item.flags() | Qt.ItemIsEditable)
-        self.set_bc_pattern()
 
-    def remove_pattern(self):
-        """
-        called when toolButton_removePattern is pressed
-        """
-        listWidget_patterns = self.mainWindow.listWidget_patterns
-        selection = listWidget_patterns.currentRow()
-        item = listWidget_patterns.takeItem(selection)
-        item = None
-        self.set_bc_pattern()
+        mb_title = f'PERMANENTLY remove profile?'
+        mb_text = f'PERMANENTLY remove the profile named {selectedProfile}?'
+        mb = self.userAsk(text=mb_text, title=mb_title)
+        if mb:
+            profiles = self.get('profiles', {})
+            profiles.pop(selectedProfile, None)
+            self.setValue('profiles', profiles)
 
-    def retrieve_bc_patterns(self):
+    def update_profile_settings(self):
         """
-        harvests all pattern strings in the listWidget_patterns and returns
-        them as a unique "|" joined set
+        called upon load or after changes are made using the settings wizard.
+        Updates the appropriate classes with potentially new information.
         """
-        listWidget_patterns = self.mainWindow.listWidget_patterns
-        # is there really no way to get everything from a listWidget?
-        patterns = listWidget_patterns.findItems('', Qt.MatchContains)
-        patterns = "|".join(set(x.text() for x in patterns))
-        return patterns
+        selected_profile = self.mainWindow.comboBox_profiles.currentText()
+        # first get the profiles
+        profiles = self.get('profiles', {})
+        # then get the selected profiles
+        profile = profiles.get(selected_profile, {})
+        # store the profile as a class variable
+        self.profile = profile
+
+        ###
+        # initalize the folder_watcher using current user inputs
+        ###
+        self.setup_Folder_Watcher()
+        self.setup_Output_Handler()
+        ####
+        #set up bcRead
+        ###
+        patterns = self.profile.get('patterns', '')
+        backend = self.profile.get('bcBackend', 'zbar')
+        self.bcRead = bcRead(patterns, backend, parent=self.mainWindow)
+        # populate self.static_exif
+        self.scaleRead = ScaleRead(parent=self.mainWindow)
+        ###
+        # misc feature classes
+        ###
+        self.blurDetect = blurDetect(parent=self.mainWindow)
+        self.colorchipDetect = ColorchipRead(parent=self.mainWindow)
+        self.eqRead = eqRead(parent=self.mainWindow)
+        ###
+        # setup metadata reading/writing class
+        ###
+        self.metaRead = MetaRead(parent=self.mainWindow)
+        self.update_metadata()
+
+    def update_currently_selected_profile(self, selected_profile=False):
+        """
+        used to store the currently selected profile in settings
+        """
+        if not selected_profile:
+            selected_profile = self.mainWindow.comboBox_profiles.currentText()
+        self.setValue('selected_profile', selected_profile)
+        
+    def populate_profile_list(self):
+        """
+        populates the profiles QCombobox with the stored profiles.
+        """
+    
+        # identify the target comboBox
+        profile_comboBox = self.mainWindow.comboBox_profiles
+        # clear current items in the list
+        profile_comboBox.clear() 
+        # populate the list
+        nameList = list(self.get('profiles', {}).keys())
+        # if the list of profile names is empty, force the wizard.
+        if nameList == []:
+            # assign 'results' to x so that it waits on the wizard to finish.
+            x = self.create_profile()
+            return
+        profile_comboBox.addItems(nameList)
+        previously_selected_profile = self.get('selected_profile', False)
+        if not previously_selected_profile:
+            # if somehow has profiles and no previously selected, use 1st found
+            previously_selected_profile = nameList[0]
+        self.mainWindow.comboBox_profiles.setCurrentText(previously_selected_profile)
+        # update it in settings
+        self.update_currently_selected_profile()
 
     def set_bc_pattern(self):
         """ harvests all pattern strings in the listWidget_patterns, joins
@@ -1336,54 +1255,6 @@ class appWindow(QMainWindow):
             notice_text = f'Warning, improper regex pattern.'
             detail_text = f'Regex patterns failed to compile.\n{patterns}'
             self.userNotice(notice_text, notice_title, detail_text)
-
-    def updateCatalogNumberPreviews(self):
-        """ called when a change is made to any of the appropriate fields in
-        barcode detection group. Updates the example preview labels"""
-
-        # skip everything if the group is not enabled.
-        if not self.mainWindow.group_renameByBarcode.isEnabled():
-            return
-        # recompile the regexPattern
-        try:
-            prefix = self.lineEdit_catalogNumberPrefix.text()
-            digits = int(self.spinBox_catalogDigits.value())
-        except AttributeError:
-            # bcRead may not have been imported yet
-            pass
-
-        # update bc pattern preview
-        prefix = self.mainWindow.lineEdit_catalogNumberPrefix.text()
-        digits = int(self.mainWindow.spinBox_catalogDigits.value())
-        if digits == 0:
-            startingNum = '(anything)'    
-        else:
-            startingNum = ''.join(str(x) for x in list(range(digits)))
-            startingNum = startingNum.zfill(digits)  # fill in leading zeroes
-        previewText = f'{prefix}{startingNum}'  # assemble the preview string.
-        #self.mainWindow.label_previewDisplay.setText(previewText) # set it
-        # update dup naming preview
-        self.setup_Output_Handler()
-        dupPreviewEnd = self.suffix_lookup(1)
-        dupPreviewText = f'{previewText}{dupPreviewEnd}'
-        self.mainWindow.label_dupPreviewDisplay.setText(dupPreviewText) # set it
-
-    def setFolderPath(self):
-        """ Called by all of the "Browse" buttons in Image Location Tab.
-        Assigns selected folder name to the associated lineEdit.
-        Uses hacky methods to lineEdit associated to button."""
-
-        # this only works with strict object naming conventions.
-        # get name of button pressed
-        buttonPressed = self.sender().objectName().split('_')[-1]
-        # use string methods to get the associated lineEdit name
-        # use eval method to convert string to variable.
-        targetField = eval(f'self.mainWindow.lineEdit_{buttonPressed}')
-        targetDir = QtWidgets.QFileDialog.getExistingDirectory(
-                None, 'Select a folder:', QtCore.QDir.homePath(),
-                QtWidgets.QFileDialog.ShowDirsOnly)
-        if targetDir != '':
-            targetField.setText(targetDir)
 
     def userAsk(self, text, title='', detailText=None):
         """ a general user dialog with yes / cancel options"""
@@ -1426,9 +1297,6 @@ class appWindow(QMainWindow):
         return reply
 
     # Functions related to the saving and retrieval of preference settings
-    def has(self, key):
-        return self.settings.contains(key)
-
     def setValue(self, key, value):
         return self.settings.setValue(key, value)
 
@@ -1447,23 +1315,6 @@ class appWindow(QMainWindow):
         index = obj.findText(value)
         obj.setCurrentIndex(index)
 
-    def convertCheckState(self, stringState):
-        """
-        given a string either "true" or "false" returns the proper
-        Qt.CheckState
-        """
-        if str(stringState).lower() != 'true':
-            return Qt.Unchecked
-        else:
-            return Qt.Checked
-
-    def convertEnabledState(self, stringState):
-        """ given a string either "true" or "false" returns the bool"""
-        if str(stringState).lower() != 'true':
-            return False
-        else:
-            return True
-
     def populateSettings(self):
         """
         Uses self.settings to populate the preferences widget's selections
@@ -1474,125 +1325,22 @@ class appWindow(QMainWindow):
         children = self.mainWindow.tabWidget.findChildren(QObject)
         [x.blockSignals(True) for x in children]
 
-        # populate listWidget_patterns        
-        self.fill_patterns(self.get('joinedPattern', ''))
-
         # populate technican_list
         self.populate_technician_list()
+        # populate the profile list
+        self.populate_profile_list()
+        # break the current profile settings out as a class variable
+        self.update_profile_settings()
 
         # QComboBox
-        comboBox_colorCheckerPosition = self.get('comboBox_colorCheckerPosition', 'Upper right')
-        self.populateQComboBoxSettings( self.mainWindow.comboBox_colorCheckerPosition, comboBox_colorCheckerPosition)
-        comboBox_dupNamingPolicy = self.get('comboBox_dupNamingPolicy', 'LOWER case letter')
-        self.populateQComboBoxSettings( self.mainWindow.comboBox_dupNamingPolicy, comboBox_dupNamingPolicy)
-        comboBox_bcBackend = self.get('comboBox_bcBackend', 'zbar')
-        self.populateQComboBoxSettings( self.mainWindow.comboBox_bcBackend, comboBox_bcBackend)
-        comboBox_crcType = self.get('comboBox_crcType', 'ISA ColorGauge Nano')
-        self.populateQComboBoxSettings( self.mainWindow.comboBox_crcType, comboBox_crcType)
-
-        # QLineEdit
-        lineEdit_catalogNumberPrefix = self.get('lineEdit_catalogNumberPrefix','')
-        self.mainWindow.lineEdit_catalogNumberPrefix.setText(lineEdit_catalogNumberPrefix)
-        lineEdit_inputPath = self.get('lineEdit_inputPath','')
-        self.mainWindow.lineEdit_inputPath.setText(lineEdit_inputPath)
-        lineEdit_pathUnalteredRaw = self.get('lineEdit_pathUnalteredRaw','')
-        self.mainWindow.lineEdit_pathUnalteredRaw.setText(lineEdit_pathUnalteredRaw)
-        lineEdit_pathProcessedJpg = self.get('lineEdit_pathProcessedJpg','')
-        self.mainWindow.lineEdit_pathProcessedJpg.setText(lineEdit_pathProcessedJpg)
-        lineEdit_pathProcessedTIFF = self.get('lineEdit_pathProcessedTIFF','')
-        self.mainWindow.lineEdit_pathProcessedTIFF.setText(lineEdit_pathProcessedTIFF)
-        lineEdit_pathProcessedPng = self.get('lineEdit_pathProcessedPng','')
-        self.mainWindow.lineEdit_pathProcessedPng.setText(lineEdit_pathProcessedPng)
-
-        # QPlainTextEdit
-        plainTextEdit_collectionName = self.get('plainTextEdit_collectionName','')
-        self.mainWindow.plainTextEdit_collectionName.setPlainText(plainTextEdit_collectionName)
-        plainTextEdit_collectionURL = self.get('plainTextEdit_collectionURL','')
-        self.mainWindow.plainTextEdit_collectionURL.setPlainText(plainTextEdit_collectionURL)
-        plainTextEdit_contactEmail = self.get('plainTextEdit_contactEmail','')
-        self.mainWindow.plainTextEdit_contactEmail.setPlainText(plainTextEdit_contactEmail)
-        plainTextEdit_contactName = self.get('plainTextEdit_contactName','')
-        self.mainWindow.plainTextEdit_contactName.setPlainText(plainTextEdit_contactName)
-        plainTextEdit_copywriteLicense = self.get('plainTextEdit_copywriteLicense','')
-        self.mainWindow.plainTextEdit_copywriteLicense.setPlainText(plainTextEdit_copywriteLicense)
-
-        # QCheckBox
-        # note: the fallback value of '' will trigger an unchecked condition in self.convertCheckState()
-        checkBox_performWhiteBalance = self.convertCheckState(self.get('checkBox_performWhiteBalance','true'))
-        self.mainWindow.checkBox_performWhiteBalance.setCheckState(checkBox_performWhiteBalance)
-        checkBox_lensCorrection = self.convertCheckState(self.get('checkBox_lensCorrection','true'))
-        self.mainWindow.checkBox_lensCorrection.setCheckState(checkBox_lensCorrection)
-        checkBox_metaDataApplication = self.convertCheckState(self.get('checkBox_metaDataApplication','true'))
-        self.mainWindow.checkBox_metaDataApplication.setCheckState(checkBox_metaDataApplication)
-        checkBox_blurDetection = self.convertCheckState(self.get('checkBox_blurDetection','true'))
-        self.mainWindow.checkBox_blurDetection.setCheckState(checkBox_blurDetection)
-        
-        # QCheckBox (enable state)
-        checkBox_performWhiteBalance_enabled = self.convertEnabledState(self.get('checkBox_performWhiteBalance_enabled', 'true'))
-        self.mainWindow.checkBox_performWhiteBalance.setEnabled(checkBox_performWhiteBalance_enabled)
-        checkBox_lensCorrection_enabled = self.convertEnabledState(self.get('checkBox_lensCorrection_enabled', 'true'))
-        self.mainWindow.checkBox_lensCorrection.setEnabled(checkBox_lensCorrection_enabled)
-
-        # QGroupbox (checkstate)
-        #group_renameByBarcode = self.get('group_renameByBarcode','')
-        group_renameByBarcode = self.convertCheckState(self.get('group_renameByBarcode','true'))
-        self.mainWindow.group_renameByBarcode.setChecked(group_renameByBarcode)
-        group_keepUnalteredRaw = self.convertCheckState(self.get('group_keepUnalteredRaw','false'))
-        self.mainWindow.group_keepUnalteredRaw.setChecked(group_keepUnalteredRaw)
-        group_saveProcessedJpg = self.convertCheckState(self.get('group_saveProcessedJpg','false'))
-        self.mainWindow.group_saveProcessedJpg.setChecked(group_saveProcessedJpg)
-        group_saveProcessedTIFF = self.convertCheckState(self.get('group_saveProcessedTIFF','false'))
-        self.mainWindow.group_saveProcessedTIFF.setChecked(group_saveProcessedTIFF)
-        group_saveProcessedPng = self.convertCheckState(self.get('group_saveProcessedPng','false'))
-        self.mainWindow.group_saveProcessedPng.setChecked(group_saveProcessedPng)
-        group_verifyRotation_checkstate = self.convertCheckState(self.get('group_verifyRotation_checkstate', 'false'))
-        self.mainWindow.group_verifyRotation .setChecked(group_verifyRotation_checkstate)
-        
-
-        # QGroupbox (enablestate)
-        group_renameByBarcode_enabled = self.convertEnabledState(self.get('group_renameByBarcode_enabled','true'))
-        self.mainWindow.group_renameByBarcode.setEnabled(group_renameByBarcode_enabled)
-        group_barcodeDetection_enabled = self.convertEnabledState(self.get('group_barcodeDetection_enabled','true'))
-        self.mainWindow.group_barcodeDetection.setEnabled(group_barcodeDetection_enabled)
-        group_colorCheckerDetection = self.convertEnabledState(self.get('group_colorCheckerDetection','true'))
-        self.mainWindow.group_colorCheckerDetection.setEnabled(group_colorCheckerDetection)
-        groupBox_colorCheckerSize = self.convertEnabledState(self.get('groupBox_colorCheckerSize','true'))
-        self.mainWindow.groupBox_colorCheckerSize.setEnabled(groupBox_colorCheckerSize)
-        group_verifyRotation = self.convertEnabledState(self.get('group_verifyRotation','true'))
-        self.mainWindow.group_verifyRotation.setEnabled(group_verifyRotation)
-        group_equipmentDetection = self.convertEnabledState(self.get('group_equipmentDetection','true'))
-        self.mainWindow.group_equipmentDetection.setEnabled(group_equipmentDetection)
-        group_scaleDetermination = self.convertEnabledState(self.get('group_scaleDetermination', 'true'))
-        self.mainWindow.group_scaleDetermination.setEnabled(group_scaleDetermination)
-        # metaDataApplication should always be an option
-        #group_metaDataApplication = self.convertEnabledState(self.get('group_metaDataApplication','true'))
-        #self.mainWindow.group_metaDataApplication.setEnabled(group_metaDataApplication)
-
-        # QSpinBox
-        spinBox_catalogDigits = int(self.get('spinBox_catalogDigits', 0))
-        self.mainWindow.spinBox_catalogDigits.setValue(spinBox_catalogDigits)
-
-        # QDoubleSpinBox
-        doubleSpinBox_focalDistance = float(self.get('doubleSpinBox_focalDistance', 25.5))
-        self.mainWindow.doubleSpinBox_focalDistance.setValue(doubleSpinBox_focalDistance)
-        doubleSpinBox_blurThreshold = float(self.get('doubleSpinBox_blurThreshold', 0.045))
-        self.mainWindow.doubleSpinBox_blurThreshold.setValue(doubleSpinBox_blurThreshold)
-
-        # slider
-        #value_LogoScaling = int(self.get('value_LogoScaling', 100))
-        #self.settings.value_LogoScaling.setValue(value_LogoScaling)
-        #self.scalingChanged(value_LogoScaling)
+        comboBox_profiles = self.get('selected_profile', '')
+        self.populateQComboBoxSettings( self.mainWindow.comboBox_profiles, comboBox_profiles)
 
         # radiobutton
         value_DarkTheme = self.get('value_DarkTheme', False)
         self.mainWindow.value_DarkTheme.setChecked(value_DarkTheme)
         value_LightTheme = self.get('value_LightTheme', True)
         self.mainWindow.value_LightTheme.setChecked(value_LightTheme)
-        radioButton_colorCheckerSmall =  self.convertCheckState(self.get('radioButton_colorCheckerSmall', 'true'))
-        self.mainWindow.radioButton_colorCheckerSmall.setChecked(radioButton_colorCheckerSmall)
-        radioButton_colorCheckerLarge =  self.convertCheckState(self.get('radioButton_colorCheckerLarge', 'false'))
-        self.mainWindow.radioButton_colorCheckerLarge.setChecked(radioButton_colorCheckerLarge)
-
 
         # clean up
         # allow signals again
@@ -1611,124 +1359,16 @@ class appWindow(QMainWindow):
 #            date_versionCheck = ""
 #        self.setValue('date_versionCheck', date_versionCheck)
 
-        # save the stored barcode patterns
-        self.settings.setValue('joinedPattern', self.retrieve_bc_patterns())
-        # be sure the bcRead backend is updated
-        self.bcRead.backend = self.mainWindow.comboBox_bcBackend.currentText()
-
         # QComboBox
-        comboBox_colorCheckerPosition = self.mainWindow.comboBox_colorCheckerPosition.currentText()
-        self.settings.setValue('comboBox_colorCheckerPosition', comboBox_colorCheckerPosition)
-        comboBox_dupNamingPolicy = self.mainWindow.comboBox_dupNamingPolicy.currentText()
-        self.settings.setValue('comboBox_dupNamingPolicy', comboBox_dupNamingPolicy)
-        comboBox_bcBackend = self.mainWindow.comboBox_bcBackend.currentText()
-        self.settings.setValue('comboBox_bcBackend', comboBox_bcBackend)
-        comboBox_crcType = self.mainWindow.comboBox_crcType.currentText()
-        self.settings.setValue('comboBox_crcType', comboBox_crcType)
-
-        # QLineEdit
-        lineEdit_catalogNumberPrefix = self.mainWindow.lineEdit_catalogNumberPrefix.text()
-        self.settings.setValue('lineEdit_catalogNumberPrefix', lineEdit_catalogNumberPrefix)
-        lineEdit_inputPath = self.mainWindow.lineEdit_inputPath.text()
-        self.settings.setValue('lineEdit_inputPath', lineEdit_inputPath)
-        lineEdit_pathUnalteredRaw = self.mainWindow.lineEdit_pathUnalteredRaw.text()
-        self.settings.setValue('lineEdit_pathUnalteredRaw', lineEdit_pathUnalteredRaw)
-        lineEdit_pathProcessedJpg = self.mainWindow.lineEdit_pathProcessedJpg.text()
-        self.settings.setValue('lineEdit_pathProcessedJpg', lineEdit_pathProcessedJpg)
-        lineEdit_pathProcessedTIFF = self.mainWindow.lineEdit_pathProcessedTIFF.text()
-        self.settings.setValue('lineEdit_pathProcessedTIFF', lineEdit_pathProcessedTIFF)
-        lineEdit_pathProcessedPng = self.mainWindow.lineEdit_pathProcessedPng.text()
-        self.settings.setValue('lineEdit_pathProcessedPng', lineEdit_pathProcessedPng)
-
-        # QPlainTextEdit
-        plainTextEdit_collectionName = self.mainWindow.plainTextEdit_collectionName.toPlainText()
-        self.settings.setValue('plainTextEdit_collectionName', plainTextEdit_collectionName)
-        plainTextEdit_collectionURL = self.mainWindow.plainTextEdit_collectionURL.toPlainText()
-        self.settings.setValue('plainTextEdit_collectionURL', plainTextEdit_collectionURL)
-        plainTextEdit_contactEmail = self.mainWindow.plainTextEdit_contactEmail.toPlainText()
-        self.settings.setValue('plainTextEdit_contactEmail', plainTextEdit_contactEmail)
-        plainTextEdit_contactName = self.mainWindow.plainTextEdit_contactName.toPlainText()
-        self.settings.setValue('plainTextEdit_contactName', plainTextEdit_contactName)
-        plainTextEdit_copywriteLicense = self.mainWindow.plainTextEdit_copywriteLicense.toPlainText()
-        self.settings.setValue('plainTextEdit_copywriteLicense', plainTextEdit_copywriteLicense)
-
-        # QCheckBox
-        checkBox_performWhiteBalance = self.mainWindow.checkBox_performWhiteBalance.isChecked()
-        self.settings.setValue('checkBox_performWhiteBalance', checkBox_performWhiteBalance)
-        checkBox_performWhiteBalance = self.mainWindow.checkBox_performWhiteBalance.isChecked()
-        self.settings.setValue('checkBox_performWhiteBalance', checkBox_performWhiteBalance)
-        checkBox_lensCorrection = self.mainWindow.checkBox_lensCorrection.isChecked()
-        self.settings.setValue('checkBox_lensCorrection', checkBox_lensCorrection)
-        checkBox_metaDataApplication = self.mainWindow.checkBox_metaDataApplication.isChecked()
-        self.settings.setValue('checkBox_metaDataApplication', checkBox_metaDataApplication)
-        checkBox_blurDetection = self.mainWindow.checkBox_blurDetection.isChecked()
-        self.settings.setValue('checkBox_blurDetection', checkBox_blurDetection)
-
-        # QCheckBox (enable state)
-        checkBox_performWhiteBalance_enabled = self.mainWindow.checkBox_performWhiteBalance.isEnabled()
-        self.settings.setValue('checkBox_performWhiteBalance_enabled', checkBox_performWhiteBalance_enabled)
-        checkBox_lensCorrection_enabled = self.mainWindow.checkBox_lensCorrection.isEnabled()
-        self.settings.setValue('checkBox_lensCorrection_enabled', checkBox_lensCorrection_enabled)
-
-        # QGroupbox (checkstate)
-        group_renameByBarcode = self.mainWindow.group_renameByBarcode.isChecked()
-        self.settings.setValue('group_renameByBarcode',group_renameByBarcode)
-        group_keepUnalteredRaw = self.mainWindow.group_keepUnalteredRaw.isChecked()
-        self.settings.setValue('group_keepUnalteredRaw',group_keepUnalteredRaw)
-        group_saveProcessedTIFF = self.mainWindow.group_saveProcessedTIFF.isChecked()
-        self.settings.setValue('group_saveProcessedTIFF',group_saveProcessedTIFF)
-        group_saveProcessedJpg = self.mainWindow.group_saveProcessedJpg.isChecked()
-        self.settings.setValue('group_saveProcessedJpg',group_saveProcessedJpg)
-        group_saveProcessedPng = self.mainWindow.group_saveProcessedPng.isChecked()
-        self.settings.setValue('group_saveProcessedPng',group_saveProcessedPng)
-        group_verifyRotation_checkstate = self.mainWindow.group_verifyRotation.isChecked()
-        self.settings.setValue('group_verifyRotation_checkstate', group_verifyRotation_checkstate)
-        group_scaleDetermination = self.mainWindow.group_scaleDetermination.isChecked()
-        self.settings.setValue('group_scaleDetermination', group_scaleDetermination)
-        
-        
-        # QGroupbox (enablestate)
-        group_renameByBarcode_enabled = self.mainWindow.group_renameByBarcode.isEnabled()
-        self.settings.setValue('group_renameByBarcode_enabled', group_renameByBarcode_enabled)
-        group_barcodeDetection_enabled = self.mainWindow.group_barcodeDetection.isEnabled()
-        self.settings.setValue('group_barcodeDetection_enabled', group_barcodeDetection_enabled)
-        group_colorCheckerDetection = self.mainWindow.group_colorCheckerDetection.isEnabled()
-        self.settings.setValue('group_colorCheckerDetection',group_colorCheckerDetection)
-        groupBox_colorCheckerSize = self.mainWindow.groupBox_colorCheckerSize.isEnabled()
-        self.settings.setValue('groupBox_colorCheckerSize',groupBox_colorCheckerSize)
-        group_verifyRotation = self.mainWindow.group_verifyRotation.isEnabled()
-        self.settings.setValue('group_verifyRotation',group_verifyRotation)
-        group_equipmentDetection = self.mainWindow.group_equipmentDetection.isEnabled()
-        self.settings.setValue('group_equipmentDetection',group_equipmentDetection)
-        group_scaleDetermination_enabled = self.mainWindow.group_scaleDetermination.isEnabled()
-        self.settings.setValue('group_scaleDetermination_enabled', group_scaleDetermination_enabled)
-        # metaDataApplication should always be an option
-        #group_metaDataApplication = self.mainWindow.group_metaDataApplication.isEnabled()
-        #self.settings.setValue('group_metaDataApplication',group_metaDataApplication)
-
-        # QSpinBox
-        spinBox_catalogDigits = self.mainWindow.spinBox_catalogDigits.value()
-        self.settings.setValue('spinBox_catalogDigits', spinBox_catalogDigits)
-
-        # QDoubleSpinBox
-        doubleSpinBox_focalDistance = self.mainWindow.doubleSpinBox_focalDistance.value()
-        self.settings.setValue('doubleSpinBox_focalDistance', doubleSpinBox_focalDistance)
-        doubleSpinBox_blurThreshold = self.mainWindow.doubleSpinBox_blurThreshold.value()
-        self.settings.setValue('doubleSpinBox_blurThreshold', doubleSpinBox_blurThreshold)
-
-        # slider
-        #value_LogoScaling = self.mainWindow.value_LogoScaling.value()
-        #self.settings.setValue('value_LogoScaling', value_LogoScaling)
+        comboBox_profiles = self.mainWindow.comboBox_profiles.currentText()
+        self.settings.setValue('selected_profile', comboBox_profiles)
 
         # radiobutton
         value_DarkTheme = self.mainWindow.value_DarkTheme.isChecked()
         self.settings.setValue('value_DarkTheme', value_DarkTheme)
         value_LightTheme = self.mainWindow.value_LightTheme.isChecked()
         self.settings.setValue('value_LightTheme', value_LightTheme)
-        radioButton_colorCheckerLarge = self.mainWindow.radioButton_colorCheckerLarge.isChecked()
-        self.settings.setValue('radioButton_colorCheckerLarge', radioButton_colorCheckerLarge)
-        radioButton_colorCheckerSmall = self.mainWindow.radioButton_colorCheckerSmall.isChecked()
-        self.settings.setValue('radioButton_colorCheckerSmall', radioButton_colorCheckerSmall)
+
         # cleanup, after changes are made, should re-initalize some classes
         self.setup_Folder_Watcher()
         self.setup_Output_Handler()
