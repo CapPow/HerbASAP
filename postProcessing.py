@@ -1172,6 +1172,9 @@ class appWindow(QMainWindow):
             profiles = self.get('profiles', {})
             profiles.pop(selectedProfile, None)
             self.setValue('profiles', profiles)
+            # update the profile options
+            self.populate_profile_list()
+            self.update_profile_settings()
 
     def update_profile_settings(self):
         """
@@ -1217,7 +1220,7 @@ class appWindow(QMainWindow):
         if not selected_profile:
             selected_profile = self.mainWindow.comboBox_profiles.currentText()
         self.setValue('selected_profile', selected_profile)
-        
+
     def populate_profile_list(self):
         """
         populates the profiles QCombobox with the stored profiles.
