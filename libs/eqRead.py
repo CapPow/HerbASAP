@@ -154,15 +154,23 @@ class eqRead():
         #im.save(dstPath, "jpeg", exif=exif_bytes, quality="keep", optimize=True)
         return exifBytes
 
-    def testFeature(self, imgPath):
+    def testFeature(self, img, imgPath, focalDistance):
         """Returns bool condition, if this module functions on a test input."""
 
         try:
+            
             result = self.detImagingEquipment(imgPath)
+            
+            height, width = img.shape[0:2]            
+            self.setMod(result, height, width, focalDistance)
+            
             if ((isinstance(result, dict)) &
                 ('cam' in result) &
                 ('lens' in result)):
-                return True
+                
+                modShape = self.undist_coords.shape
+                
+                return (result, modShape)
             else:
                 return False
         except Exception as e:
