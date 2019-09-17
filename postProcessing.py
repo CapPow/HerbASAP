@@ -374,6 +374,7 @@ class appWindow(QMainWindow):
         exif_dict = {
                 # the program's name and verison number
                 'software': f'HerbASAP, {__version__} ({platform.system()})',
+                'settingProfile': self.mainWindow.comboBox_profiles.currentText(),
                 # settings metadata
                 'collectionName': self.profile.get('collectionName', ''),
                 'collectionURL': self.profile.get('collectionURL', ''),
@@ -1194,7 +1195,7 @@ class appWindow(QMainWindow):
         self.setup_Folder_Watcher()
         self.setup_Output_Handler()
         ####
-        #set up bcRead
+        # set up bcRead
         ###
         patterns = self.profile.get('patterns', '')
         backend = self.profile.get('bcBackend', 'zbar')
