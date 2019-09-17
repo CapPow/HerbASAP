@@ -846,8 +846,8 @@
    <slot>process_image_selection()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>245</x>
-     <y>616</y>
+     <x>111</x>
+     <y>498</y>
     </hint>
     <hint type="destinationlabel">
      <x>573</x>
@@ -878,8 +878,8 @@
    <slot>process_image_directory()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>245</x>
-     <y>578</y>
+     <x>111</x>
+     <y>486</y>
     </hint>
     <hint type="destinationlabel">
      <x>568</x>

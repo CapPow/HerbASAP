@@ -781,6 +781,7 @@ class appWindow(QMainWindow):
         if self.profile.get('colorCheckerDetection', True):
             # colorchecker functions
             try:
+                print(self.profile)
                 crc_type = self.profile.get('crcType', "ISA ColorGauge Nano")
                 if crc_type == "ISA ColorGauge Nano":  # aka small crc
                     partition_size = self.profile.get('partition_size', 125)
