@@ -351,9 +351,9 @@ class appWindow(QMainWindow):
         # each key is a file extension
         # each value is a tuple containing (bool if checked, dst path)
         self.output_map = {
-                '.jpg': (self.get('saveProcessedJpg', False), self.get('pathProcessedJpg', '')),
-                '.raw': (self.get('keepUnalteredRaw', False), self.get('pathUnalteredRaw', ''))}
-        dupNamingPolicy = self.get('dupNamingPolicy')
+                '.jpg': (self.profile.get('saveProcessedJpg', False), self.profile.get('pathProcessedJpg', '')),
+                '.raw': (self.profile.get('keepUnalteredRaw', False), self.profile.get('pathUnalteredRaw', ''))}
+        dupNamingPolicy = self.profile.get('dupNamingPolicy')
 
         # establish self.suffix_lookup according to dupNamingPolicy
         # given an int (count of how many files have exact matching names,
@@ -1055,9 +1055,9 @@ class appWindow(QMainWindow):
         if self.cc_avg_white:  # if a cc_avg_white value was found
             use_camera_wb = False
             # normalize each value by 255
-            cc_avg_white = [255//x for x in self.cc_avg_white]
+            cc_avg_white = [255/x for x in self.cc_avg_white]
             r, g, b = cc_avg_white
-            g = g//2
+            g = g/2
             wb = [r, g, b, g]
             use_camera_wb = False
         else:  # otherwise use as shot values
@@ -1184,7 +1184,6 @@ class appWindow(QMainWindow):
         profile = profiles.get(selected_profile, {})
         # store the profile as a class variable
         self.profile = profile
-
         ###
         # initalize the folder_watcher using current user inputs
         ###
