@@ -421,14 +421,14 @@ class appWindow(QMainWindow):
         self.working_save_jobs = len(im_base_names) * len(to_save)
 
         # retrieve the source image exif data
-        # add Additional user comment details for the metadata            
+        # add Additional user comment details for the metadata
         addtl_user_comments = {
                 'avgWhiteRGB': str(self.cc_avg_white),
-                'barcodeValues':self.bc_code,
-                'isBlurry':str(self.is_blurry),
-                'ccQuadrant':str(self.cc_quadrant),
-                'pixelsPerMM':str(self.ppmm),
-                'pixelsPerMMConfidence':str(self.ppmm_uncertainty)
+                'barcodeValues': self.bc_code,
+                'isBlurry': str(self.is_blurry),
+                'ccQuadrant': str(self.cc_quadrant),
+                'pixelsPerMM': str(self.ppmm),
+                'pixelsPerMMConfidence': str(self.ppmm_uncertainty)
                 }
 
         self.meta_data = self.metaRead.retrieve_src_exif(orig_img_path,
@@ -705,7 +705,6 @@ class appWindow(QMainWindow):
         sets all class variables relevant to the current working image to None.
         """
         self.img_path = None
-        # self.metaRead = None
         self.base_file_name = None
         self.flip_value = 0
         self.ext = None
@@ -719,7 +718,7 @@ class appWindow(QMainWindow):
         self.processing_image = False
         self.ppmm = 'N/A'
         self.ppmm_uncertainty = 'N/A'
-        
+
         try:
             if self.raw_base:  # try extra hard to free up these resources.
                 print('manually forcing closure')
@@ -779,10 +778,10 @@ class appWindow(QMainWindow):
         # reduce the image for the cnn, store it incase of problem dialogs
         original_size, reduced_img = self.scale_images_with_info(im)
         self.reduced_img = reduced_img
+        # currently this is always returning True as it does not exist in self.profile
         if self.profile.get('colorCheckerDetection', True):
             # colorchecker functions
             try:
-                print(self.profile)
                 crc_type = self.profile.get('crcType', "ISA ColorGauge Nano")
                 if crc_type == "ISA ColorGauge Nano":  # aka small crc
                     partition_size = self.profile.get('partition_size', 125)
@@ -805,9 +804,9 @@ class appWindow(QMainWindow):
                     
                     patch_mm_area, seed_func, to_crop = self.scaleRead.scale_params.get(crc_type)
                     self.ppmm, self.ppmm_uncertainty = self.scaleRead.find_scale(full_res_cc,
-                                                                            patch_mm_area,
-                                                                            seed_func,
-                                                                            to_crop)
+                                                                                 patch_mm_area,
+                                                                                 seed_func,
+                                                                                 to_crop)
                     print(f"Pixels per mm for {os.path.basename(img_path)}: {self.ppmm}, +/- {self.ppmm_uncertainty}")
                     print(f'Scale DET! time = {time.time() - s_timer}')
 

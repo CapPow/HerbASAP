@@ -54,7 +54,8 @@ class MetaRead:
     def retrieve_src_exif(self, src, addtl_user_comments):
         """
         Given an input source (src) image file path, returns an dictionary
-        containing the source exif data, updated with the static_exif data.
+        containing the source exif data, updated with the static_exif data,
+        and any additional user comments
         """
         # prepare the user_comments
         static_exif = copy.deepcopy(self.static_exif)

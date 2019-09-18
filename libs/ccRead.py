@@ -457,7 +457,7 @@ class ColorchipRead:
         cv_image = cv2.cvtColor(np_image, cv2.COLOR_RGB2HSV)
         h, w = np_image.shape[0:2]
         area = h*w
-        min_crop_area = area // 10
+        min_crop_area = area // 15
         max_crop_area = area // 1.2
 
         # identify squares in the crop

@@ -4,7 +4,7 @@
     specimens. Specifically designed for Herbarium sheet images.
 """
 from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtWidgets import (QWizard, QSizePolicy,
+from PyQt5.QtWidgets import (QWizard, QSizePolicy, QWhatsThis,
                              QMessageBox, QDialog, QApplication)
 from PyQt5.QtCore import Qt
 from ui.settingsWizardUI import Ui_Wizard
@@ -159,11 +159,15 @@ class SettingsWizard(QWizard):
         self.canvas = None
         self.profile_saved = False
         self.partition_size = 125 # a default value in case they never set one.
+        self.colorCheckerDetection = False # has the crc been tested?
         self.working = False # used to hold "next" buttons until finished doing something.
 
     def init_ui(self):
         self.wiz = Ui_Wizard()
         self.wiz.setupUi(self)
+        # attach update_profile_details to the next button
+        self.button(QWizard.NextButton).clicked.connect(self.update_profile_details)
+        self.button(QWizard.HelpButton).clicked.connect(self.enter_whatsthis_mode)
         # Reimpliment isComplete() for appropriate pages
         # intro_page & ccRead_setup_page1
         def isComplete():
@@ -196,6 +200,9 @@ class SettingsWizard(QWizard):
         # assign it
         self.wiz.final_page.isComplete = isComplete
 
+    def enter_whatsthis_mode(self):
+        QWhatsThis.enterWhatsThisMode()
+
     def is_nameAvailable(self, profile_name):
         """
         determines if the given profile_name is unique
@@ -219,7 +226,6 @@ class SettingsWizard(QWizard):
             self.wiz.ccRead_setup_page1.completeChanged.emit()
         elif currID == 8:
             self.wiz.final_page.completeChanged.emit()
-
         QApplication.processEvents()
 
     def setFolderPath(self):
@@ -283,11 +289,7 @@ class SettingsWizard(QWizard):
         """
         imgPath = self.ask_img_path()
         if imgPath == '':
-            self.wiz.pushButton_testbcRead.setEnabled(False)
-            self.wiz.pushButton_testBlurDetection.setEnabled(False)
-            self.wiz.pushButton_testeqRead.setEnabled(False)
             return
-
         try:  # use rawpy to convert raw to openCV
             self.working = True
             self.emit_completeChanged()
@@ -308,7 +310,7 @@ class SettingsWizard(QWizard):
                 self.wiz.pushButton_testbcRead.setEnabled(True)
                 self.wiz.pushButton_testBlurDetection.setEnabled(True)
                 self.wiz.pushButton_testeqRead.setEnabled(True)
-                
+               
                 # store class variables concerning the file selected
                 self.img = im  # the opened image object
                 self.imgPath = imgPath  # the path to the selected file
@@ -465,6 +467,8 @@ class SettingsWizard(QWizard):
         bcRead = bcRead(patterns, backend, parent=self.wiz)
         grey = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
         bcResults = str(bcRead.decodeBC(grey))
+        if bcResults == '[]':
+            bcResults = 'FAILED, no codes found.'
         self.wiz.label_bcRead_results.setText(f'results: {bcResults}')
 
     ###
@@ -557,17 +561,18 @@ class SettingsWizard(QWizard):
             if mb.exec():
                 formatted_result = f"Detected CRC in {round(self.cc_crop_time, 3)} seconds."
                 self.wiz.pushButton_test_scaleDet.setEnabled(True)
-                self.wiz.pushButton_test_whiteBalance.setEnabled(True)                              
+                self.wiz.pushButton_test_whiteBalance.setEnabled(True)
+                self.colorCheckerDetection = True # successfully tested crc
             else:
                 formatted_result = 'TEST FAILED'
                 self.wiz.pushButton_test_scaleDet.setEnabled(False)
                 self.wiz.pushButton_test_whiteBalance.setEnabled(False)
 
         except Exception as e:  # really any exception here should be handled.
-            notice_title = 'Error Determining Color Reference Location'
-            notice_text = 'Critical Error: Image was NOT processed!'
-            detail_text = ('While attempting to determine the color chip '
-                           'location the following exception was rasied:'
+            notice_title = 'Error locating CRC'
+            notice_text = 'Failed to locate the CRC. Verify the CRC type '
+            ' selection and try drawing a more precise box.'
+            detail_text = ('The following exception was rasied:'
                            f'\n{e}')
             self.userNotice(notice_text, notice_title, detail_text)
             formatted_result = 'TEST FAILED'
@@ -711,8 +716,14 @@ class SettingsWizard(QWizard):
             return
 
         # class variables:
-        self.partition_size = d.get('partition_size', None)
+        # if partition_size was handed it (i.e., it is an edit profile event)
+        partition_size = d.get('partition_size', None)
+        if partition_size:
+            self.wiz.pushButton_testCRCDetection.setEnabled(True)
+            self.partition_size = partition_size
 
+        colorCheckerDetection = d.get('colorCheckerDetection', False)
+        self.colorCheckerDetection = colorCheckerDetection
         # populate listWidget_patterns        
         self.fill_patterns(d.get('patterns', ''))
 
@@ -794,7 +805,9 @@ class SettingsWizard(QWizard):
         """
 
         self.wiz_dict = {
-        # self.wiz.path_setup_page
+                # class variable(s)
+                "colorCheckerDetection": self.colorCheckerDetection,
+                # self.wiz.path_setup_page
                 "inputPath": self.wiz.lineEdit_inputPath.text(),  # input monitor folder path
                 "saveProcessedJpg": self.wiz.group_saveProcessedJpg.isChecked(),  # checked = saveJPG
                 "pathProcessedJpg": self.wiz.lineEdit_pathProcessedJpg.text(),  # output jpg folder path
@@ -807,7 +820,6 @@ class SettingsWizard(QWizard):
                 "catalogNumberPrefix": self.wiz.lineEdit_catalogNumberPrefix.text(),  # prefix
                 "catalogDigits": self.wiz.spinBox_catalogDigits.value(),  # digits
                 "dupNamingPolicy": self.wiz.comboBox_dupNamingPolicy.currentText(),  # dup naming policy
-                
                 "patterns": self.retrieve_bc_patterns(),  # pattern list
                 
                 # self.wiz.blurDetect_setup_page
@@ -836,6 +848,16 @@ class SettingsWizard(QWizard):
                 "contactName": self.wiz.plainTextEdit_contactName.toPlainText(),
                 "copywriteLicense": self.wiz.plainTextEdit_copywriteLicense.toPlainText()
                 }
+
+    def update_profile_details(self):
+        """
+        updates known details about the profile in the final page.
+        """
+        self.build_profile_dict()
+        # list the profile details on the final page.
+        formatted_profile = "\n".join([f"{k}: {v}" for k, v in self.wiz_dict.items()])
+        self.wiz.label_profileDetails.setText(formatted_profile)
+
     def save_inputs(self):
         """
         Builds a settings profile dict from the appropriate fields and saves it
@@ -874,10 +896,7 @@ class SettingsWizard(QWizard):
             # update qComboBox on "mainapp"
             self.parent.populate_profile_list()
             self.parent.update_currently_selected_profile(profile_name)
-            
-            # list the profile details on the final page.
-            formatted_profile = "\n".join([f"{k}: {v}" for k, v in self.wiz_dict.items()])
-            self.wiz.label_profileDetails.setText(formatted_profile)
+            self.update_profile_details()  # update the profile details
             # reset availability text from entry field.
             self.wiz.label_nameAvailable.setText('')
             

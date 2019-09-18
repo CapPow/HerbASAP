@@ -21,11 +21,14 @@
     <pointsize>10</pointsize>
    </font>
   </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::CustomContextMenu</enum>
+  </property>
   <property name="windowTitle">
    <string>HerbASAP profile setup</string>
   </property>
   <property name="options">
-   <set>QWizard::NoBackButtonOnStartPage|QWizard::NoDefaultButton</set>
+   <set>QWizard::HaveHelpButton|QWizard::NoBackButtonOnStartPage|QWizard::NoDefaultButton</set>
   </property>
   <widget class="QWizardPage" name="intro_page">
    <property name="autoFillBackground">
@@ -63,6 +66,9 @@
     </item>
     <item>
      <widget class="QPushButton" name="pushButton_selectExampleImage">
+      <property name="whatsThis">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt; Select an example &amp;quot;Raw&amp;quot; image file which was captured under conditions similar to those expected in your imaging project.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
       <property name="text">
        <string>Select Example Image File</string>
       </property>
@@ -74,6 +80,9 @@
        <font>
         <pointsize>12</pointsize>
        </font>
+      </property>
+      <property name="whatsThis">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The example image file name loaded. If blank, no file has been loaded.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="text">
        <string/>
@@ -171,6 +180,9 @@
              <property name="enabled">
               <bool>false</bool>
              </property>
+             <property name="whatsThis">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The path to the folder where newly captured images will be saved. In the main window, the &amp;quot;Begin Monitoring Folder&amp;quot; button will instruct HerbASAP to monitor this folder for new images, and process them as they arrive. Click the browse button to set this path.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
             </widget>
            </item>
            <item row="0" column="0">
@@ -182,6 +194,9 @@
            </item>
            <item row="0" column="2">
             <widget class="QPushButton" name="pushButton_inputPath">
+             <property name="whatsThis">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Calls user the dialog used to select the path to the folder where newly captured images will be saved. In the main window, the &amp;quot;Begin Monitoring Folder&amp;quot; button will instruct HerbASAP to monitor this folder for new images, and process them as they arrive.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>Browse</string>
              </property>
@@ -223,10 +238,16 @@
              <property name="enabled">
               <bool>false</bool>
              </property>
+             <property name="whatsThis">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The path to the folder where processed image derivatives formatted as JPGs should be saved. If &amp;quot;Save processed Images as JPG&amp;quot; is checked this path must be entered before continuing. Click the browse button to set this path.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
             </widget>
            </item>
            <item row="1" column="2">
             <widget class="QPushButton" name="pushButton_pathProcessedJpg">
+             <property name="whatsThis">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Calls user the dialog used to select the path to the folder where processed image derivatives formatted as JPGs should be saved. If &amp;quot;Save processed Images as JPG&amp;quot; is checked this path must be entered before continuing.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>Browse</string>
              </property>
@@ -278,10 +299,16 @@
              <property name="enabled">
               <bool>false</bool>
              </property>
+             <property name="whatsThis">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The path to the folder where unprocessed original images will be moved after processing. If &amp;quot;Move unaltered original images after processing&amp;quot; is checked, this path must be entered before continuing. Click the browse button to set this path.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
             </widget>
            </item>
            <item row="1" column="2">
             <widget class="QPushButton" name="pushButton_pathUnalteredRaw">
+             <property name="whatsThis">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Calls user the dialog used to select the path to the folder where unprocessed original images will be moved after processing. If &amp;quot;Move unaltered original images after processing&amp;quot; is checked, this path must be entered before continuing.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>Browse</string>
              </property>
@@ -329,6 +356,9 @@
              <property name="enabled">
               <bool>false</bool>
              </property>
+             <property name="whatsThis">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The path to the folder where processed image derivatives formatted as TIFF should be saved. If &amp;quot;Save processed Images as TIFF&amp;quot; is checked this path must be entered before continuing. Click the browse button to set this path.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
             </widget>
            </item>
            <item row="1" column="0">
@@ -340,6 +370,9 @@
            </item>
            <item row="1" column="2">
             <widget class="QPushButton" name="pushButton_pathProcessedTIFF">
+             <property name="whatsThis">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Calls user the dialog used to select the path to the folder where processed image derivatives formatted as TIFFs should be saved. If &amp;quot;Save processed Images as TIFF&amp;quot; is checked this path must be entered before continuing.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>Browse</string>
              </property>
@@ -372,7 +405,7 @@
     <item>
      <widget class="QLabel" name="label_16">
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HerbASAP can name processed image derivatives based on catalog numbers found as barcodes or data matrices in the input image. If multiple distinct codes are found in an image, a copy is saved for each code.&lt;/p&gt;&lt;p&gt;Undesired or partial reads are filtered using &amp;quot;regular expression&amp;quot; (regex) patterns. To use this feature you'll need to enter details concerning the expected catalog number. Use the &amp;quot;Preview&amp;quot; text to view the type of pattern expected based on your inputs.&lt;/p&gt;&lt;p&gt;- The Decoder backend determines what underlying software will be used to decode values in the image. Barcodes should be decoded using &amp;quot;zbar.&amp;quot; Data matrices should be decoded using &amp;quot;libdmtx.&amp;quot;&lt;/p&gt;&lt;p&gt;- Multiple patterns can used simultaneously. The &amp;quot;Add&amp;quot; / &amp;quot;Remove&amp;quot; buttons edit which patterns are acceptable.&lt;/p&gt;&lt;p&gt;- Using an empty list of patterns will result in all values being acceptable.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HerbASAP can name processed image derivatives based on catalog numbers found as barcodes or data matrices in the input image. If multiple distinct codes are found in an image, a copy is saved for each code.&lt;/p&gt;&lt;p&gt;Undesired or partial reads are filtered using &amp;quot;regular expression&amp;quot; (regex) patterns. To use this feature you'll need to enter details concerning the expected catalog number. Use the &amp;quot;Preview&amp;quot; text to view the type of pattern expected based on your inputs.&lt;/p&gt;&lt;p&gt;- Decoder backend determines what underlying software will be used to decode values in the image. Barcodes should be decoded using &amp;quot;zbar.&amp;quot; Data matrices should be decoded using &amp;quot;libdmtx.&amp;quot;&lt;/p&gt;&lt;p&gt;- Multiple patterns can used simultaneously. &lt;/p&gt;&lt;p&gt;- Using an empty list of patterns will result in all values being acceptable.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -499,24 +532,17 @@
                <property name="enabled">
                 <bool>true</bool>
                </property>
+               <property name="whatsThis">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If a pattern is selected in the list, removes it from the list of acceptable patterns.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
                <property name="text">
-                <string>remove</string>
+                <string>Remove Selected Pattern</string>
                </property>
                <property name="checkable">
                 <bool>false</bool>
                </property>
                <property name="autoRaise">
                 <bool>false</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="0">
-              <widget class="QToolButton" name="toolButton_addPattern">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="text">
-                <string>add </string>
                </property>
               </widget>
              </item>
@@ -538,6 +564,9 @@
                <property name="enabled">
                 <bool>true</bool>
                </property>
+               <property name="whatsThis">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The list of acceptable patterns to be used in this profile. The &amp;quot;Save Current Pattern&amp;quot; button adds the current pattern to this list. The &amp;quot;Remove Selected Patter&amp;quot; button removes the pattern which is selected inside the list. Advanced users may edit patterns directly within this list.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
                <property name="autoScroll">
                 <bool>false</bool>
                </property>
@@ -553,6 +582,9 @@
            <widget class="QLabel" name="label_dupPreviewDisplay">
             <property name="enabled">
              <bool>true</bool>
+            </property>
+            <property name="whatsThis">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Based on the inputs above, an example of the type of code your pattern will detect.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string/>
@@ -582,6 +614,9 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="whatsThis">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How to handle naming when the file name exists in the destination folder.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="sizeAdjustPolicy">
              <enum>QComboBox::AdjustToMinimumContentsLength</enum>
@@ -645,6 +680,9 @@
             <property name="enabled">
              <bool>true</bool>
             </property>
+            <property name="whatsThis">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decoder backend determines what underlying software will be used to decode values in the image. Barcodes should be decoded using &amp;quot;zbar.&amp;quot; Data matrices should be decoded using &amp;quot;libdmtx.&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="currentIndex">
              <number>1</number>
             </property>
@@ -670,6 +708,19 @@
             </property>
            </widget>
           </item>
+          <item row="5" column="1" colspan="2">
+           <widget class="QToolButton" name="toolButton_addPattern">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="whatsThis">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Adds the current pattern to this list of acceptable barcode regex patterns to be used for this profile.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Save Current Pattern</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -677,6 +728,9 @@
         <widget class="QPushButton" name="pushButton_testbcRead">
          <property name="enabled">
           <bool>false</bool>
+         </property>
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Test barcode / datamatrix reading functions on the loaded example image. This test only returns the patterns saved in the &amp;quot;barcode regex patterns&amp;quot; list. Running this test while the list is empty will add a completely permissive pattern to the &amp;quot;barcode regext patterns list.&amp;quot; A list of the results from the test are displayed to the right.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>Test Barcode / DataMatrix Reading</string>
@@ -715,7 +769,7 @@
     <item>
      <widget class="QLabel" name="label_18">
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HerbASAP can to a limited degree, verify that images are in focus. &lt;/p&gt;&lt;p&gt;To do this it calculates the variance of the Laplace Operator (Laplacian) for the image. The Laplacian is normalized using the image variance to account for image &amp;quot;busyness&amp;quot; (e.g., dissected leaves as compared to simple leaves). To use this feature, a threshold value must be set. If the normalized Laplacian is lower than the threshold value, a notice dialog will be provided.&lt;/p&gt;&lt;p&gt;- Lower values are more blur tolerant.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HerbASAP can to a limited degree, verify that images are in focus. &lt;/p&gt;&lt;p&gt;To do this it calculates the variance of the Laplace Operator (Laplacian) for the image. The Laplacian is normalized using the image variance to account for image &amp;quot;busyness&amp;quot; (e.g., dissected leaves as compared to simple leaves). If the normalized Laplacian of an image being processed is lower than the threshold value, a notice dialog will be provided. If you are unsure what threshold value to use, the default 0.045 is a good starting point. The threshold value may be changed later.&lt;/p&gt;&lt;p&gt;- Lower values are more blur tolerant.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -754,6 +808,9 @@
         <widget class="QPushButton" name="pushButton_testBlurDetection">
          <property name="enabled">
           <bool>false</bool>
+         </property>
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Test blur detection functions on the loaded example image. The results from the test are displayed to the right, including the normalized Laplacian of the example image.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>Test Blur Detection</string>
@@ -803,6 +860,9 @@
          </property>
          <property name="focusPolicy">
           <enum>Qt::ClickFocus</enum>
+         </property>
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The threshold value which defines &amp;quot;blurry&amp;quot; and &amp;quot;not blurry.&amp;quot; Lower values are more blur tolerant. If you are not sure what value to use, the default 0.045 is a good place to start. This value may be edited later.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="decimals">
           <number>3</number>
@@ -865,6 +925,9 @@
       <property name="enabled">
        <bool>false</bool>
       </property>
+      <property name="whatsThis">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Test CRC detection functions on the loaded example image. The results are displayed in a user dialog box for verification.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
       <property name="text">
        <string>Test CRC Detection</string>
       </property>
@@ -903,6 +966,9 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The model name of the color reference chart (CRC). This determines which model is used to detect the CRC, and the real world measurements of the internal reference color patch sizes, necesarry for scale determination.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="currentIndex">
          <number>1</number>
         </property>
@@ -935,6 +1001,9 @@
       </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label_26">
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The model name of the color reference chart (CRC). This determines which model is used to detect the CRC, and the real world measurements of the internal reference color patch sizes, necesarry for scale determination.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="text">
          <string>Color Reference Chart Type</string>
         </property>
@@ -944,8 +1013,11 @@
     </item>
     <item row="5" column="1">
      <widget class="QPushButton" name="pushButton_selectExampleImage_1">
+      <property name="whatsThis">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select an example &amp;quot;Raw&amp;quot; image file which was captured under conditions similar to those expected in your imaging project.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
       <property name="text">
-       <string>Select Test Image</string>
+       <string>Select Example Image File</string>
       </property>
      </widget>
     </item>
@@ -976,6 +1048,9 @@
         <height>343</height>
        </size>
       </property>
+      <property name="whatsThis">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If an example image file has been loaded, it should be displayed here. It is not a problem if the image is displayed upside down. Use this image to draw a box the approximate size of the CRC. The position of the box is not relevant, but the size should be as close precise as possible. The size of this box is used to set the partition size used for CRC location determination.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
       <layout class="QVBoxLayout" name="crc_canvas_layout">
        <property name="sizeConstraint">
         <enum>QLayout::SetDefaultConstraint</enum>
@@ -995,6 +1070,9 @@
     </item>
     <item row="6" column="1">
      <widget class="QLabel" name="label_loadedExampleFile_1">
+      <property name="whatsThis">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The example image file name loaded. If blank, no file has been loaded.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
       <property name="text">
        <string/>
       </property>
@@ -1027,6 +1105,9 @@
         <property name="enabled">
          <bool>false</bool>
         </property>
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Test scale determination functions on the loaded example image. The results from the test are displayed to the right, scale may be manually verified. &lt;span style=&quot; font-weight:600;&quot;&gt;Assumes correct CRC model is selected, and it is flat on the focal surface.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="text">
          <string>Test Scale Determination</string>
         </property>
@@ -1050,6 +1131,9 @@
         <property name="enabled">
          <bool>false</bool>
         </property>
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Test white balance functions on the loaded example image. The results are the average RGB values from the whitest color patch detected in the CRC and are displayed to the right.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="text">
          <string>Test White Balance</string>
         </property>
@@ -1072,6 +1156,9 @@
     </item>
     <item row="1" column="0">
      <widget class="QCheckBox" name="checkBox_scaleDetermination">
+      <property name="whatsThis">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A pixel to mm ratio may be determined using the internal area of CRC color patches. This ratio is annotated in the metadata of the derivative images. The ratio may be useful for future studies which need to compare measurements from many images. &lt;span style=&quot; font-weight:600;&quot;&gt;Assumes CRC is flat on the focal surface.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
       <property name="text">
        <string>Determine image scale using known color patch sizes</string>
       </property>
@@ -1095,6 +1182,9 @@
     </item>
     <item row="2" column="0">
      <widget class="QCheckBox" name="checkBox_performWhiteBalance">
+      <property name="whatsThis">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
       <property name="text">
        <string>Perform white balance using color checker</string>
       </property>
@@ -1107,6 +1197,9 @@
      <widget class="QGroupBox" name="group_verifyRotation">
       <property name="enabled">
        <bool>true</bool>
+      </property>
+      <property name="whatsThis">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Derivative images may be rotated to place the CRC a the specified position (e.g., &amp;quot;Lower Right&amp;quot;). This can be used to verify / correct orientation. If the CRC is properly located, the image is rotated such that the CRC is in the specified position. &lt;span style=&quot; font-weight:600;&quot;&gt;Assumes the CRC is in a fixed position in the imaging apparatus.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="title">
        <string>Rotate image, placing CRC in specific position</string>
@@ -1205,7 +1298,7 @@
     <item row="0" column="0">
      <widget class="QLabel" name="label_21">
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HerbASAP can correct for equipment based distortions. &lt;/p&gt;&lt;p&gt;Lens distortions and chromatic aberrations can be corrected in image derivative. Corrections are performed using the &amp;quot;Lensfunpy&amp;quot; library, a python wrapper for &amp;quot;Lensfun.&amp;quot; To use this feature, an approximate focal distance (i.e., distance from lens to subject) needs to be set. It is not considered necessary to adjust this value following &lt;span style=&quot; font-style:italic;&quot;&gt;minor&lt;/span&gt; modifications to the imaging aparatus.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HerbASAP can correct for equipment based distortions. &lt;/p&gt;&lt;p&gt;Lens distortions and chromatic aberrations can be corrected in image derivative. Corrections are performed using the &amp;quot;Lensfunpy&amp;quot; library, a python wrapper for &amp;quot;Lensfun.&amp;quot; To use this feature, an approximate focal distance (i.e., distance from lens to subject) needs to be set. It is not considered necessary to adjust this value following &lt;span style=&quot; font-style:italic;&quot;&gt;minor&lt;/span&gt; modifications to the imaging apparatus.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -1243,6 +1336,9 @@
            <property name="enabled">
             <bool>true</bool>
            </property>
+           <property name="whatsThis">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The approximate focal distance (i.e., distance from lens to subject) in cm. It is not necessary to edit this value following &lt;span style=&quot; font-style:italic;&quot;&gt;minor&lt;/span&gt; modifications to the imaging apparatus.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="text">
             <string>Approximate focal distance</string>
            </property>
@@ -1252,6 +1348,9 @@
           <widget class="QDoubleSpinBox" name="doubleSpinBox_focalDistance">
            <property name="enabled">
             <bool>true</bool>
+           </property>
+           <property name="whatsThis">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The approximate focal distance (i.e., distance from lens to subject) in cm. It is not necessary to edit this value following &lt;span style=&quot; font-style:italic;&quot;&gt;minor&lt;/span&gt; modifications to the imaging apparatus.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="suffix">
             <string>cm</string>
@@ -1318,8 +1417,11 @@
         <property name="enabled">
          <bool>false</bool>
         </property>
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Test equipment correction functions on the loaded example image. A correction matrix is generated based on the equipment detected from the example image. The results, and the detected equipment are displayed to the right. Use these results to verify the equipment was properly detected.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="text">
-         <string>Test Equipment Detection</string>
+         <string>Test Equipment Corrections</string>
         </property>
        </widget>
       </item>
@@ -1338,6 +1440,9 @@
       </item>
       <item row="1" column="1" rowspan="2">
        <widget class="QLabel" name="label_eqRead_results">
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt; The &amp;quot;Test Equipment Corrections&amp;quot; results, and the detected equipment are displayed here. Use these details to verify the equipment was properly detected.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -1429,6 +1534,9 @@
            <height>50</height>
           </size>
          </property>
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The collection name, which will be applied to the userComments section of matadata in processed image derivatives.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="tabChangesFocus">
           <bool>true</bool>
          </property>
@@ -1462,6 +1570,9 @@
            <height>50</height>
           </size>
          </property>
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The collection URL, which will be applied to the userComments section of matadata in processed image derivatives.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="inputMethodHints">
           <set>Qt::ImhMultiLine|Qt::ImhUrlCharactersOnly</set>
          </property>
@@ -1478,6 +1589,9 @@
            <height>50</height>
           </size>
          </property>
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The primary contact name for the collection, which will be applied to the userComments section of matadata in processed image derivatives.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="tabChangesFocus">
           <bool>true</bool>
          </property>
@@ -1490,6 +1604,9 @@
            <width>0</width>
            <height>50</height>
           </size>
+         </property>
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The primary contact Email address for the collection, which will be applied to the userComments section of matadata in processed image derivatives.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="inputMethodHints">
           <set>Qt::ImhEmailCharactersOnly|Qt::ImhMultiLine</set>
@@ -1506,6 +1623,9 @@
            <width>0</width>
            <height>50</height>
           </size>
+         </property>
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Copywrite license which this image will be released under. This will be applied to the userComments section of matadata in processed image derivatives.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="tabChangesFocus">
           <bool>true</bool>
@@ -1536,7 +1656,11 @@
    </property>
    <layout class="QGridLayout" name="gridLayout_4" rowstretch="0,0,0,0,0,1">
     <item row="2" column="1">
-     <widget class="QLineEdit" name="lineEdit_profileName"/>
+     <widget class="QLineEdit" name="lineEdit_profileName">
+      <property name="whatsThis">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The name to store this setting profile as.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
     </item>
     <item row="5" column="0">
      <widget class="QLabel" name="label_14">
@@ -1574,6 +1698,9 @@
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
          <widget class="QLabel" name="label_profileDetails">
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The full details of the profile generated through this wizard.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -1608,6 +1735,9 @@
     </item>
     <item row="3" column="1">
      <widget class="QPushButton" name="pushButton_saveProfile">
+      <property name="whatsThis">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Saves the current settings profile (and selects it in HerbASAP).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
       <property name="text">
        <string>Save Profile</string>
       </property>
@@ -1632,6 +1762,9 @@
        <font>
         <italic>true</italic>
        </font>
+      </property>
+      <property name="whatsThis">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-style:normal;&quot;&gt;If the entered profile name is unique (on this system).&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="text">
        <string/>
