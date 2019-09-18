@@ -53,7 +53,6 @@ class Canvas(QtWidgets.QLabel):
         # The scale corrected larger dim of the annotated rect
         self.scaled_begin = (0, 0)
         self.scaled_end = (0, 0)
-        self.box_size = 125
 
     def genPixBackDrop(self, im):
         # if it is oriented in landscape, rotate it
@@ -135,14 +134,10 @@ class Canvas(QtWidgets.QLabel):
         box_size = max(x_len, y_len)
         
         # You must have atleast 25 pixels to ride this ride.
-        if box_size > 25:
-            self.parent.wiz.pushButton_testCRCDetection.setEnabled(True)
-        else:
-            self.parent.wiz.pushButton_testCRCDetection.setEnabled(False)
-        # add 10% padding to box_size for try hards
-        self.box_size = int(box_size * 1.1)
+        box_size= int(box_size * 1.1)
         # send the box_size over for correction and storage as partition_size
         self.parent.save_corrected_partition_size(box_size)
+        
 
 class SettingsWizard(QWizard):
 
@@ -169,7 +164,16 @@ class SettingsWizard(QWizard):
         self.button(QWizard.NextButton).clicked.connect(self.update_profile_details)
         self.button(QWizard.HelpButton).clicked.connect(self.enter_whatsthis_mode)
         # Reimpliment isComplete() for appropriate pages
-        # intro_page & ccRead_setup_page1
+        # intro_page
+        def isComplete():
+            if (self.working) or (self.img is None):
+                res = False
+            else:
+                res = True
+                
+            return res
+        self.wiz.intro_page.isComplete = isComplete
+        # ccRead_setup_page1
         def isComplete():
             if self.working:
                 res = False
@@ -177,7 +181,6 @@ class SettingsWizard(QWizard):
                 res = True
             return res
         # assign it
-        self.wiz.intro_page.isComplete = isComplete
         self.wiz.ccRead_setup_page1.isComplete = isComplete
         # path_setup_page
         def isComplete():
@@ -218,6 +221,7 @@ class SettingsWizard(QWizard):
 
     def emit_completeChanged(self):
         currID = self.currentId()
+        QApplication.processEvents()
         if currID == 0:
             self.wiz.intro_page.completeChanged.emit()
         elif currID == 1:
@@ -226,7 +230,6 @@ class SettingsWizard(QWizard):
             self.wiz.ccRead_setup_page1.completeChanged.emit()
         elif currID == 8:
             self.wiz.final_page.completeChanged.emit()
-        QApplication.processEvents()
 
     def setFolderPath(self):
         """ Called by all of the "Browse" buttons in Image Location Tab.
@@ -528,12 +531,14 @@ class SettingsWizard(QWizard):
         ow, oh = original_size
         nh, nw = reduced_img.shape[0:2]
         correction_val = nh / oh
-        box_size = self.canvas.box_size
         corrected_box_size = int(round(box_size * correction_val,0))
         # keep a floor partition_size of 125 
         partition_size = max([125, corrected_box_size])
         print(f'using a {partition_size} partition_size')
         self.partition_size = partition_size
+        self.wiz.pushButton_testCRCDetection.setEnabled(True)
+        # force a test after drawing the box
+        self.test_crcDetection()
         self.working = False
         self.emit_completeChanged()
 
