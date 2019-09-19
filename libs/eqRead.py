@@ -28,16 +28,16 @@ import numpy as np
 import os
 
 class eqRead():
-    def __init__(self, parent=None, *args):
+    def __init__(self, parent=None, undist_coords=None, *args):
         super(eqRead, self).__init__()
         self.parent = parent
-        self.undist_coords = None
+        self.undist_coords = undist_coords
         self.equip_list = None
         try:  # prefer to use system db
             self.db = lensfunpy.Database()
         except XMLFormatError:
             # if there is a format error, attempt to use locally bundled xmls
-            self.db = lensfunpy.Database(paths=glob.glob('libs/lensfunpy-db/*.xml')) # For future use            
+            self.db = lensfunpy.Database(paths=glob.glob('libs/lensfunpy-db/*.xml')) # For future use
         # piexif's transplant function may be useful if the exif is dumped in
         # the saving process.
         # See https://piexif.readthedocs.io/en/latest/functions.html#transplant
@@ -60,26 +60,29 @@ class eqRead():
                 imgDict[k] = v.decode("utf-8")
         camMaker = imgDict.get('make', '')
         camModel = imgDict.get('model', '')
-        lensModel = imgDict.get('lensmodel', [''])[0]
-        focalLength = imgDict.get('focallength', [''])[0]
-        apertureValue = imgDict.get('fnumber', [''])[0]
-
+        #print(f'cam model = {camModel}')
+        lensModel = imgDict.get('lensmodel', '')#[0]
+        #print(f'lensmodel = {lensModel}')
+        focalLength = imgDict.get('focallength', '')[0]
+        #print(f'focallength = {focalLength}')
+        apertureValue = imgDict.get('fnumber', '')[0]
+        #print(f'apertureValue = {apertureValue}')
         # load the equipment database
         db = self.db
         # lookup the camera details
-        cam = db.find_cameras(camMaker, camModel, loose_search=False)[0]
+        cams = db.find_cameras(camMaker, camModel, loose_search=False)#[0]
         # lookup the lens details
-        lens = db.find_lenses(cam, lens=lensModel, loose_search=False)[0]
+        lenses = db.find_lenses(cams[0], lens=lensModel, loose_search=False)#[0]
         # organize the result into a dict.
-        result = {'cam':cam,
-                  'lens':lens,
+        result = {'cams':cams,
+                  'lenses':lenses,
                   'focalLength':focalLength,
                   'apertureValue':apertureValue}
 
         # drop keys which are null
-        for k,v in result.items():
-            if v in ['',None,False]:
-                del result[k]
+        #for k,v in result.items():
+        #    if v in ['',None,False]:
+        #        del result[k]
         
         return result
 
@@ -107,22 +110,22 @@ class eqRead():
         self.undist_coords = mod.apply_subpixel_geometry_distortion()      
 
     #def transPlantMetaData
-    def lensCorrect(self, im, imgPath, focalDistance=0.255):
+    def lensCorrect(self, im):
         """ Attempts to perform lens corrections using origional image metadata.
             im = an opened image object"""
 
-        height, width, rgb = im.shape
-        equip = self.detImagingEquipment(imgPath)
-        cam = equip.get('cam','')
-        lens = equip.get('lens','')
-        if lens == '':
-            print(f'lens was not found')
-            return im
-        equip_list = [cam, lens, height, width]
-        if equip_list != self.equip_list:
+        #height, width, rgb = im.shape
+        #equip = self.detImagingEquipment(imgPath)
+        #cam = equip.get('cam','')
+        #lens = equip.get('lens','')
+        #if lens == '':
+        #    print(f'lens was not found')
+        #    return im
+        #equip_list = [cam, lens, height, width]
+        #if equip_list != self.equip_list:
             # if the image equipment is different than the previous images
             # generate a new pixel map
-            self.setMod(equip, height, width, focalDistance)
+        #    self.setMod(equip, height, width, focalDistance)
         r = im[..., 0]
         # see for swapaxes: https://github.com/letmaik/lensfunpy/issues/17
         g = im[..., 1].swapaxes(0,1)
@@ -160,8 +163,7 @@ class eqRead():
         try:
             
             result = self.detImagingEquipment(imgPath)
-            
-            height, width = img.shape[0:2]            
+            height, width = img.shape[0:2]
             self.setMod(result, height, width, focalDistance)
             
             if ((isinstance(result, dict)) &
