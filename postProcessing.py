@@ -816,7 +816,7 @@ class appWindow(QMainWindow):
                 self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
                 self.cropped_cc = cropped_cc
                 cc_avg_white, self.cc_blk_point = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
-                print(f'avg BLACK: {self.cc_blk_point}')
+                #print(f'avg BLACK: {self.cc_blk_point}')
                 self.cc_avg_white = cc_avg_white
                 self.update_cc_info(self.cc_quadrant, cropped_cc,
                                     cc_crop_time, cc_avg_white)
@@ -844,8 +844,9 @@ class appWindow(QMainWindow):
                         'Lower left',
                         'Upper left']
             user_def_quad = quad_map.index(user_def_loc) + 1
-            print(user_def_quad)
-            print(self.cc_quadrant)
+            #print(user_def_quad)
+            #print(self.cc_quadrant)
+            
             # cc_quadrant starts at first,
             # determine the proper rawpy flip value necessary
             rotation_qty = (self.cc_quadrant - user_def_quad)
@@ -1073,9 +1074,10 @@ class appWindow(QMainWindow):
 
         rgb_cor = self.raw_base.postprocess(demosaic_algorithm=rawpy.DemosaicAlgorithm.AHD,
                                             #dcb_enhance=True,
+                                            use_auto_wb=True,
                                             use_camera_wb=use_camera_wb,
                                             user_wb=wb,
-                                            user_black = self.cc_blk_point,
+                                            #user_black = self.cc_blk_point,
                                             output_color=rawpy.ColorSpace.sRGB,
                                             #output_bps=8,
                                             user_flip=self.flip_value,
@@ -1108,7 +1110,8 @@ class appWindow(QMainWindow):
             im = self.raw_base.postprocess(
                     output_color=rawpy.ColorSpace.raw,
                     #half_size=True,
-                    use_auto_wb=False,
+                    use_camera_wb=False,
+                    use_auto_wb=True,
                     user_wb=ext_wb,
                     no_auto_bright=True,
                     demosaic_algorithm=rawpy.DemosaicAlgorithm.LINEAR
@@ -1212,7 +1215,7 @@ class appWindow(QMainWindow):
         ###
         # misc feature classes
         ###
-        self.eqRead = eqRead(parent=self.mainWindow, undist_coords=self.profile.get('undistCoords', None))
+        self.eqRead = eqRead(parent=self.mainWindow, equipmentDict=self.profile.get('equipmentDict', {}))
         ###
         # setup metadata reading/writing class
         ###

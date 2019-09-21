@@ -325,8 +325,8 @@ class SettingsWizard(QWizard):
                 self.wiz.label_loadedExampleFile.setText(f'{base_file_name} Loaded')
                 self.wiz.label_loadedExampleFile_1.setText(f'{base_file_name} Loaded')
             
-            # determine the imaging equipment
-            self.det_equipment()
+            # determine the imaging equipment, and generate correction
+            self.gen_distort_corrections()
             
             self.working = False
             # inform the UI the loading has completed
@@ -659,6 +659,7 @@ class SettingsWizard(QWizard):
         for eqRead to properly make equipment corrections.
         """
         try:
+            self.gen_distort_corrections()
             self.eqRead.lensCorrect(self.img)
             formatted_result = 'Success generating correction matrix!'
             self.wiz.label_eqRead_results.setText(formatted_result)
@@ -674,44 +675,43 @@ class SettingsWizard(QWizard):
             self.wiz.label_eqRead_results.setText(formatted_result)
             self.wiz.checkBox_lensCorrection.setCheckState(False)
     
-    def det_equipment(self):
-        """
-        called when an example image is loaded. Used to set the self.equipment
-        and populate the lens comboboxes.
-        """
-        
-        self.equipment = self.eqRead.detImagingEquipment(self.imgPath)
-        models = self.equipment.get('cams', [''])
-        # update the cam model text
-        model = models[0]
-        formatted_result = f'{model.maker}, {model.model}'
-        self.wiz.label_camModel.setText(formatted_result)
-        lenses = self.equipment.get('lenses', [''])
-        # populate the lens model qcombo box
-        self.populateQComboBoxSettings(self.wiz.comboBox_lensModel, lenses)
-        # select the 'best' guess
-        self.selectQComboBoxSettings(self.wiz.comboBox_lensModel, str(lenses[0]))
-        self.gen_distort_corrections()
-    
     def gen_distort_corrections(self):
         """
         attempts to generate the distortion correction matrix
         """
-        print('generating corrections')
-        equipmentList = self.equipment
-        selected_lens = self.get_selected_lens()
-        if selected_lens is None:
+        self.equipmentDict = self.eqRead.detImagingEquipment(self.imgPath)
+        
+        models = self.equipmentDict.get('cams', [''])
+        # update the cam model text
+        model = models[0]
+        formatted_result = f'{model}'
+        self.wiz.label_camModel.setText(formatted_result)
+
+        lenses = self.equipmentDict.get('lenses', [''])
+        # populate the lens model qcombo box
+        self.populateQComboBoxSettings(self.wiz.comboBox_lensModel, lenses)
+        if lenses is ['']:
             # if no lenses selected, stop early and uncheck "lensCorrection"
             self.wiz.checkBox_lensCorrection.setCheckState(False)
             return
-        equipmentList['lens'] = selected_lens
-        equipmentList['cam'] = equipmentList.get('cams', [''])[0]
-        height, width = self.img.shape[0:2]
+        # select the 'best' guess
+        selected_lens = str(lenses[0])
+        self.selectQComboBoxSettings(self.wiz.comboBox_lensModel, selected_lens)
+        self.equipmentDict['lens'] = selected_lens
+        self.equipmentDict['cam'] = self.equipmentDict.get('cams', [''])[0]
+        imgShape = self.img.shape[0:2]
+        # because we don't know the proper rotation, assume most images will be taller than wide
+        # If this is wrong, the first process of each image will take a little longer
+        height = max(imgShape)
+        width = min(imgShape)
+        self.equipmentDict['height'] = height
+        self.equipmentDict['width'] = width
         # focal distance should be in meters
         focalDistance = self.wiz.doubleSpinBox_focalDistance.value()
         focalDistance = round(focalDistance / 100, 5)
-        self.eqRead.setMod(equipmentList, height, width, focalDistance)
-        self.undist_coords = self.eqRead.undist_coords
+        self.equipmentDict['focalDistance'] = focalDistance
+        # reinitalizing eqRead also calls setmod
+        self.eqRead = eqRead(parent=self.wiz, equipmentDict = self.equipmentDict)
 
     def get_selected_lens(self):
         """
@@ -722,7 +722,7 @@ class SettingsWizard(QWizard):
             return None
         else:
             current_index =- 1
-            lens = self.equipment['lenses'][current_index]
+            lens = self.equipmentDict['lenses'][current_index]
             return lens
 
     def selectQComboBoxSettings(self, obj, value):
@@ -866,7 +866,7 @@ class SettingsWizard(QWizard):
         self.wiz_dict = {
                 # class variable(s)
                 "colorCheckerDetection": self.colorCheckerDetection,
-                "undistCoords":self.undist_coords,
+                "equipmentDict":self.equipmentDict,
                 # self.wiz.path_setup_page
                 "inputPath": self.wiz.lineEdit_inputPath.text(),  # input monitor folder path
                 "saveProcessedJpg": self.wiz.group_saveProcessedJpg.isChecked(),  # checked = saveJPG

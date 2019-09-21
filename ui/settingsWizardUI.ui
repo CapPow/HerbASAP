@@ -1399,6 +1399,9 @@
          <property name="checked">
           <bool>true</bool>
          </property>
+         <property name="tristate">
+          <bool>false</bool>
+         </property>
         </widget>
        </item>
        <item row="4" column="1">
@@ -1736,8 +1739,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>579</width>
-         <height>304</height>
+         <width>98</width>
+         <height>34</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -2033,8 +2036,8 @@
    <slot>is_nameAvailable(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>211</x>
-     <y>175</y>
+     <x>108</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>575</x>
@@ -2049,8 +2052,8 @@
    <slot>save_inputs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>211</x>
-     <y>209</y>
+     <x>108</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>581</x>
