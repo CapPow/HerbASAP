@@ -1077,47 +1077,6 @@ class appWindow(QMainWindow):
         # pass off the results to be processed
         self.process_selected_items(img_path, 'selection')
 
-    def apply_corrections(self):
-        """
-        applies postprocessing to self.raw_base based on what was learned
-        from the initial openImageFile object.
-        """
-        if self.cc_avg_white:  # if a cc_avg_white value was found
-            use_camera_wb = False
-            # normalize each value by 255
-            #cc_avg_white = [255/x for x in self.cc_avg_white]
-            r, g, b = self.cc_avg_white
-            g = g/2
-            wb = [r, g, b, g]
-            use_camera_wb = False
-        else:  # otherwise use as shot values
-            use_camera_wb = True
-            wb = [1, 1, 1, 1]
-
-        rgb_cor = self.raw_base.postprocess(demosaic_algorithm=rawpy.DemosaicAlgorithm.AHD,
-                                            #dcb_enhance=True,
-                                            use_auto_wb=True,
-                                            use_camera_wb=use_camera_wb,
-                                            user_wb=wb,
-                                            # user_black = self.cc_blk_point,
-                                            output_color=rawpy.ColorSpace.sRGB,
-                                            #output_bps=8,
-                                            user_flip=self.flip_value,
-                                            user_sat=None,
-                                            auto_bright_thr=None,
-                                            bright=1.0,
-                                            exp_shift=None,
-                                            chromatic_aberration=(1, 1),
-                                            exp_preserve_highlights=1.0,
-                                            no_auto_scale=False,
-                                            gamma=None
-                                            )
-
-        self.raw_base.close()
-        del self.raw_base
-        self.raw_base = None  # be extra sure we free the ram
-        self.im = rgb_cor
-
     def high_precision_wb(self, cc_location):
         x1, y1, x2, y2 = cc_location
 
@@ -1161,6 +1120,46 @@ class appWindow(QMainWindow):
         im[1] = np.minimum(im[1] * (255 / float(color_chip_im[1].max()) - 0.2), 255)
         im[2] = np.minimum(im[2] * (255 / float(color_chip_im[2].max()) - 0.2), 255)
         self.im = im.transpose(1, 2, 0).astype(np.uint8)
+
+    def openImageFile(self, imgPath,
+                      demosaic=rawpy.DemosaicAlgorithm.AHD):
+        """ 
+	given an image path, attempts to return a numpy array image object
+        """
+        # first open an unadulterated reference version of the image
+        #if self.ext.lower() == '.cr2':
+        ext_wb = [1, 0.5, 1, 0.5]
+        #else:
+        #    print('here')
+        #    ext_wb = [1, 1, 1, 0]
+        try:  # use rawpy to convert raw to openCV
+            raw_base = rawpy.imread(imgPath)
+            base = raw_base
+            self.raw_base = raw_base
+            im = base.postprocess(
+                    output_color=rawpy.ColorSpace.raw,
+                    #half_size=True,
+                    use_camera_wb=False,
+                    #use_auto_wb=True,
+                    user_wb=ext_wb,
+                    no_auto_bright=True,
+                    demosaic_algorithm=rawpy.DemosaicAlgorithm.LINEAR
+                    )
+            #cv2.imwrite('rawImg.jpg', im)
+            #im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+
+        # pretty much must be a raw format image
+        except (LibRawFatalError, LibRawNonFatalError) as e:
+
+            if imgPath != '':
+                title = 'Error opening file'
+                text = 'Corrupted or incompatible image file.'
+                detail_text = (f"LibRawError opening: {imgPath}\nUsually this "
+                               "indicates a corrupted or incompatible image."
+                               "\n{e}")
+                self.userNotice(text, title, detail_text)
+            raise  # Pass this up to the process function for halting
+        return im
 
     def apply_corrections(self):
         """
@@ -1211,46 +1210,6 @@ class appWindow(QMainWindow):
         del self.raw_base
         self.raw_base = None  # be extra sure we free the ram
         self.im = rgb_cor
-
-    def openImageFile(self, imgPath,
-                      demosaic=rawpy.DemosaicAlgorithm.AHD):
-        """ 
-	given an image path, attempts to return a numpy array image object
-        """
-        # first open an unadulterated reference version of the image
-        #if self.ext.lower() == '.cr2':
-        ext_wb = [1, 0.5, 1, 0.5]
-        #else:
-        #    print('here')
-        #    ext_wb = [1, 1, 1, 0]
-        try:  # use rawpy to convert raw to openCV
-            raw_base = rawpy.imread(imgPath)
-            base = raw_base
-            self.raw_base = raw_base
-            im = base.postprocess(
-                    output_color=rawpy.ColorSpace.raw,
-                    #half_size=True,
-                    use_camera_wb=False,
-                    #use_auto_wb=True,
-                    user_wb=ext_wb,
-                    no_auto_bright=True,
-                    demosaic_algorithm=rawpy.DemosaicAlgorithm.LINEAR
-                    )
-            #cv2.imwrite('rawImg.jpg', im)
-            #im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-
-        # pretty much must be a raw format image
-        except (LibRawFatalError, LibRawNonFatalError) as e:
-
-            if imgPath != '':
-                title = 'Error opening file'
-                text = 'Corrupted or incompatible image file.'
-                detail_text = (f"LibRawError opening: {imgPath}\nUsually this "
-                               "indicates a corrupted or incompatible image."
-                               "\n{e}")
-                self.userNotice(text, title, detail_text)
-            raise  # Pass this up to the process function for halting
-        return im
 
     def create_profile(self):
         """
