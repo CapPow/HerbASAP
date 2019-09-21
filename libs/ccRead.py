@@ -297,7 +297,7 @@ class ColorchipRead:
         image_width, image_height = im.size
         original_width, original_height = original_size
 
-        cv_image = cv2.cvtColor(nim, cv2.COLOR_BGR2HSV)
+        cv_image = cv2.cvtColor(nim, cv2.COLOR_RGB2HSV)
 
         partition_area = partition_size * partition_size
         contour_area_floor = partition_area // 10
@@ -526,6 +526,7 @@ class ColorchipRead:
         # determine an allowable range for the floodfill
         var_threshold = int((maxVal-minVal) * .1)
         h,w,chn = cropped_cc.shape
+        
         seed = maxLoc
         mask = np.zeros((h+2,w+2),np.uint8)
         floodflags = 8
@@ -545,7 +546,8 @@ class ColorchipRead:
         avg_white = extracted.reshape(-1,extracted.shape[-1]).mean(0)
         # convert it to an array of ints
         avg_white = np.asarray(avg_white, dtype=int)
-        return list(avg_white)
+
+        return list(avg_white), maxVal
 
     def test_feature(self, im, original_size, cc_size='predict'):
         """

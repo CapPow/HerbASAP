@@ -202,7 +202,10 @@ class appWindow(QMainWindow):
         self.Timer_Emitter.timerStart.connect(self.start_timer)
         self.Timer_Emitter.timerStop.connect(self.stop_timer)
         self.timer_start = time.time()
-       # Establish base working condition
+       # set up classes which do not need re init upon profile loading
+        self.blurDetect = blurDetect(parent=self.mainWindow)
+        self.colorchipDetect = ColorchipRead(parent=self.mainWindow)
+        # Establish base working condition
         self.reset_working_variables()
         ###
         # job manaager "boss_thread", it starts itself and is running the __boss_function
@@ -812,7 +815,8 @@ class appWindow(QMainWindow):
 
                 self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
                 self.cropped_cc = cropped_cc
-                cc_avg_white = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
+                cc_avg_white, self.cc_blk_point = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
+                #print(f'avg BLACK: {self.cc_blk_point}')
                 self.cc_avg_white = cc_avg_white
                 self.update_cc_info(self.cc_quadrant, cropped_cc,
                                     cc_crop_time, cc_avg_white)
@@ -840,6 +844,9 @@ class appWindow(QMainWindow):
                         'Lower left',
                         'Upper left']
             user_def_quad = quad_map.index(user_def_loc) + 1
+            #print(user_def_quad)
+            #print(self.cc_quadrant)
+            
             # cc_quadrant starts at first,
             # determine the proper rawpy flip value necessary
             rotation_qty = (self.cc_quadrant - user_def_quad)
@@ -858,7 +865,7 @@ class appWindow(QMainWindow):
             # equipment corrections
             cm_distance = self.profile.get('focalDistance', 25.5)
             m_distance = round(cm_distance / 100, 5)
-            eq_worker_data = EQWorkerData(self.im, self.img_path, m_distance)
+            eq_worker_data = EQWorkerData(self.im)
             eq_job = Job('eq_worker', eq_worker_data, self.eqRead.lensCorrect)
             self.boss_thread.request_job(eq_job)
             # equipment corrections should set self.im
@@ -1056,8 +1063,8 @@ class appWindow(QMainWindow):
         if self.cc_avg_white:  # if a cc_avg_white value was found
             use_camera_wb = False
             # normalize each value by 255
-            cc_avg_white = [255/x for x in self.cc_avg_white]
-            r, g, b = cc_avg_white
+            #cc_avg_white = [255/x for x in self.cc_avg_white]
+            r, g, b = self.cc_avg_white
             g = g/2
             wb = [r, g, b, g]
             use_camera_wb = False
@@ -1066,11 +1073,13 @@ class appWindow(QMainWindow):
             wb = [1, 1, 1, 1]
 
         rgb_cor = self.raw_base.postprocess(demosaic_algorithm=rawpy.DemosaicAlgorithm.AHD,
-                                            dcb_enhance=True,
+                                            #dcb_enhance=True,
+                                            use_auto_wb=True,
                                             use_camera_wb=use_camera_wb,
                                             user_wb=wb,
+                                            #user_black = self.cc_blk_point,
                                             output_color=rawpy.ColorSpace.sRGB,
-                                            output_bps=8,
+                                            #output_bps=8,
                                             user_flip=self.flip_value,
                                             user_sat=None,
                                             auto_bright_thr=None,
@@ -1092,20 +1101,23 @@ class appWindow(QMainWindow):
         """
         # first open an unadulterated reference version of the image
         #if self.ext.lower() == '.cr2':
-        ext_wb = [1, 0.5, 1, 0]
+        ext_wb = [1, 0.5, 1, 0.5]
         #else:
         #    print('here')
         #    ext_wb = [1, 1, 1, 0]
         try:  # use rawpy to convert raw to openCV
             self.raw_base = rawpy.imread(imgPath)
-            im = self.raw_base.postprocess(output_color=rawpy.ColorSpace.raw,
-                                      #half_size=True,
-                                      use_auto_wb=False,
-                                      user_wb=ext_wb,
-                                      no_auto_bright=True,
-                                      demosaic_algorithm=rawpy.DemosaicAlgorithm.LINEAR
-                                      )
+            im = self.raw_base.postprocess(
+                    output_color=rawpy.ColorSpace.raw,
+                    #half_size=True,
+                    use_camera_wb=False,
+                    use_auto_wb=True,
+                    user_wb=ext_wb,
+                    no_auto_bright=True,
+                    demosaic_algorithm=rawpy.DemosaicAlgorithm.LINEAR
+                    )
             #cv2.imwrite('rawImg.jpg', im)
+            #im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
 
         # pretty much must be a raw format image
         except (LibRawFatalError, LibRawNonFatalError) as e:
@@ -1174,7 +1186,6 @@ class appWindow(QMainWindow):
             self.setValue('profiles', profiles)
             # update the profile options
             self.populate_profile_list()
-            self.update_profile_settings()
 
     def update_profile_settings(self):
         """
@@ -1204,9 +1215,7 @@ class appWindow(QMainWindow):
         ###
         # misc feature classes
         ###
-        self.blurDetect = blurDetect(parent=self.mainWindow)
-        self.colorchipDetect = ColorchipRead(parent=self.mainWindow)
-        self.eqRead = eqRead(parent=self.mainWindow)
+        self.eqRead = eqRead(parent=self.mainWindow, equipmentDict=self.profile.get('equipmentDict', {}))
         ###
         # setup metadata reading/writing class
         ###
@@ -1226,7 +1235,6 @@ class appWindow(QMainWindow):
         """
         populates the profiles QCombobox with the stored profiles.
         """
-    
         # identify the target comboBox
         profile_comboBox = self.mainWindow.comboBox_profiles
         # clear current items in the list
@@ -1331,10 +1339,8 @@ class appWindow(QMainWindow):
 
         # populate technican_list
         self.populate_technician_list()
-        # populate the profile list
+        # populate the profile list #
         self.populate_profile_list()
-        # break the current profile settings out as a class variable
-        self.update_profile_settings()
 
         # QComboBox
         comboBox_profiles = self.get('selected_profile', '')

@@ -472,7 +472,7 @@
              <bool>true</bool>
             </property>
             <property name="text">
-             <string>Catalog Number Prefix</string>
+             <string>Catalog number Prefix</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1295,108 +1295,6 @@
     <string>Distortion Corrections</string>
    </property>
    <layout class="QGridLayout" name="gridLayout_17">
-    <item row="0" column="0">
-     <widget class="QLabel" name="label_21">
-      <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HerbASAP can correct for equipment based distortions. &lt;/p&gt;&lt;p&gt;Lens distortions and chromatic aberrations can be corrected in image derivative. Corrections are performed using the &amp;quot;Lensfunpy&amp;quot; library, a python wrapper for &amp;quot;Lensfun.&amp;quot; To use this feature, an approximate focal distance (i.e., distance from lens to subject) needs to be set. It is not considered necessary to adjust this value following &lt;span style=&quot; font-style:italic;&quot;&gt;minor&lt;/span&gt; modifications to the imaging apparatus.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QGroupBox" name="group_equipmentDetection">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="title">
-       <string>Equipment detection</string>
-      </property>
-      <property name="checkable">
-       <bool>false</bool>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_7">
-       <property name="leftMargin">
-        <number>3</number>
-       </property>
-       <property name="topMargin">
-        <number>3</number>
-       </property>
-       <property name="rightMargin">
-        <number>3</number>
-       </property>
-       <property name="bottomMargin">
-        <number>3</number>
-       </property>
-       <item row="4" column="1">
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <widget class="QLabel" name="label_2">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="whatsThis">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The approximate focal distance (i.e., distance from lens to subject) in cm. It is not necessary to edit this value following &lt;span style=&quot; font-style:italic;&quot;&gt;minor&lt;/span&gt; modifications to the imaging apparatus.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="text">
-            <string>Approximate focal distance</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_focalDistance">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="whatsThis">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The approximate focal distance (i.e., distance from lens to subject) in cm. It is not necessary to edit this value following &lt;span style=&quot; font-style:italic;&quot;&gt;minor&lt;/span&gt; modifications to the imaging apparatus.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="suffix">
-            <string>cm</string>
-           </property>
-           <property name="minimum">
-            <double>10.000000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>999.990000000000009</double>
-           </property>
-           <property name="value">
-            <double>25.500000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item row="4" column="0">
-        <widget class="QCheckBox" name="checkBox_lensCorrection">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="text">
-          <string>Perform Lens corrections</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
     <item row="2" column="0">
      <layout class="QGridLayout" name="gridLayout_16" columnstretch="1,1,0">
       <item row="2" column="2">
@@ -1455,6 +1353,156 @@
        </widget>
       </item>
      </layout>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_21">
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HerbASAP can correct for equipment based distortions. &lt;/p&gt;&lt;p&gt;Lens distortions and chromatic aberrations can be corrected in image derivative. Corrections are performed using the &amp;quot;Lensfunpy&amp;quot; library, a python wrapper for &amp;quot;Lensfun.&amp;quot; To use this feature, an approximate focal distance (i.e., distance from lens to subject) needs to be set. It is not considered necessary to adjust this value following &lt;span style=&quot; font-style:italic;&quot;&gt;minor&lt;/span&gt; modifications to the imaging apparatus.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QGroupBox" name="group_equipmentDetection">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="title">
+       <string>Equipment detection</string>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_7">
+       <property name="leftMargin">
+        <number>3</number>
+       </property>
+       <property name="topMargin">
+        <number>3</number>
+       </property>
+       <property name="rightMargin">
+        <number>3</number>
+       </property>
+       <property name="bottomMargin">
+        <number>3</number>
+       </property>
+       <item row="4" column="0">
+        <widget class="QCheckBox" name="checkBox_lensCorrection">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>Perform Lens corrections</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <property name="tristate">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="whatsThis">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The approximate focal distance (i.e., distance from lens to subject) in cm. It is not necessary to edit this value following &lt;span style=&quot; font-style:italic;&quot;&gt;minor&lt;/span&gt; modifications to the imaging apparatus.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>Approximate focal distance</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="doubleSpinBox_focalDistance">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="whatsThis">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The approximate focal distance (i.e., distance from lens to subject) in cm. It is not necessary to edit this value following &lt;span style=&quot; font-style:italic;&quot;&gt;minor&lt;/span&gt; modifications to the imaging apparatus.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="suffix">
+            <string>cm</string>
+           </property>
+           <property name="minimum">
+            <double>10.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>999.990000000000009</double>
+           </property>
+           <property name="value">
+            <double>25.500000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_12">
+         <property name="text">
+          <string>Lens model:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_10">
+         <property name="text">
+          <string>Camera model:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QComboBox" name="comboBox_lensModel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the correct lens model. If your model is not on the list, this feature is not available.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>Not Available (no lens corrections are available)</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLabel" name="label_camModel">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -1691,8 +1739,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>579</width>
-         <height>304</height>
+         <width>98</width>
+         <height>34</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -1876,7 +1924,7 @@
    <slot>add_pattern()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>460</x>
+     <x>324</x>
      <y>477</y>
     </hint>
     <hint type="destinationlabel">
@@ -1988,8 +2036,8 @@
    <slot>is_nameAvailable(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>211</x>
-     <y>175</y>
+     <x>108</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>575</x>
@@ -2004,8 +2052,8 @@
    <slot>save_inputs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>211</x>
-     <y>209</y>
+     <x>108</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>581</x>
@@ -2189,6 +2237,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>comboBox_lensModel</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>Wizard</receiver>
+   <slot>gen_distort_corrections()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>234</x>
+     <y>265</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>285</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openDisplayImage()</slot>
@@ -2205,5 +2269,6 @@
   <slot>save_inputs()</slot>
   <slot>setFolderPath()</slot>
   <slot>emit_completeChanged()</slot>
+  <slot>gen_distort_corrections()</slot>
  </slots>
 </ui>

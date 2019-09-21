@@ -10,6 +10,8 @@ from PyQt5.QtCore import Qt
 from ui.settingsWizardUI import Ui_Wizard
 from ui.imageDialogUI import Ui_Dialog_image
 
+from libs.eqRead import eqRead
+
 import numpy as np
 import cv2
 import re
@@ -160,6 +162,7 @@ class SettingsWizard(QWizard):
     def init_ui(self):
         self.wiz = Ui_Wizard()
         self.wiz.setupUi(self)
+        self.eqRead = eqRead(parent=self.wiz)
         # attach update_profile_details to the next button
         self.button(QWizard.NextButton).clicked.connect(self.update_profile_details)
         self.button(QWizard.HelpButton).clicked.connect(self.enter_whatsthis_mode)
@@ -322,6 +325,9 @@ class SettingsWizard(QWizard):
                 self.wiz.label_loadedExampleFile.setText(f'{base_file_name} Loaded')
                 self.wiz.label_loadedExampleFile_1.setText(f'{base_file_name} Loaded')
             
+            # determine the imaging equipment, and generate correction
+            self.gen_distort_corrections()
+            
             self.working = False
             # inform the UI the loading has completed
             self.emit_completeChanged()
@@ -460,16 +466,14 @@ class SettingsWizard(QWizard):
         """
         used to test the bcRead functions
         """
-        from libs.bcRead import bcRead
-
         self.update_CatalogNumber_Preview()
         patterns = self.retrieve_bc_patterns()
         self.fill_patterns(patterns)
         backend = self.wiz.comboBox_bcBackend.currentText()
-
-        bcRead = bcRead(patterns, backend, parent=self.wiz)
+        from libs.bcRead import bcRead
+        self.bcRead = bcRead(patterns, backend, parent=self.wiz)
         grey = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
-        bcResults = str(bcRead.decodeBC(grey))
+        bcResults = str(self.bcRead.decodeBC(grey))
         if bcResults == '[]':
             bcResults = 'FAILED, no codes found.'
         self.wiz.label_bcRead_results.setText(f'results: {bcResults}')
@@ -482,7 +486,6 @@ class SettingsWizard(QWizard):
         used to test the blurDetect functions
         """
         from libs.blurDetect import blurDetect
-
         blurDetect = blurDetect()
         blur_threshold = self.wiz.doubleSpinBox_blurThreshold.value()
         grey = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
@@ -546,10 +549,11 @@ class SettingsWizard(QWizard):
         """
         used to test basic crc detection
         """
+        from libs.ccRead import ColorchipRead
+        
         self.working = True
         self.emit_completeChanged()
         try:
-            from libs.ccRead import ColorchipRead, ColorChipError
             colorchipDetect = ColorchipRead(parent=self.wiz)
             crc_type = self.wiz.comboBox_crcType.currentText()
             if crc_type == "ISA ColorGauge Nano":  # aka small crc
@@ -630,10 +634,10 @@ class SettingsWizard(QWizard):
         """
         used to test the determination of an average 'white' RGB value from CRC
         """
-        from libs.ccRead import ColorchipRead, ColorChipError
+        from libs.ccRead import ColorchipRead
         colorchipDetect = ColorchipRead(parent=self.wiz)
         try:
-            cc_avg_white = colorchipDetect.predict_color_chip_whitevals(self.cropped_cc)
+            cc_avg_white, cc_black_point = colorchipDetect.predict_color_chip_whitevals(self.cropped_cc)
             if isinstance(cc_avg_white, list):
                 formatted_results = f"avg white RGB from CRC = {cc_avg_white}"
 
@@ -654,32 +658,12 @@ class SettingsWizard(QWizard):
         Used to determine if the equipment can be properly detected in order
         for eqRead to properly make equipment corrections.
         """
-        from libs.eqRead import eqRead
-        
         try:
-            eqRead = eqRead(parent=self.wiz)
-            result = eqRead.testFeature(self.img, self.imgPath, self.wiz.doubleSpinBox_focalDistance.value())
-            if result:
-                eq_dict, modShape = result
-                if modShape[0:2] == self.img.shape[0:2]:
-                    eq_dict_str = "\n\n".join([f"{k}: {v}" for k, v in eq_dict.items()])
-                    formatted_result = ('Success generating correction matrix\n\n'
-                                        f'detected equipment:\n\n{eq_dict_str}')
-                else:
-                    formatted_result = 'TEST FAILED'
-                    notice_title = 'Error Determining Equipment'
-                    notice_text = 'Equipment determination / correction failed'
-                    detail_text = ('Failed to generate the correction matrix'
-                                   f'detected equipment: {eq_dict}')
-                    self.userNotice(notice_text, notice_title, detail_text)
-            else:
-                formatted_result = 'TEST FAILED'
-                notice_title = 'Error Determining Equipment'
-                notice_text = 'Equipment determination / correction failed'
-                detail_text = ('Failed to determine equipment')
-                self.userNotice(notice_text, notice_title, detail_text)
-                
+            self.gen_distort_corrections()
+            self.eqRead.lensCorrect(self.img)
+            formatted_result = 'Success generating correction matrix!'
             self.wiz.label_eqRead_results.setText(formatted_result)
+            self.wiz.checkBox_lensCorrection.setCheckState(True)
         except Exception as e:  # really any exception here should be handled.
             notice_title = 'Error Determining Equipment'
             notice_text = 'Equipment determination / correction failed'
@@ -689,13 +673,83 @@ class SettingsWizard(QWizard):
             self.userNotice(notice_text, notice_title, detail_text)
             formatted_result = 'TEST FAILED'
             self.wiz.label_eqRead_results.setText(formatted_result)
+            self.wiz.checkBox_lensCorrection.setCheckState(False)
+    
+    def gen_distort_corrections(self):
+        """
+        attempts to generate the distortion correction matrix
+        """
+        self.equipmentDict = self.eqRead.detImagingEquipment(self.imgPath)
+        
+        models = self.equipmentDict.get('cams', [''])
+        # update the cam model text
+        model = models[0]
+        formatted_result = f'{model}'
+        self.wiz.label_camModel.setText(formatted_result)
 
-    def populateQComboBoxSettings(self, obj, value):
+        lenses = self.equipmentDict.get('lenses', [''])
+        # populate the lens model qcombo box
+        self.populateQComboBoxSettings(self.wiz.comboBox_lensModel, lenses)
+        if lenses is ['']:
+            # if no lenses selected, stop early and uncheck "lensCorrection"
+            self.wiz.checkBox_lensCorrection.setCheckState(False)
+            return
+        # select the 'best' guess
+        selected_lens = str(lenses[0])
+        self.selectQComboBoxSettings(self.wiz.comboBox_lensModel, selected_lens)
+        self.equipmentDict['lens'] = selected_lens
+        self.equipmentDict['cam'] = self.equipmentDict.get('cams', [''])[0]
+        imgShape = self.img.shape[0:2]
+        # because we don't know the proper rotation, assume most images will be taller than wide
+        # If this is wrong, the first process of each image will take a little longer
+        height = max(imgShape)
+        width = min(imgShape)
+        self.equipmentDict['height'] = height
+        self.equipmentDict['width'] = width
+        # focal distance should be in meters
+        focalDistance = self.wiz.doubleSpinBox_focalDistance.value()
+        focalDistance = round(focalDistance / 100, 5)
+        self.equipmentDict['focalDistance'] = focalDistance
+        # reinitalizing eqRead also calls setmod
+        self.eqRead = eqRead(parent=self.wiz, equipmentDict = self.equipmentDict)
+
+    def get_selected_lens(self):
+        """
+        called when the lensfunpy object is needed from user's lens selection.
+        """
+        current_index= self.wiz.comboBox_lensModel.currentIndex()
+        if current_index == 0:
+            return None
+        else:
+            current_index =- 1
+            lens = self.equipmentDict['lenses'][current_index]
+            return lens
+
+    def selectQComboBoxSettings(self, obj, value):
         """ sets a QComboBox based on a string value. Presumed to be a more
         durable method. obj is the qComboBox object, and value is a string
         to search for"""
+        self.wiz.comboBox_lensModel.blockSignals(True)
         index = obj.findText(value)
         obj.setCurrentIndex(index)
+        self.wiz.comboBox_lensModel.blockSignals(False)
+
+    def populateQComboBoxSettings(self, qbox_object, value_list):
+        """
+        populates the obj qbox_object with the value_list.
+        """
+        self.wiz.comboBox_lensModel.blockSignals(True)
+        # identify the target comboBox
+        profile_comboBox = qbox_object
+        # clear current items in the list
+        profile_comboBox.clear()
+        # clean the value_list of empty strings
+        value_list = [str(x) for x in value_list if x != '']
+        # insert the "Not available text at top of list" then populate it
+        value_list.insert(0, "Not Available (no lens corrections are available)")
+        # if the list of profile names is empty, force the wizard.
+        profile_comboBox.addItems(value_list)
+        self.wiz.comboBox_lensModel.blockSignals(False)
 
     def convertCheckState(self, stringState):
         """
@@ -734,15 +788,15 @@ class SettingsWizard(QWizard):
 
         # QComboBox
         comboBox_colorCheckerPosition = d.get('colorCheckerPosition', 'Upper right')
-        self.populateQComboBoxSettings( w.comboBox_colorCheckerPosition, comboBox_colorCheckerPosition)
+        self.selectQComboBoxSettings( w.comboBox_colorCheckerPosition, comboBox_colorCheckerPosition)
         comboBox_bcBackend = d.get('bcBackend', 'zbar')
-        self.populateQComboBoxSettings( w.comboBox_bcBackend, comboBox_bcBackend)
+        self.selectQComboBoxSettings( w.comboBox_bcBackend, comboBox_bcBackend)
         comboBox_dupNamingPolicy = d.get('dupNamingPolicy', 'LOWER case letter')
-        self.populateQComboBoxSettings( w.comboBox_dupNamingPolicy, comboBox_dupNamingPolicy)
+        self.selectQComboBoxSettings( w.comboBox_dupNamingPolicy, comboBox_dupNamingPolicy)
         comboBox_crcType = d.get('crcType', 'ISA ColorGauge Nano')
-        self.populateQComboBoxSettings( w.comboBox_crcType, comboBox_crcType)
+        self.selectQComboBoxSettings( w.comboBox_crcType, comboBox_crcType)
         comboBox_colorCheckerPosition = d.get('colorCheckerPosition', 'Upper right')
-        self.populateQComboBoxSettings( w.comboBox_colorCheckerPosition, comboBox_colorCheckerPosition)
+        self.selectQComboBoxSettings( w.comboBox_colorCheckerPosition, comboBox_colorCheckerPosition)
         
         # QLineEdit
         lineEdit_profileName = d.get('profileName', '')
@@ -812,6 +866,7 @@ class SettingsWizard(QWizard):
         self.wiz_dict = {
                 # class variable(s)
                 "colorCheckerDetection": self.colorCheckerDetection,
+                "equipmentDict":self.equipmentDict,
                 # self.wiz.path_setup_page
                 "inputPath": self.wiz.lineEdit_inputPath.text(),  # input monitor folder path
                 "saveProcessedJpg": self.wiz.group_saveProcessedJpg.isChecked(),  # checked = saveJPG
@@ -860,13 +915,13 @@ class SettingsWizard(QWizard):
         """
         self.build_profile_dict()
         # list the profile details on the final page.
-        formatted_profile = "\n".join([f"{k}: {v}" for k, v in self.wiz_dict.items()])
+        formatted_profile = "\n".join([f"{k}: {v}" for k, v in self.wiz_dict.items() if k != 'undistCoords'])
         self.wiz.label_profileDetails.setText(formatted_profile)
 
     def save_inputs(self):
         """
         Builds a settings profile dict from the appropriate fields and saves it
-        to the parent settings under the 
+        to the parent settings
         """
         # buid most recent profile dict
         self.build_profile_dict()

@@ -63,10 +63,8 @@ class EQWorkerData:
     """
         object that represents the data needed to run a eq_worker
     """
-    def __init__(self, im, img_path, m_distance):
+    def __init__(self, im):
         self.im = im
-        self.img_path = img_path
-        self.mDistance = m_distance
 
 class SaveWorkerData:
     """
@@ -139,7 +137,7 @@ class Boss(QThread):
             self.__thread_pool.start(blur_worker, priority=QThread.TimeCriticalPriority)  # start blur_worker thread
         elif job.job_name == 'eq_worker' and job.job_data is not None and job.job_function is not None:
             self.__is_eq_worker_running = True
-            eq_worker = Worker(job.job_function, job.job_data.im, job.job_data.img_path, job.job_data.mDistance)
+            eq_worker = Worker(job.job_function, job.job_data.im)
             eq_worker.set_worker_name('eq_worker')
             eq_worker.signals.started.connect(self.worker_started_handler)
             eq_worker.signals.error.connect(self.worker_error_handler)
