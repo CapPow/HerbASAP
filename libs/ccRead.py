@@ -410,7 +410,7 @@ class ColorchipRead:
                 self.discriminator_model.set_tensor(self.discriminator_input_details[0]['index'], [highest_prob_images_pred[i]])
                 self.discriminator_model.invoke()
 
-                if self.discriminator_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1] > 0.95:
+                if self.discriminator_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1] > 0.99:
                     print(f"Discriminator took {i} predictions before finding the colorchip.")
                     best_image = Image.fromarray(highest_prob_images[i])
                     best_location = highest_prob_positions[i]
@@ -423,7 +423,7 @@ class ColorchipRead:
             if high_precision:
                 best_image, biggest_square = ColorchipRead.high_precision_cc_crop(best_image)
                 x1, y1, x2, y2 = best_location[0] + biggest_square[0], best_location[1] + biggest_square[1], \
-                                 best_location[2] + biggest_square[0], best_location[3] + biggest_square[1]
+                                 best_location[0] + biggest_square[2], best_location[1] + biggest_square[3]
             else:
                 x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
         except Exception as e:

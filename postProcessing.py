@@ -857,6 +857,7 @@ class appWindow(QMainWindow):
             endPos = rotation_qty + startPos  # ending index in the list
             self.flip_value = rotations[endPos]  # value at that position
         self.apply_corrections()
+        self.high_precision_wb(cc_position)
         # pass off what was learned and properly open image.
         # add the (mostly) corrected image to the preview
         # equipment corrections remain. let user look at this while that runs.
@@ -1077,10 +1078,10 @@ class appWindow(QMainWindow):
                                             use_auto_wb=True,
                                             use_camera_wb=use_camera_wb,
                                             user_wb=wb,
-                                            #user_black = self.cc_blk_point,
+                                            # user_black = self.cc_blk_point,
                                             output_color=rawpy.ColorSpace.sRGB,
                                             #output_bps=8,
-                                            user_flip=self.flip_value,
+                                            # user_flip=self.flip_value,
                                             user_sat=None,
                                             auto_bright_thr=None,
                                             bright=1.0,
@@ -1090,10 +1091,58 @@ class appWindow(QMainWindow):
                                             no_auto_scale=False,
                                             gamma=None
                                             )
+
         self.raw_base.close()
         del self.raw_base
         self.raw_base = None  # be extra sure we free the ram
         self.im = rgb_cor
+
+    def high_precision_wb(self, cc_location):
+        x1, y1, x2, y2 = cc_location
+
+        cc_im = self.im[y1:y2, x1:x2]
+        grayImg = cv2.cvtColor(cc_im, cv2.COLOR_RGB2GRAY)  # convert to gray
+        minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(grayImg)
+        # determine an allowable range for the floodfill
+        var_threshold = int((maxVal - minVal) * .1)
+        h, w, chn = cc_im.shape
+        seed = maxLoc
+        mask = np.zeros((h + 2, w + 2), np.uint8)
+        floodflags = 8
+        floodflags |= cv2.FLOODFILL_FIXED_RANGE
+        floodflags |= cv2.FLOODFILL_MASK_ONLY
+        floodflags |= (int(maxVal) << 8)
+        num, cropped_cc, mask, rect = cv2.floodFill(cc_im, mask, seed,
+                                                    0,
+                                                    (var_threshold,) * 3,
+                                                    (var_threshold,) * 3,
+                                                    floodflags)
+        # correct for the mask expansion
+        mask = mask[1:-1, 1:-1, ...]
+
+        squares = ColorchipRead.find_squares(mask, 100, 10000)
+        print(squares)
+
+        try:
+            biggest_square = max(squares, key=cv2.contourArea)
+            x_arr = biggest_square[..., 0]
+            y_arr = biggest_square[..., 1]
+            x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
+            # biggest_square = (x1, y1, x2, y2)
+            cc_im = cc_im[y1 + 5:y2 - 5, x1 + 5:x2 - 5]
+            cc_im1 = cv2.cvtColor(cc_im, cv2.COLOR_RGB2BGR)
+        except:
+            return
+
+        color_chip_im = cc_im.transpose(2, 0, 1)
+        color_chip_im = color_chip_im.astype(np.int32)
+        im = self.im.transpose(2, 0, 1)
+        im = im.astype(np.int32)
+
+        im[0] = np.minimum(im[0] * (255 / float(color_chip_im[0].max()) - 0.2), 255)
+        im[1] = np.minimum(im[1] * (255 / float(color_chip_im[1].max()) - 0.2), 255)
+        im[2] = np.minimum(im[2] * (255 / float(color_chip_im[2].max()) - 0.2), 255)
+        self.im = im.transpose(1, 2, 0).astype(np.uint8)
 
     def openImageFile(self, imgPath,
                       demosaic=rawpy.DemosaicAlgorithm.AHD):
