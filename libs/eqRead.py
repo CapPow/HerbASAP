@@ -94,8 +94,12 @@ class eqRead():
             cam = equip['cam']
             camMaker = equip.get('camMaker','')
             camModel = equip.get('camModel', '')
-            cam = self.db.find_cameras(camMaker, camModel, loose_search=False)[0]
+            cam = self.db.find_cameras(camMaker, camModel, loose_search=False)
+            if isinstance(cam, list):
+                cam = cam[0]
             lens = str(equip.get('lens',None))
+            if isinstance(lens, list):
+                lens = lens[0]
             if lens is None:
                 self.undist_coords = None
                 return
