@@ -132,25 +132,27 @@ class eqRead():
         g = im[..., 1].swapaxes(0,1)
         b = im[..., 2]
         try:
-            _ = self.undist_coords  # check if undist coords exist yet
+            undist_coords = self.undist_coords  # check if undist coords exist yet
         except AttributeError:  # if not, generate them using input im shape
             print('generating undistcoords')
             h, w = im.shape[0:2]
             self.setMod(h, w)
+            undist_coords = self.undist_coords
         try:
             # generate a corrected channel, then save it back to the image
-            r_undistorted = cv2.remap(r, self.undist_coords[..., 0], None, cv2.INTER_LANCZOS4)
+            r_undistorted = cv2.remap(r, undist_coords[..., 0], None, cv2.INTER_LANCZOS4)
             im[..., 0] = r_undistorted
         except ValueError: # condition where resolution changed from first imputs.
             print('generating new undistcoords')
             h, w = im.shape[0:2]
             self.setMod(h, w)
-            r_undistorted = cv2.remap(r, self.undist_coords[..., 0], None, cv2.INTER_LANCZOS4)
+            undist_coords = self.undist_coords
+            r_undistorted = cv2.remap(r, undist_coords[..., 0], None, cv2.INTER_LANCZOS4)
             im[..., 0] = r_undistorted
         # by this point exceptions should be addressed
-        g_undistorted = cv2.remap(g, self.undist_coords[..., 1], None, cv2.INTER_LANCZOS4)
+        g_undistorted = cv2.remap(g, undist_coords[..., 1], None, cv2.INTER_LANCZOS4)
         im[..., 1] = g_undistorted
-        b_undistorted = cv2.remap(b, self.undist_coords[..., 2], None, cv2.INTER_LANCZOS4)
+        b_undistorted = cv2.remap(b, undist_coords[..., 2], None, cv2.INTER_LANCZOS4)
         im[..., 2] = b_undistorted
 
         return im
@@ -160,13 +162,14 @@ class eqRead():
             user data from group_metaDataApplication. Returns exif data as a
             bytes object."""
 
+        parent = self.parent
         exifDict = piexif.load(srcPath)
         
-        collName = self.parent.plainTextEdit_collectionName.text()
-        collURL = self.parent.plainTextEdit_collectionURL.text()
-        collContactEmail = self.parent.plainTextEdit_contactEmail.text()
-        collContactName = self.parent.plainTextEdit_contactName.text()
-        collLicense = self.parent.plainTextEdit_copywriteLicense.text()
+        collName = parent.plainTextEdit_collectionName.text()
+        collURL = parent.plainTextEdit_collectionURL.text()
+        collContactEmail = parent.plainTextEdit_contactEmail.text()
+        collContactName = parent.plainTextEdit_contactName.text()
+        collLicense = parent.plainTextEdit_copywriteLicense.text()
 
         #exif_dict["0th"][piexif.ImageIFD.DateTime]=datetime.strptime("2000/12/25 12:32","%Y/%m/%d %H:%M").strftime("%Y:%m:%d %H:%M:%S")
         exifBytes = piexif.dump(exif_dict)

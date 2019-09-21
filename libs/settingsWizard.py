@@ -326,6 +326,7 @@ class SettingsWizard(QWizard):
                 self.wiz.label_loadedExampleFile_1.setText(f'{base_file_name} Loaded')
             
             # determine the imaging equipment, and generate correction
+            self.populate_lenses()
             self.gen_distort_corrections()
             
             self.working = False
@@ -674,28 +675,34 @@ class SettingsWizard(QWizard):
             formatted_result = 'TEST FAILED'
             self.wiz.label_eqRead_results.setText(formatted_result)
             self.wiz.checkBox_lensCorrection.setChecked(True)
-    
+
+    def populate_lenses(self):
+        """
+        fills the lens selection qcombobox with options.
+        """
+        self.equipmentDict = self.eqRead.detImagingEquipment(self.imgPath)
+        models = self.equipmentDict.get('cams', [''])
+        # update the cam model text
+        model = models[0]
+        print(model)
+        formatted_result = f'{model}'
+        self.wiz.label_camModel.setText(formatted_result)
+        lenses = self.equipmentDict.get('lenses', [''])
+        # populate the lens model qcombo box
+        self.populateQComboBoxSettings(self.wiz.comboBox_lensModel, lenses)
+        
+
     def gen_distort_corrections(self):
         """
         attempts to generate the distortion correction matrix
         """
-        self.equipmentDict = self.eqRead.detImagingEquipment(self.imgPath)
         
-        models = self.equipmentDict.get('cams', [''])
-        # update the cam model text
-        model = models[0]
-        formatted_result = f'{model}'
-        self.wiz.label_camModel.setText(formatted_result)
-
-        lenses = self.equipmentDict.get('lenses', [''])
-        # populate the lens model qcombo box
-        self.populateQComboBoxSettings(self.wiz.comboBox_lensModel, lenses)
-        if lenses is ['']:
+        selected_lens = self.wiz.comboBox_lensModel.currentText()
+        if selected_lens is "Not Available (no lens corrections are available)":
             # if no lenses selected, stop early and uncheck "lensCorrection"
             self.wiz.checkBox_lensCorrection.setChecked(False)
             return
         # select the 'best' guess
-        selected_lens = str(lenses[0])
         self.selectQComboBoxSettings(self.wiz.comboBox_lensModel, selected_lens)
         self.equipmentDict['lens'] = selected_lens
         self.equipmentDict['cam'] = self.equipmentDict.get('cams', [''])[0]

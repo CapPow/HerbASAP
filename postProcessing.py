@@ -33,6 +33,7 @@ import sys
 import string
 import glob
 import re
+import copy
 from shutil import move as shutil_move
 # UI libs
 from PyQt5 import QtWidgets, QtCore, QtGui
@@ -741,6 +742,9 @@ class appWindow(QMainWindow):
         self.processing_image = True
         # reset the diagnostic details
         self.reset_preview_details()
+        # retrieve the profile as a local variable
+        profile = self.profile
+        
         #self.reset_diagnostic_details()
         self.mainWindow.label_imPreview.setText('...working')
         # give app a moment to update
@@ -766,14 +770,14 @@ class appWindow(QMainWindow):
         print(f'processing: {img_path}')
         # converting to greyscale
         grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-        if self.profile.get('renameByBarcode', True):
+        if profile.get('renameByBarcode', True):
             # retrieve the barcode values from image
             bc_worker_data = BCWorkerData(grey)
             bc_job = Job('bc_worker', bc_worker_data, self.bcRead.decodeBC)
             self.boss_thread.request_job(bc_job)
-        if self.profile.get('blurDetection', True):
+        if profile.get('blurDetection', True):
             # test for bluryness
-            blur_threshold = self.profile.get('blurThreshold', 0.045)
+            blur_threshold = profile.get('blurThreshold', 0.045)
             blur_worker_data = BlurWorkerData(grey, blur_threshold, True)
             blur_job = Job('blur_worker',
                            blur_worker_data, self.blurDetect.blur_check)
@@ -782,12 +786,17 @@ class appWindow(QMainWindow):
         original_size, reduced_img = self.scale_images_with_info(im)
         self.reduced_img = reduced_img
         # currently this is always returning True as it does not exist in self.profile
-        if self.profile.get('colorCheckerDetection', True):
+        
+        scaleDetermination = profile.get('scaleDetermination', False)
+        verifyRotation = profile.get('verifyRotation', False)
+        performWhiteBalance = profile.get('performWhiteBalance', False)
+        
+        if any([scaleDetermination, verifyRotation, performWhiteBalance]):
             # colorchecker functions
             try:
-                crc_type = self.profile.get('crcType', "ISA ColorGauge Nano")
+                crc_type = profile.get('crcType', "ISA ColorGauge Nano")
                 if crc_type == "ISA ColorGauge Nano":  # aka small crc
-                    partition_size = self.profile.get('partition_size', 125)
+                    partition_size = profile.get('partition_size', 125)
                     cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_small(reduced_img,
                                                                                                          original_size,
                                                                                                          stride_style='quick',
@@ -795,7 +804,7 @@ class appWindow(QMainWindow):
                                                                                                          partition_size=partition_size)
                 else:
                     cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
-                if self.profile.get('scaleDetermination', True):
+                if scaleDetermination:
                     # scale determination code
                     # set a timer for scale
                     s_timer = time.time()
@@ -834,11 +843,11 @@ class appWindow(QMainWindow):
                 self.process_from_queue()
                 return
 
-        if not self.profile.get('performWhiteBalance', True):
+        if not performWhiteBalance:
             self.cc_avg_white = None
 
-        if self.profile.get('verifyRotation', True):
-            user_def_loc = self.profile.get('colorCheckerPosition', 'Upper right')
+        if verifyRotation:
+            user_def_loc = profile.get('colorCheckerPosition', 'Upper right')
             quad_map = ['Upper right',
                         'Lower right',
                         'Lower left',
@@ -861,9 +870,9 @@ class appWindow(QMainWindow):
         # add the (mostly) corrected image to the preview
         # equipment corrections remain. let user look at this while that runs.
         self.update_preview_img(self.im)
-        if self.profile.get('lensCorrection', True):
+        if profile.get('lensCorrection', True):
             # equipment corrections
-            cm_distance = self.profile.get('focalDistance', 25.5)
+            cm_distance = profile.get('focalDistance', 25.5)
             m_distance = round(cm_distance / 100, 5)
             eq_worker_data = EQWorkerData(self.im)
             eq_job = Job('eq_worker', eq_worker_data, self.eqRead.lensCorrect)
@@ -1060,13 +1069,22 @@ class appWindow(QMainWindow):
         applies postprocessing to self.raw_base based on what was learned
         from the initial openImageFile object.
         """
-        if self.cc_avg_white:  # if a cc_avg_white value was found
-            use_camera_wb = False
+        cc_avg_white = self.cc_avg_white
+        if cc_avg_white:  # if a cc_avg_white value was found
+            #use_camera_wb = False
             # normalize each value by 255
-            #cc_avg_white = [255/x for x in self.cc_avg_white]
-            r, g, b = self.cc_avg_white
+#            cc_avg_white = [255/x for x in self.cc_avg_white]
+            #r, g, b = self.cc_avg_white
+            maxChan = max(cc_avg_white)
+            r, g, b = [maxChan/x for x in cc_avg_white]
+            print(r, g, b)
+#            print(maxChan)
+#            r = maxChan/r
+#            b = maxChan/b
+#            g = (maxChan/g) / 2
             g = g/2
             wb = [r, g, b, g]
+            print(wb)
             use_camera_wb = False
         else:  # otherwise use as shot values
             use_camera_wb = True
@@ -1074,7 +1092,7 @@ class appWindow(QMainWindow):
 
         rgb_cor = self.raw_base.postprocess(demosaic_algorithm=rawpy.DemosaicAlgorithm.AHD,
                                             #dcb_enhance=True,
-                                            use_auto_wb=True,
+                                            #use_auto_wb=True,
                                             use_camera_wb=use_camera_wb,
                                             user_wb=wb,
                                             #user_black = self.cc_blk_point,
@@ -1095,8 +1113,7 @@ class appWindow(QMainWindow):
         self.raw_base = None  # be extra sure we free the ram
         self.im = rgb_cor
 
-    def openImageFile(self, imgPath,
-                      demosaic=rawpy.DemosaicAlgorithm.AHD):
+    def openImageFile(self, imgPath):
         """ given an image path, attempts to return a numpy array image object
         """
         # first open an unadulterated reference version of the image
@@ -1106,12 +1123,14 @@ class appWindow(QMainWindow):
         #    print('here')
         #    ext_wb = [1, 1, 1, 0]
         try:  # use rawpy to convert raw to openCV
-            self.raw_base = rawpy.imread(imgPath)
-            im = self.raw_base.postprocess(
+            raw_base = rawpy.imread(imgPath)
+            base = raw_base
+            self.raw_base = raw_base
+            im = base.postprocess(
                     output_color=rawpy.ColorSpace.raw,
                     #half_size=True,
                     use_camera_wb=False,
-                    use_auto_wb=True,
+                    #use_auto_wb=True,
                     user_wb=ext_wb,
                     no_auto_bright=True,
                     demosaic_algorithm=rawpy.DemosaicAlgorithm.LINEAR
