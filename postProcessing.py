@@ -865,6 +865,18 @@ class appWindow(QMainWindow):
             startPos = 3  # starting position in the list
             endPos = rotation_qty + startPos  # ending index in the list
             self.flip_value = rotations[endPos]  # value at that position
+            if self.flip_value == 3:
+                height, width = self.im.shape
+                x1d = width - cc_position[0]
+                y1d = height - cc_position[1]
+                x2d = width - cc_position[2]
+                y2d = height - cc_position[3]
+
+                cc_position = x1d, y1d, x2d, y2d
+
+            elif self.flip_value in (5, 6):
+                cc_position = cc_position[1], cc_position[0], cc_position[3], cc_position[2]
+
         self.apply_corrections()
         self.high_precision_wb(cc_position)
         # pass off what was learned and properly open image.
@@ -1065,6 +1077,47 @@ class appWindow(QMainWindow):
         # pass off the results to be processed
         self.process_selected_items(img_path, 'selection')
 
+    def apply_corrections(self):
+        """
+        applies postprocessing to self.raw_base based on what was learned
+        from the initial openImageFile object.
+        """
+        if self.cc_avg_white:  # if a cc_avg_white value was found
+            use_camera_wb = False
+            # normalize each value by 255
+            #cc_avg_white = [255/x for x in self.cc_avg_white]
+            r, g, b = self.cc_avg_white
+            g = g/2
+            wb = [r, g, b, g]
+            use_camera_wb = False
+        else:  # otherwise use as shot values
+            use_camera_wb = True
+            wb = [1, 1, 1, 1]
+
+        rgb_cor = self.raw_base.postprocess(demosaic_algorithm=rawpy.DemosaicAlgorithm.AHD,
+                                            #dcb_enhance=True,
+                                            use_auto_wb=True,
+                                            use_camera_wb=use_camera_wb,
+                                            user_wb=wb,
+                                            # user_black = self.cc_blk_point,
+                                            output_color=rawpy.ColorSpace.sRGB,
+                                            #output_bps=8,
+                                            user_flip=self.flip_value,
+                                            user_sat=None,
+                                            auto_bright_thr=None,
+                                            bright=1.0,
+                                            exp_shift=None,
+                                            chromatic_aberration=(1, 1),
+                                            exp_preserve_highlights=1.0,
+                                            no_auto_scale=False,
+                                            gamma=None
+                                            )
+
+        self.raw_base.close()
+        del self.raw_base
+        self.raw_base = None  # be extra sure we free the ram
+        self.im = rgb_cor
+
     def high_precision_wb(self, cc_location):
         x1, y1, x2, y2 = cc_location
 
@@ -1087,10 +1140,7 @@ class appWindow(QMainWindow):
                                                     floodflags)
         # correct for the mask expansion
         mask = mask[1:-1, 1:-1, ...]
-
         squares = ColorchipRead.find_squares(mask, 100, 10000)
-        print(squares)
-
         try:
             biggest_square = max(squares, key=cv2.contourArea)
             x_arr = biggest_square[..., 0]
@@ -1191,6 +1241,7 @@ class appWindow(QMainWindow):
 
         # pretty much must be a raw format image
         except (LibRawFatalError, LibRawNonFatalError) as e:
+
             if imgPath != '':
                 title = 'Error opening file'
                 text = 'Corrupted or incompatible image file.'
