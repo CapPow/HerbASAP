@@ -663,7 +663,7 @@ class SettingsWizard(QWizard):
             self.eqRead.lensCorrect(self.img)
             formatted_result = 'Success generating correction matrix!'
             self.wiz.label_eqRead_results.setText(formatted_result)
-            self.wiz.checkBox_lensCorrection.setCheckState(True)
+            self.wiz.checkBox_lensCorrection.setChecked(True)
         except Exception as e:  # really any exception here should be handled.
             notice_title = 'Error Determining Equipment'
             notice_text = 'Equipment determination / correction failed'
@@ -673,7 +673,7 @@ class SettingsWizard(QWizard):
             self.userNotice(notice_text, notice_title, detail_text)
             formatted_result = 'TEST FAILED'
             self.wiz.label_eqRead_results.setText(formatted_result)
-            self.wiz.checkBox_lensCorrection.setCheckState(False)
+            self.wiz.checkBox_lensCorrection.setChecked(True)
     
     def gen_distort_corrections(self):
         """
@@ -692,7 +692,7 @@ class SettingsWizard(QWizard):
         self.populateQComboBoxSettings(self.wiz.comboBox_lensModel, lenses)
         if lenses is ['']:
             # if no lenses selected, stop early and uncheck "lensCorrection"
-            self.wiz.checkBox_lensCorrection.setCheckState(False)
+            self.wiz.checkBox_lensCorrection.setChecked(False)
             return
         # select the 'best' guess
         selected_lens = str(lenses[0])
@@ -826,15 +826,15 @@ class SettingsWizard(QWizard):
         
         # QCheckBox
         checkBox_blurDetection = self.convertCheckState(d.get('blurDetection', 'true'))
-        w.checkBox_blurDetection.setCheckState(checkBox_blurDetection)
+        w.checkBox_blurDetection.setChecked(checkBox_blurDetection)
         checkBox_scaleDetermination = self.convertCheckState(d.get('scaleDetermination', 'true'))
-        w.checkBox_scaleDetermination.setCheckState(checkBox_scaleDetermination)
+        w.checkBox_scaleDetermination.setChecked(checkBox_scaleDetermination)
         checkBox_performWhiteBalance = self.convertCheckState(d.get('performWhiteBalance', 'true'))
-        w.checkBox_performWhiteBalance.setCheckState(checkBox_performWhiteBalance)
+        w.checkBox_performWhiteBalance.setChecked(checkBox_performWhiteBalance)
         checkBox_performWhiteBalance = self.convertCheckState(d.get('performWhiteBalance', 'true'))
-        w.checkBox_performWhiteBalance.setCheckState(checkBox_performWhiteBalance)
+        w.checkBox_performWhiteBalance.setChecked(checkBox_performWhiteBalance)
         checkBox_lensCorrection = self.convertCheckState(d.get('lensCorrection', 'true'))
-        w.checkBox_lensCorrection.setCheckState(checkBox_lensCorrection)
+        w.checkBox_lensCorrection.setChecked(checkBox_lensCorrection)
 
         # QGroupbox (checkstate)
         group_saveProcessedJpg = self.convertCheckState(d.get('saveProcessedJpg', 'true'))
