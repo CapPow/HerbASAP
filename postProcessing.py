@@ -865,19 +865,20 @@ class appWindow(QMainWindow):
             startPos = 3  # starting position in the list
             endPos = rotation_qty + startPos  # ending index in the list
             self.flip_value = rotations[endPos]  # value at that position
-            if self.flip_value == 3:
-                height, width = self.im.shape
-                x1d = width - cc_position[0]
-                y1d = height - cc_position[1]
-                x2d = width - cc_position[2]
-                y2d = height - cc_position[3]
-
-                cc_position = x1d, y1d, x2d, y2d
-
-            elif self.flip_value in (5, 6):
-                cc_position = cc_position[1], cc_position[0], cc_position[3], cc_position[2]
 
         self.apply_corrections()
+        print(self.flip_value)
+        if self.flip_value == 3:
+            height, width, _ = self.im.shape
+            x1d = width - cc_position[0]
+            y1d = height - cc_position[1]
+            x2d = width - cc_position[2]
+            y2d = height - cc_position[3]
+
+            cc_position = x2d, y2d, x1d, y1d
+        elif self.flip_value in (5, 6):
+            cc_position = cc_position[1], cc_position[0], cc_position[3], cc_position[2]
+
         self.high_precision_wb(cc_position)
         # pass off what was learned and properly open image.
         # add the (mostly) corrected image to the preview
@@ -1079,8 +1080,10 @@ class appWindow(QMainWindow):
 
     def high_precision_wb(self, cc_location):
         x1, y1, x2, y2 = cc_location
-
+        print(cc_location)
         cc_im = self.im[y1:y2, x1:x2]
+        cv2.imwrite('cc.jpg', cc_im)
+
         grayImg = cv2.cvtColor(cc_im, cv2.COLOR_RGB2GRAY)  # convert to gray
         minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(grayImg)
         # determine an allowable range for the floodfill
@@ -1195,7 +1198,7 @@ class appWindow(QMainWindow):
                                             # user_black = self.cc_blk_point,
                                             output_color=rawpy.ColorSpace.sRGB,
                                             #output_bps=8,
-                                            # user_flip=self.flip_value,
+                                            user_flip=self.flip_value,
                                             user_sat=None,
                                             auto_bright_thr=None,
                                             bright=1.0,
