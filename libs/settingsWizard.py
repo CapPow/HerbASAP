@@ -681,12 +681,9 @@ class SettingsWizard(QWizard):
         fills the lens selection qcombobox with options.
         """
         self.equipmentDict = self.eqRead.detImagingEquipment(self.imgPath)
-        models = self.equipmentDict.get('cams', [''])
+        camModel = self.equipmentDict.get('camModel', '')
         # update the cam model text
-        model = models[0]
-        print(model)
-        formatted_result = f'{model}'
-        self.wiz.label_camModel.setText(formatted_result)
+        self.wiz.label_camModel.setText(camModel)
         lenses = self.equipmentDict.get('lenses', [''])
         # populate the lens model qcombo box
         self.populateQComboBoxSettings(self.wiz.comboBox_lensModel, lenses)
@@ -696,7 +693,6 @@ class SettingsWizard(QWizard):
         """
         attempts to generate the distortion correction matrix
         """
-        
         selected_lens = self.wiz.comboBox_lensModel.currentText()
         if selected_lens is "Not Available (no lens corrections are available)":
             # if no lenses selected, stop early and uncheck "lensCorrection"
