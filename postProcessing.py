@@ -849,9 +849,9 @@ class appWindow(QMainWindow):
         if verifyRotation:
             user_def_loc = profile.get('colorCheckerPosition', 'Upper right')
             quad_map = ['Upper right',
-                        'Lower right',
+                        'Upper left',
                         'Lower left',
-                        'Upper left']
+                        'Lower right']
             user_def_quad = quad_map.index(user_def_loc) + 1
             #print(user_def_quad)
             #print(self.cc_quadrant)
@@ -861,10 +861,11 @@ class appWindow(QMainWindow):
             rotation_qty = (self.cc_quadrant - user_def_quad)
             # rawpy: [0-7] Flip image (0=none, 3=180, 5=90CCW, 6=90CW)
             # create a list to travel based on difference
-            rotations = [5, 3, 6, 0, 5, 3, 6]
+            rotations = [6, 3, 5, 0, 6, 3, 5]
             startPos = 3  # starting position in the list
             endPos = rotation_qty + startPos  # ending index in the list
             self.flip_value = rotations[endPos]  # value at that position
+            print(f"CC Quadrant: {self.cc_quadrant} | Defined Quadrant: {user_def_quad} | Rotation: {self.flip_value}")
 
         self.apply_corrections()
         print(self.flip_value)
@@ -879,7 +880,7 @@ class appWindow(QMainWindow):
         elif self.flip_value in (5, 6):
             cc_position = cc_position[1], cc_position[0], cc_position[3], cc_position[2]
 
-        self.high_precision_wb(cc_position)
+        # self.high_precision_wb(cc_position)
         # pass off what was learned and properly open image.
         # add the (mostly) corrected image to the preview
         # equipment corrections remain. let user look at this while that runs.
@@ -1143,6 +1144,7 @@ class appWindow(QMainWindow):
                     output_color=rawpy.ColorSpace.raw,
                     #half_size=True,
                     use_camera_wb=False,
+                    user_flip=0,
                     #use_auto_wb=True,
                     user_wb=ext_wb,
                     no_auto_bright=True,

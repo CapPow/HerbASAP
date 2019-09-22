@@ -140,8 +140,12 @@ class eqRead():
         except AttributeError:  # if not, generate them using input im shape
             print('generating undistcoords')
             h, w = im.shape[0:2]
-            self.setMod(h, w)
-            undist_coords = self.undist_coords
+            try:
+                self.setMod(h, w)
+                undist_coords = self.undist_coords
+            except IndexError:
+                pass
+
         try:
             # generate a corrected channel, then save it back to the image
             r_undistorted = cv2.remap(r, undist_coords[..., 0], None, cv2.INTER_LANCZOS4)
@@ -153,6 +157,8 @@ class eqRead():
             undist_coords = self.undist_coords
             r_undistorted = cv2.remap(r, undist_coords[..., 0], None, cv2.INTER_LANCZOS4)
             im[..., 0] = r_undistorted
+        except UnboundLocalError:
+            return im
         # by this point exceptions should be addressed
         g_undistorted = cv2.remap(g, undist_coords[..., 1], None, cv2.INTER_LANCZOS4)
         im[..., 1] = g_undistorted

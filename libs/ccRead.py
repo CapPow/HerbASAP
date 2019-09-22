@@ -498,15 +498,16 @@ class ColorchipRead:
         cy = (y1 + y2) / 2
         half_width = original_width / 2
         half_height = original_height / 2
-
-        if cx < half_width and cy < half_height:
-            return 4
-        elif cx > half_width and cy < half_height:
+        print(f"x1: {x1} | y1: {y1} | x2: {x2} | y2: {y2}")
+        print(f"cx: {cx} | cy: {cy} | hw: {half_width} | hh: {half_height}")
+        if cx > half_width and cy < half_height:
             return 1
-        elif cx > half_width and cy > half_height:
+        elif cx < half_width and cy < half_height:
             return 2
         elif cx < half_width and cy > half_height:
             return 3
+        elif cx > half_width and cy > half_height:
+            return 4
         else:
             return None
 
