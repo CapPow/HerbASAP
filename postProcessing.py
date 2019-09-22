@@ -1131,11 +1131,7 @@ class appWindow(QMainWindow):
 	given an image path, attempts to return a numpy array image object
         """
         # first open an unadulterated reference version of the image
-        #if self.ext.lower() == '.cr2':
         ext_wb = [1, 0.5, 1, 0.5]
-        #else:
-        #    print('here')
-        #    ext_wb = [1, 1, 1, 0]
         try:  # use rawpy to convert raw to openCV
             raw_base = rawpy.imread(imgPath)
             base = raw_base
@@ -1145,7 +1141,7 @@ class appWindow(QMainWindow):
                     #half_size=True,
                     use_camera_wb=False,
                     user_flip=0,
-                    #use_auto_wb=True,
+                    use_auto_wb=False
                     user_wb=ext_wb,
                     no_auto_bright=True,
                     demosaic_algorithm=rawpy.DemosaicAlgorithm.LINEAR
@@ -1173,17 +1169,21 @@ class appWindow(QMainWindow):
         """
         cc_avg_white = self.cc_avg_white
         if cc_avg_white:  # if a cc_avg_white value was found
-            #use_camera_wb = False
             # normalize each value by 255
-#            cc_avg_white = [255/x for x in self.cc_avg_white]
-            #r, g, b = self.cc_avg_white
+            # cc_avg_white = [255/x for x in self.cc_avg_white]
+            # get max channel value
             maxChan = max(cc_avg_white)
-            r, g, b = [maxChan/x for x in cc_avg_white]
+            # get position of max channel value
+            maxPos = cc_avg_white.index(maxChan)
+            # get the average channel value from all 3 channels
+            avgChan = np.mean(cc_avg_white)
+            # divide all values by the max channel value
+            cc_avg_white = [maxChan/x for x in cc_avg_white]
+            # replace the max channel value with avgchannel value / itself 
+            cc_avg_white[maxPos] = avgChan / maxChan
+            r, g, b = cc_avg_white
             print(r, g, b)
-#            print(maxChan)
-#            r = maxChan/r
-#            b = maxChan/b
-#            g = (maxChan/g) / 2
+            # adjust green channel for the 4-to-3 channel black magicks
             g = g/2
             wb = [r, g, b, g]
             print(wb)
@@ -1197,7 +1197,7 @@ class appWindow(QMainWindow):
                                             #use_auto_wb=True,
                                             use_camera_wb=use_camera_wb,
                                             user_wb=wb,
-                                            # user_black = self.cc_blk_point,
+                                            #user_black = self.cc_blk_point,
                                             output_color=rawpy.ColorSpace.sRGB,
                                             #output_bps=8,
                                             user_flip=self.flip_value,

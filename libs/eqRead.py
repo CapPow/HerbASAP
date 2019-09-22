@@ -88,7 +88,6 @@ class eqRead():
         """
          Create the lensfunpy modifier
         """
-        print('starting setmod')
         equip = self.equipmentDict
         try:
             cam = equip['cam']
