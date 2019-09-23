@@ -64,13 +64,14 @@ class MetaRead:
         user_comments = json.dumps(static_exif[270])
         # apply jsonized user_comments to static_exif[270], "ImageDescription"
         static_exif[270] = user_comments
+        # overwrite any existing orientation tags as 0
+        static_exif[274] = 0
         # extract source file's exif data as dict (has camera stored values)
         exifDict = piexif.load(src)
         # update the input dict with the static_exif info @ ['0th']
         exifDict['0th'].update(static_exif)
         # have to remove makerNotes or else it crashes when using CR2s
-        exifDict['Exif'].pop(37500, None)
-        # dump resulting exifDict to bytes & return them
+        exifDict['Exif'].pop(37500, None)        # dump resulting exifDict to bytes & return them
         exif_bytes = piexif.dump(exifDict)
         return exif_bytes
 
