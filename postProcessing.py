@@ -1127,8 +1127,8 @@ class appWindow(QMainWindow):
 
     def openImageFile(self, imgPath,
                       demosaic=rawpy.DemosaicAlgorithm.AHD):
-        """ 
-	given an image path, attempts to return a numpy array image object
+        """
+        given an image path, attempts to return a numpy array image object
         """
         # first open an unadulterated reference version of the image
         ext_wb = [1, 0.5, 1, 0.5]
@@ -1141,7 +1141,7 @@ class appWindow(QMainWindow):
                     #half_size=True,
                     use_camera_wb=False,
                     user_flip=0,
-                    use_auto_wb=False
+                    use_auto_wb=False,
                     user_wb=ext_wb,
                     no_auto_bright=True,
                     demosaic_algorithm=rawpy.DemosaicAlgorithm.LINEAR
@@ -1182,11 +1182,9 @@ class appWindow(QMainWindow):
             # replace the max channel value with avgchannel value / itself 
             cc_avg_white[maxPos] = avgChan / maxChan
             r, g, b = cc_avg_white
-            print(r, g, b)
             # adjust green channel for the 4-to-3 channel black magicks
             g = g/2
             wb = [r, g, b, g]
-            print(wb)
             use_camera_wb = False
         else:  # otherwise use as shot values
             use_camera_wb = True
