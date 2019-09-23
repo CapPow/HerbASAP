@@ -166,6 +166,7 @@ class SettingsWizard(QWizard):
         # attach update_profile_details to the next button
         self.button(QWizard.NextButton).clicked.connect(self.update_profile_details)
         self.button(QWizard.HelpButton).clicked.connect(self.enter_whatsthis_mode)
+        self.button(QWizard.FinishButton).clicked.connect(self.on_finish)
         # Reimpliment isComplete() for appropriate pages
         # intro_page
         def isComplete():
@@ -205,6 +206,17 @@ class SettingsWizard(QWizard):
             return self.profile_saved
         # assign it
         self.wiz.final_page.isComplete = isComplete
+        #eqRead_setup_page
+        def isComplete():
+            no_lens = "Not Available (no lens corrections are available)"
+            no_lens_selected = self.wiz.comboBox_lensModel.currentText() == no_lens
+            lens_corr_checked = self.wiz.checkBox_lensCorrection.isChecked()
+            if lens_corr_checked and no_lens_selected:
+                return False
+            else:
+                return True
+        # assign it
+        self.wiz.eqRead_setup_page.isComplete = isComplete
 
     def enter_whatsthis_mode(self):
         QWhatsThis.enterWhatsThisMode()
@@ -231,6 +243,8 @@ class SettingsWizard(QWizard):
             self.wiz.path_setup_page.completeChanged.emit()
         elif currID == 4:
             self.wiz.ccRead_setup_page1.completeChanged.emit()
+        elif currID == 6:
+            self.wiz.eqRead_setup_page.completeChanged.emit()
         elif currID == 8:
             self.wiz.final_page.completeChanged.emit()
 
@@ -660,6 +674,9 @@ class SettingsWizard(QWizard):
         for eqRead to properly make equipment corrections.
         """
         try:
+            no_lens_selected = 'Not Available (no lens corrections are available)'
+            if self.wiz.comboBox_lensModel.currentText() == no_lens_selected:
+                raise Exception('No Lens Selected!')
             self.gen_distort_corrections()
             self.eqRead.lensCorrect(self.img)
             formatted_result = 'Success generating correction matrix!'
@@ -686,7 +703,7 @@ class SettingsWizard(QWizard):
         self.wiz.label_camModel.setText(camModel)
         lenses = self.equipmentDict.get('lenses', [''])
         # populate the lens model qcombo box
-        self.populateQComboBoxSettings(self.wiz.comboBox_lensModel, lenses)
+        self.populate_lens_qcombobox(self.wiz.comboBox_lensModel, lenses)
         
 
     def gen_distort_corrections(self):
@@ -737,7 +754,7 @@ class SettingsWizard(QWizard):
         obj.setCurrentIndex(index)
         self.wiz.comboBox_lensModel.blockSignals(False)
 
-    def populateQComboBoxSettings(self, qbox_object, value_list):
+    def populate_lens_qcombobox(self, qbox_object, value_list):
         """
         populates the obj qbox_object with the value_list.
         """
@@ -752,6 +769,9 @@ class SettingsWizard(QWizard):
         value_list.insert(0, "Not Available (no lens corrections are available)")
         # if the list of profile names is empty, force the wizard.
         profile_comboBox.addItems(value_list)
+        # select only one lens was returned, select it.
+        if len(value_list) == 2:
+            self.wiz.comboBox_lensModel.setCurrentIndex(1)
         self.wiz.comboBox_lensModel.blockSignals(False)
 
     def convertCheckState(self, stringState):
@@ -866,6 +886,9 @@ class SettingsWizard(QWizard):
         a class variable "wiz_dict"
         """
 
+        # clean unnecessary lenses list from equipmentDict
+        self.equipmentDict.pop('lenses', '')
+
         self.wiz_dict = {
                 # class variable(s)
                 "colorCheckerDetection": self.colorCheckerDetection,
@@ -971,5 +994,8 @@ class SettingsWizard(QWizard):
         self.emit_completeChanged()
 
     def run_wizard(self):
-        wiz_window = self.exec()
+        return self.exec()
 
+    def on_finish(self):
+        return True
+        

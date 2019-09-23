@@ -808,8 +808,6 @@ class appWindow(QMainWindow):
                     cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
                 if scaleDetermination:
                     # scale determination code
-                    # set a timer for scale
-                    s_timer = time.time()
                     x1, y1, x2, y2 = cc_position
                     full_res_cc = im[y1:y2, x1:x2]
                     # usful for debugging
@@ -822,7 +820,6 @@ class appWindow(QMainWindow):
                                                                                  seed_func,
                                                                                  to_crop)
                     print(f"Pixels per mm for {os.path.basename(img_path)}: {self.ppmm}, +/- {self.ppmm_uncertainty}")
-                    print(f'Scale DET! time = {time.time() - s_timer}')
 
                 self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_position)
                 self.cropped_cc = cropped_cc
@@ -1142,6 +1139,7 @@ class appWindow(QMainWindow):
                     output_color=rawpy.ColorSpace.raw,
                     #half_size=True,
                     use_camera_wb=False,
+                    #highlight_mode=rawpy.HighlightMode.Ignore,
                     user_flip=0,
                     use_auto_wb=False,
                     user_wb=ext_wb,
@@ -1171,19 +1169,19 @@ class appWindow(QMainWindow):
         """
         cc_avg_white = self.cc_avg_white
         if cc_avg_white:  # if a cc_avg_white value was found
-            # normalize each value by 255
-            # cc_avg_white = [255/x for x in self.cc_avg_white]
             # get max channel value
             maxChan = max(cc_avg_white)
             # get position of max channel value
             maxPos = cc_avg_white.index(maxChan)
             # get the average channel value from all 3 channels
             avgChan = np.mean(cc_avg_white)
+            #avgChan = np.partition(cc_avg_white, 1)[1]
             # divide all values by the max channel value
             cc_avg_white = [maxChan/x for x in cc_avg_white]
             # replace the max channel value with avgchannel value / itself 
             cc_avg_white[maxPos] = avgChan / maxChan
             r, g, b = cc_avg_white
+            print(r,g,b)
             # adjust green channel for the 4-to-3 channel black magicks
             g = g/2
             wb = [r, g, b, g]
@@ -1198,6 +1196,7 @@ class appWindow(QMainWindow):
                                             use_camera_wb=use_camera_wb,
                                             user_wb=wb,
                                             #user_black = self.cc_blk_point,
+                                            #highlight_mode=rawpy.HighlightMode.Blend,
                                             output_color=rawpy.ColorSpace.sRGB,
                                             #output_bps=8,
                                             user_flip=self.flip_value,
@@ -1205,12 +1204,11 @@ class appWindow(QMainWindow):
                                             auto_bright_thr=None,
                                             bright=1.0,
                                             exp_shift=None,
-                                            chromatic_aberration=(1, 1),
-                                            exp_preserve_highlights=1.0,
+                                            chromatic_aberration=( 1, 1),
+                                            #exp_preserve_highlights=1.0,
                                             no_auto_scale=False,
                                             gamma=None
                                             )
-
         self.raw_base.close()
         del self.raw_base
         self.raw_base = None  # be extra sure we free the ram
@@ -1218,7 +1216,7 @@ class appWindow(QMainWindow):
 
     def create_profile(self):
         """
-        Called by user, or if no profiles are present on start up. Creates a 
+        Called by user, or if no profiles are present on start up. Creates a
         settings profile.
         """
         # be sure we start with a clean slate
@@ -1231,7 +1229,9 @@ class appWindow(QMainWindow):
             # may be first time the program opened
             pass
         sd = SettingsWizard(parent=self)
-        sd.run_wizard()
+        if sd.run_wizard():
+            # if finish button pressed ... swap to main page.
+            self.mainWindow.tabWidget.setCurrentIndex(0)
 
     def edit_current_profile(self):
         """
@@ -1250,7 +1250,9 @@ class appWindow(QMainWindow):
         profile = profiles.get(selectedProfile, {})
         profile['profileName'] = selectedProfile
         sd = SettingsWizard(wiz_dict=profile, parent=self)
-        sd.run_wizard()
+        if sd.run_wizard():
+            # if finish button pressed ... swap to main page.
+            self.mainWindow.tabWidget.setCurrentIndex(0)
 
     def delete_current_profile(self):
         """
@@ -1315,6 +1317,8 @@ class appWindow(QMainWindow):
         if not selected_profile:
             selected_profile = self.mainWindow.comboBox_profiles.currentText()
         self.setValue('selected_profile', selected_profile)
+        self.populateQComboBoxSettings(self.mainWindow.comboBox_profiles,
+                                       selected_profile)
         self.update_profile_settings()
 
     def populate_profile_list(self):

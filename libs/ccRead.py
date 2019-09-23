@@ -325,25 +325,25 @@ class ColorchipRead:
                 part_im.append(part_image)
                 possible_positions.append(location)
 
-        if len(part_im) != 0:
-            inference_type = 'find_squares'
-            hists_rgb = []
-            hists_hsv = []
-            for im in part_im:
-                im_hsv = im.convert("HSV")
-                hists_rgb.append(im.histogram())
-                hists_hsv.append(im_hsv.histogram())
+#        if len(part_im) != 0:
+#            inference_type = 'find_squares'
+#            hists_rgb = []
+#            hists_hsv = []
+#            for im in part_im:
+#                im_hsv = im.convert("HSV")
+#                hists_rgb.append(im.histogram())
+#                hists_hsv.append(im_hsv.histogram())
 
-        else:
-            inference_type = 'legacy'
-            hists_rgb, hists_hsv, possible_positions = self._legacy_regions(im=im, im_hsv=im_hsv,
-                                                                            image_width=image_width,
-                                                                            image_height=image_height,
-                                                                            whole_extrema=whole_extrema,
-                                                                            stride_style=stride_style, stride=stride,
-                                                                            partition_size=partition_size,
-                                                                            over_crop=over_crop,
-                                                                            hard_cut_value=hard_cut_value)
+#        else:
+        inference_type = 'legacy'
+        hists_rgb, hists_hsv, possible_positions = self._legacy_regions(im=im, im_hsv=im_hsv,
+                                                                        image_width=image_width,
+                                                                        image_height=image_height,
+                                                                        whole_extrema=whole_extrema,
+                                                                        stride_style=stride_style, stride=stride,
+                                                                        partition_size=partition_size,
+                                                                        over_crop=over_crop,
+                                                                        hard_cut_value=hard_cut_value)
 
         hists_rgb = np.array(hists_rgb, dtype=np.uint16)
         hists_hsv = np.array(hists_hsv, dtype=np.uint16)
@@ -467,6 +467,7 @@ class ColorchipRead:
 
         # if, somehow no proper squares were identified, return the entire img
         if len(squares) < 1:
+            print('len squares was 0')
             whole_img_cont = (0, 0, w, h)
             return input_img, whole_img_cont
         # identify the largest area among contours
@@ -545,12 +546,18 @@ class ColorchipRead:
         mask = mask[1:-1, 1:-1, ...]
         # extract the rgb values of the floodfilled sections
         extracted = cropped_cc[ mask != 0]
-        # get mean of the resulting r,g,b values
-        avg_white = extracted.reshape(-1,extracted.shape[-1]).mean(0)
-        # convert it to an array of ints
-        avg_white = np.asarray(avg_white, dtype=int)
+        # reorganize the extractedv alues
+        extracted = extracted.reshape(-1,extracted.shape[-1])
+        
+        # optional code to use mean of the resulting r,g,b values
+        #avg_white = extracted.mean(0)
+        #avg_white = np.asarray(avg_white, dtype=int)
+        #print(avg_white)
+        
+        # get the mode for each channel value
+        mode_white = np.apply_along_axis(lambda x: np.bincount(x).argmax(), axis=0, arr=extracted)
 
-        return list(avg_white), maxVal
+        return list(mode_white), minVal
 
     def test_feature(self, im, original_size, cc_size='predict'):
         """

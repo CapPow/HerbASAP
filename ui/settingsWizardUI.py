@@ -509,6 +509,7 @@ class Ui_Wizard(object):
         self.checkBox_lensCorrection = QtWidgets.QCheckBox(self.group_equipmentDetection)
         self.checkBox_lensCorrection.setEnabled(True)
         self.checkBox_lensCorrection.setChecked(True)
+        self.checkBox_lensCorrection.setTristate(False)
         self.checkBox_lensCorrection.setObjectName("checkBox_lensCorrection")
         self.gridLayout_7.addWidget(self.checkBox_lensCorrection, 4, 0, 1, 1)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
@@ -641,7 +642,7 @@ class Ui_Wizard(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 579, 304))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 98, 34))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
@@ -706,6 +707,7 @@ class Ui_Wizard(object):
         self.pushButton_testCRCDetection.toggled['bool'].connect(Wizard.emit_completeChanged)
         self.pushButton_selectExampleImage_1.clicked.connect(Wizard.openDisplayImage)
         self.comboBox_lensModel.currentTextChanged['QString'].connect(Wizard.gen_distort_corrections)
+        self.comboBox_lensModel.currentTextChanged['QString'].connect(Wizard.emit_completeChanged)
         QtCore.QMetaObject.connectSlotsByName(Wizard)
 
     def retranslateUi(self, Wizard):

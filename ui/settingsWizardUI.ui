@@ -2253,6 +2253,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>comboBox_lensModel</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>Wizard</receiver>
+   <slot>emit_completeChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>266</x>
+     <y>258</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1</x>
+     <y>318</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openDisplayImage()</slot>
