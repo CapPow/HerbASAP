@@ -382,7 +382,7 @@ class ColorchipRead:
                     position_predictions.append(self.position_model.get_tensor(self.position_output_details[0]['index'])[0][0])
                 except:
                     position_predictions.append(np.array([[1, 0]], dtype=np.float32).tolist())
-            print(f"Region proposal took {time.time() - position_start}")
+            # print(f"Region proposal took {time.time() - position_start}")
 
             position_predictions, indices = (list(t) for t in zip(*sorted(zip(position_predictions, indices))))
             position_predictions.reverse()
@@ -411,7 +411,7 @@ class ColorchipRead:
                 self.discriminator_model.invoke()
 
                 if self.discriminator_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1] > 0.99:
-                    print(f"Discriminator took {i} predictions before finding the colorchip.")
+                    # print(f"Discriminator took {i} predictions before finding the colorchip.")
                     best_image = Image.fromarray(highest_prob_images[i])
                     best_location = highest_prob_positions[i]
                     break
@@ -445,7 +445,7 @@ class ColorchipRead:
                                                      int(prop_y2 * original_height)
 
         end = time.time()
-        print(f"Color chip cropping took: {end - start} seconds using {inference_type} proposal.")
+        # print(f"Color chip cropping took: {end - start} seconds using {inference_type} proposal.")
         best_image = np.array(best_image, dtype=np.uint8)
         cc_crop_time = round(end - start, 3)
 
@@ -498,8 +498,10 @@ class ColorchipRead:
         cy = (y1 + y2) / 2
         half_width = original_width / 2
         half_height = original_height / 2
-        print(f"x1: {x1} | y1: {y1} | x2: {x2} | y2: {y2}")
-        print(f"cx: {cx} | cy: {cy} | hw: {half_width} | hh: {half_height}")
+
+        # print(f"x1: {x1} | y1: {y1} | x2: {x2} | y2: {y2}")
+        # print(f"cx: {cx} | cy: {cy} | hw: {half_width} | hh: {half_height}")
+
         if cx > half_width and cy < half_height:
             return 1
         elif cx < half_width and cy < half_height:
