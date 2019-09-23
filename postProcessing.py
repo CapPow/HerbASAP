@@ -1277,6 +1277,7 @@ class appWindow(QMainWindow):
         called upon load or after changes are made using the settings wizard.
         Updates the appropriate classes with potentially new information.
         """
+        self.reset_working_variables()
         selected_profile = self.mainWindow.comboBox_profiles.currentText()
         # first get the profiles
         profiles = self.get('profiles', {})

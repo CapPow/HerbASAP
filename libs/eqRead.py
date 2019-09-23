@@ -97,12 +97,14 @@ class eqRead():
             if isinstance(cam, list):
                 cam = cam[0]
             lens = str(equip.get('lens',None))
+            print(f'dict lens = {lens}')
+            lens = self.db.find_lenses(cam, lens=lens, loose_search=True)
             if isinstance(lens, list):
                 lens = lens[0]
             if lens is None:
                 self.undist_coords = None
                 return
-            lens = self.db.find_lenses(cam, lens=lens, loose_search=False)[0]
+
             focalDistance = equip.get('focalDistance', 0.255)
             mod = lensfunpy.Modifier(lens,
                                      cam.crop_factor,
