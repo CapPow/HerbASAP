@@ -415,6 +415,7 @@ class appWindow(QMainWindow):
         self.mainWindow.toolButton_delPreviousImage.setEnabled(False)
 
         im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
+
         # reset recently_produced_images
         self.recently_produced_images = [orig_img_path]
         # see setup_Output_Handler() for details concerning self.output_map
@@ -797,11 +798,12 @@ class appWindow(QMainWindow):
                 crc_type = profile.get('crcType', "ISA ColorGauge Nano")
                 if crc_type == "ISA ColorGauge Nano":  # aka small crc
                     partition_size = profile.get('partition_size', 125)
-                    cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_small(reduced_img,
-                                                                                                         original_size,
-                                                                                                         stride_style='quick',
-                                                                                                         high_precision=True,
-                                                                                                         partition_size=partition_size)
+                    cc_position, cropped_cc, cc_crop_time = \
+                        self.colorchipDetect.process_colorchip_small(reduced_img,
+                                                                     original_size,
+                                                                     stride_style='quick',
+                                                                     high_precision=True,
+                                                                     partition_size=partition_size)
                 else:
                     cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
                 if scaleDetermination:
@@ -865,10 +867,10 @@ class appWindow(QMainWindow):
             startPos = 3  # starting position in the list
             endPos = rotation_qty + startPos  # ending index in the list
             self.flip_value = rotations[endPos]  # value at that position
-            print(f"CC Quadrant: {self.cc_quadrant} | Defined Quadrant: {user_def_quad} | Rotation: {self.flip_value}")
+
+            # print(f"CC Quadrant: {self.cc_quadrant} | Defined Quadrant: {user_def_quad} | Rotation: {self.flip_value}")
 
         self.apply_corrections()
-        print(self.flip_value)
         if self.flip_value == 3:
             height, width, _ = self.im.shape
             x1d = width - cc_position[0]

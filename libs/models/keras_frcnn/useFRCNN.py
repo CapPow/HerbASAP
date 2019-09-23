@@ -16,56 +16,55 @@ C.rot_90 = False
 
 
 def format_img_size(img, C):
-	""" formats the image size based on config """
-	img_min_side = float(C.im_size)
-	(height, width, _) = img.shape
+    """ formats the image size based on config """
+    img_min_side = float(C.im_size)
+    (height, width, _) = img.shape
 
-	if width <= height:
-		ratio = img_min_side/width
-		new_height = int(ratio * height)
-		new_width = int(img_min_side)
-	else:
-		ratio = img_min_side/height
-		new_width = int(ratio * width)
-		new_height = int(img_min_side)
-	img = cv2.resize(img, (new_width, new_height), interpolation=cv2.INTER_CUBIC)
-	return img, ratio
+    if width <= height:
+        ratio = img_min_side / width
+        new_height = int(ratio * height)
+        new_width = int(img_min_side)
+    else:
+        ratio = img_min_side / height
+        new_width = int(ratio * width)
+        new_height = int(img_min_side)
+    img = cv2.resize(img, (new_width, new_height), interpolation=cv2.INTER_CUBIC)
+    return img, ratio
 
 
 def format_img_channels(img, C):
-	""" formats the image channels based on config """
-	img = img[:, :, (2, 1, 0)]
-	img = img.astype(np.float32)
-	img[:, :, 0] -= C.img_channel_mean[0]
-	img[:, :, 1] -= C.img_channel_mean[1]
-	img[:, :, 2] -= C.img_channel_mean[2]
-	img /= C.img_scaling_factor
-	img = np.transpose(img, (2, 0, 1))
-	img = np.expand_dims(img, axis=0)
-	return img
+    """ formats the image channels based on config """
+    img = img[:, :, (2, 1, 0)]
+    img = img.astype(np.float32)
+    img[:, :, 0] -= C.img_channel_mean[0]
+    img[:, :, 1] -= C.img_channel_mean[1]
+    img[:, :, 2] -= C.img_channel_mean[2]
+    img /= C.img_scaling_factor
+    img = np.transpose(img, (2, 0, 1))
+    img = np.expand_dims(img, axis=0)
+    return img
 
 
 def format_img(img, C):
-	""" formats an image for model prediction based on config """
-	img, ratio = format_img_size(img, C)
-	img = format_img_channels(img, C)
-	return img, ratio
+    """ formats an image for model prediction based on config """
+    img, ratio = format_img_size(img, C)
+    img = format_img_channels(img, C)
+    return img, ratio
 
 
 # Method to transform the coordinates of the bounding box to its original size
 def get_real_coordinates(ratio, x1, y1, x2, y2):
+    real_x1 = int(round(x1 // ratio))
+    real_y1 = int(round(y1 // ratio))
+    real_x2 = int(round(x2 // ratio))
+    real_y2 = int(round(y2 // ratio))
 
-	real_x1 = int(round(x1 // ratio))
-	real_y1 = int(round(y1 // ratio))
-	real_x2 = int(round(x2 // ratio))
-	real_y2 = int(round(y2 // ratio))
-
-	return real_x1, real_y1, real_x2, real_y2
+    return real_x1, real_y1, real_x2, real_y2
 
 
 class_mapping = {'0': 0, '1': 1, 'bg': 2}
 if 'bg' not in class_mapping:
-	class_mapping['bg'] = len(class_mapping)
+    class_mapping['bg'] = len(class_mapping)
 
 class_mapping = {v: k for k, v in class_mapping.items()}
 class_to_color = {class_mapping[v]: np.random.randint(0, 255, 3) for v in class_mapping}
@@ -73,12 +72,11 @@ class_to_color = {class_mapping[v]: np.random.randint(0, 255, 3) for v in class_
 num_features = 128
 
 if K.image_dim_ordering() == 'th':
-	input_shape_img = (3, None, None)
-	input_shape_features = (num_features, None, None)
+    input_shape_img = (3, None, None)
+    input_shape_features = (num_features, None, None)
 else:
-	input_shape_img = (None, None, 3)
-	input_shape_features = (None, None, num_features)
-
+    input_shape_img = (None, None, 3)
+    input_shape_features = (None, None, num_features)
 
 img_input = Input(shape=input_shape_img)
 roi_input = Input(shape=(C.num_rois, 4))
@@ -133,15 +131,15 @@ def process_image_frcnn(img, key='0'):
     bboxes = {}
     probs = {}
 
-    for jk in range(R.shape[0]//C.num_rois + 1):
-        ROIs = np.expand_dims(R[C.num_rois*jk:C.num_rois*(jk+1), :], axis=0)
+    for jk in range(R.shape[0] // C.num_rois + 1):
+        ROIs = np.expand_dims(R[C.num_rois * jk:C.num_rois * (jk + 1), :], axis=0)
         if ROIs.shape[1] == 0:
             break
 
-        if jk == R.shape[0]//C.num_rois:
-            #pad R
+        if jk == R.shape[0] // C.num_rois:
+            # pad R
             curr_shape = ROIs.shape
-            target_shape = (curr_shape[0],C.num_rois,curr_shape[2])
+            target_shape = (curr_shape[0], C.num_rois, curr_shape[2])
             ROIs_padded = np.zeros(target_shape).astype(ROIs.dtype)
             ROIs_padded[:, :curr_shape[1], :] = ROIs
             ROIs_padded[0, curr_shape[1]:, :] = ROIs[0, 0, :]
@@ -164,7 +162,7 @@ def process_image_frcnn(img, key='0'):
 
             cls_num = np.argmax(P_cls[0, ii, :])
             try:
-                (tx, ty, tw, th) = P_regr[0, ii, 4*cls_num:4*(cls_num+1)]
+                (tx, ty, tw, th) = P_regr[0, ii, 4 * cls_num:4 * (cls_num + 1)]
                 tx /= C.classifier_regr_std[0]
                 ty /= C.classifier_regr_std[1]
                 tw /= C.classifier_regr_std[2]
@@ -172,7 +170,8 @@ def process_image_frcnn(img, key='0'):
                 x, y, w, h = roi_helpers.apply_regr(x, y, w, h, tx, ty, tw, th)
             except:
                 pass
-            bboxes[cls_name].append([C.rpn_stride*x, C.rpn_stride*y, C.rpn_stride*(x+w), C.rpn_stride*(y+h)])
+            bboxes[cls_name].append(
+                [C.rpn_stride * x, C.rpn_stride * y, C.rpn_stride * (x + w), C.rpn_stride * (y + h)])
             probs[cls_name].append(np.max(P_cls[0, ii, :]))
 
     try:
@@ -181,7 +180,7 @@ def process_image_frcnn(img, key='0'):
         return 0, 0, 0, 0
 
     new_boxes, new_probs = roi_helpers.non_max_suppression_fast(bbox, np.array(probs[key]), overlap_thresh=0)
-    print(new_boxes, new_probs)
+    # print(new_boxes, new_probs)
     for jk in range(new_boxes.shape[0]):
         (x1, y1, x2, y2) = new_boxes[jk, :]
         (real_x1, real_y1, real_x2, real_y2) = get_real_coordinates(ratio, x1, y1, x2, y2)
