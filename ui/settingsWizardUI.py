@@ -642,7 +642,7 @@ class Ui_Wizard(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 98, 34))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 579, 304))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
@@ -708,6 +708,7 @@ class Ui_Wizard(object):
         self.pushButton_selectExampleImage_1.clicked.connect(Wizard.openDisplayImage)
         self.comboBox_lensModel.currentTextChanged['QString'].connect(Wizard.gen_distort_corrections)
         self.comboBox_lensModel.currentTextChanged['QString'].connect(Wizard.emit_completeChanged)
+        self.checkBox_lensCorrection.stateChanged['int'].connect(Wizard.emit_completeChanged)
         QtCore.QMetaObject.connectSlotsByName(Wizard)
 
     def retranslateUi(self, Wizard):

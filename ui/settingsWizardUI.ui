@@ -1739,8 +1739,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>98</width>
-         <height>34</height>
+         <width>579</width>
+         <height>304</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -2036,8 +2036,8 @@
    <slot>is_nameAvailable(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>100</y>
+     <x>211</x>
+     <y>175</y>
     </hint>
     <hint type="destinationlabel">
      <x>575</x>
@@ -2052,8 +2052,8 @@
    <slot>save_inputs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>100</y>
+     <x>211</x>
+     <y>209</y>
     </hint>
     <hint type="destinationlabel">
      <x>581</x>
@@ -2266,6 +2266,22 @@
     <hint type="destinationlabel">
      <x>1</x>
      <y>318</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_lensCorrection</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>Wizard</receiver>
+   <slot>emit_completeChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>83</x>
+     <y>215</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2</x>
+     <y>249</y>
     </hint>
    </hints>
   </connection>

@@ -211,7 +211,7 @@ class SettingsWizard(QWizard):
             no_lens = "Not Available (no lens corrections are available)"
             no_lens_selected = self.wiz.comboBox_lensModel.currentText() == no_lens
             lens_corr_checked = self.wiz.checkBox_lensCorrection.isChecked()
-            if lens_corr_checked and no_lens_selected:
+            if no_lens_selected and lens_corr_checked:
                 return False
             else:
                 return True

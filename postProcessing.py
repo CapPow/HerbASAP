@@ -1139,7 +1139,7 @@ class appWindow(QMainWindow):
                     output_color=rawpy.ColorSpace.raw,
                     #half_size=True,
                     use_camera_wb=False,
-                    #highlight_mode=rawpy.HighlightMode.Ignore,
+                    highlight_mode=rawpy.HighlightMode.Ignore,
                     user_flip=0,
                     use_auto_wb=False,
                     user_wb=ext_wb,
@@ -1178,8 +1178,10 @@ class appWindow(QMainWindow):
             #avgChan = np.partition(cc_avg_white, 1)[1]
             # divide all values by the max channel value
             cc_avg_white = [maxChan/x for x in cc_avg_white]
+
             # replace the max channel value with avgchannel value / itself 
             cc_avg_white[maxPos] = avgChan / maxChan
+            print(cc_avg_white)
             r, g, b = cc_avg_white
             print(r,g,b)
             # adjust green channel for the 4-to-3 channel black magicks
@@ -1195,7 +1197,6 @@ class appWindow(QMainWindow):
                                             #use_auto_wb=True,
                                             use_camera_wb=use_camera_wb,
                                             user_wb=wb,
-                                            #user_black = self.cc_blk_point,
                                             #highlight_mode=rawpy.HighlightMode.Blend,
                                             output_color=rawpy.ColorSpace.sRGB,
                                             #output_bps=8,
