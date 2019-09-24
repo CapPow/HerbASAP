@@ -33,7 +33,7 @@ class eqRead():
         self.parent = parent
         self.equipmentDict = equipmentDict
         self.db = lensfunpy.Database(paths=glob.glob('libs/lensfunpy-db/*.xml'))
-
+        
     def detImagingEquipment(self, imgPath):
         """ given an image file path, attempts to determine
         the make/model of the camera body and lens. """
@@ -54,7 +54,6 @@ class eqRead():
         camModel = imgDict.get('model', '')
         #print(f'cam model = {camModel}')
         lensModel = imgDict.get('lensmodel', '')#[0]
-        lensModel = lensModel.split(" ")[0]
         #print(f'lensmodel = {lensModel}')
         focalLength = imgDict.get('focallength', '')[0]
         #print(f'focallength = {focalLength}')
@@ -66,6 +65,9 @@ class eqRead():
         cams = db.find_cameras(camMaker, camModel, loose_search=False)#[0]
         # lookup the lens details
         lenses = [x.model for x in db.find_lenses(cams[0], lens=lensModel, loose_search=False)]#[0]
+        if not lenses:
+            lensModel = lensModel.split(" ")[0]
+            lenses = [x.model for x in db.find_lenses(cams[0], lens=lensModel, loose_search=False)]  # [0]
         # organize the result into a dict.
         result = {#'cams':cams,
                   'lenses': lenses,
