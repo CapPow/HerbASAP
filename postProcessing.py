@@ -62,6 +62,7 @@ from libs.boss_worker import (Boss, BCWorkerData, BlurWorkerData, EQWorkerData,
 from libs.metaRead import MetaRead
 from libs.scaleRead import ScaleRead
 from libs.settingsWizard import SettingsWizard
+import string
 
 
 class BcDialog(QDialog):
@@ -373,6 +374,7 @@ class appWindow(QMainWindow):
         else:
             self.suffix_lookup = False
 
+
     def update_metadata(self):
         
         exif_dict = {
@@ -449,13 +451,48 @@ class appWindow(QMainWindow):
                     # not sure of slick way to avoid checking ext twice
                     if ext == '.raw':
                         ext = orig_im_ext
-                    fileQty = len(glob.glob(f'{path}//{bc}*{ext}'))
-                    if fileQty > 0:
-                        new_file_suffix = self.suffix_lookup(fileQty)
-                        new_file_base_name = f'{bc}{new_file_suffix}'
-                        new_file_name = f'{path}//{new_file_base_name}{ext}'
-                    else:
-                        new_file_name = f'{path}//{bc}{ext}'
+                    file_list = glob.glob(f'{path}//{bc}*{ext}')
+
+                    file_quantity = len(file_list)
+                    file_suffixes = set()
+                    if file_quantity > 0:
+                        for filename in file_list:
+                            suffix = os.path.basename(filename).replace(bc, '').replace(ext, '')
+                            file_suffixes.add(suffix)
+
+                    duplicate_naming_policy = self.profile.get('dupNamingPolicy')
+                    new_file_suffix = ''
+                    if duplicate_naming_policy == 'LOWER case letter':
+                        letters = list(string.ascii_lowercase)
+                        while new_file_suffix in file_suffixes:
+                            new_file_suffix += 'a'
+                            for letter in letters:
+                                new_file_suffix = new_file_suffix[:-1]
+                                new_file_suffix += letter
+                                if new_file_suffix not in file_suffixes:
+                                    break
+                    elif duplicate_naming_policy == 'UPPER case letter':
+                        letters = list(string.ascii_uppercase)
+                        while new_file_suffix in file_suffixes:
+                            new_file_suffix += 'A'
+                            for letter in letters:
+                                new_file_suffix = new_file_suffix[:-1]
+                                new_file_suffix += letter
+                                if new_file_suffix not in file_suffixes:
+                                    break
+                    elif duplicate_naming_policy == 'Number with underscore':
+                        num = 0
+                        while new_file_suffix in file_suffixes:
+                            if new_file_suffix not in file_suffixes:
+                                break
+                            new_file_suffix = f"_{num}"
+                            num += 1
+
+                    # print(f"File suffixes: {file_suffixes}")
+                    # print(f"New file suffix: {new_file_suffix}")
+
+                    new_file_base_name = f'{bc}{new_file_suffix}'
+                    new_file_name = f'{path}//{new_file_base_name}{ext}'
                     if ext == orig_im_ext:
                         # if it is a raw move just perform it
                         try:
