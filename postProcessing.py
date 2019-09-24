@@ -813,7 +813,7 @@ class appWindow(QMainWindow):
                     # scale determination code
                     x1, y1, x2, y2 = cc_position
                     full_res_cc = im[y1:y2, x1:x2]
-                    # usful for debugging
+                    # useful for debugging
                     #cv2.imwrite('full_res_cc.jpg', full_res_cc)
                     # lookup the patch area and seed function
                     
@@ -868,21 +868,24 @@ class appWindow(QMainWindow):
             endPos = rotation_qty + startPos  # ending index in the list
             self.flip_value = rotations[endPos]  # value at that position
 
-            # print(f"CC Quadrant: {self.cc_quadrant} | Defined Quadrant: {user_def_quad} | Rotation: {self.flip_value}")
+            print(f"CC Quadrant: {self.cc_quadrant} | Defined Quadrant: {user_def_quad} | Rotation: {self.flip_value}")
 
         self.apply_corrections()
+        width, height = original_size
+        x1, y1, x2, y2 = cc_position
+        print(f"CC Position before calc.: {cc_position}")
         if self.flip_value == 3:
-            height, width, _ = self.im.shape
-            x1d = width - cc_position[0]
-            y1d = height - cc_position[1]
-            x2d = width - cc_position[2]
-            y2d = height - cc_position[3]
+            x1, x2, y1, y2 = width - x2, width - x1, height - y2, height - y1
 
-            cc_position = x2d, y2d, x1d, y1d
-        elif self.flip_value in (5, 6):
-            cc_position = cc_position[1], cc_position[0], cc_position[3], cc_position[2]
+        elif self.flip_value == 5:
+            x1, y1, x2, y2 = y1, width - x2, y2, width - x1
 
-        # self.high_precision_wb(cc_position)
+        elif self.flip_value == 6:
+            x1, x2, y1, y2 = height - y2, height - y1, x1, x2
+
+        cc_position = x1, y1, x2, y2
+        print(f"CC Position after calc.: {cc_position}")
+        self.high_precision_wb(cc_position)
         # pass off what was learned and properly open image.
         # add the (mostly) corrected image to the preview
         # equipment corrections remain. let user look at this while that runs.
@@ -906,7 +909,6 @@ class appWindow(QMainWindow):
             self.boss_thread.signals.clear_to_save.connect(wait_event.quit)
             wait_event.exec()
         # now that it appears all workers are wrapped up, bundle the save ops.
-        print(self.bc_code)
         if len(self.bc_code) > 0:
             names = self.bc_code
         else:  # name based on base_file_name
