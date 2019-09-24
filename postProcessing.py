@@ -817,7 +817,7 @@ class appWindow(QMainWindow):
                     # useful for debugging
                     #cv2.imwrite('full_res_cc.jpg', full_res_cc)
                     # lookup the patch area and seed function
-                    
+
                     patch_mm_area, seed_func, to_crop = self.scaleRead.scale_params.get(crc_type)
                     self.ppmm, self.ppmm_uncertainty = self.scaleRead.find_scale(full_res_cc,
                                                                                  patch_mm_area,
