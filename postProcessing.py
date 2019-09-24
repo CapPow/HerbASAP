@@ -803,7 +803,6 @@ class appWindow(QMainWindow):
                     cc_location, cropped_cc, cc_crop_time = \
                         self.colorchipDetect.process_colorchip_small(reduced_img,
                                                                      original_size,
-                                                                     stride_style='quick',
                                                                      high_precision=True,
                                                                      partition_size=partition_size)
                 else:
