@@ -806,11 +806,10 @@ class appWindow(QMainWindow):
                                                                      stride_style='quick',
                                                                      high_precision=True,
                                                                      partition_size=partition_size)
+                elif crc_type == 'Tiffen / Kodak Q-13  (8")':
+                    cc_location, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im, pp_fix=1)
                 else:
-                    if "Q-13" in crc_type:
-                        cc_location, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im, pp_fix=1)
-                    else:
-                        cc_location, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
+                    cc_location, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
                 if scaleDetermination:
                     # scale determination code
                     x1, y1, x2, y2 = cc_location
