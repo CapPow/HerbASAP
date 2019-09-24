@@ -842,11 +842,10 @@ class appWindow(QMainWindow):
                                                                      original_size,
                                                                      high_precision=True,
                                                                      partition_size=partition_size)
+                elif crc_type == 'Tiffen / Kodak Q-13  (8")':
+                    cc_location, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im, pp_fix=1)
                 else:
-                    if "Q-13" in crc_type:
-                        cc_location, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im, pp_fix=1)
-                    else:
-                        cc_location, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
+                    cc_location, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
                 if scaleDetermination:
                     # scale determination code
                     x1, y1, x2, y2 = cc_location
@@ -854,7 +853,7 @@ class appWindow(QMainWindow):
                     # useful for debugging
                     #cv2.imwrite('full_res_cc.jpg', full_res_cc)
                     # lookup the patch area and seed function
-                    
+
                     patch_mm_area, seed_func, to_crop = self.scaleRead.scale_params.get(crc_type)
                     self.ppmm, self.ppmm_uncertainty = self.scaleRead.find_scale(full_res_cc,
                                                                                  patch_mm_area,
@@ -914,21 +913,21 @@ class appWindow(QMainWindow):
 
         # print(f"CC Position before calc.: {cc_location}")
 
-        if self.flip_value == 3:
-            x1, x2, y1, y2 = width - x2, width - x1, height - y2, height - y1
+#        if self.flip_value == 3:
+#            x1, x2, y1, y2 = width - x2, width - x1, height - y2, height - y1
 
-        elif self.flip_value == 5:
-            x1, y1, x2, y2 = y1, width - x2, y2, width - x1
+#        elif self.flip_value == 5:
+#            x1, y1, x2, y2 = y1, width - x2, y2, width - x1
 
-        elif self.flip_value == 6:
-            x1, x2, y1, y2 = height - y2, height - y1, x1, x2
+#        elif self.flip_value == 6:
+#            x1, x2, y1, y2 = height - y2, height - y1, x1, x2
 
-        cc_location = x1, y1, x2, y2
-        self.cc_location = cc_location
+#        cc_location = x1, y1, x2, y2
+#        self.cc_location = cc_location
 
         # print(f"CC Position after calc.: {cc_location}")
 
-        self.high_precision_wb(cc_location)
+        #self.high_precision_wb(cc_location)
         # pass off what was learned and properly open image.
         # add the (mostly) corrected image to the preview
         # equipment corrections remain. let user look at this while that runs.
@@ -1184,12 +1183,12 @@ class appWindow(QMainWindow):
             self.raw_base = raw_base
             im = base.postprocess(
                     output_color=rawpy.ColorSpace.raw,
-                    use_camera_wb=True,
-                    # highlight_mode=rawpy.HighlightMode.Ignore,
+                    use_camera_wb=False,
+                    highlight_mode=rawpy.HighlightMode.Ignore,
                     user_flip=0,
                     use_auto_wb=False,
                     user_wb=ext_wb,
-                    # no_auto_bright=False,
+                    no_auto_bright=False,
                     demosaic_algorithm=rawpy.DemosaicAlgorithm.LINEAR
                     )
             #cv2.imwrite('rawImg.jpg', im)

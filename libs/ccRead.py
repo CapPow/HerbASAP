@@ -249,7 +249,7 @@ class ColorchipRead:
         pass
 
     def process_colorchip_small(self, im, original_size, stride_style='whole',
-                                stride=25, partition_size=125,
+                                stride=25, partition_size=125, discriminator_floor=0.999,
                                 over_crop=0, hard_cut_value=50, high_precision=False, full_tf=True):
         """
         Finds small colorchips using the quickCC model. This model is specifically trained on tiny colorchips found in
@@ -409,8 +409,9 @@ class ColorchipRead:
             for i in range(len(highest_prob_images)):
                 self.discriminator_model.set_tensor(self.discriminator_input_details[0]['index'], [highest_prob_images_pred[i]])
                 self.discriminator_model.invoke()
-
-                if self.discriminator_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1] > 0.95:
+                disc_value = self.discriminator_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1] 
+                #print(disc_value)
+                if disc_value > discriminator_floor:
                     # print(f"Discriminator took {i} predictions before finding the colorchip.")
                     best_image = Image.fromarray(highest_prob_images[i])
                     best_location = highest_prob_positions[i]

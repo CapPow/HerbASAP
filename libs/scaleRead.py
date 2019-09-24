@@ -50,7 +50,7 @@ class ScaleRead:
                     cnt_len = cv2.arcLength(cnt, True)
                     cnt = cv2.approxPolyDP(cnt, 0.02 * cnt_len, True)
                     contourArea = cv2.contourArea(cnt)
-                    if len(cnt) == 4 and contour_area_floor < contourArea < contour_area_ceiling \
+                    if len(cnt) == 4 and (contour_area_floor < contourArea < contour_area_ceiling) \
                             and cv2.isContourConvex(cnt):
                         cnt = cnt.reshape(-1, 2)
                         max_cos = np.max([ScaleRead.angle_cos(cnt[i], cnt[(i + 1) % 4], cnt[(i + 2) % 4])
@@ -82,7 +82,6 @@ class ScaleRead:
         x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
         biggest_square = (x1, y1, x2, y2)
         cropped_img = input_img[y1:y2, x1:x2]
-
         return cropped_img
 
     @staticmethod
