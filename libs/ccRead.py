@@ -135,7 +135,7 @@ class ColorchipRead:
     @staticmethod
     def find_squares(img, contour_area_floor=850, contour_area_ceiling=100000, leap=6):
         # taken from: opencv samples
-        img = cv2.GaussianBlur(img, (7, 7), 0)
+        img = cv2.GaussianBlur(img, (5, 5), 0)
         squares = []
         for gray in cv2.split(img):
             for thrs in range(0, 255, leap):
@@ -352,7 +352,7 @@ class ColorchipRead:
         position_start = time.time()
 
         if full_tf:
-            position_prediction, position_uncertainty = self._position_with_uncertainty([hists_rgb, hists_hsv], 3)
+            position_prediction, position_uncertainty = self._position_with_uncertainty([hists_rgb, hists_hsv], 5)
 
             only_cc_position_uncertainty = position_uncertainty[0][:, 1]
             only_cc_position_prediction = position_prediction[0][:, 1]
@@ -458,8 +458,8 @@ class ColorchipRead:
         cv_image = cv2.cvtColor(np_image, cv2.COLOR_RGB2HSV)
         h, w = np_image.shape[0:2]
         area = h*w
-        min_crop_area = area // 15
-        max_crop_area = area // 1.2
+        min_crop_area = area // 3.4
+        max_crop_area = area // 3.1
 
         # identify squares in the crop
         squares = ColorchipRead.find_squares(cv_image,
