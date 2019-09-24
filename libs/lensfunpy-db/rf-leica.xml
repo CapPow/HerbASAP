@@ -1,6 +1,4 @@
-<!DOCTYPE lensdatabase SYSTEM "lensfun-database.dtd">
-<lensdatabase version="2">
-
+<lensdatabase version="1">
     <mount>
         <name>Leica M</name>
         <compat>M42</compat>
@@ -9,14 +7,12 @@
         <compat>T2</compat>
         <compat>Generic</compat>
     </mount>
-
     <camera>
         <maker>Leica</maker>
         <model>Leica M (Typ 240)</model>
         <mount>Leica M</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <lens>
         <maker>Leica</maker>
         <model>Elmarit-M 1:2.8/28</model>
@@ -28,7 +24,6 @@
             <distortion model="ptlens" focal="28" a="0.00349" b="-0.00508" c="-0.01721"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Leica</maker>
         <model>Elmarit-M 1:2.8/90</model>
@@ -40,7 +35,6 @@
             <distortion model="ptlens" focal="90" a="-0.00423" b="0.01406" c="-0.00692"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Leica</maker>
         <model>Summicron-M 1:2/50</model>
@@ -54,5 +48,4 @@
             <tca model="poly3" focal="50" vr="0.9999915" vb="0.9998735"/>
         </calibration>
     </lens>
-
 </lensdatabase>

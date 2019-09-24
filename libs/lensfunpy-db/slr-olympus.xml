@@ -1,6 +1,4 @@
-<!DOCTYPE lensdatabase SYSTEM "lensfun-database.dtd">
-<lensdatabase version="2">
-
+<lensdatabase version="1">
     <mount>
         <name>4/3 System</name>
         <compat>M42</compat>
@@ -9,7 +7,6 @@
         <compat>T2</compat>
         <compat>Generic</compat>
     </mount>
-
     <mount>
         <name>Olympus OM</name>
         <compat>M42</compat>
@@ -19,7 +16,6 @@
         <compat>Tamron Adaptall</compat>
         <compat>Generic</compat>
     </mount>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -27,7 +23,6 @@
         <mount>4/3 System</mount>
         <cropfactor>2</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -35,7 +30,6 @@
         <mount>4/3 System</mount>
         <cropfactor>2</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -43,7 +37,6 @@
         <mount>4/3 System</mount>
         <cropfactor>2</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -51,7 +44,6 @@
         <mount>4/3 System</mount>
         <cropfactor>2</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -59,7 +51,6 @@
         <mount>4/3 System</mount>
         <cropfactor>2</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -67,7 +58,6 @@
         <mount>4/3 System</mount>
         <cropfactor>2</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -75,7 +65,6 @@
         <mount>4/3 System</mount>
         <cropfactor>2</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -83,7 +72,6 @@
         <mount>4/3 System</mount>
         <cropfactor>2</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -91,7 +79,6 @@
         <mount>4/3 System</mount>
         <cropfactor>2</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -99,7 +86,6 @@
         <mount>4/3 System</mount>
         <cropfactor>2</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -107,7 +93,6 @@
         <mount>4/3 System</mount>
         <cropfactor>2</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Optical Co.,Ltd</maker>
         <maker lang="en">Olympus</maker>
@@ -115,7 +100,6 @@
         <mount>olympusE10</mount>
         <cropfactor>3.933</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Optical Co.,Ltd</maker>
         <maker lang="en">Olympus</maker>
@@ -124,7 +108,6 @@
         <mount>olympusE10</mount>
         <cropfactor>3.933</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -132,7 +115,6 @@
         <mount>4/3 System</mount>
         <cropfactor>2</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Corporation</maker>
         <maker lang="en">Olympus</maker>
@@ -140,7 +122,6 @@
         <mount>4/3 System</mount>
         <cropfactor>2</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -148,7 +129,6 @@
         <mount>4/3 System</mount>
         <cropfactor>2</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -156,7 +136,6 @@
         <mount>4/3 System</mount>
         <cropfactor>2</cropfactor>
     </camera>
-
     <lens>
         <maker>Olympus</maker>
         <model>Olympus Zuiko Digital ED 7-14mm f/4.0</model>
@@ -172,7 +151,6 @@
             <distortion model="ptlens" focal="14" a="0" b="0.005149" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Olympus Zuiko Digital ED 9-18mm f/4.0-5.6</model>
@@ -275,7 +253,6 @@
             <vignetting model="pa" focal="18" aperture="22" distance="1000" k1="-0.2048" k2="-0.0675" k3="0.0626"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Olympus Zuiko Digital 11-22mm f/2.8-3.5</model>
@@ -292,7 +269,6 @@
             <distortion model="poly3" focal="22" k1="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Olympus Zuiko Digital ED 14-42mm f/3.5-5.6</model>
@@ -414,7 +390,6 @@
             <vignetting model="pa" focal="42" aperture="22" distance="1000" k1="-0.1034" k2="-0.0652" k3="0.0355"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Olympus Zuiko Digital 14-45mm f/3.5-5.6</model>
@@ -429,7 +404,6 @@
             <distortion model="ptlens" focal="45" a="0" b="-0.001233" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Olympus Zuiko Digital 14-54mm f/2.8-3.5</model>
@@ -450,7 +424,6 @@
             <tca model="poly3" focal="54" vr="0.9998060" vb="1.0000496"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Olympus Zuiko Digital 25mm f/2.8</model>
@@ -484,7 +457,6 @@
             <vignetting model="pa" focal="25" aperture="22" distance="1000" k1="-0.2340" k2="-0.0217" k3="0.0337"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Olympus Zuiko Digital 35mm f/3.5 Macro</model>
@@ -518,7 +490,6 @@
             <vignetting model="pa" focal="35" aperture="22" distance="1000" k1="-0.1450" k2="-0.0149" k3="0.0368"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Olympus Zuiko Digital 40-150mm f/3.5-4.5</model>
@@ -533,7 +504,6 @@
             <distortion model="poly3" focal="150" k1="0.005332"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Olympus Zuiko Digital ED 40-150mm f/4.0-5.6</model>
@@ -656,7 +626,6 @@
             <vignetting model="pa" focal="150" aperture="22" distance="1000" k1="-0.0257" k2="-0.1300" k3="0.0997"/>
         </calibration>
     </lens>
-
     <lens>
         <!-- Also update copy with "SWD" below. -->
         <maker>Olympus</maker>
@@ -675,7 +644,6 @@
             <distortion model="poly3" focal="200" k1="0.003465"/>
         </calibration>
     </lens>
-
     <lens>
         <!-- Also update copy without "SWD" above. -->
         <maker>Olympus</maker>
@@ -694,7 +662,6 @@
             <distortion model="poly3" focal="200" k1="0.003465"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Olympus Zuiko Digital ED 50mm f/2.0 Macro</model>
@@ -705,7 +672,6 @@
             <distortion model="ptlens" focal="50" a="0.001878" b="-0.005529" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Olympus E-10 &amp; compatibles (Standard)</model>
@@ -727,7 +693,6 @@
             <distortion model="poly3" focal="36" k1="2.9e-05"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Olympus E-10 &amp; compatibles, with WCON-08B</model>
@@ -743,7 +708,6 @@
             <distortion model="ptlens" focal="13" a="0.006898" b="-0.012403" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Olympus E-10 &amp; compatibles, with B-300 (full tele)</model>
@@ -755,7 +719,6 @@
             <distortion model="ptlens" focal="36" a="0.001885" b="0.002595" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Olympus E-10 &amp; compatibles, macro (full tele): 8 inches lens-to-subject</model>
@@ -767,7 +730,6 @@
             <distortion model="poly3" focal="36" k1="-0.002276"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Olympus E-10 &amp; compatibles, macro (full tele): 12 inches lens-to-subject</model>
@@ -779,7 +741,6 @@
             <distortion model="poly3" focal="36" k1="-0.0014"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Olympus E-10 &amp; compatibles, macro (full tele): 16 inches lens-to-subject</model>
@@ -791,7 +752,6 @@
             <distortion model="poly3" focal="36" k1="-0.001229"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Olympus E-10 &amp; compatibles, macro (full tele): 20 inches lens-to-subject</model>
@@ -803,7 +763,6 @@
             <distortion model="poly3" focal="36" k1="-0.001085"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Olympus Zuiko Digital ED 12-60mm f/2.8-4.0 SWD</model>
@@ -828,7 +787,6 @@
             <distortion model="ptlens" focal="60" a="0.00155019" b="-0.00153152" c="0.0052106"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Olympus Zuiko Digital ED 14-35mm F2.0 SWD</model>
@@ -855,7 +813,6 @@
             <tca model="poly3" focal="35" vr="0.9997740" vb="1.0001929"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Zuiko Auto-S 50mm f/1.8</model>
@@ -877,5 +834,4 @@
             <vignetting model="pa" focal="50" aperture="16" distance="1000" k1="-0.0023" k2="-0.2127" k3="0.1554"/>
         </calibration>
     </lens>
-
 </lensdatabase>

@@ -1,6 +1,4 @@
-<!DOCTYPE lensdatabase SYSTEM "lensfun-database.dtd">
-<lensdatabase version="2">
-
+<lensdatabase version="1">
     <lens>
         <maker>Ricoh</maker>
         <model>Ricoh XR Rikenon 1:1.4 50mm</model>
@@ -12,7 +10,6 @@
             <tca model="poly3" focal="50" br="-0.0000276" vr="1.0001338" bb="0.0000254" vb="0.9998300"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Ricoh</maker>
         <model>Ricoh 50mm 1:2.0</model>
@@ -37,5 +34,4 @@
             <vignetting model="pa" focal="50" aperture="16" distance="1000" k1="-0.1951" k2="0.0241" k3="0.0171"/>
         </calibration>
     </lens>
-
 </lensdatabase>

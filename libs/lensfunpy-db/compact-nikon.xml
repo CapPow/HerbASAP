@@ -1,13 +1,10 @@
-<!DOCTYPE lensdatabase SYSTEM "lensfun-database.dtd">
-<lensdatabase version="2">
-
+<lensdatabase version="1">
     <camera>
         <maker>Nikon</maker>
         <model>Coolpix P60</model>
         <mount>nikonP60</mount>
         <cropfactor>5.62</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon</maker>
         <model>E8800</model>
@@ -15,7 +12,6 @@
         <mount>nikon8800</mount>
         <cropfactor>3.933</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon</maker>
         <model>E8700</model>
@@ -23,7 +19,6 @@
         <mount>nikon5700</mount>
         <cropfactor>3.933</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon</maker>
         <model>E5700</model>
@@ -31,7 +26,6 @@
         <mount>nikon5700</mount>
         <cropfactor>3.933</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon</maker>
         <model>E7900</model>
@@ -39,7 +33,6 @@
         <mount>nikon7900</mount>
         <cropfactor>4.86</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon</maker>
         <model>E7600</model>
@@ -47,7 +40,6 @@
         <mount>nikon7900</mount>
         <cropfactor>4.86</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon</maker>
         <model>E5900</model>
@@ -55,7 +47,6 @@
         <mount>nikon7900</mount>
         <cropfactor>4.86</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon</maker>
         <model>E5200</model>
@@ -63,7 +54,6 @@
         <mount>nikon7900</mount>
         <cropfactor>4.86</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon</maker>
         <model>E4200</model>
@@ -71,7 +61,6 @@
         <mount>nikon7900</mount>
         <cropfactor>4.86</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon</maker>
         <model>E5400</model>
@@ -79,7 +68,6 @@
         <mount>nikon5400</mount>
         <cropfactor>4.843</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon</maker>
         <model>E5000</model>
@@ -87,7 +75,6 @@
         <mount>nikon5000</mount>
         <cropfactor>3.933</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon</maker>
         <model>E4800</model>
@@ -95,7 +82,6 @@
         <mount>nikon4800</mount>
         <cropfactor>6</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon</maker>
         <model>E4500</model>
@@ -103,7 +89,6 @@
         <mount>nikon4500</mount>
         <cropfactor>4.843</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon</maker>
         <model>E995</model>
@@ -111,7 +96,6 @@
         <mount>nikon995</mount>
         <cropfactor>4.843</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon</maker>
         <model>E990</model>
@@ -119,7 +103,6 @@
         <mount>nikon990</mount>
         <cropfactor>4.843</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon</maker>
         <model>E950</model>
@@ -127,28 +110,24 @@
         <mount>nikon950</mount>
         <cropfactor>5.408</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon</maker>
         <model>Coolpix P330</model>
         <mount>nikonP330</mount>
         <cropfactor>4.706</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon</maker>
         <model>Coolpix S3300</model>
         <mount>nikonS3300</mount>
         <cropfactor>5.65</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon</maker>
         <model>Coolpix P6000</model>
         <mount>nikonP6000</mount>
         <cropfactor>4.6</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon</maker>
         <model>E8400</model>
@@ -156,21 +135,18 @@
         <mount>nikon8400</mount>
         <cropfactor>3.933</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon</maker>
         <model>Coolpix P7000</model>
         <mount>nikonP7000</mount>
         <cropfactor>4.69</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon</maker>
         <model>Coolpix P7800</model>
         <mount>nikonP7800</mount>
         <cropfactor>4.67</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -178,7 +154,6 @@
         <mount>nikonA</mount>
         <cropfactor>1.523</cropfactor>
     </camera>
-
     <lens>
         <maker>Nikon</maker>
         <model>E8800 &amp; compatibles (Standard)</model>
@@ -199,7 +174,6 @@
             <distortion model="ptlens" focal="89" a="0" b="0.002974" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>E8800 &amp; compatibles, with WM-E80</model>
@@ -218,7 +192,6 @@
             <distortion model="ptlens" focal="35.9" a="-0.0024" b="-0.006042" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>E8400 &amp; compatibles (Standard)</model>
@@ -237,7 +210,6 @@
             <distortion model="poly3" focal="21.6" k1="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>E8400 &amp; compatibles, with WC-E75</model>
@@ -256,7 +228,6 @@
             <distortion model="ptlens" focal="21.6" a="0" b="-0.003667" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>E5700 &amp; compatibles (Standard)</model>
@@ -285,7 +256,6 @@
             <distortion model="ptlens" focal="71.2" a="0.004259" b="-0.007821" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>E5700 &amp; compatibles, with TC-E15ED (full tele)</model>
@@ -298,7 +268,6 @@
             <distortion model="ptlens" focal="71.2" a="-0.000659" b="0.004458" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>E5700 &amp; compatibles, with WC-E80 (full wide)</model>
@@ -311,7 +280,6 @@
             <distortion model="ptlens" focal="8.9" a="0.016692" b="-0.060767" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>E7900 &amp; compatibles (Standard)</model>
@@ -330,7 +298,6 @@
             <distortion model="ptlens" focal="23.4" a="0" b="-0.000554" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>E5400 &amp; compatibles (Standard)</model>
@@ -354,7 +321,6 @@
             <distortion model="ptlens" focal="24" a="0" b="0.009755" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>E5400 &amp; compatibles, with WC-E80</model>
@@ -374,7 +340,6 @@
             <distortion model="ptlens" focal="24" a="0" b="0.00557" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>E5000 &amp; compatibles (Standard)</model>
@@ -396,7 +361,6 @@
             <distortion model="ptlens" focal="21.4" a="-0.000745" b="0.001506" c="-0.005233"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>E5000 &amp; compatibles, with WC-E68 (full wide)</model>
@@ -409,7 +373,6 @@
             <distortion model="ptlens" focal="7.1" a="0.026854" b="-0.077694" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>E4800 &amp; compatibles (Standard)</model>
@@ -428,7 +391,6 @@
             <distortion model="ptlens" focal="50" a="0" b="0.012609" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>E995 &amp; compatibles (Standard)</model>
@@ -447,7 +409,6 @@
             <distortion model="poly3" focal="31" k1="0.009298"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>E995 &amp; compatibles, with WC-E63</model>
@@ -471,7 +432,6 @@
             <distortion model="ptlens" focal="16.9" a="-0.000905" b="0.000825" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>E995 &amp; compatibles, with WC-E24</model>
@@ -508,7 +468,6 @@
             <distortion model="poly3" focal="32" k1="0.0081"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>E995 &amp; compatibles, with TC-E2</model>
@@ -538,7 +497,6 @@
             <distortion model="poly3" focal="31" k1="0.0118"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>E990 &amp; compatibles (Standard)</model>
@@ -569,7 +527,6 @@
             <distortion model="ptlens" focal="23.4" a="1.9e-05" b="0.009522" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>E990 &amp; compatibles, with WC-E63</model>
@@ -582,7 +539,6 @@
             <distortion model="ptlens" focal="8.2" a="0.027148" b="-0.073181" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>E950 &amp; compatibles (Standard)</model>
@@ -609,7 +565,6 @@
             <distortion model="poly3" focal="21" k1="0.0116"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Coolpix P60 &amp; compatibles (Standard)</model>
@@ -630,7 +585,6 @@
             <!-- TCA and vignetting doesn't matter for this camera. -->
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Coolpix P330 &amp; compatibles (Standard)</model>
@@ -656,7 +610,6 @@
             <tca model="poly3" focal="25.5" br="0.0000262" vr="1.0000900" bb="-0.0000026" vb="1.0001305"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Coolpix S3300 &amp; compatibles</model>
@@ -674,7 +627,6 @@
             <tca model="poly3" focal="27.6"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Coolpix P7000 &amp; compatibles</model>
@@ -690,7 +642,6 @@
             <distortion model="ptlens" focal="42.6" a="0" b="0.00694" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Coolpix A &amp; compatibles</model>
@@ -704,7 +655,6 @@
             <tca model="poly3" focal="18.5" vr="1.0000922" vb="1.0000229"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Coolpix P7800 &amp; compatibles</model>
@@ -737,5 +687,4 @@
             <tca model="poly3" focal="42.8" vr="0.9997493" vb="0.9998575"/>
         </calibration>
     </lens>
-
 </lensdatabase>

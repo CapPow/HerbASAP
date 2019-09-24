@@ -1,6 +1,4 @@
-<!DOCTYPE lensdatabase SYSTEM "lensfun-database.dtd">
-<lensdatabase version="2">
-
+<lensdatabase version="1">
     <mount>
         <name>Nikon CX</name>
         <compat>Nikon F</compat>
@@ -13,7 +11,18 @@
         <compat>T2</compat>
         <compat>Generic</compat>
     </mount>
-
+    <mount>
+        <name>Nikon Z</name>
+        <compat>Nikon F</compat>
+        <compat>Nikon F AI</compat>
+        <compat>Nikon F AI-S</compat>
+        <compat>Nikon F AF</compat>
+        <compat>M42</compat>
+        <compat>M39/1</compat>
+        <compat>DKL</compat>
+        <compat>T2</compat>
+        <compat>Generic</compat>
+    </mount>
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -22,7 +31,6 @@
         <mount>Nikon CX</mount>
         <cropfactor>2.727</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -31,7 +39,6 @@
         <mount>Nikon CX</mount>
         <cropfactor>2.727</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -40,7 +47,6 @@
         <mount>Nikon CX</mount>
         <cropfactor>2.727</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -49,7 +55,6 @@
         <mount>Nikon CX</mount>
         <cropfactor>2.727</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -58,7 +63,6 @@
         <mount>Nikon CX</mount>
         <cropfactor>2.727</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -67,7 +71,6 @@
         <mount>Nikon CX</mount>
         <cropfactor>2.727</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -76,7 +79,6 @@
         <mount>Nikon CX</mount>
         <cropfactor>2.727</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -85,7 +87,6 @@
         <mount>Nikon CX</mount>
         <cropfactor>2.727</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -94,7 +95,6 @@
         <mount>Nikon CX</mount>
         <cropfactor>2.727</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -103,7 +103,6 @@
         <mount>Nikon CX</mount>
         <cropfactor>2.727</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -112,7 +111,22 @@
         <mount>Nikon CX</mount>
         <cropfactor>2.727</cropfactor>
     </camera>
-
+    <camera>
+        <maker>Nikon Corporation</maker>
+        <maker lang="en">Nikon</maker>
+        <model>Nikon Z6</model>
+        <model lang="en">Z6</model>
+        <mount>Nikon Z</mount>
+        <cropfactor>1</cropfactor>
+    </camera>
+    <camera>
+        <maker>Nikon Corporation</maker>
+        <maker lang="en">Nikon</maker>
+        <model>Nikon Z7</model>
+        <model lang="en">Z7</model>
+        <mount>Nikon Z</mount>
+        <cropfactor>1</cropfactor>
+    </camera>
     <lens>
         <maker>Nikon</maker>
         <model>1 Nikkor VR 10-30mm f/3.5-5.6</model>
@@ -134,7 +148,6 @@
             <tca model="poly3" focal="30" vr="1.0001281" vb="1.0000955"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>1 Nikkor VR 30-110mm f/3.8-5.6</model>
@@ -154,7 +167,6 @@
             <tca model="poly3" focal="110" vr="0.9998706" vb="0.9998498"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>1 Nikkor AW 11-27.5mm f/3.5-5.6</model>
@@ -178,7 +190,6 @@
             <tca model="poly3" focal="27.5" br="-0.0000339" vr="1.0001351" bb="-0.0000011" vb="1.0000496"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>1 Nikkor 18.5mm f/1.8</model>
@@ -190,7 +201,6 @@
             <tca model="poly3" focal="18.5" br="-0.0000181" vr="1.0004235" bb="0.0000843" vb="0.9999900"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>1 Nikkor 32mm f/1.2</model>
@@ -202,7 +212,6 @@
             <tca model="poly3" focal="32" br="-0.0000293" vr="1.0000997" bb="0.0000337" vb="0.9998935"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>1 Nikkor 10mm f/2.8</model>
@@ -231,7 +240,6 @@
             <vignetting model="pa" focal="10" aperture="11" distance="1000" k1="-0.5985" k2="0.1814" k3="-0.0093"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>1 Nikkor AW 10mm f/2.8</model>
@@ -243,5 +251,22 @@
             <tca model="poly3" focal="10" br="-0.0001550" vr="1.0006279" bb="0.0001309" vb="0.9998205"/>
         </calibration>
     </lens>
-
+    <lens>
+        <maker>Nikon</maker>
+        <model>Nikkor Z 24-70mm f/4 S</model>
+        <mount>Nikon Z</mount>
+        <cropfactor>1</cropfactor>
+        <calibration>
+            <distortion model="ptlens" focal="24" a="0.032" b="-0.114" c="0.073"/>
+            <distortion model="ptlens" focal="28" a="0.022" b="-0.077" c="0.061"/>
+            <distortion model="ptlens" focal="35" a="0.019" b="-0.056" c="0.063"/>
+            <distortion model="ptlens" focal="50" a="0.024" b="-0.067" c="0.096"/>
+            <distortion model="ptlens" focal="70" a="0.012" b="-0.017" c="0.039"/>
+            <tca model="poly3" focal="24" vr="1.0002247" vb="1.0000753"/>
+            <tca model="poly3" focal="28" vr="1.0001203" vb="1.0001310"/>
+            <tca model="poly3" focal="35" vr="1.0000506" vb="1.0001152"/>
+            <tca model="poly3" focal="50" vr="0.9999946" vb="1.0000632"/>
+            <tca model="poly3" focal="70" vr="0.9999059" vb="0.9999643"/>
+        </calibration>
+    </lens>
 </lensdatabase>

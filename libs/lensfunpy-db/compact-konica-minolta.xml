@@ -1,27 +1,22 @@
-<!DOCTYPE lensdatabase SYSTEM "lensfun-database.dtd">
-<lensdatabase version="2">
-
+<lensdatabase version="1">
     <camera>
         <maker>Konica Minolta</maker>
         <model>DiMAGE Z6</model>
         <mount>kmZ3</mount>
         <cropfactor>6.05</cropfactor>
     </camera>
-
     <camera>
         <maker>Konica Minolta</maker>
         <model>DiMAGE Z5</model>
         <mount>kmZ3</mount>
         <cropfactor>6.05</cropfactor>
     </camera>
-
     <camera>
         <maker>Konica Minolta</maker>
         <model>DiMAGE Z3</model>
         <mount>kmZ3</mount>
         <cropfactor>6.05</cropfactor>
     </camera>
-
     <camera>
         <maker>Konica Minolta Camera, Inc.</maker>
         <maker lang="en">Konica Minolta</maker>
@@ -29,7 +24,6 @@
         <mount>kmZ2</mount>
         <cropfactor>6.03</cropfactor>
     </camera>
-
     <camera>
         <maker>Minolta Co., Ltd.</maker>
         <maker lang="en">Minolta</maker>
@@ -37,28 +31,24 @@
         <mount>kmZ1</mount>
         <cropfactor>6.545</cropfactor>
     </camera>
-
     <camera>
         <maker>Konica Minolta</maker>
         <model>DiMAGE Z20</model>
         <mount>kmZ10</mount>
         <cropfactor>6.05</cropfactor>
     </camera>
-
     <camera>
         <maker>Konica Minolta</maker>
         <model>DiMAGE Z10</model>
         <mount>kmZ10</mount>
         <cropfactor>6.05</cropfactor>
     </camera>
-
     <camera>
         <maker>Konica Minolta</maker>
         <model>DiMAGE A200</model>
         <mount>kmD7</mount>
         <cropfactor>3.933</cropfactor>
     </camera>
-
     <camera>
         <maker>Konica Minolta Camera, Inc.</maker>
         <maker lang="en">Konica Minolta</maker>
@@ -66,7 +56,6 @@
         <mount>kmD7</mount>
         <cropfactor>3.933</cropfactor>
     </camera>
-
     <camera>
         <maker>Minolta Co., Ltd.</maker>
         <maker lang="en">Minolta</maker>
@@ -74,7 +63,6 @@
         <mount>kmD7</mount>
         <cropfactor>3.933</cropfactor>
     </camera>
-
     <camera>
         <maker>Minolta Co., Ltd.</maker>
         <maker lang="en">Minolta</maker>
@@ -82,7 +70,6 @@
         <mount>kmD7</mount>
         <cropfactor>3.933</cropfactor>
     </camera>
-
     <camera>
         <maker>Minolta Co., Ltd.</maker>
         <maker lang="en">Minolta</maker>
@@ -90,7 +77,6 @@
         <mount>kmD7</mount>
         <cropfactor>3.933</cropfactor>
     </camera>
-
     <camera>
         <maker>Minolta Co., Ltd.</maker>
         <maker lang="en">Minolta</maker>
@@ -98,7 +84,6 @@
         <mount>kmD7</mount>
         <cropfactor>3.933</cropfactor>
     </camera>
-
     <camera>
         <maker>Minolta Co., Ltd.</maker>
         <maker lang="en">Minolta</maker>
@@ -106,7 +91,6 @@
         <mount>kmXt</mount>
         <cropfactor>6.5</cropfactor>
     </camera>
-
     <camera>
         <maker>Minolta Co., Ltd.</maker>
         <maker lang="en">Minolta</maker>
@@ -114,7 +98,6 @@
         <mount>kmXt</mount>
         <cropfactor>6.5</cropfactor>
     </camera>
-
     <camera>
         <maker>Minolta Co., Ltd.</maker>
         <maker lang="en">Minolta</maker>
@@ -122,7 +105,6 @@
         <mount>kmXt</mount>
         <cropfactor>6.5</cropfactor>
     </camera>
-
     <camera>
         <maker>Konica Minolta Camera, Inc.</maker>
         <maker lang="en">Konica Minolta</maker>
@@ -130,7 +112,6 @@
         <mount>kmG400</mount>
         <cropfactor>6.144</cropfactor>
     </camera>
-
     <camera>
         <maker>Konica Minolta Camera, Inc.</maker>
         <maker lang="en">Konica Minolta</maker>
@@ -138,7 +119,6 @@
         <mount>kmG400</mount>
         <cropfactor>6.144</cropfactor>
     </camera>
-
     <lens>
         <maker>Konica Minolta</maker>
         <model>DiMAGE Z3 &amp; compatibles (Standard)</model>
@@ -158,7 +138,6 @@
             <distortion model="ptlens" focal="69.454" a="0" b="0.00172" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Konica Minolta</maker>
         <model>DiMAGE Z2 &amp; compatibles (Standard)</model>
@@ -178,7 +157,6 @@
             <distortion model="ptlens" focal="63" a="0" b="0.000531" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Konica Minolta</maker>
         <model>DiMAGE Z2 &amp; compatibles, with ZCW-100</model>
@@ -193,7 +171,6 @@
             <distortion model="ptlens" focal="10.4" a="-0.001905" b="-0.017509" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Konica Minolta</maker>
         <model>DiMAGE Z1 &amp; compatibles (Standard)</model>
@@ -217,7 +194,6 @@
             <distortion model="ptlens" focal="58" a="0" b="0.000217" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Konica Minolta</maker>
         <model>DiMAGE Z1 &amp; compatibles, with ZCW-100</model>
@@ -230,7 +206,6 @@
             <distortion model="ptlens" focal="4.4" a="0.030707" b="-0.10549" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Konica Minolta</maker>
         <model>DiMAGE Z10 &amp; compatibles (Standard)</model>
@@ -251,7 +226,6 @@
             <distortion model="ptlens" focal="48" a="0.006184" b="0.003347" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Konica Minolta</maker>
         <model>DiMAGE Z10 &amp; compatibles, with ZCW-200</model>
@@ -264,7 +238,6 @@
             <distortion model="ptlens" focal="4.2" a="0.024186" b="-0.107425" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Konica Minolta</maker>
         <model>DiMAGE 7 &amp; compatibles (Standard)</model>
@@ -282,7 +255,6 @@
             <distortion model="ptlens" focal="50.8" a="0" b="0.008" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Konica Minolta</maker>
         <model>DiMAGE 7 &amp; compatibles, with ACW-100 converter</model>
@@ -295,7 +267,6 @@
             <distortion model="ptlens" focal="7.3" a="0" b="0.02892" c="-0.106517"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Konica Minolta</maker>
         <model>DiMAGE X &amp; compatibles (Standard)</model>
@@ -317,7 +288,6 @@
             <distortion model="ptlens" focal="17.1" a="0" b="0.009984" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Konica Minolta</maker>
         <model>DiMAGE G400 &amp; compatibles (Standard)</model>
@@ -336,5 +306,4 @@
             <distortion model="ptlens" focal="16.8" a="-0.005442" b="0.012752" c="0"/>
         </calibration>
     </lens>
-
 </lensdatabase>

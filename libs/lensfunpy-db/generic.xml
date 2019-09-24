@@ -1,11 +1,4 @@
-<!DOCTYPE lensdatabase SYSTEM "lensfun-database.dtd">
-<!--
-    The meaning of this file is to provide some generic lenses that can be used
-    to correct or simulate geometric distortions for specific types of lenses.
-    It does not provide (obviously) any calibration data.
--->
-<lensdatabase version="2">
-
+<lensdatabase version="1">
     <mount>
         <name>Generic</name>
         <!-- The following is a list of all mounts in the Lensfun database for
@@ -37,6 +30,7 @@
         <compat>Nikon F AF</compat>
         <compat>Nikon F AI</compat>
         <compat>Nikon F AI-S</compat>
+        <compat>Nikon Z</compat>
         <compat>Olympus OM</compat>
         <compat>Pentax Q</compat>
         <compat>Pentax K</compat>
@@ -56,7 +50,6 @@
         <compat>C</compat>
         <compat>Kiev 88</compat>
     </mount>
-
     <camera>
         <maker>Generic</maker>
         <maker lang="de">Generisch</maker>
@@ -65,7 +58,6 @@
         <mount>Generic</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <camera>
         <maker>Generic</maker>
         <maker lang="de">Generisch</maker>
@@ -74,7 +66,6 @@
         <mount>Generic</mount>
         <cropfactor>1.1</cropfactor>
     </camera>
-
     <camera>
         <maker>Generic</maker>
         <maker lang="de">Generisch</maker>
@@ -83,7 +74,6 @@
         <mount>Generic</mount>
         <cropfactor>1.267</cropfactor>
     </camera>
-
     <camera>
         <maker>Generic</maker>
         <maker lang="de">Generisch</maker>
@@ -92,7 +82,6 @@
         <mount>Generic</mount>
         <cropfactor>1.53</cropfactor>
     </camera>
-
     <camera>
         <maker>Generic</maker>
         <maker lang="de">Generisch</maker>
@@ -101,7 +90,6 @@
         <mount>Generic</mount>
         <cropfactor>1.611</cropfactor>
     </camera>
-
     <camera>
         <maker>Generic</maker>
         <maker lang="de">Generisch</maker>
@@ -110,7 +98,6 @@
         <mount>Generic</mount>
         <cropfactor>1.739</cropfactor>
     </camera>
-
     <camera>
         <maker>Generic</maker>
         <maker lang="de">Generisch</maker>
@@ -119,7 +106,6 @@
         <mount>Generic</mount>
         <cropfactor>2</cropfactor>
     </camera>
-
     <lens>
         <maker>Generic</maker>
         <maker lang="de">Generisch</maker>
@@ -129,7 +115,6 @@
         <type>rectilinear</type>
         <cropfactor>1</cropfactor>
     </lens>
-
     <lens>
         <maker>Generic</maker>
         <maker lang="de">Generisch</maker>
@@ -139,7 +124,6 @@
         <type>fisheye</type>
         <cropfactor>1</cropfactor>
     </lens>
-
     <lens>
         <maker>Generic</maker>
         <maker lang="de">Generisch</maker>
@@ -149,5 +133,4 @@
         <type>panoramic</type>
         <cropfactor>1</cropfactor>
     </lens>
-
 </lensdatabase>

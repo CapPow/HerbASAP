@@ -1,6 +1,4 @@
-<!DOCTYPE lensdatabase SYSTEM "lensfun-database.dtd">
-<lensdatabase version="2">
-
+<lensdatabase version="1">
     <lens>
         <!-- Fixme: The versions I and II are optically equivalent.  At the
              same time, exiv2 doesn't seem to be able to distinguish between
@@ -23,7 +21,6 @@
             <distortion model="ptlens" focal="16" a="0.001" b="-0.023" c="0.021"/>
         </calibration>
     </lens>
-
     <lens>
         <!-- Fixme: The versions I and II are optically equivalent.  At the
              same time, exiv2 doesn't seem to be able to distinguish between
@@ -119,7 +116,6 @@
             <vignetting model="pa" focal="16" aperture="22" distance="1000" k1="-0.1690" k2="-0.2027" k3="0.1971"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Tokina</maker>
         <model>Tokina 12-24mm f/4 AT-X 124 AF Pro DX</model>
@@ -138,7 +134,6 @@
             <distortion model="ptlens" focal="24" a="0" b="0" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Tokina</maker>
         <model>Tokina 19-35mm f/3.5-4.5 AF 193</model>
@@ -158,7 +153,6 @@
             <distortion model="ptlens" focal="35" a="0" b="-0.000829" c="-0.007504"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Tokina</maker>
         <model>Tokina 28-70mm f/2.8 AT-X 287 Pro SV</model>
@@ -177,7 +171,6 @@
             <distortion model="poly3" focal="70" k1="0.003103"/>
         </calibration>
     </lens>
-
     <lens>
         <!-- This is a pure manual lens with no EXIF footprint. -->
         <maker>Tokina</maker>
@@ -196,7 +189,6 @@
             <tca model="poly3" focal="200" br="-0.0000075" vr="0.9993965" bb="-0.0000782" vb="0.9994524"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Tokina</maker>
         <model>Tokina 17mm f/3.5 AT-X 17 AF Pro</model>
@@ -209,7 +201,6 @@
             <distortion model="poly3" focal="17" k1="-0.012125"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Tokina</maker>
         <model>Tokina 17mm f/3.5 AT-X 17 AF Pro</model>
@@ -222,7 +213,6 @@
             <distortion model="ptlens" focal="17" a="0" b="-0.004083" c="-0.015672"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Tokina</maker>
         <model>Tokina 500mm f/8 RMC Mirror Lens</model>
@@ -240,7 +230,6 @@
             <tca model="poly3" focal="500" br="0.0000917" cr="-0.0001426" vr="0.9998064" bb="0.0002514" cb="-0.0004149" vb="0.9997489"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Tokina</maker>
         <model>Tokina AF 16-28mm f/2.8 AT-X Pro SD FX</model>
@@ -265,7 +254,6 @@
             <tca model="poly3" focal="28" br="0.0000373" vr="0.9999960" bb="-0.0000421" vb="1.0002272"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Tokina</maker>
         <model>Tokina AF 12-28mm f/4 AT-X Pro DX</model>
@@ -284,7 +272,6 @@
             <tca model="poly3" focal="28" br="0.0001388" vr="0.9998978" bb="-0.0001242" vb="1.0005127"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Tokina</maker>
         <model>Tokina AT-X M100 100mm f/2.8 Pro D Macro AF</model>
@@ -297,7 +284,6 @@
             <tca model="poly3" focal="100" vr="0.9998950" vb="0.9997397"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Tokina</maker>
         <model>Tokina AF 80-200mm f/2.8 AT-X 828 Pro</model>
@@ -320,7 +306,6 @@
             <tca model="poly3" focal="200" vr="0.9998570" vb="0.9999823"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Tokina</maker>
         <model>Tokina AF 28-80mm f/2.8 AT-X 280 Pro</model>
@@ -340,7 +325,6 @@
             <distortion model="ptlens" focal="80" a="0.00884" b="-0.01771" c="0.02833"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Tokina</maker>
         <model>Tokina AF 11-20mm f/2.8 AT-X Pro DX</model>
@@ -371,7 +355,6 @@
             <tca model="poly3" focal="20" vr="1.0000661" vb="1.0001206"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Tokina</maker>
         <model>Tokina AF 100mm f/2.8 AT-X Pro D M100 Macro</model>
@@ -394,5 +377,4 @@
             <vignetting model="pa" focal="100" aperture="32" distance="1000" k1="-0.1772" k2="0.0435" k3="0.0307"/>
         </calibration>
     </lens>
-
 </lensdatabase>

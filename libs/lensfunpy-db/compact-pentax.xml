@@ -1,6 +1,4 @@
-<!DOCTYPE lensdatabase SYSTEM "lensfun-database.dtd">
-<lensdatabase version="2">
-
+<lensdatabase version="1">
     <camera>
         <maker>Pentax Corporation</maker>
         <maker lang="en">Pentax</maker>
@@ -9,7 +7,6 @@
         <mount>pentax43WR</mount>
         <cropfactor>6.5</cropfactor>
     </camera>
-
     <camera>
         <maker>Pentax Corporation</maker>
         <maker lang="en">Pentax</maker>
@@ -18,7 +15,6 @@
         <mount>pentax750</mount>
         <cropfactor>4.843</cropfactor>
     </camera>
-
     <camera>
         <maker>Pentax Corporation</maker>
         <maker lang="en">Pentax</maker>
@@ -27,7 +23,6 @@
         <mount>pentax750</mount>
         <cropfactor>4.843</cropfactor>
     </camera>
-
     <camera>
         <maker>Pentax Corporation</maker>
         <maker lang="en">Pentax</maker>
@@ -36,7 +31,6 @@
         <mount>pentax750</mount>
         <cropfactor>4.843</cropfactor>
     </camera>
-
     <camera>
         <maker>Pentax Corporation</maker>
         <maker lang="en">Pentax</maker>
@@ -45,7 +39,6 @@
         <mount>pentax750</mount>
         <cropfactor>4.843</cropfactor>
     </camera>
-
     <camera>
         <maker>Pentax Corporation</maker>
         <maker lang="en">Pentax</maker>
@@ -54,7 +47,6 @@
         <mount>pentax230</mount>
         <cropfactor>6.563</cropfactor>
     </camera>
-
     <camera>
         <maker>Pentax Corporation</maker>
         <maker lang="en">Pentax</maker>
@@ -63,7 +55,6 @@
         <mount>pentax230</mount>
         <cropfactor>6.563</cropfactor>
     </camera>
-
     <camera>
         <maker>Pentax Corporation</maker>
         <maker lang="en">Pentax</maker>
@@ -72,7 +63,6 @@
         <mount>pentax230</mount>
         <cropfactor>6.563</cropfactor>
     </camera>
-
     <camera>
         <maker>Pentax Corporation</maker>
         <maker lang="en">Pentax</maker>
@@ -81,7 +71,6 @@
         <mount>pentax230</mount>
         <cropfactor>6.563</cropfactor>
     </camera>
-
     <camera>
         <maker>Asahi Optical Co.,Ltd</maker>
         <maker lang="en">Pentax</maker>
@@ -90,7 +79,6 @@
         <mount>pentax430</mount>
         <cropfactor>4.85</cropfactor>
     </camera>
-
     <lens>
         <maker>Pentax</maker>
         <model>Pentax Optio 43WR &amp; compatibles (Standard)</model>
@@ -109,7 +97,6 @@
             <distortion model="ptlens" focal="16" a="-0.021041" b="0.050701" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Pentax</maker>
         <model>Pentax Optio 750Z &amp; compatibles (Standard)</model>
@@ -129,7 +116,6 @@
             <distortion model="ptlens" focal="39" a="0" b="0.011569" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Pentax</maker>
         <model>Pentax Optio 230GS &amp; compatibles (Standard)</model>
@@ -148,7 +134,6 @@
             <distortion model="ptlens" focal="17.4" a="0.001466" b="-0.007908" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Pentax</maker>
         <model>Pentax Optio 430 &amp; compatibles (Standard)</model>
@@ -167,5 +152,4 @@
             <distortion model="ptlens" focal="22.8" a="0" b="-0.002609" c="0"/>
         </calibration>
     </lens>
-
 </lensdatabase>

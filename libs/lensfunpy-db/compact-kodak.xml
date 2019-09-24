@@ -1,6 +1,4 @@
-<!DOCTYPE lensdatabase SYSTEM "lensfun-database.dtd">
-<lensdatabase version="2">
-
+<lensdatabase version="1">
     <camera>
         <maker>Eastman Kodak Company</maker>
         <maker lang="en">Kodak</maker>
@@ -9,7 +7,6 @@
         <mount>kodakDC120</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <camera>
         <maker>Eastman Kodak Company</maker>
         <maker lang="en">Kodak</maker>
@@ -18,7 +15,6 @@
         <mount>kodakDC50</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <camera>
         <maker>Eastman Kodak Company</maker>
         <maker lang="en">Kodak</maker>
@@ -27,7 +23,14 @@
         <mount>kodakCX6330</mount>
         <cropfactor>6.593</cropfactor>
     </camera>
-
+    <camera>
+        <maker>Eastman Kodak Company</maker>
+        <maker lang="en">Kodak</maker>
+        <model>Kodak CX7525 Zoom Digital Camera</model>
+        <model lang="en">Kodak CX7525</model>
+        <mount>kodakCX6330</mount>
+        <cropfactor>6.07</cropfactor>
+    </camera>
     <lens>
         <maker>Kodak</maker>
         <model>Kodak CX6330 &amp; compatibles</model>
@@ -45,5 +48,4 @@
             <distortion model="ptlens" focal="16.8" a="0" b="-0.00293" c="0"/>
         </calibration>
     </lens>
-
 </lensdatabase>

@@ -1,90 +1,76 @@
-<!DOCTYPE lensdatabase SYSTEM "lensfun-database.dtd">
-<lensdatabase version="2">
-
+<lensdatabase version="1">
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix F11</model>
         <mount>fujiF11</mount>
         <cropfactor>4.5</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix F10</model>
         <mount>fujiF11</mount>
         <cropfactor>4.5</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix S9000</model>
         <mount>fujiS9000</mount>
         <cropfactor>4.48</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix S9500</model>
         <mount>fujiS9000</mount>
         <cropfactor>4.48</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix S9600</model>
         <mount>fujiS9000</mount>
         <cropfactor>4.48</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix S5500</model>
         <mount>fujiS5500</mount>
         <cropfactor>6.491</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix S5100</model>
         <mount>fujiS5500</mount>
         <cropfactor>6.491</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix S7000</model>
         <mount>fuji602</mount>
         <cropfactor>4.487</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix S20Pro</model>
         <mount>fuji602</mount>
         <cropfactor>4.487</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix S602 ZOOM</model>
         <mount>fuji602</mount>
         <cropfactor>4.487</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix F601 ZOOM</model>
         <mount>fuji601</mount>
         <cropfactor>4.487</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix F810</model>
         <mount>fuji810</mount>
         <cropfactor>4.5</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix F810</model>
@@ -92,91 +78,78 @@
         <mount>fuji810</mount>
         <cropfactor>4.9</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix F710</model>
         <mount>fuji810</mount>
         <cropfactor>4.5</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix E550</model>
         <mount>fuji810</mount>
         <cropfactor>4.5</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix 3800</model>
         <mount>fuji2800</mount>
         <cropfactor>6.3333333</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix S304</model>
         <mount>fuji2800</mount>
         <cropfactor>6.3333333</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix S3000</model>
         <mount>fuji2800</mount>
         <cropfactor>6.3333333</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix2800ZOOM</model>
         <mount>fuji2800</mount>
         <cropfactor>6.3333333</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix F200EXR</model>
         <mount>fujiF200exr</mount>
         <cropfactor>4.341</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix X100</model>
         <mount>fujix100</mount>
         <cropfactor>1.523</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>X100S</model>
         <mount>fujix100</mount>
         <cropfactor>1.523</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>X100T</model>
         <mount>fujix100</mount>
         <cropfactor>1.523</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>X10</model>
         <mount>fujix10</mount>
         <cropfactor>3.93</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>X70</model>
         <mount>fujix70</mount>
         <cropfactor>1.5375</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>X20</model>
@@ -186,7 +159,6 @@
         <mount>fujix10</mount>
         <cropfactor>3.93</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>X30</model>
@@ -196,49 +168,42 @@
         <mount>fujix10</mount>
         <cropfactor>3.93</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix HS20EXR</model>
         <mount>fujihs20exr</mount>
         <cropfactor>5.71</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix F770EXR</model>
         <mount>fujif770exr</mount>
         <cropfactor>5.43</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix S5600</model>
         <mount>fujiS5600</mount>
         <cropfactor>6.03</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>XQ1</model>
         <mount>fujiXQ1</mount>
         <cropfactor>3.91</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix A370</model>
         <mount>fujiA370</mount>
         <cropfactor>6.03</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>X-S1</model>
         <mount>fujiXS1</mount>
         <cropfactor>3.93</cropfactor>
     </camera>
-
     <lens>
         <maker>Fujifilm</maker>
         <model>FinePix F11 &amp; compatibles (Standard)</model>
@@ -259,7 +224,6 @@
             <distortion model="poly3" focal="24" k1="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Fujifilm</maker>
         <model>FinePix S9000 &amp; compatibles (Standard)</model>
@@ -281,7 +245,6 @@
             <distortion model="ptlens" focal="67" a="0" b="0.003859" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Fujifilm</maker>
         <model>FinePix S5500 &amp; compatibles (Standard)</model>
@@ -306,7 +269,6 @@
             <distortion model="ptlens" focal="57" a="0" b="0.002197" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Fujifilm</maker>
         <model>FinePix S602 ZOOM &amp; compatibles (Standard)</model>
@@ -328,7 +290,6 @@
             <distortion model="ptlens" focal="46.8" a="0.001412" b="0.009081" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Fujifilm</maker>
         <model>FinePix F601 ZOOM &amp; compatibles (Standard)</model>
@@ -347,7 +308,6 @@
             <distortion model="poly3" focal="24.9" k1="-0.005081"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Fujifilm</maker>
         <model>FinePix F810 &amp; compatibles (Standard)</model>
@@ -367,7 +327,6 @@
             <distortion model="ptlens" focal="28.8" a="0" b="0.0005" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Fujifilm</maker>
         <model>FinePix F810 &amp; compatibles, with WL-FXE01 (full wide)</model>
@@ -380,7 +339,6 @@
             <distortion model="ptlens" focal="7.2" a="0.023137" b="-0.073048" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Fujifilm</maker>
         <model>FinePix 2800 ZOOM &amp; compatibles (Standard)</model>
@@ -693,7 +651,6 @@
             <distortion model="ptlens" focal="36" a="0" b="0" c="0.025"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Fujifilm</maker>
         <model>FinePix F200EXR &amp; compatibles (Standard)</model>
@@ -711,7 +668,6 @@
             <distortion model="ptlens" focal="32" a="-0.00962" b="0.02592" c="-0.01447"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Fujifilm</maker>
         <model>X100 &amp; compatibles (Standard)</model>
@@ -725,7 +681,6 @@
             <tca model="poly3" focal="23" br="-0.0001543" vr="1.0006122" bb="0.0001753" vb="0.9996422"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Fujifilm</maker>
         <model>X100 &amp; compatibles (Standard) + TCL-X100</model>
@@ -738,7 +693,6 @@
             <tca model="poly3" focal="33" vr="1.0000047" vb="0.9999998"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Fujifilm</maker>
         <model>X10 &amp; compatibles (Standard)</model>
@@ -760,7 +714,6 @@
             <tca model="poly3" focal="28.4" vr="0.9998" vb="0.9996"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Fujifilm</maker>
         <model>FinePix HS20EXR &amp; compatibles (Standard)</model>
@@ -804,7 +757,6 @@
             <tca model="poly3" focal="126" br="0.0000220" vr="0.9994784" bb="0.0001868" vb="0.9993445"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Fujifilm</maker>
         <model>FinePix F770EXR &amp; compatibles (Standard)</model>
@@ -828,7 +780,6 @@
             <tca model="poly3" focal="92" vr="0.999" vb="0.999"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Fujifilm</maker>
         <model>FinePix S5600</model>
@@ -848,7 +799,6 @@
             <distortion model="poly3" focal="63" k1="0.00021"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Fujifilm</maker>
         <model>Fujifilm XQ1</model>
@@ -870,7 +820,6 @@
             <tca model="poly3" focal="25.6" br="-0.0000914" vr="1.0001901" bb="-0.0000653" vb="1.0001226"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Fujifilm</maker>
         <model>Fujifilm FinePix A370</model>
@@ -885,7 +834,6 @@
             <distortion model="ptlens" focal="17.4" a="0" b="0.00062" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Fujifilm</maker>
         <model>Fujifilm X-S1</model>
@@ -977,7 +925,6 @@
             <vignetting model="pa" focal="158.6" aperture="11" distance="1000" k1="-0.5375" k2="0.3770" k3="-0.0282"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Fujifilm</maker>
         <model>X70 &amp; compatibles (Standard)</model>
@@ -988,5 +935,4 @@
             <tca model="poly3" focal="18.5" br="-0.0002189" vr="1.0006596" bb="0.0002054" vb="0.9994221"/>
         </calibration>
     </lens>
-
 </lensdatabase>

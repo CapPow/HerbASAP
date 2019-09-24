@@ -1,6 +1,4 @@
-<!DOCTYPE lensdatabase SYSTEM "lensfun-database.dtd">
-<lensdatabase version="2">
-
+<lensdatabase version="1">
     <mount>
         <name>Leica R</name>
         <compat>M42</compat>
@@ -10,19 +8,16 @@
         <compat>Tamron Adaptall</compat>
         <compat>Generic</compat>
     </mount>
-
     <mount>
         <name>Leica S</name>
         <compat>Generic</compat>
     </mount>
-
     <camera>
         <maker>Leica</maker>
         <model>Digilux 3</model>
         <mount>4/3 System</mount>
         <cropfactor>2</cropfactor>
     </camera>
-
     <lens>
         <maker>Leica</maker>
         <model>Leica D Vario-Elmar 14-150mm f/3.5-5.6 Asph. OIS</model>
@@ -43,5 +38,4 @@
             <tca model="poly3" focal="150" vr="0.9991" vb="0.9999"/>
         </calibration>
     </lens>
-
 </lensdatabase>

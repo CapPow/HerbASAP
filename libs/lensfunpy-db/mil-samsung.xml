@@ -1,6 +1,4 @@
-<!DOCTYPE lensdatabase SYSTEM "lensfun-database.dtd">
-<lensdatabase version="2">
-
+<lensdatabase version="1">
     <mount>
         <name>Samsung NX</name>
         <compat>M42</compat>
@@ -9,7 +7,6 @@
         <compat>T2</compat>
         <compat>Generic</compat>
     </mount>
-
     <mount>
         <name>Samsung NX mini</name>
         <compat>M42</compat>
@@ -18,7 +15,6 @@
         <compat>T2</compat>
         <compat>Generic</compat>
     </mount>
-
     <camera>
         <maker>Samsung</maker>
         <model>EK-GN120</model>
@@ -26,126 +22,108 @@
         <mount>Samsung NX</mount>
         <cropfactor>1.531</cropfactor>
     </camera>
-
     <camera>
         <maker>Samsung</maker>
         <model>NX10</model>
         <mount>Samsung NX</mount>
         <cropfactor>1.525</cropfactor>
     </camera>
-
     <camera>
         <maker>Samsung</maker>
         <model>NX11</model>
         <mount>Samsung NX</mount>
         <cropfactor>1.525</cropfactor>
     </camera>
-
     <camera>
         <maker>Samsung</maker>
         <model>NX100</model>
         <mount>Samsung NX</mount>
         <cropfactor>1.525</cropfactor>
     </camera>
-
     <camera>
         <maker>Samsung</maker>
         <model>NX1000</model>
         <mount>Samsung NX</mount>
         <cropfactor>1.525</cropfactor>
     </camera>
-
     <camera>
         <maker>Samsung</maker>
         <model>NX20</model>
         <mount>Samsung NX</mount>
         <cropfactor>1.525</cropfactor>
     </camera>
-
     <camera>
         <maker>Samsung</maker>
         <model>NX200</model>
         <mount>Samsung NX</mount>
         <cropfactor>1.525</cropfactor>
     </camera>
-
     <camera>
         <maker>Samsung</maker>
         <model>NX210</model>
         <mount>Samsung NX</mount>
         <cropfactor>1.525</cropfactor>
     </camera>
-
     <camera>
         <maker>Samsung</maker>
         <model>NX300</model>
         <mount>Samsung NX</mount>
         <cropfactor>1.531</cropfactor>
     </camera>
-
     <camera>
         <maker>Samsung</maker>
         <model>NX300M</model>
         <mount>Samsung NX</mount>
         <cropfactor>1.531</cropfactor>
     </camera>
-
     <camera>
         <maker>Samsung</maker>
         <model>NX500</model>
         <mount>Samsung NX</mount>
         <cropfactor>1.531</cropfactor>
     </camera>
-
     <camera>
         <maker>Samsung</maker>
         <model>NX1100</model>
         <mount>Samsung NX</mount>
         <cropfactor>1.531</cropfactor>
     </camera>
-
     <camera>
         <maker>Samsung</maker>
         <model>NX2000</model>
         <mount>Samsung NX</mount>
         <cropfactor>1.531</cropfactor>
     </camera>
-
     <camera>
         <maker>Samsung</maker>
         <model>NX3000</model>
         <mount>Samsung NX</mount>
         <cropfactor>1.531</cropfactor>
     </camera>
-
     <camera>
         <maker>Samsung</maker>
         <model>NX1</model>
         <mount>Samsung NX</mount>
         <cropfactor>1.531</cropfactor>
     </camera>
-
     <camera>
         <maker>Samsung</maker>
         <model>NX5</model>
         <mount>Samsung NX</mount>
         <cropfactor>1.525</cropfactor>
     </camera>
-
     <camera>
         <maker>Samsung</maker>
         <model>NX30</model>
         <mount>Samsung NX</mount>
         <cropfactor>1.531</cropfactor>
     </camera>
-
     <camera>
         <maker>Samsung</maker>
         <model>NX mini</model>
         <mount>Samsung NX mini</mount>
         <cropfactor>2.727</cropfactor>
     </camera>
-
     <lens>
         <maker>Samsung</maker>
         <model>Samsung NX 20-50mm f/3.5-5.6 ED</model>
@@ -161,7 +139,6 @@
             <distortion model="ptlens" focal="50" a="-0.02119" b="0.06813" c="-0.06118"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Samsung</maker>
         <model>Samsung NX 30mm f/2 Pancake</model>
@@ -172,7 +149,6 @@
             <distortion model="poly3" focal="30" k1="-0.00596"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Samsung</maker>
         <model>Samsung NX 16mm f/2.4 Pancake</model>
@@ -184,7 +160,6 @@
             <tca model="poly3" focal="16" br="-0.0000770" vr="1.0006160" bb="0.0001654" vb="0.9997845"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Samsung</maker>
         <model>Samsung NX 18-55mm f/3.5-5.6 OIS</model>
@@ -208,7 +183,6 @@
             <tca model="poly3" focal="55" vr="1.0002" vb="0.9996"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Samsung</maker>
         <model>Samsung NX 45mm f/1.8 2D/3D</model>
@@ -221,7 +195,6 @@
             <tca model="poly3" focal="45" br="-0.0000373" vr="1.0001884" bb="0.0000950" vb="0.9997324"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Samsung</maker>
         <model>Samsung NX 20mm f/2.8 Pancake</model>
@@ -233,7 +206,6 @@
             <tca model="poly3" focal="20" br="-0.0001595" vr="1.0006749" bb="0.0001657" vb="0.9996819"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Samsung</maker>
         <model>Samsung NX 16-50mm f/3.5-5.6 PZ ED OIS</model>
@@ -248,7 +220,6 @@
             <distortion model="ptlens" focal="50" a="0" b="0.00145" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Samsung</maker>
         <model>Samsung NX 10mm f/3.5 Fisheye</model>
@@ -262,5 +233,4 @@
             <tca model="poly3" focal="10" br="0.0000529" vr="1.0002370" bb="-0.0000076" vb="1.0003018"/>
         </calibration>
     </lens>
-
 </lensdatabase>

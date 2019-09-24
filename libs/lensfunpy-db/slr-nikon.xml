@@ -1,6 +1,4 @@
-<!DOCTYPE lensdatabase SYSTEM "lensfun-database.dtd">
-<lensdatabase version="2">
-
+<lensdatabase version="1">
     <mount>
         <name>Nikon F</name>
         <compat>Nikon F AI</compat>
@@ -13,7 +11,6 @@
         <compat>Tamron Adaptall</compat>
         <compat>Generic</compat>
     </mount>
-
     <mount>
         <name>Nikon F AI</name>
         <compat>Nikon F</compat>
@@ -26,7 +23,6 @@
         <compat>Tamron Adaptall</compat>
         <compat>Generic</compat>
     </mount>
-
     <mount>
         <name>Nikon F AI-S</name>
         <compat>Nikon F</compat>
@@ -39,7 +35,6 @@
         <compat>Tamron Adaptall</compat>
         <compat>Generic</compat>
     </mount>
-
     <mount>
         <name>Nikon F AF</name>
         <compat>Nikon F</compat>
@@ -51,7 +46,6 @@
         <compat>T2</compat>
         <compat>Generic</compat>
     </mount>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -60,7 +54,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.525</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -69,7 +62,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.523</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -78,7 +70,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.525</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -87,7 +78,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.523</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -96,7 +86,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.525</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -105,7 +94,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.525</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -114,7 +102,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.523</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -123,7 +110,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.523</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -132,7 +118,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.525</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -141,7 +126,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.523</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -150,7 +134,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.523</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -159,7 +142,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.523</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -168,7 +150,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.531</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -177,7 +158,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -186,7 +166,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -195,7 +174,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -204,7 +182,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -213,7 +190,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -222,7 +198,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -231,7 +206,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -240,7 +214,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -249,7 +222,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.523</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -258,7 +230,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.558</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -267,7 +238,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.554</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -276,7 +246,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.523</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -285,7 +254,14 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.523</cropfactor>
     </camera>
-
+    <camera>
+        <maker>Nikon Corporation</maker>
+        <maker lang="en">Nikon</maker>
+        <model>Nikon D3500</model>
+        <model lang="en">D3500</model>
+        <mount>Nikon F AF</mount>
+        <cropfactor>1.523</cropfactor>
+    </camera>
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -294,7 +270,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.523</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -303,7 +278,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.523</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -312,7 +286,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.534</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -321,7 +294,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.534</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -330,7 +302,14 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.534</cropfactor>
     </camera>
-
+    <camera>
+        <maker>Nikon Corporation</maker>
+        <maker lang="en">Nikon</maker>
+        <model>Nikon D5600</model>
+        <model lang="en">D5600</model>
+        <mount>Nikon F AF</mount>
+        <cropfactor>1.534</cropfactor>
+    </camera>
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -339,7 +318,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.523</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -348,7 +326,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.534</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -357,7 +334,14 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.534</cropfactor>
     </camera>
-
+    <camera>
+        <maker>Nikon Corporation</maker>
+        <maker lang="en">Nikon</maker>
+        <model>Nikon D7500</model>
+        <model lang="en">D7500</model>
+        <mount>Nikon F AF</mount>
+        <cropfactor>1.534</cropfactor>
+    </camera>
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -366,7 +350,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.525</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -375,7 +358,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.525</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -384,7 +366,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.525</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -393,7 +374,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.546</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -402,7 +382,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.546</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -411,7 +390,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.522</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -420,7 +398,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.522</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -429,7 +406,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -438,7 +414,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -447,7 +422,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -456,7 +430,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -465,7 +438,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -474,7 +446,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.003</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon Corporation</maker>
         <maker lang="en">Nikon</maker>
@@ -483,7 +454,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.001</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePixS1Pro</model>
@@ -491,7 +461,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.543</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePixS2Pro</model>
@@ -499,7 +468,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.543</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix S3Pro</model>
@@ -507,7 +475,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.534</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>FinePix S5Pro</model>
@@ -515,7 +482,6 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.560</cropfactor>
     </camera>
-
     <camera>
         <maker>Fujifilm</maker>
         <model>IS Pro</model>
@@ -523,21 +489,18 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1.560</cropfactor>
     </camera>
-
     <camera>
         <maker>Kodak</maker>
         <model>DCS Pro SLR/n</model>
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <camera>
         <maker>Kodak</maker>
         <model>DCS Pro 14nx</model>
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <camera>
         <maker>Kodak</maker>
         <model>DCS Pro 14N</model>
@@ -545,14 +508,12 @@
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <camera>
         <maker>Nikon</maker>
         <model>35mm film: full frame</model>
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S DX Zoom-Nikkor 12-24mm f/4G IF-ED</model>
@@ -574,7 +535,6 @@
             <distortion model="ptlens" focal="24" a="-0.007101" b="0.018378" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S Zoom-Nikkor 16-35mm f/4G ED VR</model>
@@ -595,7 +555,6 @@
             <tca model="poly3" focal="35" vr="1.0000943" vb="1.0000318"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S DX Nikkor 16-80mm f/2.8-4E ED VR</model>
@@ -756,7 +715,6 @@
             <vignetting model="pa" focal="80" aperture="32" distance="1000" k1="-0.2462" k2="0.2443" k3="-0.1243"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S DX Zoom-Nikkor 16-85mm f/3.5-5.6G ED VR</model>
@@ -825,7 +783,6 @@
             <vignetting model="pa" focal="85" aperture="36" distance="1000" k1="-0.0937" k2="-0.0561" k3="0.0275"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S Zoom-Nikkor 17-35mm f/2.8D IF-ED</model>
@@ -841,7 +798,6 @@
             <distortion model="ptlens" focal="35" a="0" b="0.0025" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S DX Zoom-Nikkor 17-55mm f/2.8G IF-ED</model>
@@ -859,7 +815,6 @@
             <distortion model="poly3" focal="55" k1="0.005143"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Zoom-Nikkor 18-35mm f/3.5-4.5D IF-ED</model>
@@ -876,7 +831,6 @@
             <distortion model="ptlens" focal="35" a="0" b="-0.002437" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S DX Zoom-Nikkor 18-55mm f/3.5-5.6G ED</model>
@@ -895,7 +849,6 @@
             <distortion model="ptlens" focal="55" a="0" b="-0.001004" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S DX Zoom-Nikkor 18-55mm f/3.5-5.6G VR</model>
@@ -966,7 +919,6 @@
             <vignetting model="pa" focal="55" aperture="36" distance="1000" k1="-0.0567" k2="-0.0167" k3="0.0137"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S DX VR Nikkor 18-55mm f/3.5-5.6G II</model>
@@ -995,7 +947,6 @@
             <tca model="poly3" focal="55" br="-0.0000181" vr="1.0000225" bb="0.0000268" vb="0.9999503"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S DX Zoom-Nikkor 18-70mm f/3.5-4.5G IF-ED</model>
@@ -1118,7 +1069,6 @@
             <vignetting model="pa" focal="70" aperture="29" distance="1000" k1="-0.1466" k2="-0.0219" k3="0.0228"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S DX Zoom-Nikkor 18-105mm f/3.5-5.6G ED VR</model>
@@ -1201,7 +1151,6 @@
             <vignetting model="pa" focal="105" aperture="36" distance="1000" k1="-0.2340" k2="0.1934" k3="-0.0849"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S DX Zoom-Nikkor 18-135mm f/3.5-5.6G IF-ED</model>
@@ -1351,7 +1300,6 @@
             <vignetting model="pa" focal="135" aperture="32" distance="1000" k1="-0.1261" k2="0.0423" k3="-0.0225"/>
         </calibration>
     </lens>
-
     <lens>
         <!-- Also update copy at "Nikon AF-S DX VR Zoom-Nikkor 18-200mm f/3.5-5.6G IF-ED II" below. -->
         <maker>Nikon</maker>
@@ -1381,7 +1329,6 @@
             <tca model="poly3" focal="200" br="-0.0000064" vr="0.9999083" bb="0.0000246" vb="0.9996926"/>
         </calibration>
     </lens>
-
     <lens>
         <!-- Also update copy at "Nikon AF-S DX VR Zoom-Nikkor 18-200mm f/3.5-5.6G IF-ED" above. -->
         <maker>Nikon</maker>
@@ -1411,7 +1358,6 @@
             <tca model="poly3" focal="200" br="-0.0000064" vr="0.9999083" bb="0.0000246" vb="0.9996926"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Zoom-Nikkor 24-50mm f/3.3-4.5D</model>
@@ -1426,7 +1372,25 @@
             <distortion model="poly3" focal="50" k1="-0.003329"/>
         </calibration>
     </lens>
-
+    <lens>
+        <maker>Nikon</maker>
+        <model>Nikon AF Zoom-Nikkor 24-50mm f/3.3-4.5</model>
+        <model lang="en">Nikkor AF 24-50mm f/3.3-4.5</model>
+        <mount>Nikon F AF</mount>
+        <cropfactor>1</cropfactor>
+        <calibration>
+            <!-- Taken with Nikon D750 -->
+            <distortion model="ptlens" focal="24" a="0.02066" b="-0.06229" c="0.01467"/>
+            <distortion model="ptlens" focal="35" a="0.01041" b="-0.03848" c="0.02503"/>
+            <distortion model="ptlens" focal="42" a="-0.00155" b="0.00359" c="-0.01268"/>
+            <distortion model="ptlens" focal="50" a="-0.00169" b="0.00372" c="-0.01028"/>
+            <tca model="poly3" focal="24" vr="1.0001258" vb="1.0001678"/>
+            <tca model="poly3" focal="31" vr="1.0000642" vb="1.0002017"/>
+            <tca model="poly3" focal="38" vr="1.0001077" vb="1.0000725"/>
+            <tca model="poly3" focal="45" vr="1.0001319" vb="1.0000311"/>
+            <tca model="poly3" focal="50" vr="1.0001317" vb="1.0000524"/>
+        </calibration>
+    </lens>
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Zoom-Nikkor 24-85mm f/2.8-4D IF</model>
@@ -1450,7 +1414,6 @@
             <tca model="poly3" focal="85" br="0.0000388" vr="0.9998218" bb="-0.0000124" vb="1.0000196"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Zoom-Nikkor 24-85mm f/2.8-4D IF</model>
@@ -1467,7 +1430,6 @@
             <distortion model="ptlens" focal="85" a="0" b="0.004" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S Zoom-Nikkor 24-85mm f/3.5-4.5G IF-ED</model>
@@ -1482,7 +1444,6 @@
             <distortion model="ptlens" focal="85" a="0.003412" b="0.0089" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S VR Zoom-Nikkor 24-120mm f/3.5-5.6G IF-ED</model>
@@ -1502,10 +1463,9 @@
             <distortion model="ptlens" focal="120" a="0" b="0.005123" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
-        <model>Nikon AF-S Nikkor 24-120mm f/4G ED VR</model>
+        <model>Nikon AF-S Nikkor 24-120mm f/4G ED VR 170</model>
         <model lang="en">Nikkor AF-S 24-120mm f/4G ED VR</model>
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
@@ -1523,9 +1483,93 @@
             <tca model="poly3" focal="50" br="-0.0000101" vr="1.0001043" bb="-0.0000518" vb="1.0001772"/>
             <tca model="poly3" focal="85" br="0.0000209" vr="0.9998799" bb="-0.0000182" vb="0.9999789"/>
             <tca model="poly3" focal="120" br="-0.0000034" vr="0.9997514" bb="0.0000435" vb="0.9998576"/>
+            <!-- Taken with Nikon D750 (Jacques Le Clerc)-->
+            <vignetting model="pa" focal="24" aperture="4" distance="0.45" k1="-0.4244" k2="-0.5194" k3="0.1145"/>
+            <vignetting model="pa" focal="24" aperture="4" distance="1000" k1="-0.4062" k2="-0.4572" k3="0.1061"/>
+            <vignetting model="pa" focal="24" aperture="5.6" distance="0.45" k1="-0.7487" k2="0.5644" k3="-0.5597"/>
+            <vignetting model="pa" focal="24" aperture="5.6" distance="1000" k1="-0.7539" k2="0.5942" k3="-0.4537"/>
+            <vignetting model="pa" focal="24" aperture="8" distance="0.45" k1="-0.7012" k2="0.4953" k3="-0.4671"/>
+            <vignetting model="pa" focal="24" aperture="8" distance="1000" k1="-0.5230" k2="0.0396" k3="-0.1062"/>
+            <vignetting model="pa" focal="24" aperture="11" distance="0.45" k1="-0.8591" k2="0.8206" k3="-0.6073"/>
+            <vignetting model="pa" focal="24" aperture="11" distance="1000" k1="-0.6316" k2="0.1252" k3="-0.0091"/>
+            <vignetting model="pa" focal="24" aperture="16" distance="0.45" k1="-0.7347" k2="0.4135" k3="-0.2923"/>
+            <vignetting model="pa" focal="24" aperture="16" distance="1000" k1="-0.6725" k2="0.2333" k3="-0.1013"/>
+            <vignetting model="pa" focal="24" aperture="22" distance="0.45" k1="-0.6726" k2="0.2355" k3="-0.1605"/>
+            <vignetting model="pa" focal="24" aperture="22" distance="1000" k1="-0.6886" k2="0.2543" k3="-0.1001"/>
+            <vignetting model="pa" focal="28" aperture="4" distance="0.45" k1="-0.4280" k2="-0.1776" k3="-0.0487"/>
+            <vignetting model="pa" focal="28" aperture="4" distance="1000" k1="-0.7229" k2="0.8559" k3="-0.7552"/>
+            <vignetting model="pa" focal="28" aperture="5.6" distance="0.45" k1="-0.8226" k2="0.7489" k3="-0.4555"/>
+            <vignetting model="pa" focal="28" aperture="5.6" distance="1000" k1="-0.9185" k2="1.1766" k3="-0.7885"/>
+            <vignetting model="pa" focal="28" aperture="8" distance="0.45" k1="-0.7313" k2="0.4507" k3="-0.2010"/>
+            <vignetting model="pa" focal="28" aperture="8" distance="1000" k1="-0.5858" k2="0.2258" k3="-0.0578"/>
+            <vignetting model="pa" focal="28" aperture="11" distance="0.45" k1="-0.6367" k2="0.2488" k3="-0.0978"/>
+            <vignetting model="pa" focal="28" aperture="11" distance="1000" k1="-0.6900" k2="0.4809" k3="-0.2583"/>
+            <vignetting model="pa" focal="28" aperture="16" distance="0.45" k1="-0.6097" k2="0.1802" k3="-0.0387"/>
+            <vignetting model="pa" focal="28" aperture="16" distance="1000" k1="-0.6165" k2="0.2853" k3="-0.1141"/>
+            <vignetting model="pa" focal="28" aperture="22" distance="0.45" k1="-0.6163" k2="0.1954" k3="-0.0500"/>
+            <vignetting model="pa" focal="28" aperture="22" distance="1000" k1="-0.6012" k2="0.2539" k3="-0.0955"/>
+            <vignetting model="pa" focal="35" aperture="4" distance="0.45" k1="-0.4624" k2="0.1938" k3="-0.2229"/>
+            <vignetting model="pa" focal="35" aperture="4" distance="1000" k1="-0.6610" k2="0.7924" k3="-0.6925"/>
+            <vignetting model="pa" focal="35" aperture="5.6" distance="0.45" k1="-0.4560" k2="0.1176" k3="-0.0280"/>
+            <vignetting model="pa" focal="35" aperture="5.6" distance="1000" k1="-0.7230" k2="0.8275" k3="-0.5254"/>
+            <vignetting model="pa" focal="35" aperture="8" distance="0.45" k1="-0.4951" k2="0.1532" k3="-0.0245"/>
+            <vignetting model="pa" focal="35" aperture="8" distance="1000" k1="-0.6037" k2="0.4244" k3="-0.1914"/>
+            <vignetting model="pa" focal="35" aperture="11" distance="0.45" k1="-0.4447" k2="0.0554" k3="0.0302"/>
+            <vignetting model="pa" focal="35" aperture="11" distance="1000" k1="-0.3284" k2="0.2568" k3="-0.2994"/>
+            <vignetting model="pa" focal="35" aperture="16" distance="0.45" k1="-0.4618" k2="0.1038" k3="-0.0223"/>
+            <vignetting model="pa" focal="35" aperture="16" distance="1000" k1="-0.2258" k2="-0.0855" k3="-0.0262"/>
+            <vignetting model="pa" focal="35" aperture="22" distance="0.45" k1="-0.5049" k2="0.1892" k3="-0.0676"/>
+            <vignetting model="pa" focal="35" aperture="22" distance="1000" k1="-0.2468" k2="-0.0556" k3="-0.0359"/>
+            <vignetting model="pa" focal="50" aperture="4" distance="0.45" k1="-0.5007" k2="0.4008" k3="-0.3907"/>
+            <vignetting model="pa" focal="50" aperture="4" distance="1000" k1="-0.4870" k2="0.4198" k3="-0.4900"/>
+            <vignetting model="pa" focal="50" aperture="5.6" distance="0.45" k1="-0.4366" k2="0.2878" k3="-0.1856"/>
+            <vignetting model="pa" focal="50" aperture="5.6" distance="1000" k1="-0.5420" k2="0.5958" k3="-0.4399"/>
+            <vignetting model="pa" focal="50" aperture="8" distance="0.45" k1="-0.4772" k2="0.2475" k3="-0.0891"/>
+            <vignetting model="pa" focal="50" aperture="8" distance="1000" k1="-0.6175" k2="0.5421" k3="-0.2554"/>
+            <vignetting model="pa" focal="50" aperture="11" distance="0.45" k1="-0.4237" k2="0.2127" k3="-0.1359"/>
+            <vignetting model="pa" focal="50" aperture="11" distance="1000" k1="-0.5467" k2="0.3830" k3="-0.1186"/>
+            <vignetting model="pa" focal="50" aperture="16" distance="0.45" k1="-0.3869" k2="0.0630" k3="0.0095"/>
+            <vignetting model="pa" focal="50" aperture="16" distance="1000" k1="-0.4989" k2="0.2700" k3="-0.0844"/>
+            <vignetting model="pa" focal="50" aperture="22" distance="0.45" k1="-0.4217" k2="0.1289" k3="-0.0292"/>
+            <vignetting model="pa" focal="50" aperture="22" distance="1000" k1="-0.5021" k2="0.2712" k3="-0.0816"/>
+            <vignetting model="pa" focal="70" aperture="4" distance="0.45" k1="-0.6759" k2="0.7942" k3="-0.8262"/>
+            <vignetting model="pa" focal="70" aperture="4" distance="1000" k1="-0.2583" k2="-0.4745" k3="0.0476"/>
+            <vignetting model="pa" focal="70" aperture="5.6" distance="0.45" k1="-0.5867" k2="1.1207" k3="-1.0009"/>
+            <vignetting model="pa" focal="70" aperture="5.6" distance="1000" k1="-0.5221" k2="0.8942" k3="-0.8477"/>
+            <vignetting model="pa" focal="70" aperture="8" distance="0.45" k1="-0.6207" k2="1.1040" k3="-0.9121"/>
+            <vignetting model="pa" focal="70" aperture="8" distance="1000" k1="-0.7033" k2="1.1455" k3="-0.8513"/>
+            <vignetting model="pa" focal="70" aperture="11" distance="0.45" k1="-0.5375" k2="0.7730" k3="-0.6138"/>
+            <vignetting model="pa" focal="70" aperture="11" distance="1000" k1="-0.5828" k2="0.6194" k3="-0.3643"/>
+            <vignetting model="pa" focal="70" aperture="16" distance="0.45" k1="-0.4323" k2="0.3484" k3="-0.2395"/>
+            <vignetting model="pa" focal="70" aperture="16" distance="1000" k1="-0.4063" k2="0.2041" k3="-0.0915"/>
+            <vignetting model="pa" focal="70" aperture="22" distance="0.45" k1="-0.3938" k2="0.1694" k3="-0.0624"/>
+            <vignetting model="pa" focal="70" aperture="22" distance="1000" k1="-0.4171" k2="0.1720" k3="-0.0431"/>
+            <vignetting model="pa" focal="85" aperture="4" distance="0.45" k1="-0.4676" k2="0.1946" k3="-0.4677"/>
+            <vignetting model="pa" focal="85" aperture="4" distance="1000" k1="-0.2281" k2="-0.8335" k3="0.3652"/>
+            <vignetting model="pa" focal="85" aperture="5.6" distance="0.45" k1="-0.6854" k2="1.2164" k3="-1.0928"/>
+            <vignetting model="pa" focal="85" aperture="5.6" distance="1000" k1="-0.3194" k2="0.4083" k3="-0.5442"/>
+            <vignetting model="pa" focal="85" aperture="8" distance="0.45" k1="-0.6732" k2="1.1248" k3="-0.9263"/>
+            <vignetting model="pa" focal="85" aperture="8" distance="1000" k1="-0.5852" k2="0.8195" k3="-0.6239"/>
+            <vignetting model="pa" focal="85" aperture="11" distance="0.45" k1="-0.6005" k2="0.8920" k3="-0.6958"/>
+            <vignetting model="pa" focal="85" aperture="11" distance="1000" k1="-0.3676" k2="0.3329" k3="-0.2356"/>
+            <vignetting model="pa" focal="85" aperture="16" distance="0.45" k1="-0.5618" k2="0.7563" k3="-0.5795"/>
+            <vignetting model="pa" focal="85" aperture="16" distance="1000" k1="-0.3931" k2="0.2222" k3="-0.0520"/>
+            <vignetting model="pa" focal="85" aperture="22" distance="0.45" k1="-0.4709" k2="0.4305" k3="-0.2915"/>
+            <vignetting model="pa" focal="85" aperture="22" distance="1000" k1="-0.3676" k2="0.1503" k3="-0.0054"/>
+            <vignetting model="pa" focal="120" aperture="4" distance="0.45" k1="-0.6704" k2="0.6873" k3="-0.6476"/>
+            <vignetting model="pa" focal="120" aperture="4" distance="1000" k1="-0.5062" k2="-0.3718" k3="0.2194"/>
+            <vignetting model="pa" focal="120" aperture="5.6" distance="0.45" k1="-0.5898" k2="0.8841" k3="-0.7293"/>
+            <vignetting model="pa" focal="120" aperture="5.6" distance="1000" k1="-0.1023" k2="0.1335" k3="-0.3632"/>
+            <vignetting model="pa" focal="120" aperture="8" distance="0.45" k1="-0.3751" k2="0.3473" k3="-0.2483"/>
+            <vignetting model="pa" focal="120" aperture="8" distance="1000" k1="-0.4354" k2="0.6360" k3="-0.4835"/>
+            <vignetting model="pa" focal="120" aperture="11" distance="0.45" k1="-0.3859" k2="0.0653" k3="0.0556"/>
+            <vignetting model="pa" focal="120" aperture="11" distance="1000" k1="-0.3954" k2="0.6164" k3="-0.3327"/>
+            <vignetting model="pa" focal="120" aperture="16" distance="0.45" k1="-0.3245" k2="0.0671" k3="0.0530"/>
+            <vignetting model="pa" focal="120" aperture="16" distance="1000" k1="-0.2656" k2="0.3846" k3="-0.2062"/>
+            <vignetting model="pa" focal="120" aperture="22" distance="0.45" k1="-0.3324" k2="0.0045" k3="0.0927"/>
+            <vignetting model="pa" focal="120" aperture="22" distance="1000" k1="-0.2296" k2="0.3378" k3="-0.1859"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Zoom-Nikkor 28-200mm f/3.5-5.6G IF-ED</model>
@@ -1544,7 +1588,6 @@
             <distortion model="poly3" focal="200" k1="0.007103"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S Zoom-Nikkor 28-300mm f/3.5-5.6G ED VR</model>
@@ -1567,7 +1610,6 @@
             <tca model="poly3" focal="300" br="-0.0000196" vr="0.9998476" bb="-0.0000967" vb="0.9999651"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Zoom-Nikkor 35-70mm f/2.8D</model>
@@ -1584,7 +1626,6 @@
             <distortion model="poly3" focal="70" k1="0.003679"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AI-S Zoom-Nikkor 50-135mm f/3.5</model>
@@ -1598,7 +1639,6 @@
             <distortion model="poly3" focal="135" k1="0.004"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S DX Zoom-Nikkor 55-200mm f/4-5.6G ED</model>
@@ -1615,7 +1655,6 @@
             <distortion model="poly3" focal="200" k1="0.008208"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Zoom-Nikkor 70-180mm f/4.5-5.6D ED Micro</model>
@@ -1631,7 +1670,6 @@
             <distortion model="poly3" focal="180" k1="0.0025"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S VR Zoom-Nikkor 70-200mm f/2.8G IF-ED</model>
@@ -1702,7 +1740,6 @@
             <vignetting model="pa" focal="200" aperture="22" distance="1000" k1="-0.1208" k2="0.0927" k3="-0.0197"/>
         </calibration>
     </lens>
-
     <lens>
         <!-- This entry is odd.  I had to change the mount from AF to AI-S.
              Besides, it is only measured up to 200mm. -->
@@ -1719,7 +1756,6 @@
             <distortion model="poly3" focal="200" k1="0.006988"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Zoom-Nikkor 70-210mm f/4</model>
@@ -1743,7 +1779,6 @@
             <distortion model="ptlens" focal="210" a="0.003682" b="-0.006324" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Nikkor 70-210mm f/4-5.6</model>
@@ -1820,7 +1855,6 @@
             <vignetting model="pa" focal="210" aperture="45" distance="1000" k1="-0.1446" k2="0.2322" k3="-0.1162"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Zoom-Nikkor 70-300mm f/4-5.6D ED</model>
@@ -1836,7 +1870,6 @@
             <distortion model="poly3" focal="300" k1="0.004364"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Zoom-Nikkor 70-300mm f/4-5.6G</model>
@@ -1852,7 +1885,6 @@
             <distortion model="poly3" focal="300" k1="0.004364"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Zoom-Nikkor 80-200mm f/2.8D ED</model>
@@ -1865,9 +1897,79 @@
             <distortion model="poly3" focal="135" k1="0.004233"/>
             <distortion model="poly3" focal="180" k1="0.010432"/>
             <distortion model="poly3" focal="200" k1="0.010603"/>
+            <!-- Taken with Nikon D750 (Jacques Le Clerc)-->
+            <vignetting model="pa" focal="80" aperture="2.8" distance="1.5" k1="-0.9043" k2="0.8117" k3="-0.4644"/>
+            <vignetting model="pa" focal="80" aperture="2.8" distance="1000" k1="-0.8995" k2="0.7517" k3="-0.4074"/>
+            <vignetting model="pa" focal="80" aperture="4" distance="1.5" k1="-0.1835" k2="-0.0789" k3="-0.1134"/>
+            <vignetting model="pa" focal="80" aperture="4" distance="1000" k1="-0.1452" k2="-0.2906" k3="0.0751"/>
+            <vignetting model="pa" focal="80" aperture="5.6" distance="1.5" k1="-0.3251" k2="0.7369" k3="-0.7071"/>
+            <vignetting model="pa" focal="80" aperture="5.6" distance="1000" k1="-0.2480" k2="0.3969" k3="-0.4000"/>
+            <vignetting model="pa" focal="80" aperture="8" distance="1.5" k1="-0.2605" k2="0.4412" k3="-0.3823"/>
+            <vignetting model="pa" focal="80" aperture="8" distance="1000" k1="-0.2558" k2="0.2724" k3="-0.1891"/>
+            <vignetting model="pa" focal="80" aperture="11" distance="1.5" k1="-0.1565" k2="0.0247" k3="0.0173"/>
+            <vignetting model="pa" focal="80" aperture="11" distance="1000" k1="-0.1823" k2="0.1049" k3="-0.0719"/>
+            <vignetting model="pa" focal="80" aperture="16" distance="1.5" k1="-0.1456" k2="-0.0083" k3="0.0419"/>
+            <vignetting model="pa" focal="80" aperture="16" distance="1000" k1="-0.1843" k2="0.0859" k3="-0.0330"/>
+            <vignetting model="pa" focal="80" aperture="22" distance="1.5" k1="-0.1495" k2="0.0044" k3="0.0293"/>
+            <vignetting model="pa" focal="80" aperture="22" distance="1000" k1="-0.2040" k2="0.1220" k3="-0.0628"/>
+            <vignetting model="pa" focal="100" aperture="2.8" distance="1.5" k1="-0.4830" k2="-0.2776" k3="0.1080"/>
+            <vignetting model="pa" focal="100" aperture="2.8" distance="1000" k1="-0.6044" k2="0.3328" k3="-0.2002"/>
+            <vignetting model="pa" focal="100" aperture="4" distance="1.5" k1="0.1993" k2="-1.1431" k3="0.4397"/>
+            <vignetting model="pa" focal="100" aperture="4" distance="1000" k1="-0.1258" k2="-0.0167" k3="-0.1522"/>
+            <vignetting model="pa" focal="100" aperture="5.6" distance="1.5" k1="-0.0711" k2="0.0381" k3="-0.4451"/>
+            <vignetting model="pa" focal="100" aperture="5.6" distance="1000" k1="-0.3689" k2="0.6892" k3="-0.5431"/>
+            <vignetting model="pa" focal="100" aperture="8" distance="1.5" k1="-0.2718" k2="0.7682" k3="-0.9650"/>
+            <vignetting model="pa" focal="100" aperture="8" distance="1000" k1="-0.0394" k2="-0.1180" k3="0.0745"/>
+            <vignetting model="pa" focal="100" aperture="11" distance="1.5" k1="-0.4513" k2="1.2607" k3="-1.1900"/>
+            <vignetting model="pa" focal="100" aperture="11" distance="1000" k1="-0.1483" k2="0.0777" k3="-0.0398"/>
+            <vignetting model="pa" focal="100" aperture="16" distance="1.5" k1="-0.4369" k2="1.1625" k3="-1.0168"/>
+            <vignetting model="pa" focal="100" aperture="16" distance="1000" k1="-0.1647" k2="0.0729" k3="-0.0247"/>
+            <vignetting model="pa" focal="100" aperture="22" distance="1.5" k1="-0.3088" k2="0.6589" k3="-0.5527"/>
+            <vignetting model="pa" focal="100" aperture="22" distance="1000" k1="-0.1495" k2="0.0442" k3="-0.0080"/>
+            <vignetting model="pa" focal="125" aperture="2.8" distance="1.5" k1="-0.4279" k2="-0.8327" k3="0.5698"/>
+            <vignetting model="pa" focal="125" aperture="2.8" distance="1000" k1="-0.4492" k2="-0.2155" k3="0.0948"/>
+            <vignetting model="pa" focal="125" aperture="4" distance="1.5" k1="0.1912" k2="-1.7365" k3="0.9791"/>
+            <vignetting model="pa" focal="125" aperture="4" distance="1000" k1="0.1064" k2="-0.8048" k3="0.2986"/>
+            <vignetting model="pa" focal="125" aperture="5.6" distance="1.5" k1="0.2319" k2="-1.1154" k3="0.3395"/>
+            <vignetting model="pa" focal="125" aperture="5.6" distance="1000" k1="-0.1673" k2="0.3456" k3="-0.5130"/>
+            <vignetting model="pa" focal="125" aperture="8" distance="1.5" k1="-0.0054" k2="-0.0582" k3="-0.4616"/>
+            <vignetting model="pa" focal="125" aperture="8" distance="1000" k1="-0.3699" k2="0.7903" k3="-0.6795"/>
+            <vignetting model="pa" focal="125" aperture="11" distance="1.5" k1="-0.2999" k2="0.9940" k3="-1.2035"/>
+            <vignetting model="pa" focal="125" aperture="11" distance="1000" k1="-0.2482" k2="0.4035" k3="-0.3157"/>
+            <vignetting model="pa" focal="125" aperture="16" distance="1.5" k1="-0.4843" k2="1.6222" k3="-1.6129"/>
+            <vignetting model="pa" focal="125" aperture="16" distance="1000" k1="-0.1460" k2="0.0136" k3="0.0268"/>
+            <vignetting model="pa" focal="125" aperture="22" distance="1.5" k1="-0.6580" k2="2.0160" k3="-1.7978"/>
+            <vignetting model="pa" focal="125" aperture="22" distance="1000" k1="-0.1514" k2="0.0705" k3="-0.0230"/>
+            <vignetting model="pa" focal="145" aperture="2.8" distance="1.5" k1="-0.6555" k2="-0.5129" k3="0.4659"/>
+            <vignetting model="pa" focal="145" aperture="2.8" distance="1000" k1="-0.2865" k2="-0.8757" k3="0.5857"/>
+            <vignetting model="pa" focal="145" aperture="4" distance="1.5" k1="0.1332" k2="-1.8369" k3="1.1513"/>
+            <vignetting model="pa" focal="145" aperture="4" distance="1000" k1="0.0305" k2="-1.0280" k3="0.5267"/>
+            <vignetting model="pa" focal="145" aperture="5.6" distance="1.5" k1="0.3203" k2="-1.5810" k3="0.7142"/>
+            <vignetting model="pa" focal="145" aperture="5.6" distance="1000" k1="0.0112" k2="-0.2937" k3="-0.1194"/>
+            <vignetting model="pa" focal="145" aperture="8" distance="1.5" k1="0.1375" k2="-0.5898" k3="-0.1059"/>
+            <vignetting model="pa" focal="145" aperture="8" distance="1000" k1="-0.2322" k2="0.5865" k3="-0.6933"/>
+            <vignetting model="pa" focal="145" aperture="11" distance="1.5" k1="-0.2435" k2="0.7301" k3="-1.0431"/>
+            <vignetting model="pa" focal="145" aperture="11" distance="1000" k1="-0.2027" k2="0.4728" k3="-0.4505"/>
+            <vignetting model="pa" focal="145" aperture="16" distance="1.5" k1="-0.4109" k2="1.3990" k3="-1.5199"/>
+            <vignetting model="pa" focal="145" aperture="16" distance="1000" k1="-0.1415" k2="0.1223" k3="-0.0733"/>
+            <vignetting model="pa" focal="145" aperture="22" distance="1.5" k1="-0.5971" k2="1.9682" k3="-1.8701"/>
+            <vignetting model="pa" focal="145" aperture="22" distance="1000" k1="-0.1360" k2="0.0568" k3="-0.0326"/>
+            <vignetting model="pa" focal="200" aperture="2.8" distance="1.5" k1="-1.1232" k2="0.5956" k3="-0.1746"/>
+            <vignetting model="pa" focal="200" aperture="2.8" distance="1000" k1="-1.2111" k2="0.9042" k3="-0.3499"/>
+            <vignetting model="pa" focal="200" aperture="4" distance="1.5" k1="-1.1337" k2="0.8025" k3="-0.2705"/>
+            <vignetting model="pa" focal="200" aperture="4" distance="1000" k1="-0.3196" k2="-0.7455" k3="0.5806"/>
+            <vignetting model="pa" focal="200" aperture="5.6" distance="1.5" k1="-0.0398" k2="-1.4652" k3="0.9431"/>
+            <vignetting model="pa" focal="200" aperture="5.6" distance="1000" k1="0.0829" k2="-1.0294" k3="0.4928"/>
+            <vignetting model="pa" focal="200" aperture="8" distance="1.5" k1="0.3131" k2="-1.6589" k3="0.8096"/>
+            <vignetting model="pa" focal="200" aperture="8" distance="1000" k1="0.0033" k2="-0.2315" k3="-0.1512"/>
+            <vignetting model="pa" focal="200" aperture="11" distance="1.5" k1="0.1457" k2="-0.5859" k3="-0.0874"/>
+            <vignetting model="pa" focal="200" aperture="11" distance="1000" k1="-0.2521" k2="0.6625" k3="-0.7198"/>
+            <vignetting model="pa" focal="200" aperture="16" distance="1.5" k1="-0.1339" k2="0.4925" k3="-0.8910"/>
+            <vignetting model="pa" focal="200" aperture="16" distance="1000" k1="-0.2490" k2="0.5490" k3="-0.4804"/>
+            <vignetting model="pa" focal="200" aperture="22" distance="1.5" k1="-0.3994" k2="1.3915" k3="-1.4757"/>
+            <vignetting model="pa" focal="200" aperture="22" distance="1000" k1="-0.1546" k2="0.1571" k3="-0.1247"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Zoom-Nikkor 80-200mm f/2.8 ED</model>
@@ -1944,10 +2046,9 @@
             <vignetting model="pa" focal="200" aperture="22" distance="1000" k1="-0.0755" k2="0.0954" k3="-0.0359"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
-        <model>Nikon AF Zoom-Nikkor 80-400mm f/4.5-5.6D ED VR</model>
+        <model>Nikon AF Zoom-Nikkor 80-400mm f/4.5-5.6D ED VR 183</model>
         <model lang="en">Nikkor AF 80-400mm f/4.5-5.6D ED VR</model>
         <mount>Nikon F AF</mount>
         <!-- Average crop factor of Nikon APS-C cameras -->
@@ -1961,7 +2062,6 @@
             <distortion model="poly3" focal="400" k1="0.0045"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Nikkor 14mm f/2.8D ED</model>
@@ -1973,7 +2073,6 @@
             <distortion model="ptlens" focal="14" a="0.013209" b="-0.036529" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AI Nikkor 15mm f/3.5</model>
@@ -1985,7 +2084,6 @@
             <distortion model="ptlens" focal="15" a="0.007" b="-0.021" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S Nikkor 20mm f/1.8G ED</model>
@@ -2030,7 +2128,6 @@
             <vignetting model="pa" focal="20" aperture="16" distance="1000" k1="-0.4951" k2="0.1771" k3="0.0365"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Nikkor 20mm f/2.8D</model>
@@ -2042,7 +2139,6 @@
             <distortion model="ptlens" focal="20" a="0.0063" b="-0.021" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AI-S Nikkor 24mm f/2.8</model>
@@ -2056,10 +2152,9 @@
             <tca model="poly3" focal="24" br="-0.0002082" vr="1.0007055" bb="0.0001896" vb="0.9996373"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
-        <model>Nikon AF Nikkor 24mm f/2.8D</model>
+        <model>Nikon AF Nikkor 24mm f/2.8D 54</model>
         <model lang="en">Nikkor AF 24mm f/2.8D</model>
         <mount>Nikon F AF</mount>
         <!-- Average crop factor of Nikon APS-C cameras -->
@@ -2068,7 +2163,6 @@
             <distortion model="ptlens" focal="24" a="0.00112" b="-0.00753" c="-0.00379"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Nikkor 24mm f/2.8D</model>
@@ -2079,11 +2173,10 @@
             <distortion model="ptlens" focal="24" a="0.022" b="-0.056" c="0.022"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
-        <model>Nikon AI-S Nikkor 24mm f/2.0</model>
-        <model lang="en">Nikkor AI-S 24mm f/2.0</model>
+        <model>Nikon AI-S Nikkor 24mm f/2</model>
+        <model lang="en">Nikkor AI-S 24mm f/2</model>
         <mount>Nikon F AI-S</mount>
         <!-- Average crop factor of Nikon APS-C cameras -->
         <cropfactor>1.528</cropfactor>
@@ -2091,7 +2184,6 @@
             <distortion model="poly3" focal="24" k1="-0.008"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AI-S Nikkor 28mm f/2.8</model>
@@ -2102,12 +2194,26 @@
             <!-- Taken with Nikon D600 -->
             <distortion model="ptlens" focal="28" a="0.00929" b="-0.02155" c="0.0021"/>
             <tca model="poly3" focal="28" br="-0.0002306" vr="1.0006860" bb="0.0002350" vb="0.9995614"/>
+            <!-- Taken with Nikon D750 - Jacques Le Clerc -->
+            <vignetting model="pa" focal="28" aperture="2.8" distance="0.01" k1="-1.9557" k2="2.2763" k3="-1.1052"/>
+            <vignetting model="pa" focal="28" aperture="2.8" distance="1000" k1="-1.9557" k2="2.2763" k3="-1.1052"/>
+            <vignetting model="pa" focal="28" aperture="4" distance="0.01" k1="-0.8649" k2="0.6654" k3="-0.4446"/>
+            <vignetting model="pa" focal="28" aperture="4" distance="1000" k1="-0.8649" k2="0.6654" k3="-0.4446"/>
+            <vignetting model="pa" focal="28" aperture="5.6" distance="0.01" k1="-0.9746" k2="0.9208" k3="-0.5184"/>
+            <vignetting model="pa" focal="28" aperture="5.6" distance="1000" k1="-0.9746" k2="0.9208" k3="-0.5184"/>
+            <vignetting model="pa" focal="28" aperture="8" distance="0.01" k1="-1.0073" k2="0.8691" k3="-0.4228"/>
+            <vignetting model="pa" focal="28" aperture="8" distance="1000" k1="-1.0073" k2="0.8691" k3="-0.4228"/>
+            <vignetting model="pa" focal="28" aperture="11" distance="0.01" k1="-0.9884" k2="0.8367" k3="-0.4002"/>
+            <vignetting model="pa" focal="28" aperture="11" distance="1000" k1="-0.9884" k2="0.8367" k3="-0.4002"/>
+            <vignetting model="pa" focal="28" aperture="16" distance="0.01" k1="-0.9280" k2="0.6700" k3="-0.2822"/>
+            <vignetting model="pa" focal="28" aperture="16" distance="1000" k1="-0.9280" k2="0.6700" k3="-0.2822"/>
+            <vignetting model="pa" focal="28" aperture="22" distance="0.01" k1="-0.9445" k2="0.6984" k3="-0.2952"/>
+            <vignetting model="pa" focal="28" aperture="22" distance="1000" k1="-0.9445" k2="0.6984" k3="-0.2952"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
-        <model>Nikon AF Nikkor 28mm f/2.8D</model>
+        <model>Nikon AF Nikkor 28mm f/2.8D 62</model>
         <model lang="en">Nikkor AF 28mm f/2.8D</model>
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
@@ -2115,11 +2221,10 @@
             <distortion model="ptlens" focal="28" a="0" b="0.025773" c="-0.085777"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
-        <model>Nikon AI-S Nikkor 28mm f/2.0</model>
-        <model lang="en">Nikkor AI-S 28mm f/2.0</model>
+        <model>Nikon AI-S Nikkor 28mm f/2</model>
+        <model lang="en">Nikkor AI-S 28mm f/2</model>
         <mount>Nikon F AI-S</mount>
         <!-- Average crop factor of Nikon APS-C cameras -->
         <cropfactor>1.528</cropfactor>
@@ -2127,7 +2232,6 @@
             <distortion model="poly3" focal="28" k1="-0.0044"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AI-S Nikkor 28mm f/3.5 PC (unshifted)</model>
@@ -2139,7 +2243,6 @@
             <distortion model="ptlens" focal="28" a="0.007377" b="-0.021769" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S Nikkor 28mm f/1.8G</model>
@@ -2152,7 +2255,6 @@
             <tca model="poly3" focal="28" br="-0.0000955" vr="1.0002765" bb="0.0000582" vb="0.9999656"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Nikkor 28mm f/1.4D</model>
@@ -2164,11 +2266,10 @@
             <distortion model="ptlens" focal="28" a="0.00913976" b="-0.0245588" c="0.000542579"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
-        <model>Nikon AI-S Nikkor 35mm f/2.0</model>
-        <model lang="en">Nikkor AI-S 35mm f/2.0</model>
+        <model>Nikon AI-S Nikkor 35mm f/2</model>
+        <model lang="en">Nikkor AI-S 35mm f/2</model>
         <mount>Nikon F AI-S</mount>
         <cropfactor>1</cropfactor>
         <calibration>
@@ -2177,7 +2278,6 @@
             <tca model="poly3" focal="35" br="-0.0001699" vr="1.0005262" bb="0.0001817" vb="0.9996614"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AI-S Nikkor 35mm f/1.4</model>
@@ -2189,7 +2289,6 @@
             <distortion model="poly3" focal="35" k1="-0.005"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S DX Nikkor 35mm f/1.8G</model>
@@ -2212,18 +2311,27 @@
             <vignetting model="pa" focal="35" aperture="22" distance="1000" k1="-0.1143" k2="-0.0162" k3="0.0186"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
-        <model>Nikon AF Nikkor 35mm f/2.0D</model>
+        <model>Nikon AF Nikkor 35mm f/2D 66</model>
         <model lang="en">Nikkor AF 35mm f/2.0D</model>
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
         <calibration>
             <distortion model="ptlens" focal="35" a="0.001968" b="-0.009475" c="0"/>
+            <!-- Taken with Nikon D3 -->
+            <vignetting model="pa" focal="35" aperture="2" distance="10" k1="-1.6691" k2="1.6789" k3="-0.7358"/>
+            <vignetting model="pa" focal="35" aperture="2" distance="1000" k1="-1.6691" k2="1.6789" k3="-0.7358"/>
+            <vignetting model="pa" focal="35" aperture="2.8" distance="10" k1="-0.4608" k2="-0.4247" k3="0.3332"/>
+            <vignetting model="pa" focal="35" aperture="2.8" distance="1000" k1="-0.4608" k2="-0.4247" k3="0.3332"/>
+            <vignetting model="pa" focal="35" aperture="4" distance="10" k1="-0.2960" k2="-0.1757" k3="0.0421"/>
+            <vignetting model="pa" focal="35" aperture="4" distance="1000" k1="-0.2960" k2="-0.1757" k3="0.0421"/>
+            <vignetting model="pa" focal="35" aperture="5.6" distance="10" k1="-0.4347" k2="0.2874" k3="-0.1813"/>
+            <vignetting model="pa" focal="35" aperture="5.6" distance="1000" k1="-0.4347" k2="0.2874" k3="-0.1813"/>
+            <vignetting model="pa" focal="35" aperture="22" distance="10" k1="-0.4186" k2="0.1698" k3="-0.0435"/>
+            <vignetting model="pa" focal="35" aperture="22" distance="1000" k1="-0.4186" k2="0.1698" k3="-0.0435"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Nikkor 35mm f/2.8 PC "black knob"</model>
@@ -2237,7 +2345,6 @@
             <tca model="poly3" focal="35" vr="1.0003" vb="0.9999"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AI Nikkor 45mm f/2.8 GN</model>
@@ -2249,7 +2356,6 @@
             <distortion model="poly3" focal="45" k1="-0.0005"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Nikkor 50mm f/1.4D</model>
@@ -2271,7 +2377,6 @@
             <vignetting model="pa" focal="50" aperture="11" distance="1000" k1="-0.4912" k2="0.5335" k3="-0.2775"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AI-S Nikkor 50mm f/1.4</model>
@@ -2283,7 +2388,6 @@
             <distortion model="poly3" focal="50" k1="-0.0025"/>
         </calibration>
     </lens>
-
     <lens>
         <!-- Submitted by Ed Gomez -->
         <maker>Nikon</maker>
@@ -2299,7 +2403,6 @@
             <distortion model="ptlens" focal="50" a="-0.00255" b="0.00841" c="-0.01107"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Nikkor 50mm f/1.8D</model>
@@ -2322,7 +2425,6 @@
             <vignetting model="pa" focal="50" aperture="22" distance="1000" k1="-0.2490" k2="0.1102" k3="-0.0426"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AI-S Nikkor 50mm f/1.8</model>
@@ -2334,11 +2436,10 @@
             <distortion model="poly3" focal="50" k1="-0.0005"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
-        <model>Nikon Nikkor 50mm f/2.0</model>
-        <model lang="en">Nikkor 50mm f/2.0</model>
+        <model>Nikon Nikkor 50mm f/2</model>
+        <model lang="en">Nikkor 50mm f/2</model>
         <mount>Nikon F</mount>
         <!-- Average crop factor of Nikon APS-C cameras -->
         <cropfactor>1.528</cropfactor>
@@ -2346,7 +2447,6 @@
             <distortion model="poly3" focal="50" k1="-0.002"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AI Nikkor 55mm f/1.2</model>
@@ -2358,7 +2458,6 @@
             <distortion model="poly3" focal="55" k1="-0.003"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AI-S Nikkor 55mm f/2.8 Micro</model>
@@ -2370,7 +2469,35 @@
             <distortion model="poly3" focal="55" k1="-0.0002"/>
         </calibration>
     </lens>
-
+    <!-- Added Jacques Le Clerc) Manual Lens - No CPU -->
+    <lens>
+        <maker>Nikon</maker>
+        <model>Nikon AI-S Nikkor 55mm f/2.8 Micro</model>
+        <model lang="en">Nikkor AI-S 55mm f/2.8 Micro</model>
+        <mount>Nikon F AI-S</mount>
+        <cropfactor>1</cropfactor>
+        <calibration>
+            <distortion model="poly3" focal="55" k1="-0.000135"/>
+            <tca model="poly3" focal="55" vr="1.0000699" vb="0.9999505"/>
+            <!-- Taken with Nikon D750 (Jacques Le Clerc)-->
+            <vignetting model="pa" focal="55" aperture="2.8" distance="0.01" k1="-1.1600" k2="0.7258" k3="-0.2788"/>
+            <vignetting model="pa" focal="55" aperture="2.8" distance="1000" k1="-1.1600" k2="0.7258" k3="-0.2788"/>
+            <vignetting model="pa" focal="55" aperture="4" distance="0.01" k1="-0.3360" k2="-0.1154" k3="-0.0705"/>
+            <vignetting model="pa" focal="55" aperture="4" distance="1000" k1="-0.3360" k2="-0.1154" k3="-0.0705"/>
+            <vignetting model="pa" focal="55" aperture="5.6" distance="0.01" k1="-0.7731" k2="0.9602" k3="-0.6518"/>
+            <vignetting model="pa" focal="55" aperture="5.6" distance="1000" k1="-0.7731" k2="0.9602" k3="-0.6518"/>
+            <vignetting model="pa" focal="55" aperture="8" distance="0.01" k1="-0.5113" k2="0.3328" k3="-0.1973"/>
+            <vignetting model="pa" focal="55" aperture="8" distance="1000" k1="-0.5113" k2="0.3328" k3="-0.1973"/>
+            <vignetting model="pa" focal="55" aperture="11" distance="0.01" k1="-0.5248" k2="0.1450" k3="0.0307"/>
+            <vignetting model="pa" focal="55" aperture="11" distance="1000" k1="-0.5248" k2="0.1450" k3="0.0307"/>
+            <vignetting model="pa" focal="55" aperture="16" distance="0.01" k1="-0.5322" k2="0.1633" k3="0.0180"/>
+            <vignetting model="pa" focal="55" aperture="16" distance="1000" k1="-0.5322" k2="0.1633" k3="0.0180"/>
+            <vignetting model="pa" focal="55" aperture="22" distance="0.01" k1="-0.5749" k2="0.2699" k3="-0.0567"/>
+            <vignetting model="pa" focal="55" aperture="22" distance="1000" k1="-0.5749" k2="0.2699" k3="-0.0567"/>
+            <vignetting model="pa" focal="55" aperture="32" distance="0.01" k1="-0.5214" k2="0.1511" k3="0.0190"/>
+            <vignetting model="pa" focal="55" aperture="32" distance="1000" k1="-0.5214" k2="0.1511" k3="0.0190"/>
+        </calibration>
+    </lens>
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AI-S Nikkor 58mm f/1.2 Noct</model>
@@ -2383,7 +2510,6 @@
             <distortion model="poly3" focal="58" k1="-0.003"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Nikkor 85mm f/1.8D</model>
@@ -2394,7 +2520,6 @@
             <distortion model="poly3" focal="85" k1="-0.000852"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Nikkor 105mm f/2.8D</model>
@@ -2406,10 +2531,9 @@
             <distortion model="poly3" focal="105" k1="0.00142"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
-        <model>Nikon AF-S VR Micro-Nikkor 105mm f/2.8G IF-ED</model>
+        <model>Nikon AF-S VR Micro-Nikkor 105mm f/2.8G IF-ED 138</model>
         <model lang="en">Nikkor AF-S VR 105mm f/2.8G IF-ED</model>
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
@@ -2430,11 +2554,10 @@
             <vignetting model="pa" focal="105" aperture="32" distance="1000" k1="-0.0451" k2="0.1358" k3="-0.0981"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
-        <model>Nikon AI-S Nikkor 135mm f/2.0</model>
-        <model lang="en">Nikkor AI-S 135mm f/2.0</model>
+        <model>Nikon AI-S Nikkor 135mm f/2</model>
+        <model lang="en">Nikkor AI-S 135mm f/2</model>
         <mount>Nikon F AI-S</mount>
         <!-- Average crop factor of Nikon APS-C cameras -->
         <cropfactor>1.528</cropfactor>
@@ -2442,7 +2565,6 @@
             <distortion model="poly3" focal="135" k1="0.0015"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AI-S Nikkor 180mm f/2.8 ED</model>
@@ -2454,11 +2576,10 @@
             <distortion model="poly3" focal="180" k1="0.001"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
-        <model>Nikon AI-S Nikkor 500mm f/8.0 Reflex</model>
-        <model lang="en">Nikkor AI-S 500mm f/8.0 Reflex</model>
+        <model>Nikon AI-S Nikkor 500mm f/8 Reflex</model>
+        <model lang="en">Nikkor AI-S 500mm f/8 Reflex</model>
         <mount>Nikon F AI-S</mount>
         <cropfactor>1</cropfactor>
         <calibration>
@@ -2467,11 +2588,10 @@
             <tca model="poly3" focal="500" vr="0.9999785" vb="0.9999698"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
-        <model>Nikon AI-S Nikkor 500mm f/8.0 Reflex</model>
-        <model lang="en">Nikkor AI-S 500mm f/8.0 Reflex</model>
+        <model>Nikon AI-S Nikkor 500mm f/8 Reflex</model>
+        <model lang="en">Nikkor AI-S 500mm f/8 Reflex</model>
         <mount>Nikon F AI-S</mount>
         <!-- Average crop factor of Nikon APS-C cameras -->
         <cropfactor>1.528</cropfactor>
@@ -2479,10 +2599,9 @@
             <distortion model="poly3" focal="500" k1="0.001"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
-        <model>Nikon AF-S Nikkor 85mm f/1.8G</model>
+        <model>Nikon AF-S Nikkor 85mm f/1.8G 179</model>
         <model lang="en">Nikkor AF-S 85mm f/1.8G</model>
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
@@ -2573,10 +2692,9 @@
             <vignetting model="pa" focal="85" aperture="16" distance="1000" k1="-0.1997" k2="0.2217" k3="-0.2915"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
-        <model>Nikon AF Nikkor 85mm f/1.8</model>
+        <model>Nikon AF Nikkor 85mm f/1.8 21</model>
         <model lang="en">Nikkor AF 85mm f/1.8</model>
         <mount>Nikon F AF</mount>
         <cropfactor>1.523</cropfactor>
@@ -2596,7 +2714,6 @@
             <vignetting model="pa" focal="85" aperture="16" distance="1000" k1="-0.1724" k2="0.2410" k3="-0.1074"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S Zoom-Nikkor 24-70mm f/2.8G ED</model>
@@ -2612,10 +2729,9 @@
             <distortion model="ptlens" focal="70" a="0.00933" b="-0.03902" c="0.05818"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
-        <model>Nikon AF-S Zoom-Nikkor 14-24mm f/2.8G ED</model>
+        <model>Nikon AF-S Zoom-Nikkor 14-24mm f/2.8G ED 146</model>
         <model lang="en">Nikkor AF-S 14-24mm f/2.8G ED</model>
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
@@ -2635,7 +2751,6 @@
             <tca model="poly3" focal="24" br="0.0000737" vr="1.0001211" bb="-0.0000343" vb="1.0000684"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S VR Zoom-Nikkor 70-300mm f/4.5-5.6G IF-ED</model>
@@ -2657,7 +2772,6 @@
             <tca model="poly3" focal="300" br="-0.0000515" vr="1.0000175" bb="0.0000673" vb="0.9996418"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S VR Zoom-Nikkor 70-300mm f/4.5-5.6G IF-ED</model>
@@ -2730,7 +2844,6 @@
             <vignetting model="pa" focal="300" aperture="40" distance="1000" k1="-0.0669" k2="0.0271" k3="-0.0091"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S VR Zoom-Nikkor 70-200mm f/4G IF-ED</model>
@@ -2745,9 +2858,18 @@
             <distortion model="poly3" focal="130" k1="0.00663"/>
             <distortion model="poly3" focal="170" k1="0.00789"/>
             <distortion model="poly3" focal="200" k1="0.00789"/>
+            <tca model="poly3" focal="78" vr="1.0002318" vb="1.0000130"/>
+            <tca model="poly3" focal="86" vr="1.0001836" vb="0.9999931"/>
+            <tca model="poly3" focal="95" vr="1.0001789" vb="0.9999722"/>
+            <tca model="poly3" focal="105" vr="1.0001451" vb="0.9999614"/>
+            <tca model="poly3" focal="120" vr="1.0001286" vb="0.9999432"/>
+            <tca model="poly3" focal="135" vr="1.0000597" vb="0.9999415"/>
+            <tca model="poly3" focal="155" vr="1.0000269" vb="0.9999229"/>
+            <tca model="poly3" focal="160" vr="1.0000016" vb="0.9999261"/>
+            <tca model="poly3" focal="175" vr="0.9999842" vb="0.9999247"/>
+            <tca model="poly3" focal="200" vr="0.9999424" vb="0.9999065"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AI-S Nikkor 50mm f/1.2</model>
@@ -2760,19 +2882,18 @@
             <distortion model="ptlens" focal="50" a="0.0042" b="-0.01715" c="0.00585"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
-        <model>Nikon AF-S Nikkor 50mm f/1.8G</model>
+        <model>Nikon AF-S Nikkor 50mm f/1.8G 176</model>
         <model lang="en">Nikkor AF-S 50mm f/1.8G</model>
         <mount>Nikon F AF</mount>
         <cropfactor>1.523</cropfactor>
         <calibration>
             <!-- Taken with Nikon D200 -->
             <distortion model="ptlens" focal="50" a="-0.00299" b="0.00708" c="-0.00949"/>
+            <tca model="poly3" focal="50" vr="1.0000984" vb="0.9999494"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S Nikkor 50mm f/1.8G</model>
@@ -2784,7 +2905,6 @@
             <distortion model="poly3" focal="50" k1="-0.00462"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S DX Nikkor 10-24mm f/3.5-4.5G ED</model>
@@ -2858,7 +2978,6 @@
             <vignetting model="pa" focal="24" aperture="29" distance="1000" k1="-0.4338" k2="0.2285" k3="-0.0697"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S DX Nikkor 55-300mm f/4.5-5.6G ED VR</model>
@@ -2994,10 +3113,9 @@
             <vignetting model="pa" focal="300" aperture="29" distance="1000" k1="-0.0716" k2="0.0050" k3="-0.0002"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
-        <model>Nikon AF-S Nikkor 50mm f/1.4G</model>
+        <model>Nikon AF-S Nikkor 50mm f/1.4G 160</model>
         <model lang="en">Nikkor AF-S 50mm f/1.4G</model>
         <mount>Nikon F AF</mount>
         <cropfactor>1.534</cropfactor>
@@ -3006,7 +3124,6 @@
             <distortion model="poly3" focal="50" k1="-0.00466"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S Nikkor 50mm f/1.4G</model>
@@ -3059,7 +3176,6 @@
             <vignetting model="pa" focal="50" aperture="16" distance="1000" k1="0.0439" k2="-0.2233" k3="0.1462"/>
         </calibration>
     </lens>
-
     <lens>
         <!-- Also update copy at Nikon AI-S Nikkor 20mm f/2.8 below. -->
         <maker>Nikon</maker>
@@ -3084,7 +3200,6 @@
             <vignetting model="pa" focal="20" aperture="22" distance="1000" k1="-0.4001" k2="-0.1161" k3="0.1251"/>
         </calibration>
     </lens>
-
     <lens>
         <!-- Also update copy at Nikon AF Nikkor 20mm f/2.8D above. -->
         <maker>Nikon</maker>
@@ -3109,7 +3224,6 @@
             <vignetting model="pa" focal="20" aperture="22" distance="1000" k1="-0.4001" k2="-0.1161" k3="0.1251"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S Nikkor 24-85 mm f/3.5-4.5G ED VR</model>
@@ -3134,7 +3248,6 @@
             <tca model="poly3" focal="85" br="0.0000118" vr="0.9998654" bb="-0.0000847" vb="1.0001720"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S Nikkor 800mm f/5.6E FL ED VR</model>
@@ -3149,7 +3262,6 @@
             <vignetting model="pa" focal="800" aperture="5.6" distance="100" k1="-0.60708" k2="0.24577" k3="-0.10028"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S Nikkor 600mm f/4G ED VR</model>
@@ -3164,7 +3276,6 @@
             <vignetting model="pa" focal="600" aperture="4" distance="100" k1="-1.12925" k2="1.1294" k3="-0.5612"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S DX Nikkor 18-140mm f/3.5-5.6G ED VR</model>
@@ -3183,7 +3294,6 @@
             <distortion model="ptlens" focal="140" a="0.004" b="0.002" c="-0.002"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AI-S Fisheye-Nikkor 6mm f/2.8</model>
@@ -3195,10 +3305,10 @@
             <!-- Taken from
                  http://www.mir.com.my/rb/photography/companies/nikon/nikkoresources/fisheyes/6mm_FisheyeNikkor-Manual/8.jpg
                  -->
-            <distortion model="ptlens" focal="6" a="0.011705" b="-0.01815" c="-0.03936" real-focal="6.250"/>
+            <distortion model="ptlens" focal="6" a="0.011705" b="-0.01815" c="-0.03936"/>
+            <real-focal-length focal="6" real-focal="6.250"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Zoom-Nikkor 28-80mm f/3.3-5.6G</model>
@@ -3221,7 +3331,6 @@
             <tca model="poly3" focal="80" vr="0.9999976" vb="1.0000594"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Zoom-Nikkor 28-200mm f/3.5-5.6G IF-ED</model>
@@ -3246,7 +3355,6 @@
             <tca model="poly3" focal="200" vr="0.9999001" vb="0.9998229"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Zoom-Nikkor 20-35mm f/2.8D IF</model>
@@ -3265,7 +3373,6 @@
             <tca model="poly3" focal="35" br="0.0001757" vr="0.9999669" bb="-0.0000378" vb="1.0000656"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon Nikkor AI 20mm f/3.5</model>
@@ -3276,9 +3383,19 @@
             <!-- Taken with Nikon D700 -->
             <distortion model="ptlens" focal="20" a="0.02362" b="-0.04833" c="-0.00643"/>
             <tca model="poly3" focal="20" br="-0.0000578" vr="1.0005977" bb="0.0002050" vb="0.9994372"/>
+            <!-- Taken with Nikon D3 -->
+            <vignetting model="pa" focal="20" aperture="3.5" distance="10" k1="-2.0188" k2="2.0196" k3="-0.8437"/>
+            <vignetting model="pa" focal="20" aperture="3.5" distance="1000" k1="-2.0188" k2="2.0196" k3="-0.8437"/>
+            <vignetting model="pa" focal="20" aperture="5.6" distance="10" k1="-0.4128" k2="-0.3600" k3="0.1257"/>
+            <vignetting model="pa" focal="20" aperture="5.6" distance="1000" k1="-0.4128" k2="-0.3600" k3="0.1257"/>
+            <vignetting model="pa" focal="20" aperture="8" distance="10" k1="-0.6401" k2="0.4627" k3="-0.3218"/>
+            <vignetting model="pa" focal="20" aperture="8" distance="1000" k1="-0.6401" k2="0.4627" k3="-0.3218"/>
+            <vignetting model="pa" focal="20" aperture="11" distance="10" k1="-0.5662" k2="0.1576" k3="-0.0319"/>
+            <vignetting model="pa" focal="20" aperture="11" distance="1000" k1="-0.5662" k2="0.1576" k3="-0.0319"/>
+            <vignetting model="pa" focal="20" aperture="22" distance="10" k1="-0.5717" k2="0.1604" k3="-0.0259"/>
+            <vignetting model="pa" focal="20" aperture="22" distance="1000" k1="-0.5717" k2="0.1604" k3="-0.0259"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Micro-Nikkor 60mm f/2.8D</model>
@@ -3302,7 +3419,6 @@
             <vignetting model="pa" focal="60" aperture="32" distance="1000" k1="-0.3371" k2="0.1495" k3="-0.0450"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF DX Fisheye-Nikkor 10.5mm f/2.8G ED</model>
@@ -3313,11 +3429,11 @@
         <calibration>
             <!-- Taken with Nikon D7000 -->
             <!-- Taken with panorama -->
-            <distortion model="ptlens" focal="10.5" a="0.03347" b="-0.0964" c="0.08113" real-focal="10.31"/>
+            <distortion model="ptlens" focal="10.5" a="0.03347" b="-0.0964" c="0.08113"/>
             <tca model="poly3" focal="10.5" br="0.0001472" vr="1.0001888" bb="-0.0000942" vb="1.0006018"/>
+            <real-focal-length focal="10.5" real-focal="10.31"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S DX Nikkor 18-300mm f/3.5-6.3G ED VR</model>
@@ -3342,7 +3458,6 @@
             <tca model="poly3" focal="300" vr="0.9998668" vb="0.9991122"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S Micro Nikkor 60mm f/2.8G ED</model>
@@ -3355,7 +3470,6 @@
             <tca model="poly3" focal="60" vr="0.9999113" vb="1.0000999"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S Nikkor 85mm f/1.4G</model>
@@ -3368,7 +3482,6 @@
             <tca model="poly3" focal="85" br="0.0000048" vr="0.9999486" bb="-0.0000248" vb="1.0000052"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon Lens Series E 28mm f/2.8</model>
@@ -3378,9 +3491,23 @@
             <!-- Taken with Nikon D600 -->
             <distortion model="ptlens" focal="28" a="0.01493" b="-0.05112" c="0.02965"/>
             <tca model="poly3" focal="28" vr="1.0004587" vb="0.9998259"/>
+            <!-- Taken with Nikon D750 - Jacques Le Clerc -->
+            <vignetting model="pa" focal="28" aperture="2.8" distance="0.01" k1="-2.1044" k2="2.3077" k3="-1.0293"/>
+            <vignetting model="pa" focal="28" aperture="2.8" distance="1000" k1="-2.1044" k2="2.3077" k3="-1.0293"/>
+            <vignetting model="pa" focal="28" aperture="4" distance="0.01" k1="-0.8175" k2="0.0140" k3="0.1251"/>
+            <vignetting model="pa" focal="28" aperture="4" distance="1000" k1="-0.8175" k2="0.0140" k3="0.1251"/>
+            <vignetting model="pa" focal="28" aperture="5.6" distance="0.01" k1="-1.0455" k2="0.8979" k3="-0.4767"/>
+            <vignetting model="pa" focal="28" aperture="5.6" distance="1000" k1="-1.0455" k2="0.8979" k3="-0.4767"/>
+            <vignetting model="pa" focal="28" aperture="8" distance="0.01" k1="-0.8623" k2="0.4596" k3="-0.1667"/>
+            <vignetting model="pa" focal="28" aperture="8" distance="1000" k1="-0.8623" k2="0.4596" k3="-0.1667"/>
+            <vignetting model="pa" focal="28" aperture="11" distance="0.01" k1="-0.9613" k2="0.6768" k3="-0.2975"/>
+            <vignetting model="pa" focal="28" aperture="11" distance="1000" k1="-0.9613" k2="0.6768" k3="-0.2975"/>
+            <vignetting model="pa" focal="28" aperture="16" distance="0.01" k1="-0.9855" k2="0.7184" k3="-0.3134"/>
+            <vignetting model="pa" focal="28" aperture="16" distance="1000" k1="-0.9855" k2="0.7184" k3="-0.3134"/>
+            <vignetting model="pa" focal="28" aperture="22" distance="0.01" k1="-0.9555" k2="0.6554" k3="-0.2738"/>
+            <vignetting model="pa" focal="28" aperture="22" distance="1000" k1="-0.9555" k2="0.6554" k3="-0.2738"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon Lens Series E 50mm f/1.8</model>
@@ -3390,9 +3517,27 @@
             <!-- Taken with Nikon D600 -->
             <distortion model="poly3" focal="50" k1="0.0007"/>
             <tca model="poly3" focal="50" vr="1.0000550" vb="0.9999107"/>
+            <!-- Taken with Nikon D750 - Jacques Le Clerc -->
+            <vignetting model="pa" focal="50" aperture="1.8" distance="0.01" k1="-1.5024" k2="1.2615" k3="-0.4931"/>
+            <vignetting model="pa" focal="50" aperture="1.8" distance="1000" k1="-1.5024" k2="1.2615" k3="-0.4931"/>
+            <vignetting model="pa" focal="50" aperture="2" distance="0.01" k1="-1.1660" k2="0.5507" k3="-0.0939"/>
+            <vignetting model="pa" focal="50" aperture="2" distance="1000" k1="-1.1660" k2="0.5507" k3="-0.0939"/>
+            <vignetting model="pa" focal="50" aperture="2.8" distance="0.01" k1="-0.3894" k2="0.1101" k3="-0.1899"/>
+            <vignetting model="pa" focal="50" aperture="2.8" distance="1000" k1="-0.3894" k2="0.1101" k3="-0.1899"/>
+            <vignetting model="pa" focal="50" aperture="4" distance="0.01" k1="-0.4265" k2="0.0998" k3="0.0073"/>
+            <vignetting model="pa" focal="50" aperture="4" distance="1000" k1="-0.4265" k2="0.0998" k3="0.0073"/>
+            <vignetting model="pa" focal="50" aperture="5.6" distance="0.01" k1="-0.3799" k2="0.0066" k3="0.0571"/>
+            <vignetting model="pa" focal="50" aperture="5.6" distance="1000" k1="-0.3799" k2="0.0066" k3="0.0571"/>
+            <vignetting model="pa" focal="50" aperture="8" distance="0.01" k1="-0.5012" k2="0.2802" k3="-0.1544"/>
+            <vignetting model="pa" focal="50" aperture="8" distance="1000" k1="-0.5012" k2="0.2802" k3="-0.1544"/>
+            <vignetting model="pa" focal="50" aperture="11" distance="0.01" k1="-0.5803" k2="0.4403" k3="-0.2312"/>
+            <vignetting model="pa" focal="50" aperture="11" distance="1000" k1="-0.5803" k2="0.4403" k3="-0.2312"/>
+            <vignetting model="pa" focal="50" aperture="16" distance="0.01" k1="-0.5205" k2="0.2958" k3="-0.1305"/>
+            <vignetting model="pa" focal="50" aperture="16" distance="1000" k1="-0.5205" k2="0.2958" k3="-0.1305"/>
+            <vignetting model="pa" focal="50" aperture="22" distance="0.01" k1="-0.5778" k2="0.4417" k3="-0.2320"/>
+            <vignetting model="pa" focal="50" aperture="22" distance="1000" k1="-0.5778" k2="0.4417" k3="-0.2320"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon Lens Series E 100mm f/2.8</model>
@@ -3404,7 +3549,6 @@
             <tca model="poly3" focal="100" vr="0.9998270" vb="0.9999607"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Micro-Nikkor 105mm f/2.8D</model>
@@ -3427,7 +3571,6 @@
             <vignetting model="pa" focal="105" aperture="32" distance="1000" k1="-0.0379" k2="-0.1418" k3="0.0891"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikkor 55mm f/3.5 Micro</model>
@@ -3438,7 +3581,6 @@
             <distortion model="poly3" focal="55" k1="0.000103"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S Nikkor 300mm f/4E PF ED VR</model>
@@ -3461,7 +3603,6 @@
             <vignetting model="pa" focal="300" aperture="32" distance="1000" k1="-0.1730" k2="0.2293" k3="-0.0866"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S DX Nikkor 18-300mm f/3.5-5.6G ED VR</model>
@@ -3484,7 +3625,6 @@
             <tca model="poly3" focal="300" br="-0.0000065" vr="0.9994044" bb="-0.0000318" vb="1.0000918"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S Nikkor 35mm f/1.8G ED</model>
@@ -3497,7 +3637,6 @@
             <tca model="poly3" focal="35" br="-0.0002043" vr="1.0006177" bb="0.0003032" vb="0.9996507"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF DC-Nikkor 135mm f/2D</model>
@@ -3510,7 +3649,6 @@
             <tca model="poly3" focal="135" br="-0.0001287" vr="0.9997403" bb="-0.0000253" vb="1.0008556"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF DC-Nikkor 105mm f/2D</model>
@@ -3523,7 +3661,6 @@
             <tca model="poly3" focal="105" vr="0.9998959" vb="1.0001104"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-P DX Nikkor 18-55mm f/3.5-5.6G VR</model>
@@ -3613,10 +3750,9 @@
             <vignetting model="pa" focal="55" aperture="22" distance="1000" k1="-0.1172" k2="0.0224" k3="-0.0061"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
-        <model>Nikon AF-S Nikkor 70-200mm f/2.8G ED VR II</model>
+        <model>Nikon AF-S Nikkor 70-200mm f/2.8G ED VR II 162</model>
         <model lang="en">Nikkor AF-S 70-200mm f/2.8G ED VR II</model>
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
@@ -3714,7 +3850,6 @@
             <vignetting model="pa" focal="200" aperture="22" distance="1000" k1="-0.1448" k2="0.0653" k3="-0.0218"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Zoom-Nikkor 28-70mm f/3.5-4.5D</model>
@@ -3781,7 +3916,6 @@
             <vignetting model="pa" focal="70" aperture="32" distance="1000" k1="-0.5484" k2="0.7069" k3="-0.5361"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S DX Micro Nikkor 40mm f/2.8G</model>
@@ -3794,7 +3928,6 @@
             <tca model="poly3" focal="40" vr="1.0002635" vb="0.9999669"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-P DX Nikkor 70-300mm f/4.5-6.3G ED VR</model>
@@ -3817,7 +3950,26 @@
             <tca model="poly3" focal="300" vr="0.9997757" vb="0.9997447"/>
         </calibration>
     </lens>
-
+    <lens>
+        <maker>Nikon</maker>
+        <model>AF-P Nikkor 70-300mm f/4.5-5.6E ED VR</model>
+        <model lang="en">Nikkor AF-P 70-300mm f/4.5-5.6E ED VR</model>
+        <mount>Nikon F AF</mount>
+        <cropfactor>1</cropfactor>
+        <calibration>
+            <!-- Taken with D850 -->
+            <distortion model="poly3" focal="70" k1="-0.005636"/>
+            <distortion model="poly3" focal="100" k1="-0.001539"/>
+            <distortion model="poly3" focal="125" k1="0.000726"/>
+            <distortion model="poly3" focal="185" k1="0.00048"/>
+            <distortion model="poly3" focal="300" k1="-0.000668"/>
+            <tca model="poly3" focal="70" vr="1.0000828" vb="1.0000233"/>
+            <tca model="poly3" focal="100" vr="1.0000526" vb="1.0000235"/>
+            <tca model="poly3" focal="125" vr="1.0000125" vb="1.0000104"/>
+            <tca model="poly3" focal="185" vr="0.9999616" vb="0.9999863"/>
+            <tca model="poly3" focal="300" vr="0.9998467" vb="0.9999508"/>
+        </calibration>
+    </lens>
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S DX Nikkor 35mm f/1.8G</model>
@@ -3830,7 +3982,6 @@
             <tca model="poly3" focal="35" vr="1.0002896" vb="1.0003004"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Nikkor 35-70mm f/2.8</model>
@@ -3851,9 +4002,78 @@
             <tca model="poly3" focal="48" vr="1.0001616" vb="0.9999739"/>
             <tca model="poly3" focal="58" vr="1.0001055" vb="0.9999782"/>
             <tca model="poly3" focal="70" vr="1.0000968" vb="0.9999608"/>
+            <vignetting model="pa" focal="35" aperture="2.8" distance="10" k1="-0.5772" k2="-0.2992" k3="0.1747"/>
+            <vignetting model="pa" focal="35" aperture="2.8" distance="1000" k1="-0.5772" k2="-0.2992" k3="0.1747"/>
+            <vignetting model="pa" focal="35" aperture="4" distance="10" k1="-0.3579" k2="0.1865" k3="-0.3571"/>
+            <vignetting model="pa" focal="35" aperture="4" distance="1000" k1="-0.3579" k2="0.1865" k3="-0.3571"/>
+            <vignetting model="pa" focal="35" aperture="5.6" distance="10" k1="-0.4669" k2="0.4805" k3="-0.3721"/>
+            <vignetting model="pa" focal="35" aperture="5.6" distance="1000" k1="-0.4669" k2="0.4805" k3="-0.3721"/>
+            <vignetting model="pa" focal="35" aperture="8" distance="10" k1="-0.4309" k2="0.3074" k3="-0.1869"/>
+            <vignetting model="pa" focal="35" aperture="8" distance="1000" k1="-0.4309" k2="0.3074" k3="-0.1869"/>
+            <vignetting model="pa" focal="35" aperture="22" distance="10" k1="-0.4301" k2="0.2769" k3="-0.1437"/>
+            <vignetting model="pa" focal="35" aperture="22" distance="1000" k1="-0.4301" k2="0.2769" k3="-0.1437"/>
+            <vignetting model="pa" focal="40" aperture="2.8" distance="10" k1="-0.6005" k2="-0.3492" k3="0.3608"/>
+            <vignetting model="pa" focal="40" aperture="2.8" distance="1000" k1="-0.6005" k2="-0.3492" k3="0.3608"/>
+            <vignetting model="pa" focal="40" aperture="4" distance="10" k1="-0.2966" k2="0.0123" k3="-0.0742"/>
+            <vignetting model="pa" focal="40" aperture="4" distance="1000" k1="-0.2966" k2="0.0123" k3="-0.0742"/>
+            <vignetting model="pa" focal="40" aperture="5.6" distance="10" k1="-0.3728" k2="0.1988" k3="-0.0802"/>
+            <vignetting model="pa" focal="40" aperture="5.6" distance="1000" k1="-0.3728" k2="0.1988" k3="-0.0802"/>
+            <vignetting model="pa" focal="40" aperture="8" distance="10" k1="-0.3735" k2="0.1832" k3="-0.0571"/>
+            <vignetting model="pa" focal="40" aperture="8" distance="1000" k1="-0.3735" k2="0.1832" k3="-0.0571"/>
+            <vignetting model="pa" focal="40" aperture="22" distance="10" k1="-0.3909" k2="0.2194" k3="-0.0767"/>
+            <vignetting model="pa" focal="40" aperture="22" distance="1000" k1="-0.3909" k2="0.2194" k3="-0.0767"/>
+            <vignetting model="pa" focal="44" aperture="2.8" distance="10" k1="-0.6631" k2="-0.2340" k3="0.3182"/>
+            <vignetting model="pa" focal="44" aperture="2.8" distance="1000" k1="-0.6631" k2="-0.2340" k3="0.3182"/>
+            <vignetting model="pa" focal="44" aperture="4" distance="10" k1="-0.3058" k2="0.1301" k3="-0.1581"/>
+            <vignetting model="pa" focal="44" aperture="4" distance="1000" k1="-0.3058" k2="0.1301" k3="-0.1581"/>
+            <vignetting model="pa" focal="44" aperture="5.6" distance="10" k1="-0.3273" k2="0.1293" k3="-0.0348"/>
+            <vignetting model="pa" focal="44" aperture="5.6" distance="1000" k1="-0.3273" k2="0.1293" k3="-0.0348"/>
+            <vignetting model="pa" focal="44" aperture="8" distance="10" k1="-0.3400" k2="0.1465" k3="-0.0354"/>
+            <vignetting model="pa" focal="44" aperture="8" distance="1000" k1="-0.3400" k2="0.1465" k3="-0.0354"/>
+            <vignetting model="pa" focal="44" aperture="22" distance="10" k1="-0.3613" k2="0.1931" k3="-0.0627"/>
+            <vignetting model="pa" focal="44" aperture="22" distance="1000" k1="-0.3613" k2="0.1931" k3="-0.0627"/>
+            <vignetting model="pa" focal="48" aperture="2.8" distance="10" k1="-0.9004" k2="0.3104" k3="0.0173"/>
+            <vignetting model="pa" focal="48" aperture="2.8" distance="1000" k1="-0.9004" k2="0.3104" k3="0.0173"/>
+            <vignetting model="pa" focal="48" aperture="4" distance="10" k1="-0.3147" k2="0.2495" k3="-0.2196"/>
+            <vignetting model="pa" focal="48" aperture="4" distance="1000" k1="-0.3147" k2="0.2495" k3="-0.2196"/>
+            <vignetting model="pa" focal="48" aperture="5.6" distance="10" k1="-0.3160" k2="0.1556" k3="-0.0406"/>
+            <vignetting model="pa" focal="48" aperture="5.6" distance="1000" k1="-0.3160" k2="0.1556" k3="-0.0406"/>
+            <vignetting model="pa" focal="48" aperture="8" distance="10" k1="-0.3230" k2="0.1623" k3="-0.0402"/>
+            <vignetting model="pa" focal="48" aperture="8" distance="1000" k1="-0.3230" k2="0.1623" k3="-0.0402"/>
+            <vignetting model="pa" focal="48" aperture="22" distance="10" k1="-0.3306" k2="0.1788" k3="-0.0498"/>
+            <vignetting model="pa" focal="48" aperture="22" distance="1000" k1="-0.3306" k2="0.1788" k3="-0.0498"/>
+            <vignetting model="pa" focal="52" aperture="2.8" distance="10" k1="-0.9912" k2="0.5531" k3="-0.1259"/>
+            <vignetting model="pa" focal="52" aperture="2.8" distance="1000" k1="-0.9912" k2="0.5531" k3="-0.1259"/>
+            <vignetting model="pa" focal="52" aperture="4" distance="10" k1="-0.2813" k2="0.1778" k3="-0.1709"/>
+            <vignetting model="pa" focal="52" aperture="4" distance="1000" k1="-0.2813" k2="0.1778" k3="-0.1709"/>
+            <vignetting model="pa" focal="52" aperture="5.6" distance="10" k1="-0.3000" k2="0.1532" k3="-0.0399"/>
+            <vignetting model="pa" focal="52" aperture="5.6" distance="1000" k1="-0.3000" k2="0.1532" k3="-0.0399"/>
+            <vignetting model="pa" focal="52" aperture="8" distance="10" k1="-0.3064" k2="0.1660" k3="-0.0466"/>
+            <vignetting model="pa" focal="52" aperture="8" distance="1000" k1="-0.3064" k2="0.1660" k3="-0.0466"/>
+            <vignetting model="pa" focal="52" aperture="22" distance="10" k1="-0.3149" k2="0.1825" k3="-0.0535"/>
+            <vignetting model="pa" focal="52" aperture="22" distance="1000" k1="-0.3149" k2="0.1825" k3="-0.0535"/>
+            <vignetting model="pa" focal="58" aperture="2.8" distance="10" k1="-0.9695" k2="0.5786" k3="-0.1498"/>
+            <vignetting model="pa" focal="58" aperture="2.8" distance="1000" k1="-0.9695" k2="0.5786" k3="-0.1498"/>
+            <vignetting model="pa" focal="58" aperture="4" distance="10" k1="-0.2081" k2="-0.0492" k3="-0.0136"/>
+            <vignetting model="pa" focal="58" aperture="4" distance="1000" k1="-0.2081" k2="-0.0492" k3="-0.0136"/>
+            <vignetting model="pa" focal="58" aperture="5.6" distance="10" k1="-0.2795" k2="0.1369" k3="-0.0319"/>
+            <vignetting model="pa" focal="58" aperture="5.6" distance="1000" k1="-0.2795" k2="0.1369" k3="-0.0319"/>
+            <vignetting model="pa" focal="58" aperture="8" distance="10" k1="-0.2843" k2="0.1445" k3="-0.0357"/>
+            <vignetting model="pa" focal="58" aperture="8" distance="1000" k1="-0.2843" k2="0.1445" k3="-0.0357"/>
+            <vignetting model="pa" focal="58" aperture="22" distance="10" k1="-0.2957" k2="0.1647" k3="-0.0436"/>
+            <vignetting model="pa" focal="58" aperture="22" distance="1000" k1="-0.2957" k2="0.1647" k3="-0.0436"/>
+            <vignetting model="pa" focal="70" aperture="2.8" distance="10" k1="-1.0965" k2="1.0059" k3="-0.4153"/>
+            <vignetting model="pa" focal="70" aperture="2.8" distance="1000" k1="-1.0965" k2="1.0059" k3="-0.4153"/>
+            <vignetting model="pa" focal="70" aperture="4" distance="10" k1="-0.1240" k2="-0.4134" k3="0.2466"/>
+            <vignetting model="pa" focal="70" aperture="4" distance="1000" k1="-0.1240" k2="-0.4134" k3="0.2466"/>
+            <vignetting model="pa" focal="70" aperture="5.6" distance="10" k1="-0.2622" k2="0.1811" k3="-0.0858"/>
+            <vignetting model="pa" focal="70" aperture="5.6" distance="1000" k1="-0.2622" k2="0.1811" k3="-0.0858"/>
+            <vignetting model="pa" focal="70" aperture="8" distance="10" k1="-0.2522" k2="0.1261" k3="-0.0283"/>
+            <vignetting model="pa" focal="70" aperture="8" distance="1000" k1="-0.2522" k2="0.1261" k3="-0.0283"/>
+            <vignetting model="pa" focal="70" aperture="22" distance="10" k1="-0.2828" k2="0.1813" k3="-0.0573"/>
+            <vignetting model="pa" focal="70" aperture="22" distance="1000" k1="-0.2828" k2="0.1813" k3="-0.0573"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AI-S Nikkor 50mm f/1.4</model>
@@ -3864,9 +4084,18 @@
             <!-- Taken with Nikon D3 -->
             <distortion model="ptlens" focal="50" a="0.00762" b="-0.03144" c="0.02936"/>
             <tca model="poly3" focal="50" vr="1.0000689" vb="0.9999818"/>
+            <vignetting model="pa" focal="50" aperture="1.4" distance="10" k1="-1.7490" k2="1.6264" k3="-0.6967"/>
+            <vignetting model="pa" focal="50" aperture="1.4" distance="1000" k1="-1.7490" k2="1.6264" k3="-0.6967"/>
+            <vignetting model="pa" focal="50" aperture="2" distance="10" k1="0.0701" k2="-1.4452" k3="0.7268"/>
+            <vignetting model="pa" focal="50" aperture="2" distance="1000" k1="0.0701" k2="-1.4452" k3="0.7268"/>
+            <vignetting model="pa" focal="50" aperture="2.8" distance="10" k1="-0.3373" k2="0.5958" k3="-0.6684"/>
+            <vignetting model="pa" focal="50" aperture="2.8" distance="1000" k1="-0.3373" k2="0.5958" k3="-0.6684"/>
+            <vignetting model="pa" focal="50" aperture="4" distance="10" k1="-0.3042" k2="0.2947" k3="-0.1901"/>
+            <vignetting model="pa" focal="50" aperture="4" distance="1000" k1="-0.3042" k2="0.2947" k3="-0.1901"/>
+            <vignetting model="pa" focal="50" aperture="16" distance="10" k1="-0.3188" k2="0.2332" k3="-0.0895"/>
+            <vignetting model="pa" focal="50" aperture="16" distance="1000" k1="-0.3188" k2="0.2332" k3="-0.0895"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AI-S Nikkor 50mm f/1.8</model>
@@ -3877,9 +4106,48 @@
             <!-- Taken with Nikon D3 -->
             <distortion model="poly3" focal="50" k1="-0.0004"/>
             <tca model="poly3" focal="50" vr="1.0000763" vb="0.9998909"/>
+            <vignetting model="pa" focal="50" aperture="1.8" distance="10" k1="-1.4944" k2="1.3561" k3="-0.5665"/>
+            <vignetting model="pa" focal="50" aperture="1.8" distance="1000" k1="-1.4944" k2="1.3561" k3="-0.5665"/>
+            <vignetting model="pa" focal="50" aperture="2.8" distance="10" k1="-0.3809" k2="0.2207" k3="-0.2458"/>
+            <vignetting model="pa" focal="50" aperture="2.8" distance="1000" k1="-0.3809" k2="0.2207" k3="-0.2458"/>
+            <vignetting model="pa" focal="50" aperture="4" distance="10" k1="-0.3843" k2="0.1364" k3="-0.0213"/>
+            <vignetting model="pa" focal="50" aperture="4" distance="1000" k1="-0.3843" k2="0.1364" k3="-0.0213"/>
+            <vignetting model="pa" focal="50" aperture="5.6" distance="10" k1="-0.3854" k2="0.1399" k3="-0.0232"/>
+            <vignetting model="pa" focal="50" aperture="5.6" distance="1000" k1="-0.3854" k2="0.1399" k3="-0.0232"/>
+            <vignetting model="pa" focal="50" aperture="22" distance="10" k1="-0.4075" k2="0.1697" k3="-0.0356"/>
+            <vignetting model="pa" focal="50" aperture="22" distance="1000" k1="-0.4075" k2="0.1697" k3="-0.0356"/>
         </calibration>
     </lens>
-
+    <lens>
+        <maker>Nikon</maker>
+        <model>Nikon AI-S Nikkor 105mm f/2.5</model>
+        <model lang="en">Nikkor AI-S 105mm f/2.5</model>
+        <mount>Nikon F AI</mount>
+        <mount>Nikon F AI-S</mount>
+        <cropfactor>1</cropfactor>
+        <calibration>
+            <!-- Taken with Nikon D3 -->
+            <distortion model="ptlens" focal="105" a="0" b="-0.00039" c="0"/>
+            <tca model="poly3" focal="105" vr="0.9998613" vb="0.9998255"/>
+            <!-- Added Jacques Le Clerc) Manual Lens - No CPU -->
+            <vignetting model="pa" focal="105" aperture="2.5" distance="0.01" k1="-1.2726" k2="1.2576" k3="-0.5724"/>
+            <vignetting model="pa" focal="105" aperture="2.5" distance="1000" k1="-1.2726" k2="1.2576" k3="-0.5724"/>
+            <vignetting model="pa" focal="105" aperture="2.8" distance="0.01" k1="-0.7166" k2="0.1303" k3="0.0684"/>
+            <vignetting model="pa" focal="105" aperture="2.8" distance="1000" k1="-0.7166" k2="0.1303" k3="0.0684"/>
+            <vignetting model="pa" focal="105" aperture="4" distance="0.01" k1="-0.1577" k2="0.2156" k3="-0.2862"/>
+            <vignetting model="pa" focal="105" aperture="4" distance="1000" k1="-0.1577" k2="0.2156" k3="-0.2862"/>
+            <vignetting model="pa" focal="105" aperture="5.6" distance="0.01" k1="-0.1761" k2="0.0601" k3="-0.0199"/>
+            <vignetting model="pa" focal="105" aperture="5.6" distance="1000" k1="-0.1761" k2="0.0601" k3="-0.0199"/>
+            <vignetting model="pa" focal="105" aperture="8" distance="0.01" k1="-0.2485" k2="0.1635" k3="-0.0808"/>
+            <vignetting model="pa" focal="105" aperture="8" distance="1000" k1="-0.2485" k2="0.1635" k3="-0.0808"/>
+            <vignetting model="pa" focal="105" aperture="11" distance="0.01" k1="-0.0957" k2="-0.0264" k3="0.0036"/>
+            <vignetting model="pa" focal="105" aperture="11" distance="1000" k1="-0.0957" k2="-0.0264" k3="0.0036"/>
+            <vignetting model="pa" focal="105" aperture="16" distance="0.01" k1="-0.1626" k2="0.0188" k3="0.0041"/>
+            <vignetting model="pa" focal="105" aperture="16" distance="1000" k1="-0.1626" k2="0.0188" k3="0.0041"/>
+            <vignetting model="pa" focal="105" aperture="22" distance="0.01" k1="-0.1529" k2="0.0654" k3="-0.0403"/>
+            <vignetting model="pa" focal="105" aperture="22" distance="1000" k1="-0.1529" k2="0.0654" k3="-0.0403"/>
+        </calibration>
+    </lens>
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AI-S Nikkor 135mm f/2.8</model>
@@ -3890,9 +4158,18 @@
             <!-- Taken with Nikon D3 -->
             <distortion model="poly3" focal="135" k1="0.00204"/>
             <tca model="poly3" focal="135" vr="0.9998352" vb="0.9999342"/>
+            <vignetting model="pa" focal="135" aperture="2.8" distance="10" k1="-1.2588" k2="1.4089" k3="-0.6639"/>
+            <vignetting model="pa" focal="135" aperture="2.8" distance="1000" k1="-1.2588" k2="1.4089" k3="-0.6639"/>
+            <vignetting model="pa" focal="135" aperture="4" distance="10" k1="-0.1187" k2="0.0333" k3="-0.0972"/>
+            <vignetting model="pa" focal="135" aperture="4" distance="1000" k1="-0.1187" k2="0.0333" k3="-0.0972"/>
+            <vignetting model="pa" focal="135" aperture="5.6" distance="10" k1="-0.1555" k2="0.0881" k3="-0.0258"/>
+            <vignetting model="pa" focal="135" aperture="5.6" distance="1000" k1="-0.1555" k2="0.0881" k3="-0.0258"/>
+            <vignetting model="pa" focal="135" aperture="8" distance="10" k1="-0.1588" k2="0.0884" k3="-0.0218"/>
+            <vignetting model="pa" focal="135" aperture="8" distance="1000" k1="-0.1588" k2="0.0884" k3="-0.0218"/>
+            <vignetting model="pa" focal="135" aperture="32" distance="10" k1="-0.1513" k2="0.0632" k3="-0.0065"/>
+            <vignetting model="pa" focal="135" aperture="32" distance="1000" k1="-0.1513" k2="0.0632" k3="-0.0065"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF Nikkor 180mm f/2.8D IF-ED</model>
@@ -3916,7 +4193,17 @@
             <vignetting model="pa" focal="180" aperture="22" distance="1000" k1="-0.1611" k2="0.1235" k3="-0.0627"/>
         </calibration>
     </lens>
-
+    <lens>
+        <maker>Nikon</maker>
+        <model>Nikkor AI-S 85mm f/2.0</model>
+        <mount>Nikon F AI-S</mount>
+        <cropfactor>1</cropfactor>
+        <calibration>
+            <!-- Taken with Nikon Df -->
+            <distortion model="ptlens" focal="85" a="-0.00562" b="0.02015" c="-0.01504"/>
+            <tca model="poly3" focal="85" vr="1.0000037" vb="0.9998670"/>
+        </calibration>
+    </lens>
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AI-S Nikkor 200mm f/4</model>
@@ -3929,7 +4216,6 @@
             <tca model="poly3" focal="200" vr="0.9997286" vb="0.9998411"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AI-S Nikkor 300mm f/4.5</model>
@@ -3942,7 +4228,6 @@
             <tca model="poly3" focal="300" vr="0.9997133" vb="0.9997451"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AI-S Nikkor 400mm f/3.5</model>
@@ -3955,7 +4240,6 @@
             <tca model="poly3" focal="400" vr="0.9998761" vb="0.9998796"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AI-S Nikkor 400mm f/3.5 + TC14B teleconverter</model>
@@ -3968,10 +4252,9 @@
             <tca model="poly3" focal="600" vr="0.9998468" vb="0.9997375"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
-        <model>Nikon AF-S Nikkor 70-200mm f/2.8E FL ED VR</model>
+        <model>Nikon AF-S Nikkor 70-200mm f/2.8E FL ED VR 164</model>
         <model lang="en">Nikkor AF-S 70-200mm f/2.8E FL ED VR</model>
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
@@ -3991,7 +4274,6 @@
             <tca model="poly3" focal="200" vr="0.9999579" vb="0.9998847"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-S Nikkor 300mm f/4D IF-ED</model>
@@ -4000,7 +4282,7 @@
         <cropfactor>1</cropfactor>
         <calibration>
             <!-- Taken with Nikon D3 -->
-            <distortion model="ptlens" focal="300" a="0" b="0.00357" c="0"/>
+            <distortion model="poly3" focal="300" k1="0.00357"/>
             <tca model="poly3" focal="300" vr="0.9999216" vb="0.9999283"/>
             <vignetting model="pa" focal="300" aperture="4" distance="10" k1="-1.2815" k2="1.4933" k3="-0.7174"/>
             <vignetting model="pa" focal="300" aperture="4" distance="1000" k1="-1.2815" k2="1.4933" k3="-0.7174"/>
@@ -4014,10 +4296,33 @@
             <vignetting model="pa" focal="300" aperture="32" distance="1000" k1="-0.1032" k2="0.0972" k3="-0.0284"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
-        <model>Nikon AF-S Nikkor 24-70mm f/2.8E ED VR</model>
+        <model>Nikon AF Nikkor 300mm f/4 IF-ED</model>
+        <model lang="en">Nikkor AF 300mm f/4 IF-ED</model>
+        <mount>Nikon F AF</mount>
+        <cropfactor>1</cropfactor>
+        <calibration>
+            <!-- Taken with Nikon D750 -->
+            <distortion model="ptlens" focal="300" a="-0.014" b="0.066" c="-0.175"/>
+            <tca model="poly3" focal="300" vr="0.9999566" vb="0.9999835"/>
+            <vignetting model="pa" focal="300" aperture="4" distance="10" k1="-1.1453" k2="1.3030" k3="-0.6562"/>
+            <vignetting model="pa" focal="300" aperture="4" distance="1000" k1="-1.1453" k2="1.3030" k3="-0.6562"/>
+            <vignetting model="pa" focal="300" aperture="5.6" distance="10" k1="0.0749" k2="-1.0984" k3="0.6570"/>
+            <vignetting model="pa" focal="300" aperture="5.6" distance="1000" k1="0.0749" k2="-1.0984" k3="0.6570"/>
+            <vignetting model="pa" focal="300" aperture="8" distance="10" k1="0.0259" k2="-0.2347" k3="-0.0600"/>
+            <vignetting model="pa" focal="300" aperture="8" distance="1000" k1="0.0259" k2="-0.2347" k3="-0.0600"/>
+            <vignetting model="pa" focal="300" aperture="11" distance="10" k1="-0.1379" k2="0.2682" k3="-0.2609"/>
+            <vignetting model="pa" focal="300" aperture="11" distance="1000" k1="-0.1379" k2="0.2682" k3="-0.2609"/>
+            <vignetting model="pa" focal="300" aperture="16" distance="10" k1="-0.0847" k2="0.0445" k3="-0.0344"/>
+            <vignetting model="pa" focal="300" aperture="16" distance="1000" k1="-0.0847" k2="0.0445" k3="-0.0344"/>
+            <vignetting model="pa" focal="300" aperture="32" distance="10" k1="-0.0621" k2="0.0062" k3="-0.0145"/>
+            <vignetting model="pa" focal="300" aperture="32" distance="1000" k1="-0.0621" k2="0.0062" k3="-0.0145"/>
+        </calibration>
+    </lens>
+    <lens>
+        <maker>Nikon</maker>
+        <model>Nikon AF-S Nikkor 24-70mm f/2.8E ED VR 170</model>
         <model lang="en">Nikkor AF-S 24-70mm f/2.8E ED VR</model>
         <mount>Nikon F AF</mount>
         <cropfactor>1</cropfactor>
@@ -4035,7 +4340,6 @@
             <tca model="poly3" focal="70" br="0.0000130" vr="0.9999752" bb="0.0000012" vb="0.9999608"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Nikon</maker>
         <model>Nikon AF-P DX Nikkor 10-20mm f/4.5-5.6 VR 168</model>
@@ -4057,5 +4361,202 @@
             <tca model="poly3" focal="20" br="0.0000488" vr="1.0001530" bb="-0.0000368" vb="1.0002910"/>
         </calibration>
     </lens>
-
+    <lens>
+        <maker>Nikon</maker>
+        <model>200-500mm F5.6 174</model>
+        <model lang="en">Nikkor AF-S 200-500mm f/5.6E ED VR</model>
+        <mount>Nikon F AF</mount>
+        <cropfactor>1.534</cropfactor>
+        <calibration>
+            <!-- Taken with Nikon D5200 -->
+            <distortion model="ptlens" focal="200" a="0.01845" b="-0.06595" c="0.07949"/>
+            <distortion model="ptlens" focal="300" a="-0.00704" b="0.03211" c="-0.04097"/>
+            <distortion model="ptlens" focal="400" a="0" b="0.00196" c="0"/>
+            <distortion model="ptlens" focal="500" a="0" b="0.00159" c="0"/>
+            <tca model="poly3" focal="200" vr="1.0000257" vb="0.9999549"/>
+            <tca model="poly3" focal="300" vr="0.9999355" vb="0.9999671"/>
+            <tca model="poly3" focal="400" vr="0.9998119" vb="0.9999143"/>
+            <tca model="poly3" focal="500" vr="0.9998470" vb="0.9998154"/>
+        </calibration>
+    </lens>
+    <lens>
+        <maker>Nikon</maker>
+        <model>Nikon AI 80-200mm f/4.5 Zoom New</model>
+        <model lang="en">Nikkor AI 80-200mm f/4.5 Zoom New</model>
+        <mount>Nikon F AF</mount>
+        <cropfactor>1</cropfactor>
+        <calibration>
+            <!-- Taken with Nikon D3 -->
+            <distortion model="ptlens" focal="80" a="0.0023" b="-0.01568" c="0.00351"/>
+            <distortion model="ptlens" focal="86" a="-0.00219" b="0.00158" c="-0.01067"/>
+            <distortion model="ptlens" focal="105" a="-0.00012" b="-0.00092" c="-0.00732"/>
+            <distortion model="ptlens" focal="135" a="-0.00524" b="0.01926" c="-0.02231"/>
+            <distortion model="ptlens" focal="200" a="0.00425" b="-0.01582" c="0.0288"/>
+            <tca model="poly3" focal="80" vr="1.0001589" vb="0.9999164"/>
+            <tca model="poly3" focal="86" vr="1.0000347" vb="0.9999866"/>
+            <tca model="poly3" focal="105" vr="0.9999107" vb="1.0000350"/>
+            <tca model="poly3" focal="135" vr="0.9997835" vb="1.0000065"/>
+            <tca model="poly3" focal="200" vr="0.9995688" vb="0.9999577"/>
+            <vignetting model="pa" focal="80" aperture="4.5" distance="10" k1="-0.8630" k2="0.6205" k3="-0.3575"/>
+            <vignetting model="pa" focal="80" aperture="4.5" distance="1000" k1="-0.8630" k2="0.6205" k3="-0.3575"/>
+            <vignetting model="pa" focal="80" aperture="5.6" distance="10" k1="0.1833" k2="-0.9961" k3="0.3796"/>
+            <vignetting model="pa" focal="80" aperture="5.6" distance="1000" k1="0.1833" k2="-0.9961" k3="0.3796"/>
+            <vignetting model="pa" focal="80" aperture="8" distance="10" k1="-0.1866" k2="0.5593" k3="-0.5512"/>
+            <vignetting model="pa" focal="80" aperture="8" distance="1000" k1="-0.1866" k2="0.5593" k3="-0.5512"/>
+            <vignetting model="pa" focal="80" aperture="11" distance="10" k1="-0.1584" k2="0.3424" k3="-0.2280"/>
+            <vignetting model="pa" focal="80" aperture="11" distance="1000" k1="-0.1584" k2="0.3424" k3="-0.2280"/>
+            <vignetting model="pa" focal="80" aperture="32" distance="10" k1="-0.1018" k2="0.1221" k3="-0.0225"/>
+            <vignetting model="pa" focal="80" aperture="32" distance="1000" k1="-0.1018" k2="0.1221" k3="-0.0225"/>
+            <vignetting model="pa" focal="86" aperture="4.5" distance="10" k1="-0.7709" k2="0.5325" k3="-0.3060"/>
+            <vignetting model="pa" focal="86" aperture="4.5" distance="1000" k1="-0.7709" k2="0.5325" k3="-0.3060"/>
+            <vignetting model="pa" focal="86" aperture="5.6" distance="10" k1="0.1069" k2="-0.6945" k3="0.2231"/>
+            <vignetting model="pa" focal="86" aperture="5.6" distance="1000" k1="0.1069" k2="-0.6945" k3="0.2231"/>
+            <vignetting model="pa" focal="86" aperture="8" distance="10" k1="-0.1832" k2="0.4616" k3="-0.3662"/>
+            <vignetting model="pa" focal="86" aperture="8" distance="1000" k1="-0.1832" k2="0.4616" k3="-0.3662"/>
+            <vignetting model="pa" focal="86" aperture="11" distance="10" k1="-0.1038" k2="0.1260" k3="-0.0282"/>
+            <vignetting model="pa" focal="86" aperture="11" distance="1000" k1="-0.1038" k2="0.1260" k3="-0.0282"/>
+            <vignetting model="pa" focal="86" aperture="32" distance="10" k1="-0.0998" k2="0.1208" k3="-0.0243"/>
+            <vignetting model="pa" focal="86" aperture="32" distance="1000" k1="-0.0998" k2="0.1208" k3="-0.0243"/>
+            <vignetting model="pa" focal="105" aperture="4.5" distance="10" k1="-0.6826" k2="0.4904" k3="-0.2827"/>
+            <vignetting model="pa" focal="105" aperture="4.5" distance="1000" k1="-0.6826" k2="0.4904" k3="-0.2827"/>
+            <vignetting model="pa" focal="105" aperture="5.6" distance="10" k1="0.0034" k2="-0.3213" k3="0.0348"/>
+            <vignetting model="pa" focal="105" aperture="5.6" distance="1000" k1="0.0034" k2="-0.3213" k3="0.0348"/>
+            <vignetting model="pa" focal="105" aperture="8" distance="10" k1="-0.1172" k2="0.2019" k3="-0.1054"/>
+            <vignetting model="pa" focal="105" aperture="8" distance="1000" k1="-0.1172" k2="0.2019" k3="-0.1054"/>
+            <vignetting model="pa" focal="105" aperture="11" distance="10" k1="-0.1007" k2="0.1235" k3="-0.0261"/>
+            <vignetting model="pa" focal="105" aperture="11" distance="1000" k1="-0.1007" k2="0.1235" k3="-0.0261"/>
+            <vignetting model="pa" focal="105" aperture="32" distance="10" k1="-0.1018" k2="0.1306" k3="-0.0315"/>
+            <vignetting model="pa" focal="105" aperture="32" distance="1000" k1="-0.1018" k2="0.1306" k3="-0.0315"/>
+            <vignetting model="pa" focal="135" aperture="4.5" distance="10" k1="-0.4393" k2="-0.2468" k3="0.1249"/>
+            <vignetting model="pa" focal="135" aperture="4.5" distance="1000" k1="-0.4393" k2="-0.2468" k3="0.1249"/>
+            <vignetting model="pa" focal="135" aperture="5.6" distance="10" k1="0.1257" k2="-0.7164" k3="0.2032"/>
+            <vignetting model="pa" focal="135" aperture="5.6" distance="1000" k1="0.1257" k2="-0.7164" k3="0.2032"/>
+            <vignetting model="pa" focal="135" aperture="8" distance="10" k1="-0.1856" k2="0.5320" k3="-0.4684"/>
+            <vignetting model="pa" focal="135" aperture="8" distance="1000" k1="-0.1856" k2="0.5320" k3="-0.4684"/>
+            <vignetting model="pa" focal="135" aperture="11" distance="10" k1="-0.1058" k2="0.1514" k3="-0.0562"/>
+            <vignetting model="pa" focal="135" aperture="11" distance="1000" k1="-0.1058" k2="0.1514" k3="-0.0562"/>
+            <vignetting model="pa" focal="135" aperture="32" distance="10" k1="-0.1032" k2="0.1283" k3="-0.0293"/>
+            <vignetting model="pa" focal="135" aperture="32" distance="1000" k1="-0.1032" k2="0.1283" k3="-0.0293"/>
+            <vignetting model="pa" focal="200" aperture="4.5" distance="10" k1="-1.3274" k2="1.2227" k3="-0.4991"/>
+            <vignetting model="pa" focal="200" aperture="4.5" distance="1000" k1="-1.3274" k2="1.2227" k3="-0.4991"/>
+            <vignetting model="pa" focal="200" aperture="5.6" distance="10" k1="0.0317" k2="-1.1815" k3="0.7338"/>
+            <vignetting model="pa" focal="200" aperture="5.6" distance="1000" k1="0.0317" k2="-1.1815" k3="0.7338"/>
+            <vignetting model="pa" focal="200" aperture="8" distance="10" k1="-0.0645" k2="0.1108" k3="-0.1869"/>
+            <vignetting model="pa" focal="200" aperture="8" distance="1000" k1="-0.0645" k2="0.1108" k3="-0.1869"/>
+            <vignetting model="pa" focal="200" aperture="11" distance="10" k1="-0.1014" k2="0.1341" k3="-0.0436"/>
+            <vignetting model="pa" focal="200" aperture="11" distance="1000" k1="-0.1014" k2="0.1341" k3="-0.0436"/>
+            <vignetting model="pa" focal="200" aperture="32" distance="10" k1="-0.1081" k2="0.1177" k3="-0.0143"/>
+            <vignetting model="pa" focal="200" aperture="32" distance="1000" k1="-0.1081" k2="0.1177" k3="-0.0143"/>
+        </calibration>
+    </lens>
+    <lens>
+        <maker>Nikon</maker>
+        <model>Nikon AF-S Zoom-Nikkor 17-35mm f/2.8D IF-ED</model>
+        <model lang="en">Nikkor AF-S 17-35mm f/2.8D IF-ED</model>
+        <mount>Nikon F AF</mount>
+        <cropfactor>1</cropfactor>
+        <calibration>
+            <!-- Taken with D800 -->
+            <distortion model="ptlens" focal="17" a="0.00659" b="-0.00944" c="-0.03917"/>
+            <distortion model="ptlens" focal="20" a="0.0123" b="-0.02615" c="-0.00642"/>
+            <distortion model="ptlens" focal="24" a="0.01738" b="-0.03586" c="0.01159"/>
+            <distortion model="ptlens" focal="28" a="0.01262" b="-0.02385" c="0.01442"/>
+            <distortion model="ptlens" focal="35" a="0.01452" b="-0.0337" c="0.03455"/>
+            <tca model="poly3" focal="17" vr="1.0005442" vb="1.0000327"/>
+            <tca model="poly3" focal="20" vr="1.0004189" vb="1.0001160"/>
+            <tca model="poly3" focal="24" vr="1.0001913" vb="1.0001882"/>
+            <tca model="poly3" focal="28" vr="1.0001826" vb="1.0001455"/>
+            <tca model="poly3" focal="35" vr="1.0002995" vb="0.9999044"/>
+            <vignetting model="pa" focal="17" aperture="2.8" distance="10" k1="-0.3102" k2="-0.9258" k3="0.4669"/>
+            <vignetting model="pa" focal="17" aperture="2.8" distance="1000" k1="-0.3102" k2="-0.9258" k3="0.4669"/>
+            <vignetting model="pa" focal="17" aperture="4" distance="10" k1="-0.6029" k2="0.3208" k3="-0.3993"/>
+            <vignetting model="pa" focal="17" aperture="4" distance="1000" k1="-0.6029" k2="0.3208" k3="-0.3993"/>
+            <vignetting model="pa" focal="17" aperture="5.6" distance="10" k1="-0.7086" k2="0.5724" k3="-0.4108"/>
+            <vignetting model="pa" focal="17" aperture="5.6" distance="1000" k1="-0.7086" k2="0.5724" k3="-0.4108"/>
+            <vignetting model="pa" focal="17" aperture="8" distance="10" k1="-0.6547" k2="0.3163" k3="-0.1340"/>
+            <vignetting model="pa" focal="17" aperture="8" distance="1000" k1="-0.6547" k2="0.3163" k3="-0.1340"/>
+            <vignetting model="pa" focal="17" aperture="11" distance="10" k1="-0.6213" k2="0.1954" k3="-0.0307"/>
+            <vignetting model="pa" focal="17" aperture="11" distance="1000" k1="-0.6213" k2="0.1954" k3="-0.0307"/>
+            <vignetting model="pa" focal="17" aperture="18" distance="10" k1="-0.6237" k2="0.1982" k3="-0.0305"/>
+            <vignetting model="pa" focal="17" aperture="18" distance="1000" k1="-0.6237" k2="0.1982" k3="-0.0305"/>
+            <vignetting model="pa" focal="17" aperture="22" distance="10" k1="-0.6098" k2="0.1605" k3="-0.0034"/>
+            <vignetting model="pa" focal="17" aperture="22" distance="1000" k1="-0.6098" k2="0.1605" k3="-0.0034"/>
+            <vignetting model="pa" focal="20" aperture="2.8" distance="10" k1="-0.4248" k2="-0.5582" k3="0.3591"/>
+            <vignetting model="pa" focal="20" aperture="2.8" distance="1000" k1="-0.4248" k2="-0.5582" k3="0.3591"/>
+            <vignetting model="pa" focal="20" aperture="4" distance="10" k1="-0.5306" k2="0.2425" k3="-0.2080"/>
+            <vignetting model="pa" focal="20" aperture="4" distance="1000" k1="-0.5306" k2="0.2425" k3="-0.2080"/>
+            <vignetting model="pa" focal="20" aperture="5.6" distance="10" k1="-0.5378" k2="0.1938" k3="-0.0597"/>
+            <vignetting model="pa" focal="20" aperture="5.6" distance="1000" k1="-0.5378" k2="0.1938" k3="-0.0597"/>
+            <vignetting model="pa" focal="20" aperture="8" distance="10" k1="-0.5282" k2="0.1562" k3="-0.0269"/>
+            <vignetting model="pa" focal="20" aperture="8" distance="1000" k1="-0.5282" k2="0.1562" k3="-0.0269"/>
+            <vignetting model="pa" focal="20" aperture="11" distance="10" k1="-0.5244" k2="0.1523" k3="-0.0268"/>
+            <vignetting model="pa" focal="20" aperture="11" distance="1000" k1="-0.5244" k2="0.1523" k3="-0.0268"/>
+            <vignetting model="pa" focal="20" aperture="16" distance="10" k1="-0.5279" k2="0.1588" k3="-0.0304"/>
+            <vignetting model="pa" focal="20" aperture="16" distance="1000" k1="-0.5279" k2="0.1588" k3="-0.0304"/>
+            <vignetting model="pa" focal="20" aperture="22" distance="10" k1="-0.5233" k2="0.1539" k3="-0.0294"/>
+            <vignetting model="pa" focal="20" aperture="22" distance="1000" k1="-0.5233" k2="0.1539" k3="-0.0294"/>
+            <vignetting model="pa" focal="25" aperture="2.8" distance="10" k1="-0.6110" k2="-0.2833" k3="0.3026"/>
+            <vignetting model="pa" focal="25" aperture="2.8" distance="1000" k1="-0.6110" k2="-0.2833" k3="0.3026"/>
+            <vignetting model="pa" focal="25" aperture="4" distance="10" k1="-0.2662" k2="-0.5295" k3="0.3012"/>
+            <vignetting model="pa" focal="25" aperture="4" distance="1000" k1="-0.2662" k2="-0.5295" k3="0.3012"/>
+            <vignetting model="pa" focal="25" aperture="5.6" distance="10" k1="-0.4713" k2="0.3164" k3="-0.2378"/>
+            <vignetting model="pa" focal="25" aperture="5.6" distance="1000" k1="-0.4713" k2="0.3164" k3="-0.2378"/>
+            <vignetting model="pa" focal="25" aperture="8" distance="10" k1="-0.4370" k2="0.1459" k3="-0.0423"/>
+            <vignetting model="pa" focal="25" aperture="8" distance="1000" k1="-0.4370" k2="0.1459" k3="-0.0423"/>
+            <vignetting model="pa" focal="25" aperture="11" distance="10" k1="-0.4283" k2="0.1232" k3="-0.0273"/>
+            <vignetting model="pa" focal="25" aperture="11" distance="1000" k1="-0.4283" k2="0.1232" k3="-0.0273"/>
+            <vignetting model="pa" focal="25" aperture="16" distance="10" k1="-0.4299" k2="0.1263" k3="-0.0300"/>
+            <vignetting model="pa" focal="25" aperture="16" distance="1000" k1="-0.4299" k2="0.1263" k3="-0.0300"/>
+            <vignetting model="pa" focal="25" aperture="22" distance="10" k1="-0.4143" k2="0.0950" k3="-0.0148"/>
+            <vignetting model="pa" focal="25" aperture="22" distance="1000" k1="-0.4143" k2="0.0950" k3="-0.0148"/>
+            <vignetting model="pa" focal="28" aperture="2.8" distance="10" k1="-1.0081" k2="0.4523" k3="-0.0563"/>
+            <vignetting model="pa" focal="28" aperture="2.8" distance="1000" k1="-1.0081" k2="0.4523" k3="-0.0563"/>
+            <vignetting model="pa" focal="28" aperture="4" distance="10" k1="-0.2465" k2="-0.8613" k3="0.5915"/>
+            <vignetting model="pa" focal="28" aperture="4" distance="1000" k1="-0.2465" k2="-0.8613" k3="0.5915"/>
+            <vignetting model="pa" focal="28" aperture="5.6" distance="10" k1="-0.3020" k2="-0.0494" k3="-0.0803"/>
+            <vignetting model="pa" focal="28" aperture="5.6" distance="1000" k1="-0.3020" k2="-0.0494" k3="-0.0803"/>
+            <vignetting model="pa" focal="28" aperture="8" distance="10" k1="-0.4204" k2="0.3065" k3="-0.2085"/>
+            <vignetting model="pa" focal="28" aperture="8" distance="1000" k1="-0.4204" k2="0.3065" k3="-0.2085"/>
+            <vignetting model="pa" focal="28" aperture="11" distance="10" k1="-0.3748" k2="0.1291" k3="-0.0407"/>
+            <vignetting model="pa" focal="28" aperture="11" distance="1000" k1="-0.3748" k2="0.1291" k3="-0.0407"/>
+            <vignetting model="pa" focal="28" aperture="16" distance="10" k1="-0.3845" k2="0.1591" k3="-0.0643"/>
+            <vignetting model="pa" focal="28" aperture="16" distance="1000" k1="-0.3845" k2="0.1591" k3="-0.0643"/>
+            <vignetting model="pa" focal="28" aperture="22" distance="10" k1="-0.3943" k2="0.1976" k3="-0.0970"/>
+            <vignetting model="pa" focal="28" aperture="22" distance="1000" k1="-0.3943" k2="0.1976" k3="-0.0970"/>
+            <vignetting model="pa" focal="35" aperture="2.8" distance="10" k1="-1.5092" k2="1.5137" k3="-0.6542"/>
+            <vignetting model="pa" focal="35" aperture="2.8" distance="1000" k1="-1.5092" k2="1.5137" k3="-0.6542"/>
+            <vignetting model="pa" focal="35" aperture="4" distance="10" k1="-0.4957" k2="-0.4797" k3="0.4467"/>
+            <vignetting model="pa" focal="35" aperture="4" distance="1000" k1="-0.4957" k2="-0.4797" k3="0.4467"/>
+            <vignetting model="pa" focal="35" aperture="5.6" distance="10" k1="-0.1056" k2="-0.6747" k3="0.3311"/>
+            <vignetting model="pa" focal="35" aperture="5.6" distance="1000" k1="-0.1056" k2="-0.6747" k3="0.3311"/>
+            <vignetting model="pa" focal="35" aperture="8" distance="10" k1="-0.3551" k2="0.3405" k3="-0.3377"/>
+            <vignetting model="pa" focal="35" aperture="8" distance="1000" k1="-0.3551" k2="0.3405" k3="-0.3377"/>
+            <vignetting model="pa" focal="35" aperture="11" distance="10" k1="-0.3399" k2="0.1965" k3="-0.1084"/>
+            <vignetting model="pa" focal="35" aperture="11" distance="1000" k1="-0.3399" k2="0.1965" k3="-0.1084"/>
+            <vignetting model="pa" focal="35" aperture="16" distance="10" k1="-0.3202" k2="0.1117" k3="-0.0274"/>
+            <vignetting model="pa" focal="35" aperture="16" distance="1000" k1="-0.3202" k2="0.1117" k3="-0.0274"/>
+            <vignetting model="pa" focal="35" aperture="22" distance="10" k1="-0.3362" k2="0.1527" k3="-0.0537"/>
+            <vignetting model="pa" focal="35" aperture="22" distance="1000" k1="-0.3362" k2="0.1527" k3="-0.0537"/>
+        </calibration>
+    </lens>
+    <lens>
+        <maker>Nikon</maker>
+        <model>Nikon AF-S Nikkor 18-35mm f/3.5-4.5G ED</model>
+        <model lang="en">Nikkor AF-S 18-35mm f/3.5-4.5G ED</model>
+        <mount>Nikon F AF</mount>
+        <cropfactor>1</cropfactor>
+        <calibration>
+            <!-- Taken with Nikon D610 -->
+            <distortion model="ptlens" focal="18" a="0.00919" b="-0.02694" c="-0.01432"/>
+            <distortion model="ptlens" focal="24" a="0.00382" b="-0.01445" c="-0.0043"/>
+            <distortion model="ptlens" focal="28" a="0.00147" b="-0.00844" c="-0.00135"/>
+            <distortion model="ptlens" focal="32" a="0.00176" b="-0.01065" c="0.00519"/>
+            <distortion model="ptlens" focal="35" a="0.00596" b="-0.02416" c="0.02137"/>
+            <tca model="poly3" focal="18" vr="1.0001603" vb="1.0001229"/>
+            <tca model="poly3" focal="24" vr="1.0001355" vb="1.0001050"/>
+            <tca model="poly3" focal="28" vr="1.0001508" vb="1.0000740"/>
+            <tca model="poly3" focal="32" vr="1.0001699" vb="1.0000483"/>
+            <tca model="poly3" focal="35" vr="1.0001831" vb="1.0000038"/>
+        </calibration>
+    </lens>
 </lensdatabase>

@@ -1,6 +1,4 @@
-<!DOCTYPE lensdatabase SYSTEM "lensfun-database.dtd">
-<lensdatabase version="2">
-
+<lensdatabase version="1">
     <camera>
         <maker>Olympus Corporation</maker>
         <maker lang="en">Olympus</maker>
@@ -9,7 +7,6 @@
         <mount>olympus8080</mount>
         <cropfactor>3.933</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -18,7 +15,6 @@
         <mount>olympusStylusV</mount>
         <cropfactor>6.0</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -30,7 +26,6 @@
         <mount>olympusStylusV</mount>
         <cropfactor>6.0</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -39,7 +34,6 @@
         <mount>olympus7000</mount>
         <cropfactor>4.8</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Optical Co.,Ltd</maker>
         <maker lang="en">Olympus</maker>
@@ -48,7 +42,6 @@
         <mount>olympus4000</mount>
         <cropfactor>4.92</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Optical Co.,Ltd</maker>
         <maker lang="en">Olympus</maker>
@@ -57,7 +50,6 @@
         <mount>olympusC50</mount>
         <cropfactor>4.9</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Optical Co.,Ltd</maker>
         <maker lang="en">Olympus</maker>
@@ -69,7 +61,6 @@
         <mount>olympusC50</mount>
         <cropfactor>4.9</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Optical Co.,Ltd</maker>
         <maker lang="en">Olympus</maker>
@@ -78,7 +69,6 @@
         <mount>olympus750</mount>
         <cropfactor>6.03</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Optical Co.,Ltd</maker>
         <maker lang="en">Olympus</maker>
@@ -87,7 +77,6 @@
         <mount>olympus700</mount>
         <cropfactor>6.52</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Optical Co.,Ltd</maker>
         <maker lang="en">Olympus</maker>
@@ -96,7 +85,6 @@
         <mount>olympus700</mount>
         <cropfactor>6.52</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -105,7 +93,6 @@
         <mount>olympus5060</mount>
         <cropfactor>4.930</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Corporation</maker>
         <maker lang="en">Olympus</maker>
@@ -114,7 +101,6 @@
         <mount>olympus5060</mount>
         <cropfactor>4.930</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Optical Co.,Ltd</maker>
         <maker lang="en">Olympus</maker>
@@ -123,7 +109,6 @@
         <mount>olympus2040</mount>
         <cropfactor>4.930</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Optical Co.,Ltd</maker>
         <maker lang="en">Olympus</maker>
@@ -132,7 +117,6 @@
         <mount>olympus2040</mount>
         <cropfactor>4.930</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Optical Co.,Ltd</maker>
         <maker lang="en">Olympus</maker>
@@ -141,7 +125,6 @@
         <mount>olympus2040</mount>
         <cropfactor>4.930</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Optical Co.,Ltd</maker>
         <maker lang="en">Olympus</maker>
@@ -150,7 +133,6 @@
         <mount>olympus2040</mount>
         <cropfactor>4.930</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Optical Co.,Ltd</maker>
         <maker lang="en">Olympus</maker>
@@ -159,7 +141,6 @@
         <mount>olympusC860</mount>
         <cropfactor>6.563</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Optical Co.,Ltd</maker>
         <maker lang="en">Olympus</maker>
@@ -171,7 +152,6 @@
         <mount>olympusC860</mount>
         <cropfactor>6.563</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus</maker>
         <model>mju-II</model>
@@ -179,14 +159,12 @@
         <mount>olympusEpic</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus</maker>
         <model>Stylus Epic</model>
         <mount>olympusEpic</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -195,7 +173,6 @@
         <mount>olympusSP350</mount>
         <cropfactor>4.8</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -204,7 +181,6 @@
         <mount>olympusSP500</mount>
         <cropfactor>6.0</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -213,7 +189,6 @@
         <mount>olympusSP560</mount>
         <cropfactor>5.8</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -221,7 +196,6 @@
         <mount>olympusxz1</mount>
         <cropfactor>4.68</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -229,7 +203,6 @@
         <mount>olympusxz1</mount>
         <cropfactor>4.68</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Imaging Corp.</maker>
         <maker lang="en">Olympus</maker>
@@ -238,7 +211,6 @@
         <mount>olympusStylus1</mount>
         <cropfactor>4.67</cropfactor>
     </camera>
-
     <camera>
         <!-- This is an alias of the previous entry.  The new firmware of the
              Stylus 1 even identifies the Stylus 1 as "Stylus 1,1s". -->
@@ -249,7 +221,6 @@
         <mount>olympusStylus1</mount>
         <cropfactor>4.67</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Corporation</maker>
         <maker lang="en">Olympus</maker>
@@ -258,7 +229,6 @@
         <mount>olympusStylusTG4</mount>
         <cropfactor>5.56</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Corporation</maker>
         <maker lang="en">Olympus</maker>
@@ -267,7 +237,6 @@
         <mount>olympusStylusTG4</mount>
         <cropfactor>5.56</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Corporation</maker>
         <maker lang="en">Olympus</maker>
@@ -276,7 +245,6 @@
         <mount>olympusStylusTG4</mount>
         <cropfactor>5.56</cropfactor>
     </camera>
-
     <camera>
         <maker>Olympus Corporation</maker>
         <maker lang="en">Olympus</maker>
@@ -285,7 +253,22 @@
         <mount>olympusStylusTG4</mount>
         <cropfactor>5.56</cropfactor>
     </camera>
-
+    <camera>
+        <maker>Olympus Corporation</maker>
+        <maker lang="en">Olympus</maker>
+        <model>TG-5</model>
+        <model lang="en">Stylus TG-5</model>
+        <mount>olympusStylusTG4</mount>
+        <cropfactor>5.56</cropfactor>
+    </camera>
+    <camera>
+        <maker>Olympus Corporation</maker>
+        <maker lang="en">Olympus</maker>
+        <model>TG-6</model>
+        <model lang="en">Stylus TG-6</model>
+        <mount>olympusStylusTG4</mount>
+        <cropfactor>5.56</cropfactor>
+    </camera>
     <lens>
         <maker>Olympus</maker>
         <model>C8080WZ &amp; compatibles (Standard)</model>
@@ -306,7 +289,6 @@
             <distortion model="ptlens" focal="35.6" a="0.013081" b="-0.014879" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Stylus V &amp; compatibles (Standard)</model>
@@ -324,7 +306,6 @@
             <distortion model="poly3" focal="11.52" k1="-0.001258"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>C7000Z &amp; compatibles (Standard)</model>
@@ -346,7 +327,6 @@
             <distortion model="ptlens" focal="39.5" a="0" b="0.00644" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>C4000Z &amp; compatibles (Standard)</model>
@@ -367,7 +347,6 @@
             <distortion model="ptlens" focal="19.1" a="0" b="0.004666" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>C4000Z &amp; compatibles, with A-28 iS/L converter</model>
@@ -387,7 +366,6 @@
             <distortion model="ptlens" focal="19.9" a="0" b="0.004447" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>C-50Z &amp; compatibles (Standard)</model>
@@ -406,7 +384,6 @@
             <distortion model="poly3" focal="23.4" k1="-0.001201"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>C750UZ &amp; compatibles (Standard)</model>
@@ -425,7 +402,6 @@
             <distortion model="ptlens" focal="63" a="0" b="0.004464" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>C700UZ &amp; compatibles (Standard)</model>
@@ -445,7 +421,6 @@
             <distortion model="ptlens" focal="58" a="0" b="-0" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>C2040Z &amp; compatibles (Standard)</model>
@@ -468,7 +443,6 @@
             <distortion model="ptlens" focal="21.3" a="0.000657" b="0.002024" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>C2040Z &amp; compatibles, with WCON-08B</model>
@@ -491,7 +465,6 @@
             <distortion model="ptlens" focal="21.3" a="0.004686" b="-0.008143" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>C5060WZ &amp; compatibles (Standard)</model>
@@ -515,7 +488,6 @@
             <distortion model="ptlens" focal="22.9" a="0" b="0" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>C860L &amp; compatibles (Standard)</model>
@@ -528,7 +500,6 @@
             <distortion model="ptlens" focal="5.5" a="0.01115" b="-0.029245" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Stylus Epic &amp; compatibles (Standard)</model>
@@ -541,7 +512,6 @@
             <distortion model="ptlens" focal="35" a="-0.01247" b="0.027098" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>XZ-1 &amp; compatibles (Standard)</model>
@@ -622,7 +592,6 @@
             <vignetting model="pa" focal="24" aperture="8" distance="1000" k1="0.0049" k2="-0.1887" k3="0.1121"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Stylus 1 &amp; compatibles</model>
@@ -651,7 +620,6 @@
             <tca model="poly3" focal="64.3" br="0.0000729" vr="0.9996827" bb="0.0000264" vb="0.9998948"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Olympus</maker>
         <model>Olympus Stylus TG-4 &amp; compatibles</model>
@@ -674,5 +642,4 @@
             <tca model="poly3" focal="18" br="-0.0000067" vr="0.9999876" bb="-0.0000838" vb="1.0000917"/>
         </calibration>
     </lens>
-
 </lensdatabase>

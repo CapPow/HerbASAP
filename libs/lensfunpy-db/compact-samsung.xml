@@ -1,13 +1,10 @@
-<!DOCTYPE lensdatabase SYSTEM "lensfun-database.dtd">
-<lensdatabase version="2">
-
+<lensdatabase version="1">
     <camera>
         <maker>Samsung</maker>
         <model>WB2000</model>
         <mount>samsungWB2000</mount>
         <cropfactor>5.69</cropfactor>
     </camera>
-
     <camera>
         <maker>Samsung</maker>
         <model>SM-G935F</model>
@@ -15,7 +12,20 @@
         <mount>samsungS7</mount>
         <cropfactor>6.19</cropfactor>
     </camera>
-
+    <camera>
+        <maker>Samsung</maker>
+        <model>SM-G950F</model>
+        <model lang="en">Galaxy S8</model>
+        <mount>samsungS8</mount>
+        <cropfactor>6.19</cropfactor>
+    </camera>
+    <camera>
+        <maker>Samsung</maker>
+        <model>SM-N950U</model>
+        <model lang="en">Galaxy S8</model>
+        <mount>samsungS8wide</mount>
+        <cropfactor>6.047</cropfactor>
+    </camera>
     <lens>
         <maker>Samsung</maker>
         <model>WB2000 &amp; compatibles (Standard)</model>
@@ -109,7 +119,6 @@
             <vignetting model="pa" focal="120" aperture="7.5" distance="1000" k1="-0.2428" k2="0.0351" k3="0.0172"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Samsung</maker>
         <model>Samsung S7 wide angle lens cover</model>
@@ -121,5 +130,25 @@
             <tca model="poly3" focal="4.2" vr="1.0000287" vb="1.0001262"/>
         </calibration>
     </lens>
-
+    <lens>
+        <maker>Samsung</maker>
+        <model>Samsung S8 wide angle lens</model>
+        <mount>samsungS8wide</mount>
+        <cropfactor>6.047</cropfactor>
+        <aspect-ratio>4:3</aspect-ratio>
+        <calibration>
+            <distortion model="ptlens" focal="4.3" a="0.028436" b="-0.111992" c="0.127611"/>
+            <tca model="poly3" focal="4.3" vr="1.0000210" vb="1.0000744"/>
+        </calibration>
+    </lens>
+    <lens>
+        <maker>Samsung</maker>
+        <model>SM-G950F</model>
+        <mount>samsungS8</mount>
+        <cropfactor>6.19</cropfactor>
+        <aspect-ratio>4:3</aspect-ratio>
+        <calibration>
+            <distortion model="ptlens" focal="4.2" a="0.04069" b="-0.14767" c="0.17184"/>
+        </calibration>
+    </lens>
 </lensdatabase>

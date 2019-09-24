@@ -1,6 +1,4 @@
-<!DOCTYPE lensdatabase SYSTEM "lensfun-database.dtd">
-<lensdatabase version="2">
-
+<lensdatabase version="1">
     <lens>
         <maker>Tokina</maker>
         <model>E 20mm f/2</model>
@@ -12,5 +10,4 @@
             <tca model="poly3" focal="20" vr="1.0001" vb="1.00005"/>
         </calibration>
     </lens>
-
 </lensdatabase>

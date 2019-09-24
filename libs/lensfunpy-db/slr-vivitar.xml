@@ -1,6 +1,4 @@
-<!DOCTYPE lensdatabase SYSTEM "lensfun-database.dtd">
-<lensdatabase version="2">
-
+<lensdatabase version="1">
     <lens>
         <maker>Vivitar</maker>
         <model>Vivitar 100mm f/3.5 AF Macro</model>
@@ -15,7 +13,6 @@
             <tca model="poly3" focal="100"/>
         </calibration>
     </lens>
-
     <lens>
         <!-- This lens is available in five variants, see
              <http://www.robertstech.com/vivitar.htm>.  This web site suggests
@@ -48,5 +45,4 @@
             <tca model="poly3" focal="210" vr="0.9994685" vb="1.0000417"/>
         </calibration>
     </lens>
-
 </lensdatabase>

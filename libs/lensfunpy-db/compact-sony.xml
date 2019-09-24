@@ -1,27 +1,22 @@
-<!DOCTYPE lensdatabase SYSTEM "lensfun-database.dtd">
-<lensdatabase version="2">
-
+<lensdatabase version="1">
     <camera>
         <maker>Sony</maker>
         <model>DSC-R1</model>
         <mount>sonyR1</mount>
         <cropfactor>1.68</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-H1</model>
         <mount>sonyH1</mount>
         <cropfactor>6.0</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-F828</model>
         <mount>sony828</mount>
         <cropfactor>3.933</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>Cybershot</model>
@@ -30,7 +25,6 @@
         <mount>sony707</mount>
         <cropfactor>3.933</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>Cybershot</model>
@@ -39,91 +33,78 @@
         <mount>sony707</mount>
         <cropfactor>3.933</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-P200</model>
         <mount>sonyW1</mount>
         <cropfactor>4.8</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-P150</model>
         <mount>sonyW1</mount>
         <cropfactor>4.8</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-P100</model>
         <mount>sonyW1</mount>
         <cropfactor>4.8</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-P93</model>
         <mount>sonyW1</mount>
         <cropfactor>4.8</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-W12</model>
         <mount>sonyW1</mount>
         <cropfactor>4.8</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-W7</model>
         <mount>sonyW1</mount>
         <cropfactor>4.8</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-W15</model>
         <mount>sonyW1</mount>
         <cropfactor>4.8</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-W5</model>
         <mount>sonyW1</mount>
         <cropfactor>4.8</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-W1</model>
         <mount>sonyW1</mount>
         <cropfactor>4.8</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-V3</model>
         <mount>sonyV1</mount>
         <cropfactor>4.843</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-V1</model>
         <mount>sonyV1</mount>
         <cropfactor>4.843</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-T1</model>
         <mount>sonyT1</mount>
         <cropfactor>5.650</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>Cybershot</model>
@@ -132,7 +113,6 @@
         <mount>sonyS85</mount>
         <cropfactor>4.843</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>Cybershot</model>
@@ -141,42 +121,36 @@
         <mount>sonyS85</mount>
         <cropfactor>4.843</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-S90</model>
         <mount>sonyS60</mount>
         <cropfactor>6.5</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-ST80</model>
         <mount>sonyS60</mount>
         <cropfactor>6.5</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-S80</model>
         <mount>sonyS60</mount>
         <cropfactor>6.5</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-S60</model>
         <mount>sonyS60</mount>
         <cropfactor>6.5</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-P73</model>
         <mount>sonyS60</mount>
         <cropfactor>6.5</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-RX100</model>
@@ -184,7 +158,6 @@
         <mount>sonyRX100</mount>
         <cropfactor>2.73</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-RX100M2</model>
@@ -192,7 +165,6 @@
         <mount>sonyRX100II</mount>
         <cropfactor>2.73</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-RX100M3</model>
@@ -200,7 +172,6 @@
         <mount>sonyRX100III</mount>
         <cropfactor>2.73</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-RX100M4</model>
@@ -208,7 +179,6 @@
         <mount>sonyRX100III</mount>
         <cropfactor>2.73</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-RX100M5</model>
@@ -216,28 +186,38 @@
         <mount>sonyRX100III</mount>
         <cropfactor>2.73</cropfactor>
     </camera>
-
+    <camera>
+        <maker>Sony</maker>
+        <model>DSC-RX100M6</model>
+        <model lang="en">RX100 VI</model>
+        <mount>sonyRX100VI</mount>
+        <cropfactor>2.66</cropfactor>
+    </camera>
+    <camera>
+        <maker>Sony</maker>
+        <model>DSC-RX100M5A</model>
+        <model lang="en">RX100 VA</model>
+        <mount>sonyRX100III</mount>
+        <cropfactor>2.73</cropfactor>
+    </camera>
     <camera>
         <maker>Sony</maker>
         <model>DSC-HX300</model>
         <mount>sonyHX300</mount>
         <cropfactor>5.58</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-HX20V</model>
         <mount>sonyHX20V</mount>
         <cropfactor>5.62</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>Xperia Z3</model>
         <mount>sonyXperiaZ3</mount>
         <cropfactor>7.87</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-RX10</model>
@@ -245,7 +225,6 @@
         <mount>sonyRX10</mount>
         <cropfactor>2.73</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-RX10M2</model>
@@ -253,7 +232,6 @@
         <mount>sonyRX10II</mount>
         <cropfactor>2.73</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-RX10M3</model>
@@ -261,7 +239,6 @@
         <mount>sonyRX10III</mount>
         <cropfactor>2.73</cropfactor>
     </camera>
-
     <camera>
         <!-- Added on the assumption that this is the same lens as RX10 III -->
         <maker>Sony</maker>
@@ -270,7 +247,6 @@
         <mount>sonyRX10III</mount>
         <cropfactor>2.73</cropfactor>
     </camera>
-
     <camera>
         <maker>Sony</maker>
         <model>DSC-RX1RM2</model>
@@ -278,7 +254,6 @@
         <mount>sonyRX1</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-R1 &amp; compatibles (Standard)</model>
@@ -304,7 +279,6 @@
             <distortion model="ptlens" focal="71.5" a="0" b="0" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-H1 &amp; compatibles (Standard)</model>
@@ -327,7 +301,6 @@
             <distortion model="ptlens" focal="72" a="0" b="0.001577" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-H1 &amp; compatibles, with VCL-DH0758 0.7x converter</model>
@@ -350,7 +323,6 @@
             <distortion model="ptlens" focal="72" a="0" b="0" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-H1 &amp; compatibles, with VCL-DH1758 1.7x converter</model>
@@ -369,7 +341,6 @@
             <distortion model="poly3" focal="72" k1="0.001196"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-F828 &amp; compatibles (Standard)</model>
@@ -394,7 +365,6 @@
             <distortion model="ptlens" focal="51" a="-0.005786" b="0.018882" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-F828 &amp; compatibles, at 2 feet lens-to-subject</model>
@@ -419,7 +389,6 @@
             <distortion model="ptlens" focal="51" a="-0.003365" b="0.002377" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-F707 &amp; compatibles (Standard)</model>
@@ -442,7 +411,6 @@
             <distortion model="ptlens" focal="48.5" a="0" b="0.012038" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-F707 &amp; compatibles, macro at 1 inch lens-to-subject</model>
@@ -459,7 +427,6 @@
             <distortion model="ptlens" focal="12.7" a="-0.0067" b="-0.007913" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-F707 &amp; compatibles, macro at 2 inches lens-to-subject</model>
@@ -477,7 +444,6 @@
             <distortion model="ptlens" focal="15.5" a="-0.001112" b="-0.01061" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-F707 &amp; compatibles, macro at 4 inches lens-to-subject</model>
@@ -498,7 +464,6 @@
             <distortion model="ptlens" focal="19.8" a="0.000277" b="-0.004201" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-F707 &amp; compatibles, macro at 6 inches lens-to-subject</model>
@@ -516,7 +481,6 @@
             <distortion model="ptlens" focal="21.7" a="-0.000938" b="0.000754" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-F707 &amp; compatibles, macro at 8 inches lens-to-subject</model>
@@ -537,7 +501,6 @@
             <distortion model="ptlens" focal="23.5" a="0.008569" b="-0.01449" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-F707 &amp; compatibles, macro at 12 inches lens-to-subject</model>
@@ -556,7 +519,6 @@
             <distortion model="ptlens" focal="26.2" a="0.001346" b="0.001204" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-F707 &amp; compatibles, macro at 16 inches lens-to-subject</model>
@@ -576,7 +538,6 @@
             <distortion model="ptlens" focal="25.1" a="-0.005856" b="0.016421" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-F707 &amp; compatibles, macro at 20 inches lens-to-subject</model>
@@ -596,7 +557,6 @@
             <distortion model="ptlens" focal="31" a="-0.005955" b="0.017757" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-F707 &amp; compatibles, macro at 24 inches lens-to-subject</model>
@@ -616,7 +576,6 @@
             <distortion model="ptlens" focal="32.3" a="0.001832" b="0.004546" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-F707 &amp; compatibles, macro at 32 inches lens-to-subject</model>
@@ -637,7 +596,6 @@
             <distortion model="ptlens" focal="48.5" a="0.004262" b="0.000662" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-F707 &amp; compatibles, with VCL-HGD0758 wide angle</model>
@@ -661,7 +619,6 @@
             <distortion model="ptlens" focal="48.5" a="0.0019" b="0.005193" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-F707 &amp; compatibles, with Sakar 1858W</model>
@@ -679,7 +636,6 @@
             <distortion model="ptlens" focal="48.5" a="0" b="0.008175" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-W1 &amp; compatibles (Standard)</model>
@@ -699,7 +655,6 @@
             <distortion model="ptlens" focal="23.7" a="-0.00342" b="0.006814" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-V1 &amp; compatibles (Standard)</model>
@@ -720,7 +675,6 @@
             <distortion model="ptlens" focal="28" a="0" b="0.00446" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-V1 &amp; compatibles, with VCL-DEH07V converter</model>
@@ -733,7 +687,6 @@
             <distortion model="ptlens" focal="7" a="0.045731" b="-0.098626" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-V1 &amp; compatibles, with VCL-DEH17V converter</model>
@@ -746,7 +699,6 @@
             <distortion model="poly3" focal="28" k1="0.009101"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-T1 &amp; compatibles (Standard)</model>
@@ -766,7 +718,6 @@
             <distortion model="ptlens" focal="20.1" a="0" b="0.020712" c="-0.027228"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-S85 &amp; compatibles (Standard)</model>
@@ -779,7 +730,6 @@
             <distortion model="ptlens" focal="7" a="0.014946" b="-0.03766" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-S85 &amp; compatibles, with VCL-MHG07a converter</model>
@@ -792,7 +742,6 @@
             <distortion model="ptlens" focal="7" a="0.03951" b="-0.094976" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-S60 &amp; compatibles (Standard)</model>
@@ -813,7 +762,6 @@
             <distortion model="ptlens" focal="18" a="0" b="-0.004799" c="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Sony</maker>
         <model>DSC-RX100 &amp; compatibles (Standard)</model>
@@ -1008,7 +956,6 @@
             <vignetting model="pa" focal="37.1" aperture="11" distance="1000" k1="-0.1810" k2="-0.1572" k3="0.0584"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Sony</maker>
         <model>DSC-RX100 II &amp; compatibles</model>
@@ -1132,7 +1079,6 @@
             <vignetting model="pa" focal="37.1" aperture="11" distance="1000" k1="-0.2129" k2="0.2491" k3="-0.0930"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Sony</maker>
         <model>DSC-RX100 III &amp; compatibles</model>
@@ -1158,7 +1104,30 @@
             <tca model="poly3" focal="25.7" br="-0.0000121" vr="1.0002604" bb="0.0000035" vb="1.0000797"/>
         </calibration>
     </lens>
-
+    <lens>
+        <maker>Sony</maker>
+        <model>DSC-RX100 VI &amp; compatibles</model>
+        <model lang="en">fixed lens</model>
+        <model lang="de">festes Objektiv</model>
+        <mount>sonyRX100VI</mount>
+        <cropfactor>2.66</cropfactor>
+        <calibration>
+            <distortion model="ptlens" focal="9.0" a="0.0550686" b="-0.187729" c="0.0499341"/>
+            <distortion model="ptlens" focal="12.01" a="0.0172382" b="-0.0693586" c="0.0118126"/>
+            <distortion model="ptlens" focal="14.4" a="0.0144882" b="-0.047442" c="0.0135358"/>
+            <distortion model="ptlens" focal="20.26" a="0" b="0.00488279" c="0"/>
+            <distortion model="ptlens" focal="29.67" a="0" b="0.0142525" c="0"/>
+            <distortion model="ptlens" focal="45.23" a="0" b="0.020598" c="0"/>
+            <distortion model="ptlens" focal="72.0" a="0" b="0.0224483" c="0"/>
+            <tca model="poly3" focal="9.0" vr="1.0002038" vb="1.0001300"/>
+            <tca model="poly3" focal="12.0" vr="1.0001358" vb="1.0001864"/>
+            <tca model="poly3" focal="14.4" vr="1.0001617" vb="1.0001882"/>
+            <tca model="poly3" focal="20.3" vr="1.0000805" vb="1.0001181"/>
+            <tca model="poly3" focal="29.7" vr="0.9999773" vb="1.0000212"/>
+            <tca model="poly3" focal="45.2" vr="0.9999109" vb="0.9999381"/>
+            <tca model="poly3" focal="72.0" vr="0.9999557" vb="0.9999281"/>
+        </calibration>
+    </lens>
     <lens>
         <maker>Sony</maker>
         <model>DSC-HX300 &amp; compatibles (Standard)</model>
@@ -1176,7 +1145,6 @@
             <distortion focal="215" model="poly3" k1="0"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Sony</maker>
         <model>Sony Xperia Z3 &amp; compatibles</model>
@@ -1187,10 +1155,10 @@
         <aspect-ratio>4:3</aspect-ratio>
         <calibration>
             <!-- This stems from the advertised feature of 25mm equiv. -->
-            <distortion model="ptlens" focal="4.9" a="0.0132" b="-0.07765" c="0.14683" real-focal="3.2"/>
+            <distortion model="ptlens" focal="4.9" a="0.0132" b="-0.07765" c="0.14683"/>
+            <real-focal-length focal="4.9" real-focal="3.2"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Sony</maker>
         <model>Sony RX10 &amp; compatibles</model>
@@ -1306,7 +1274,6 @@
             <vignetting model="pa" focal="73.3" aperture="16" distance="1000" k1="-0.7658" k2="0.9603" k3="-0.5151"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Sony</maker>
         <model>Sony RX10II &amp; compatibles</model>
@@ -1332,7 +1299,6 @@
             <tca model="poly3" focal="73.2" vr="0.9998839" vb="0.9999304"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Sony</maker>
         <model>Sony RX10III &amp; compatibles</model>
@@ -1361,7 +1327,6 @@
             <tca model="poly3" focal="220" vr="0.9994000" vb="0.9996000"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Carl Zeiss</maker>
         <model>DSC-RX1RM2 &amp; compatibles</model>
@@ -1375,5 +1340,4 @@
             <tca model="poly3" focal="35" vr="1.0001751" vb="1.0000530"/>
         </calibration>
     </lens>
-
 </lensdatabase>

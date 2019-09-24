@@ -1,13 +1,10 @@
-<!DOCTYPE lensdatabase SYSTEM "lensfun-database.dtd">
-<lensdatabase version="2">
-
+<lensdatabase version="1">
     <camera>
         <maker>Leica</maker>
         <model>Digilux 2</model>
         <mount>leicaDigilux2</mount>
         <cropfactor>3.933</cropfactor>
     </camera>
-
     <camera>
         <maker>Leica</maker>
         <model>D-LUX2</model>
@@ -16,7 +13,6 @@
         <cropfactor>4.45</cropfactor>
         <!-- aspect ratio 16:9 -->
     </camera>
-
     <camera>
         <maker>Leica</maker>
         <model>D-LUX 4</model>
@@ -25,7 +21,6 @@
         <cropfactor>4.33</cropfactor>
         <!-- aspect ratio 4:3 -->
     </camera>
-
     <camera>
         <maker>Leica</maker>
         <model>D-LUX 3</model>
@@ -34,14 +29,18 @@
         <cropfactor>4.33</cropfactor>
         <!-- aspect ratio 16:9 -->
     </camera>
-
     <camera>
         <maker>Leica Camera AG</maker>
         <model>Leica Q (Typ 116)</model>
         <mount>leicaQTyp116</mount>
         <cropfactor>1</cropfactor>
     </camera>
-
+    <camera>
+        <maker>Leica</maker>
+        <model>Leica X Vario (Typ 107)</model>
+        <mount>leicaXVario107</mount>
+        <cropfactor>1.53</cropfactor>
+    </camera>
     <lens>
         <maker>Leica</maker>
         <model>Digilux 2 &amp; compatibles (Standard)</model>
@@ -67,7 +66,6 @@
             <distortion model="ptlens" focal="22.5" a="0" b="-0.003695" c="0.005038"/>
         </calibration>
     </lens>
-
     <lens>
         <maker>Leica Camera AG</maker>
         <maker lang="en">Leica</maker>
@@ -80,5 +78,19 @@
             <tca model="poly3" focal="28" br="-0.0000329" vr="1.0002023" bb="0.0000845" vb="0.9999781"/>
         </calibration>
     </lens>
-
+    <lens>
+        <maker>Leica</maker>
+        <model>Leica X Vario 18.0-46.0 mm f/3.5-6.4</model>
+        <model lang="en">fixed lens</model>
+        <model lang="de">festes Objektiv</model>
+        <mount>leicaXVario107</mount>
+        <cropfactor>1.53</cropfactor>
+        <calibration>
+            <distortion model="ptlens" focal="18" a="0.01281" b="-0.06126" c="0.01224"/>
+            <distortion model="ptlens" focal="22.7" a="-0.00227" b="-0.00171" c="-0.02905"/>
+            <distortion model="ptlens" focal="29" a="0.00083" b="-0.00707" c="-0.00502"/>
+            <distortion model="ptlens" focal="33" a="0.01103" b="-0.04453" c="0.04574"/>
+            <distortion model="ptlens" focal="46" a="0.00682" b="-0.02474" c="0.02966"/>
+        </calibration>
+    </lens>
 </lensdatabase>
