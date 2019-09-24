@@ -805,7 +805,10 @@ class appWindow(QMainWindow):
                                                                      high_precision=True,
                                                                      partition_size=partition_size)
                 else:
-                    cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
+                    if "Q-13" in crc_type:
+                        cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im, pp_fix=1)
+                    else:
+                        cc_position, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
                 if scaleDetermination:
                     # scale determination code
                     x1, y1, x2, y2 = cc_position
@@ -903,6 +906,7 @@ class appWindow(QMainWindow):
             self.boss_thread.signals.clear_to_save.connect(wait_event.quit)
             wait_event.exec()
         # now that it appears all workers are wrapped up, bundle the save ops.
+        print(self.bc_code)
         if len(self.bc_code) > 0:
             names = self.bc_code
         else:  # name based on base_file_name
@@ -1137,13 +1141,12 @@ class appWindow(QMainWindow):
             self.raw_base = raw_base
             im = base.postprocess(
                     output_color=rawpy.ColorSpace.raw,
-                    #half_size=True,
-                    use_camera_wb=False,
-                    highlight_mode=rawpy.HighlightMode.Ignore,
+                    use_camera_wb=True,
+                    # highlight_mode=rawpy.HighlightMode.Ignore,
                     user_flip=0,
                     use_auto_wb=False,
                     user_wb=ext_wb,
-                    no_auto_bright=True,
+                    # no_auto_bright=False,
                     demosaic_algorithm=rawpy.DemosaicAlgorithm.LINEAR
                     )
             #cv2.imwrite('rawImg.jpg', im)

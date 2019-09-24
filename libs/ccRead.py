@@ -104,7 +104,7 @@ class ColorchipRead:
         prediction = result.mean(axis=0)
         return prediction, uncertainty
 
-    def process_colorchip_big(self, im):
+    def process_colorchip_big(self, im, pp_fix=0):
         """
         Processes big colorchips using a minimally-modified Google MobileNetV2 neural network model. The model predicts
         the bounding box within a shrunken 256x256 image. Most large colorchips should be accurately predicted, as long
@@ -116,7 +116,7 @@ class ColorchipRead:
         """
         start = time.time()
 
-        scaled_x1, scaled_y1, scaled_x2, scaled_y2 = process_image_frcnn(im)
+        scaled_x1, scaled_y1, scaled_x2, scaled_y2 = process_image_frcnn(im, pp_fix=pp_fix)
         if max(scaled_x1, scaled_y1, scaled_x2, scaled_y2) == 0:
             raise FRCNNLCCFailed
 

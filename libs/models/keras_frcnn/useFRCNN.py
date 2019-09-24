@@ -14,7 +14,6 @@ C.use_horizontal_flips = False
 C.use_vertical_flips = False
 C.rot_90 = False
 
-
 def format_img_size(img, C):
     """ formats the image size based on config """
     img_min_side = float(C.im_size)
@@ -108,7 +107,7 @@ bbox_threshold = 0.8
 visualise = True
 
 
-def process_image_frcnn(img, key='0'):
+def process_image_frcnn(img, key='0', pp_fix=0):
     # using this model, key "0" should indicate color reference charts and
     # key "1" should indicate scale bar
     # img = cv2.imread(filepath)
@@ -179,9 +178,42 @@ def process_image_frcnn(img, key='0'):
     except KeyError:
         return 0, 0, 0, 0
 
-    new_boxes, new_probs = roi_helpers.non_max_suppression_fast(bbox, np.array(probs[key]), overlap_thresh=0)
-    # print(new_boxes, new_probs)
-    for jk in range(new_boxes.shape[0]):
-        (x1, y1, x2, y2) = new_boxes[jk, :]
-        (real_x1, real_y1, real_x2, real_y2) = get_real_coordinates(ratio, x1, y1, x2, y2)
-        return real_x1, real_y1, real_x2, real_y2
+    new_boxes, new_probs = roi_helpers.non_max_suppression_fast(bbox, np.array(probs[key]), overlap_thresh=1)
+    best_box_idx = 0
+    highest = 0
+    for idx, jk in enumerate(range(new_boxes.shape[0])):
+        if jk > highest:
+            highest = jk
+            best_box_idx = idx
+    (x1, y1, x2, y2) = new_boxes[best_box_idx, :]
+
+    # print(f"Old coordinates: {x1, y1, x2, y2}")
+
+    if pp_fix == 1:
+        h, w, _ = img.shape
+        if w > h:
+            half_line = ratio * w / 2
+            centroid = (x1 + x2) / 2
+            if centroid > half_line:
+                x1 = x1 + 80
+                x2 = x2 + 140
+            else:
+                x1 = x1 - 140
+                x2 = x2 - 80
+        else:
+            half_line = ratio * h / 2
+            centroid = (y1 + y2) / 2
+            
+            if centroid > half_line:
+                y1 = y1 + 80
+                y2 = y2 + 140
+            else:
+                y1 = y1 - 140
+                y2 = y2 - 80
+
+    #     print(f"Centroid: {centroid}")
+    #     print(f"Half-line: {half_line}")
+
+    # print(f"Calculated coordinates: {x1, y1, x2, y2}")
+    (real_x1, real_y1, real_x2, real_y2) = get_real_coordinates(ratio, x1, y1, x2, y2)
+    return real_x1, real_y1, real_x2, real_y2
