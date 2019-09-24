@@ -32,11 +32,7 @@ class eqRead():
         super(eqRead, self).__init__()
         self.parent = parent
         self.equipmentDict = equipmentDict
-        try:  # prefer to use system db
-            self.db = lensfunpy.Database()
-        except XMLFormatError:
-            # if there is a format error, attempt to use locally bundled xmls
-            self.db = lensfunpy.Database(paths=glob.glob('libs/lensfunpy-db/*.xml'))
+        self.db = lensfunpy.Database(paths=glob.glob('libs/lensfunpy-db/*.xml'))
 
     def detImagingEquipment(self, imgPath):
         """ given an image file path, attempts to determine
