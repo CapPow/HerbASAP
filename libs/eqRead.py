@@ -58,6 +58,7 @@ class eqRead():
         camModel = imgDict.get('model', '')
         #print(f'cam model = {camModel}')
         lensModel = imgDict.get('lensmodel', '')#[0]
+        lensModel = lensModel.split(" ")[0]
         #print(f'lensmodel = {lensModel}')
         focalLength = imgDict.get('focallength', '')[0]
         #print(f'focallength = {focalLength}')
