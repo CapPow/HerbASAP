@@ -249,8 +249,8 @@ class ColorchipRead:
         pass
 
     def process_colorchip_small(self, im, original_size, stride_style='whole',
-                                stride=25, partition_size=125, discriminator_floor=0.999,
-                                over_crop=0, hard_cut_value=50, high_precision=False, full_tf=True):
+                                stride=25, partition_size=125, discriminator_floor=0.95,
+                                over_crop=1, hard_cut_value=50, high_precision=False, full_tf=True):
         """
         Finds small colorchips using the quickCC model. This model is specifically trained on tiny colorchips found in
         many herbarium collections. If the colorchip is similar in size to those, and is in the same proportion to the
@@ -364,7 +364,7 @@ class ColorchipRead:
             max_pred = max(position_predictions)
             for _j in range(len(position_predictions)):
                 try:
-                    if position_predictions[_j] < (max_pred - 0.01):
+                    if position_predictions[_j] < (max_pred - 0.001):
                         del position_predictions[_j]
                         del position_uncertainty[_j]
                         del indices[_j]
@@ -458,8 +458,8 @@ class ColorchipRead:
         cv_image = cv2.cvtColor(np_image, cv2.COLOR_RGB2HSV)
         h, w = np_image.shape[0:2]
         area = h*w
-        min_crop_area = area // 3.4
-        max_crop_area = area // 3.1
+        min_crop_area = area // 7
+        max_crop_area = area // 2
 
         # identify squares in the crop
         squares = ColorchipRead.find_squares(cv_image,
