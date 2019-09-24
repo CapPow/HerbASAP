@@ -833,6 +833,7 @@ class appWindow(QMainWindow):
         
         if any([scaleDetermination, verifyRotation, performWhiteBalance]):
             # colorchecker functions
+
             try:
                 crc_type = profile.get('crcType', "ISA ColorGauge Nano")
                 if crc_type == "ISA ColorGauge Nano":  # aka small crc
@@ -846,6 +847,8 @@ class appWindow(QMainWindow):
                     cc_location, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im, pp_fix=1)
                 else:
                     cc_location, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
+
+                x1, y1, x2, y2 = cc_location
                 if scaleDetermination:
                     # scale determination code
                     x1, y1, x2, y2 = cc_location
@@ -864,8 +867,51 @@ class appWindow(QMainWindow):
                 self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_location)
                 self.cropped_cc = cropped_cc
                 cc_avg_white, self.cc_blk_point = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
-                #print(f'avg BLACK: {self.cc_blk_point}')
-                self.cc_avg_white = cc_avg_white
+                # print(f'avg BLACK: {self.cc_blk_point}')
+
+                if performWhiteBalance:
+                    self.cc_avg_white = cc_avg_white
+
+                if verifyRotation:
+                    user_def_loc = profile.get('colorCheckerPosition', 'Upper right')
+                    quad_map = ['Upper right',
+                                'Upper left',
+                                'Lower left',
+                                'Lower right']
+                    user_def_quad = quad_map.index(user_def_loc) + 1
+                    # print(user_def_quad)
+                    # print(self.cc_quadrant)
+
+                    # cc_quadrant starts at first,
+                    # determine the proper rawpy flip value necessary
+                    rotation_qty = (self.cc_quadrant - user_def_quad)
+                    # rawpy: [0-7] Flip image (0=none, 3=180, 5=90CCW, 6=90CW)
+                    # create a list to travel based on difference
+                    rotations = [6, 3, 5, 0, 6, 3, 5]
+                    startPos = 3  # starting position in the list
+                    endPos = rotation_qty + startPos  # ending index in the list
+                    self.flip_value = rotations[endPos]  # value at that position
+
+                    # print(f"CC Quadrant: {self.cc_quadrant} | Defined Quadrant: {user_def_quad} | Rotation: {self.flip_value}")
+
+                self.apply_corrections()
+
+                print(f"CC Position before calc.: {cc_location}")
+                width, height = original_size
+                if self.flip_value == 3:
+                    x1, x2, y1, y2 = width - x2, width - x1, height - y2, height - y1
+
+                elif self.flip_value == 5:
+                    x1, y1, x2, y2 = y1, width - x2, y2, width - x1
+
+                elif self.flip_value == 6:
+                    x1, x2, y1, y2 = height - y2, height - y1, x1, x2
+
+                cc_location = x1, y1, x2, y2
+                self.cc_location = cc_location
+
+                print(f"CC Position after calc.: {cc_location}")
+
                 self.update_cc_info(self.cc_quadrant, cropped_cc,
                                     cc_crop_time, cc_avg_white)
             # apply corrections based on what is learned from the colorchipDetect
@@ -881,51 +927,6 @@ class appWindow(QMainWindow):
                 # attempt to recover from the error
                 self.process_from_queue()
                 return
-
-        if not performWhiteBalance:
-            self.cc_avg_white = None
-
-        if verifyRotation:
-            user_def_loc = profile.get('colorCheckerPosition', 'Upper right')
-            quad_map = ['Upper right',
-                        'Upper left',
-                        'Lower left',
-                        'Lower right']
-            user_def_quad = quad_map.index(user_def_loc) + 1
-            #print(user_def_quad)
-            #print(self.cc_quadrant)
-            
-            # cc_quadrant starts at first,
-            # determine the proper rawpy flip value necessary
-            rotation_qty = (self.cc_quadrant - user_def_quad)
-            # rawpy: [0-7] Flip image (0=none, 3=180, 5=90CCW, 6=90CW)
-            # create a list to travel based on difference
-            rotations = [6, 3, 5, 0, 6, 3, 5]
-            startPos = 3  # starting position in the list
-            endPos = rotation_qty + startPos  # ending index in the list
-            self.flip_value = rotations[endPos]  # value at that position
-
-            # print(f"CC Quadrant: {self.cc_quadrant} | Defined Quadrant: {user_def_quad} | Rotation: {self.flip_value}")
-
-        self.apply_corrections()
-        width, height = original_size
-        x1, y1, x2, y2 = cc_location
-
-        # print(f"CC Position before calc.: {cc_location}")
-
-#        if self.flip_value == 3:
-#            x1, x2, y1, y2 = width - x2, width - x1, height - y2, height - y1
-
-#        elif self.flip_value == 5:
-#            x1, y1, x2, y2 = y1, width - x2, y2, width - x1
-
-#        elif self.flip_value == 6:
-#            x1, x2, y1, y2 = height - y2, height - y1, x1, x2
-
-#        cc_location = x1, y1, x2, y2
-#        self.cc_location = cc_location
-
-        # print(f"CC Position after calc.: {cc_location}")
 
         #self.high_precision_wb(cc_location)
         # pass off what was learned and properly open image.
