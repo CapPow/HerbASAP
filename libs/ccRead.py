@@ -479,7 +479,7 @@ class ColorchipRead:
         disc_model = self.discriminator_model
         # identify the largest area among contours
         for current_square in squares:
-            print(current_square)
+            #print(current_square)
             x_arr = current_square[..., 0]
             y_arr = current_square[..., 1]
             x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
@@ -492,7 +492,7 @@ class ColorchipRead:
                                                 [img])
             disc_model.invoke()
             disc_value = disc_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1]
-            print(disc_value)
+            #print(disc_value)
             if disc_value > 0.5:
                 return cropped_img, current_square
 
