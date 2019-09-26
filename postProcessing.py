@@ -842,7 +842,7 @@ class appWindow(QMainWindow):
                         self.colorchipDetect.process_colorchip_small(reduced_img,
                                                                      original_size,
                                                                      high_precision=True,
-                                                                     partition_size=partition_size)
+                                                                     partition_size=100)
                 elif crc_type == 'Tiffen / Kodak Q-13  (8")':
                     cc_location, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im, pp_fix=1)
                 else:

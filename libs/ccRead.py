@@ -77,6 +77,8 @@ class ColorchipRead:
         self.discriminator_input_details = self.discriminator_model.get_input_details()
         self.discriminator_output_details = self.discriminator_model.get_output_details()
 
+        self.iterator = 0
+
         # self.large_colorchip_regressor_model_k = load_model("libs/models/lcc_regressor.hdf5")
 
     def ocv_to_pil(self, im):
@@ -160,7 +162,7 @@ class ColorchipRead:
 
     @staticmethod
     def _legacy_regions(im, im_hsv, image_width, image_height, whole_extrema, stride_style='quick', stride=25,
-                        partition_size=125, over_crop=0, hard_cut_value=50):
+                        partition_size=100, over_crop=0, hard_cut_value=50):
         possible_positions = []
         hists_rgb = []
         hists_hsv = []
@@ -249,7 +251,7 @@ class ColorchipRead:
         pass
 
     def process_colorchip_small(self, im, original_size, stride_style='whole',
-                                stride=25, partition_size=125, discriminator_floor=0.95,
+                                stride=25, partition_size=80, discriminator_floor=0.90,
                                 over_crop=1, hard_cut_value=50, high_precision=False, full_tf=True):
         """
         Finds small colorchips using the quickCC model. This model is specifically trained on tiny colorchips found in
@@ -420,6 +422,8 @@ class ColorchipRead:
                 raise DiscriminatorFailed
 
         # hpstart = time.time()
+        best_image = np.array(best_image, dtype=np.uint8)
+        # cv2.imwrite(f'ccs/o-{self.iterator}.jpg', best_image)
         try:
             if high_precision:
                 best_image, biggest_square = ColorchipRead.high_precision_cc_crop(best_image)
@@ -431,6 +435,8 @@ class ColorchipRead:
             print(e)
             raise InvalidStride
         # print(f"High precision took {time.time() - hpstart} seconds.")
+        # cv2.imwrite(f'ccs/h-{self.iterator}.jpg', best_image)
+        self.iterator += 1
 
         xc = np.array([x1, x2])
         yc = np.array([y1, y2])
@@ -447,18 +453,17 @@ class ColorchipRead:
 
         end = time.time()
         # print(f"Color chip cropping took: {end - start} seconds using {inference_type} proposal.")
-        best_image = np.array(best_image, dtype=np.uint8)
+
         cc_crop_time = round(end - start, 3)
 
         return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image, cc_crop_time
 
     @staticmethod
     def high_precision_cc_crop(input_img):
-        np_image = np.array(input_img)
-        cv_image = cv2.cvtColor(np_image, cv2.COLOR_RGB2HSV)
-        h, w = np_image.shape[0:2]
+        cv_image = cv2.cvtColor(input_img, cv2.COLOR_RGB2HSV)
+        h, w = input_img.shape[0:2]
         area = h*w
-        min_crop_area = area // 7
+        min_crop_area = area // 4
         max_crop_area = area // 2
 
         # identify squares in the crop
@@ -477,7 +482,7 @@ class ColorchipRead:
         y_arr = biggest_square[..., 1]
         x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
         biggest_square = (x1, y1, x2, y2)
-        cropped_img = np_image[y1:y2, x1:x2]
+        cropped_img = input_img[y1:y2, x1:x2]
 
         return cropped_img, biggest_square
 

@@ -178,7 +178,6 @@ class ScaleRead:
         pixels_per_mm = []
         orig_mask = np.zeros((h + 2, w + 2), np.uint8)
         for i, seed in enumerate(seed_pts):
-
             mask = orig_mask.copy()
             floodflags = 4
             floodflags |= (255 << 8)
@@ -204,6 +203,7 @@ class ScaleRead:
                     mask[:, -3]   # last col adjusting for mask expansion
                     ]
             if any([255 in x for x in mask_edge_vectors]):
+                print(f"Continuing, patch number {i}")
                 continue
 
             squares = ScaleRead.find_squares(mask,
@@ -220,11 +220,12 @@ class ScaleRead:
             rect_area = np.sqrt(((patch_w+2) * (patch_h+2)) / patch_mm_area)
             pixels_per_mm.append(rect_area)
 
+
             # useful for debugging odd scal values generation
-            #cv2.imwrite(f'{i}_mask.jpg', mask)
+            cv2.imwrite(f'{i}_mask.jpg', mask)
 
         # require a minimum qty of measurements before proceeding
-        if len(pixels_per_mm) > 6:
+        if len(pixels_per_mm) > 2:
             ppm_std = np.std(pixels_per_mm)
             pixel_mean = np.mean(pixels_per_mm)
             lower_bounds = pixel_mean - ppm_std # keep results within +/- 1 std
