@@ -551,7 +551,7 @@ class SettingsWizard(QWizard):
         correction_val = nh / oh
         corrected_box_size = int(round(box_size * correction_val,0))
         # keep a floor partition_size of 125 
-        partition_size = max([125, corrected_box_size])
+        partition_size = max([50, corrected_box_size])
         print(f'using a {partition_size} partition_size')
         self.partition_size = partition_size
         self.wiz.pushButton_testCRCDetection.setEnabled(True)

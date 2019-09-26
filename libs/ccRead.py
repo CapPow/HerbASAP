@@ -162,7 +162,7 @@ class ColorchipRead:
 
     @staticmethod
     def _legacy_regions(im, im_hsv, image_width, image_height, whole_extrema, stride_style='quick', stride=25,
-                        partition_size=100, over_crop=0, hard_cut_value=50):
+                        partition_size=125, over_crop=0, hard_cut_value=50):
         possible_positions = []
         hists_rgb = []
         hists_hsv = []
@@ -251,7 +251,7 @@ class ColorchipRead:
         pass
 
     def process_colorchip_small(self, im, original_size, stride_style='whole',
-                                stride=25, partition_size=80, discriminator_floor=0.90,
+                                stride=25, partition_size=125, discriminator_floor=0.90,
                                 over_crop=1, hard_cut_value=50, high_precision=False, full_tf=True):
         """
         Finds small colorchips using the quickCC model. This model is specifically trained on tiny colorchips found in
@@ -424,16 +424,15 @@ class ColorchipRead:
         # hpstart = time.time()
         best_image = np.array(best_image, dtype=np.uint8)
         # cv2.imwrite(f'ccs/o-{self.iterator}.jpg', best_image)
-        try:
-            if high_precision:
-                best_image, biggest_square = ColorchipRead.high_precision_cc_crop(best_image)
+        x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
+        if high_precision:
+            try:
+                best_image, biggest_square = self.high_precision_cc_crop(best_image)
                 x1, y1, x2, y2 = best_location[0] + biggest_square[0], best_location[1] + biggest_square[1], \
                                  best_location[0] + biggest_square[2], best_location[1] + biggest_square[3]
-            else:
+            except TypeError:
                 x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
-        except Exception as e:
-            print(e)
-            raise InvalidStride
+
         # print(f"High precision took {time.time() - hpstart} seconds.")
         # cv2.imwrite(f'ccs/h-{self.iterator}.jpg', best_image)
         self.iterator += 1
@@ -458,13 +457,12 @@ class ColorchipRead:
 
         return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image, cc_crop_time
 
-    @staticmethod
-    def high_precision_cc_crop(input_img):
+    def high_precision_cc_crop(self, input_img):
         cv_image = cv2.cvtColor(input_img, cv2.COLOR_RGB2HSV)
         h, w = input_img.shape[0:2]
         area = h*w
         min_crop_area = area // 4
-        max_crop_area = area // 2
+        max_crop_area = area // 1.3
 
         # identify squares in the crop
         squares = ColorchipRead.find_squares(cv_image,
@@ -476,15 +474,30 @@ class ColorchipRead:
             print('len squares was 0')
             whole_img_cont = (0, 0, w, h)
             return input_img, whole_img_cont
-        # identify the largest area among contours
-        biggest_square = max(squares, key=cv2.contourArea)
-        x_arr = biggest_square[..., 0]
-        y_arr = biggest_square[..., 1]
-        x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
-        biggest_square = (x1, y1, x2, y2)
-        cropped_img = input_img[y1:y2, x1:x2]
 
-        return cropped_img, biggest_square
+        squares = np.array(squares)
+        squares = sorted(squares, key=cv2.contourArea, reverse=True)
+
+        # identify the largest area among contours
+        for index in range(len(squares)):
+            biggest_square = squares[index]
+            biggest_square = np.array(biggest_square)
+            print(biggest_square)
+            x_arr = biggest_square[..., 0]
+            y_arr = biggest_square[..., 1]
+            x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
+            biggest_square = (x1, y1, x2, y2)
+            cropped_img = input_img[y1:y2, x1:x2]
+            img = np.zeros((125, 125, 3), dtype=np.float32)
+            cropped_img_t = np.array(cropped_img, dtype=np.float32) / 255
+            img[0:cropped_img_t.shape[0], 0:cropped_img_t.shape[1]] = cropped_img
+            self.discriminator_model.set_tensor(self.discriminator_input_details[0]['index'],
+                                                [img])
+            self.discriminator_model.invoke()
+            disc_value = self.discriminator_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1]
+            print(disc_value)
+            if disc_value > 0.5:
+                return cropped_img, biggest_square
 
     @staticmethod
     def predict_color_chip_quadrant(original_size, scaled_crop_location):
