@@ -427,9 +427,9 @@ class ColorchipRead:
         x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
         if high_precision:
             try:
-                best_image, biggest_square = self.high_precision_cc_crop(best_image)
-                x1, y1, x2, y2 = best_location[0] + biggest_square[0], best_location[1] + biggest_square[1], \
-                                 best_location[0] + biggest_square[2], best_location[1] + biggest_square[3]
+                best_image, best_square = self.high_precision_cc_crop(best_image)
+                x1, y1, x2, y2 = best_location[0] + best_square[0], best_location[1] + best_square[1], \
+                                 best_location[0] + best_square[2], best_location[1] + best_square[3]
             except TypeError:
                 x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
 
@@ -471,33 +471,30 @@ class ColorchipRead:
 
         # if, somehow no proper squares were identified, return the entire img
         if len(squares) < 1:
-            print('len squares was 0')
             whole_img_cont = (0, 0, w, h)
             return input_img, whole_img_cont
 
-        squares = np.array(squares)
         squares = sorted(squares, key=cv2.contourArea, reverse=True)
-
+        
+        disc_model = self.discriminator_model
         # identify the largest area among contours
-        for index in range(len(squares)):
-            biggest_square = squares[index]
-            biggest_square = np.array(biggest_square)
-            print(biggest_square)
-            x_arr = biggest_square[..., 0]
-            y_arr = biggest_square[..., 1]
+        for current_square in squares:
+            print(current_square)
+            x_arr = current_square[..., 0]
+            y_arr = current_square[..., 1]
             x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
-            biggest_square = (x1, y1, x2, y2)
+            current_square = (x1, y1, x2, y2)
             cropped_img = input_img[y1:y2, x1:x2]
             img = np.zeros((125, 125, 3), dtype=np.float32)
             cropped_img_t = np.array(cropped_img, dtype=np.float32) / 255
             img[0:cropped_img_t.shape[0], 0:cropped_img_t.shape[1]] = cropped_img
-            self.discriminator_model.set_tensor(self.discriminator_input_details[0]['index'],
+            disc_model.set_tensor(self.discriminator_input_details[0]['index'],
                                                 [img])
-            self.discriminator_model.invoke()
-            disc_value = self.discriminator_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1]
+            disc_model.invoke()
+            disc_value = disc_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1]
             print(disc_value)
             if disc_value > 0.5:
-                return cropped_img, biggest_square
+                return cropped_img, current_square
 
     @staticmethod
     def predict_color_chip_quadrant(original_size, scaled_crop_location):

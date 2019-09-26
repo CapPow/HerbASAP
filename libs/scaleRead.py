@@ -203,7 +203,7 @@ class ScaleRead:
                     mask[:, -3]   # last col adjusting for mask expansion
                     ]
             if any([255 in x for x in mask_edge_vectors]):
-                print(f"Continuing, patch number {i}")
+                #print(f"Continuing, patch number {i}")
                 continue
 
             squares = ScaleRead.find_squares(mask,
@@ -225,7 +225,7 @@ class ScaleRead:
             # cv2.imwrite(f'{i}_mask.jpg', mask)
 
         # require a minimum qty of measurements before proceeding
-        if len(pixels_per_mm) > 2:
+        if len(pixels_per_mm) > 5:
             ppm_std = np.std(pixels_per_mm)
             pixel_mean = np.mean(pixels_per_mm)
             lower_bounds = pixel_mean - ppm_std # keep results within +/- 1 std
