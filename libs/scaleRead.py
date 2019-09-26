@@ -222,7 +222,7 @@ class ScaleRead:
 
 
             # useful for debugging odd scal values generation
-            cv2.imwrite(f'{i}_mask.jpg', mask)
+            # cv2.imwrite(f'{i}_mask.jpg', mask)
 
         # require a minimum qty of measurements before proceeding
         if len(pixels_per_mm) > 2:

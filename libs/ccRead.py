@@ -564,7 +564,7 @@ class ColorchipRead:
         # correct for the mask expansion
         mask = mask[1:-1, 1:-1, ...]
         # extract the rgb values of the floodfilled sections
-        extracted = cropped_cc[ mask != 0]
+        extracted = cropped_cc[mask != 0]
         # reorganize the extractedv alues
         extracted = extracted.reshape(-1,extracted.shape[-1])
         
