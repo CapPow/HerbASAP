@@ -469,14 +469,12 @@ class ColorchipRead:
                                              contour_area_floor=min_crop_area,
                                              contour_area_ceiling=max_crop_area)
 
-        # if, somehow no proper squares were identified, return the entire img
-        if len(squares) < 1:
-            whole_img_cont = (0, 0, w, h)
-            return input_img, whole_img_cont
-
         squares = sorted(squares, key=cv2.contourArea, reverse=True)
-        
         disc_model = self.discriminator_model
+        best_disc = 0.5
+        # if no square > 0.5, use whole image as crop & contour
+        best_cropped_img = input_img
+        best_current_square = (0, 0, w, h)
         # identify the largest area among contours
         for current_square in squares:
             #print(current_square)
@@ -493,8 +491,12 @@ class ColorchipRead:
             disc_model.invoke()
             disc_value = disc_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1]
             #print(disc_value)
-            if disc_value > 0.5:
-                return cropped_img, current_square
+            if disc_value > best_disc:
+                best_cropped_img = cropped_img
+                best_current_square = current_square
+                best_disc = disc_value
+
+        return best_cropped_img, best_current_square
 
     @staticmethod
     def predict_color_chip_quadrant(original_size, scaled_crop_location):
