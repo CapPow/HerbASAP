@@ -842,7 +842,8 @@ class appWindow(QMainWindow):
                         self.colorchipDetect.process_colorchip_small(reduced_img,
                                                                      original_size,
                                                                      high_precision=True,
-                                                                     partition_size=partition_size)
+                                                                     partition_size=partition_size,
+                                                                     stride_style='quick')
                 elif crc_type == 'Tiffen / Kodak Q-13  (8")':
                     cc_location, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im, pp_fix=1)
                 else:
@@ -896,7 +897,7 @@ class appWindow(QMainWindow):
 
                 self.apply_corrections()
 
-                print(f"CC Position before calc.: {cc_location}")
+                # print(f"CC Position before calc.: {cc_location}")
                 width, height = original_size
                 if self.flip_value == 3:
                     x1, x2, y1, y2 = width - x2, width - x1, height - y2, height - y1
@@ -909,8 +910,7 @@ class appWindow(QMainWindow):
 
                 cc_location = x1, y1, x2, y2
                 self.cc_location = cc_location
-
-                print(f"CC Position after calc.: {cc_location}")
+                # print(f"CC Position after calc.: {cc_location}")
 
                 self.update_cc_info(self.cc_quadrant, cropped_cc,
                                     cc_crop_time, cc_avg_white)

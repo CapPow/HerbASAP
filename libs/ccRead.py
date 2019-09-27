@@ -327,34 +327,34 @@ class ColorchipRead:
                 part_im.append(part_image)
                 possible_positions.append(location)
 
-#        if len(part_im) != 0:
-#            inference_type = 'find_squares'
-#            hists_rgb = []
-#            hists_hsv = []
-#            for im in part_im:
-#                im_hsv = im.convert("HSV")
-#                hists_rgb.append(im.histogram())
-#                hists_hsv.append(im_hsv.histogram())
+        if len(part_im) != 0:
+           inference_type = 'find_squares'
+           hists_rgb = []
+           hists_hsv = []
+           for im in part_im:
+               im_hsv = im.convert("HSV")
+               hists_rgb.append(im.histogram())
+               hists_hsv.append(im_hsv.histogram())
 
-#        else:
-        inference_type = 'legacy'
-        hists_rgb, hists_hsv, possible_positions = self._legacy_regions(im=im, im_hsv=im_hsv,
-                                                                        image_width=image_width,
-                                                                        image_height=image_height,
-                                                                        whole_extrema=whole_extrema,
-                                                                        stride_style=stride_style, stride=stride,
-                                                                        partition_size=partition_size,
-                                                                        over_crop=over_crop,
-                                                                        hard_cut_value=hard_cut_value)
+        else:
+            inference_type = 'legacy'
+            hists_rgb, hists_hsv, possible_positions = self._legacy_regions(im=im, im_hsv=im_hsv,
+                                                                            image_width=image_width,
+                                                                            image_height=image_height,
+                                                                            whole_extrema=whole_extrema,
+                                                                            stride_style=stride_style, stride=stride,
+                                                                            partition_size=partition_size,
+                                                                            over_crop=over_crop,
+                                                                            hard_cut_value=hard_cut_value)
 
-        hists_rgb = np.array(hists_rgb, dtype=np.uint16)
-        hists_hsv = np.array(hists_hsv, dtype=np.uint16)
+            hists_rgb = np.array(hists_rgb, dtype=np.uint16)
+            hists_hsv = np.array(hists_hsv, dtype=np.uint16)
 
-        position_predictions = []
-        position_start = time.time()
+            position_predictions = []
+            position_start = time.time()
 
         if full_tf:
-            position_prediction, position_uncertainty = self._position_with_uncertainty([hists_rgb, hists_hsv], 5)
+            position_prediction, position_uncertainty = self._position_with_uncertainty([hists_rgb, hists_hsv], 10)
 
             only_cc_position_uncertainty = position_uncertainty[0][:, 1]
             only_cc_position_prediction = position_prediction[0][:, 1]
@@ -454,7 +454,7 @@ class ColorchipRead:
         # print(f"Color chip cropping took: {end - start} seconds using {inference_type} proposal.")
 
         cc_crop_time = round(end - start, 3)
-
+        print(f"Inference type: {inference_type}")
         return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image, cc_crop_time
 
     def high_precision_cc_crop(self, input_img):
