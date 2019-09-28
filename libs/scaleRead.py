@@ -22,7 +22,8 @@ class ScaleRead:
         ###
         self.scale_params = {
                 'CameraTrax 24 ColorCard (2" x 3")':(115.5625, self.det_large_crc_seeds, True),
-                'ISA ColorGauge Nano':(10.0489, self.det_isa_nano_seeds, True),
+                'ISA ColorGauge Nano':(10.0489, self.det_isa_nano_seeds, False),
+                #'ISA ColorGauge Nano':(10.0489, self.det_large_crc_seeds, False),
                 'Tiffen / Kodak Q-13  (8")':(386.6379, self.det_large_crc_seeds, False),
                 'X-Rite ColorChecker Passport':(164.3652, self.det_large_crc_seeds, True),
                 'X-Rite ColorChecker Classic':(361.00, self.det_large_crc_seeds, True)
@@ -92,30 +93,26 @@ class ScaleRead:
         """
         # determine how to split the points among x / y axes
         h_w_combined = h+w
-        # establish a no-sample buffer zone along edges
-        h_buffer = h//15
-        w_buffer = w//15
         if h < w:
             h_ratio = h / h_w_combined
             h_pts = max(int(pts * h_ratio), 2)
             w_pts = pts - h_pts
-            # determine the points to sample along crop img width 
+            # determine the points to sample along crop img width
             w_samples = np.linspace(0, w, w_pts+2).astype(int)[1:-1]
             # determine the points to sample along crop img height
             h_anchors = np.linspace(0, h, h_pts+2).astype(int)[1:-1]
-            # repeate the given points for each 
+            # repeate the given points for each
             h_anchors = np.tile(h_anchors, len(w_samples)//len(h_anchors))
             seed_pts = tuple(zip(w_samples, h_anchors))
-
         else:
             w_ratio = w / h_w_combined
             w_pts = max(int(pts * w_ratio), 2)
             h_pts = pts - w_pts
-            # determine the points to sample along crop img width 
+            # determine the points to sample along crop img width
             h_samples = np.linspace(0, w, h_pts+2).astype(int)[1:-1]
             # determine the points to sample along crop img height
             w_anchors = np.linspace(0, h, w_pts+2).astype(int)[1:-1]
-            # repeate the given points for each 
+            # repeate the given points for each
             w_anchors = np.tile(w_anchors, len(h_samples)//len(w_anchors))
             seed_pts = tuple(zip(h_samples, w_anchors))
 
@@ -123,18 +120,14 @@ class ScaleRead:
 
     @staticmethod
     def det_isa_nano_seeds(h, w, pts=12):
-        
-        # establish a no-sample buffer zone        
+        # establish a no-sample buffer zone
         h_buffer = h//10
         w_buffer = w//10
-        
         #pts are the number of seed points to take per axis
         sample_hs = np.linspace(0, h, pts+2).astype(int)[1:-1]
         anchor_hs = np.tile([h_buffer, h - (h_buffer)], len(sample_hs)//2)
-
         sample_ws = np.linspace(0, w, pts+2).astype(int)[1:-1]
         anchor_ws = np.tile([w - (w_buffer), w_buffer], len(sample_ws)//2)
-
         h_seeds = tuple(zip(anchor_ws, sample_hs))
         w_seeds = tuple(zip(sample_ws, anchor_hs))
         # the result is a series of staggered points along border of the image.
@@ -144,7 +137,7 @@ class ScaleRead:
 
 
     @staticmethod
-    def find_scale(im, patch_mm_area, seed_func, to_crop):
+    def find_scale(im, patch_mm_area, seed_func, to_crop, retry=True):
         '''
         Finds the pixels to millimeter of image using the CRC patch size. Currently only works ISA ColorGauge Target
         CRCs (micro, nano, and pico versions)
@@ -171,8 +164,9 @@ class ScaleRead:
         area = h*w
         contour_area_floor = area // 50
         contour_area_ceiling = area // 10
-        # determine reasonable lower, upper thresholds, 5% of lum range
-        minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(cv2.cvtColor(im,cv2.COLOR_RGB2LAB)[..., 0])
+
+        #determine reasonable lower, upper thresholds, 5% of lum range
+        minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(cv2.cvtColor(im, cv2.COLOR_RGB2LAB)[..., 0])
         var_threshold = int((maxVal-minVal) * 0.05)
         # container to hold the results from each seed's floodfill
         pixels_per_mm = []
@@ -184,8 +178,8 @@ class ScaleRead:
             floodflags |= cv2.FLOODFILL_MASK_ONLY
             # retval, image, mask, rect
             _, _, mask, rect = cv2.floodFill(im, mask, seed, (255,0,0),
-                                             (var_threshold,)*3,
-                                             (var_threshold,)*3, floodflags)
+                                             (var_threshold, )*3,
+                                             (var_threshold, )*3, floodflags)
 
             x1, y1, patch_w, patch_h = rect
             patch_hw = [patch_w, patch_h]
@@ -220,9 +214,8 @@ class ScaleRead:
             rect_area = np.sqrt(((patch_w+2) * (patch_h+2)) / patch_mm_area)
             pixels_per_mm.append(rect_area)
 
-
             # useful for debugging odd scal values generation
-            # cv2.imwrite(f'{i}_mask.jpg', mask)
+            #cv2.imwrite(f'{i}_mask.jpg', mask)
 
         # require a minimum qty of measurements before proceeding
         if len(pixels_per_mm) > 5:
@@ -234,6 +227,20 @@ class ScaleRead:
             # determine CI @ 95% : 1.96 SE = std / sqrt(len(array))
             ppm_uncertainty = round(1.96 * (np.std(pixels_per_mm)/ np.sqrt(len(pixels_per_mm))), 2)
             pixels_per_mm_avg = round(np.mean(pixels_per_mm), 2)
+        elif retry:
+            print('RETRYING')
+            # if no scale det! try Lum expansion
+            # based on: https://stackoverflow.com/questions/19363293/whats-the-fastest-way-to-increase-color-image-contrast-with-opencv-in-python-c
+            clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+            lab = cv2.cvtColor(im, cv2.COLOR_RGB2LAB)  # convert from BGR to LAB color space
+            l, a, b = cv2.split(lab)  # split on 3 different channels
+            l2 = clahe.apply(l)  # apply CLAHE to the L-channel
+            lab = cv2.merge((l2,a,b))  # merge channels
+            im = cv2.cvtColor(lab, cv2.COLOR_LAB2RGB)  # convert from LAB to BGR
+            # retry param avoids infinate recursion
+            # if not using ...large_crc_seeds, it is safe trying large method
+            # yet vise versa is untrue, explicitly use det_large_crc_seeds
+            return ScaleRead.find_scale(im, patch_mm_area, ScaleRead.det_large_crc_seeds, to_crop, retry=False)
         else:
             pixels_per_mm_avg = 0
             ppm_uncertainty = max(h,w)  # be really sure they get the point.

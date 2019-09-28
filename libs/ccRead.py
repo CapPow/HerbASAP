@@ -298,9 +298,7 @@ class ColorchipRead:
         start = time.time()
         image_width, image_height = im.size
         original_width, original_height = original_size
-
         cv_image = cv2.cvtColor(nim, cv2.COLOR_RGB2HSV)
-
         partition_area = partition_size * partition_size
         contour_area_floor = partition_area // 10
         contour_area_ceiling = partition_area // 0.5
@@ -311,8 +309,12 @@ class ColorchipRead:
 
         squares = np.array(squares)
 
+        position_model = self.position_model
+        discriminator_model = self.discriminator_model
+
         part_im = []
         possible_positions = []
+
         for square in squares:
             M = cv2.moments(square)
             cX = int(M["m10"] / M["m00"])
@@ -364,10 +366,10 @@ class ColorchipRead:
                 (list(t) for t in zip(*sorted(zip(only_cc_position_uncertainty, only_cc_position_prediction, indices))))
 
             max_pred = max(position_predictions)
-            for _j in range(len(position_predictions)):
+            for _j, position_prediction in enumerate(position_predictions):
                 try:
-                    if position_predictions[_j] < (max_pred - 0.001):
-                        del position_predictions[_j]
+                    if position_prediction < (max_pred - 0.001):
+                        del position_prediction
                         del position_uncertainty[_j]
                         del indices[_j]
                 except IndexError:
@@ -375,13 +377,14 @@ class ColorchipRead:
 
         else:
             indices = [i for i in range(len(hists_rgb))]
-            for i in range(len(hists_rgb)):
+            for i in indices:
+            #for i in range(len(hists_rgb)):
                 try:
-                    self.position_model.set_tensor(self.position_input_details[0]['index'], [hists_rgb[i]])
-                    self.position_model.set_tensor(self.position_input_details[1]['index'], [hists_hsv[i]])
-                    self.position_model.invoke()
+                    position_model.set_tensor(position_model.get_input_details()[0]['index'], [hists_rgb[i]])
+                    position_model.set_tensor(position_model.get_input_details()[1]['index'], [hists_hsv[i]])
+                    position_model.invoke()
                     # outputs.append(self.position_model.get_tensor(self.position_output_details[0]['index']))
-                    position_predictions.append(self.position_model.get_tensor(self.position_output_details[0]['index'])[0][0])
+                    position_predictions.append(position_model.get_tensor(position_model.get_output_details()[0]['index'])[0][0])
                 except:
                     position_predictions.append(np.array([[1, 0]], dtype=np.float32).tolist())
             # print(f"Region proposal took {time.time() - position_start}")
@@ -398,7 +401,7 @@ class ColorchipRead:
             highest_prob_positions = [possible_positions[k] for k in indices]
         else:
             for i in indices:
-                # im.crop(possible_positions[indices[i]]).show()
+                #im.crop(possible_positions[indices[i]]).show()
                 highest_prob_images.append(np.array(im.crop(possible_positions[i]).resize((125, 125))))
                 highest_prob_positions.append(possible_positions[i])
 
@@ -408,14 +411,14 @@ class ColorchipRead:
             best_image = Image.fromarray(highest_prob_images[0])
             best_location = highest_prob_positions[0]
         else:
-            for i in range(len(highest_prob_images)):
-                self.discriminator_model.set_tensor(self.discriminator_input_details[0]['index'], [highest_prob_images_pred[i]])
-                self.discriminator_model.invoke()
-                disc_value = self.discriminator_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1] 
+            for i, highest_prob_image in enumerate(highest_prob_images):
+                discriminator_model.set_tensor(discriminator_model.get_input_details()[0]['index'], [highest_prob_images_pred[i]])
+                discriminator_model.invoke()
+                disc_value = discriminator_model.get_tensor(discriminator_model.get_output_details()[0]['index'])[0][1]
                 #print(disc_value)
                 if disc_value > discriminator_floor:
                     # print(f"Discriminator took {i} predictions before finding the colorchip.")
-                    best_image = Image.fromarray(highest_prob_images[i])
+                    best_image = Image.fromarray(highest_prob_image)
                     best_location = highest_prob_positions[i]
                     break
             else:
@@ -476,7 +479,7 @@ class ColorchipRead:
         best_cropped_img = input_img
         best_current_square = (0, 0, w, h)
         # identify the largest area among contours
-        for current_square in squares:
+        for i, current_square in enumerate(squares):
             #print(current_square)
             x_arr = current_square[..., 0]
             y_arr = current_square[..., 1]
@@ -486,16 +489,14 @@ class ColorchipRead:
             img = np.zeros((125, 125, 3), dtype=np.float32)
             cropped_img_t = np.array(cropped_img, dtype=np.float32) / 255
             img[0:cropped_img_t.shape[0], 0:cropped_img_t.shape[1]] = cropped_img
-            disc_model.set_tensor(self.discriminator_input_details[0]['index'],
+            disc_model.set_tensor(disc_model.get_input_details()[0]['index'],
                                                 [img])
             disc_model.invoke()
-            disc_value = disc_model.get_tensor(self.discriminator_output_details[0]['index'])[0][1]
-            #print(disc_value)
+            disc_value = disc_model.get_tensor(disc_model.get_output_details()[0]['index'])[0][1]
             if disc_value > best_disc:
                 best_cropped_img = cropped_img
                 best_current_square = current_square
                 best_disc = disc_value
-
         return best_cropped_img, best_current_square
 
     @staticmethod
