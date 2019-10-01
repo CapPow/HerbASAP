@@ -55,10 +55,13 @@ class Event_Handler(PatternMatchingEventHandler):
         """
         event_type = event.event_type
         img_path = event.src_path
+        img_filename, img_ext = path.splitext(img_path)
         # be sure the destination path is the focus
         if event_type in ['renamed', 'moved']:
             img_path = event.dest_path
         # if it is leaving the self.watch_dir, set self.last_item = None
+        elif img_ext.lower() == '.tmp':
+            return
         if (path.dirname(img_path) != self.watch_dir) or event.event_type in self._removeEvents:
             # if a file is moved out of self.watch_dir:
             if img_path == self.last_item:
