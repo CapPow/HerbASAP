@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>715</width>
-    <height>588</height>
+    <width>838</width>
+    <height>676</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1061,7 +1061,7 @@
     <item row="0" column="1" rowspan="2">
      <widget class="QLabel" name="label_33">
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HerbASAP has several features which depend the presence of a color reference chart (CRC).&lt;/p&gt;&lt;p&gt;CRC location is determined using the methods described by Ledesma et al. 2019. To use these features, you must select which CRC type is expected and &lt;span style=&quot; font-weight:600;&quot;&gt;draw a box&lt;/span&gt; the approximate size of the CRC (anywhere) in the image. The box is used to set the window size to consider for region proposals.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HerbASAP has several features which depend the presence of a color reference chart (CRC).&lt;/p&gt;&lt;p&gt;CRC location is determined using the methods described by Ledesma et al. 2019. To use these features, you must select which CRC type is expected and draw a box the approximate size of the CRC (anywhere) in the image. The box is used to set the window size to consider for region proposals.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -1739,8 +1739,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>579</width>
-         <height>304</height>
+         <width>98</width>
+         <height>34</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
