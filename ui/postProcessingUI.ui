@@ -766,7 +766,7 @@
               <string>Dark theme</string>
              </property>
              <property name="checked">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
             </widget>
            </item>
@@ -774,6 +774,9 @@
             <widget class="QRadioButton" name="value_LightTheme">
              <property name="text">
               <string>Default System Settings</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
              </property>
             </widget>
            </item>

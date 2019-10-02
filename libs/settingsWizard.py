@@ -29,12 +29,19 @@ class ImageDialog(QDialog):
         mb = Ui_Dialog_image()
         mb.setupUi(self)
 
-        height, width = img_array_object.shape[0:2]
-        bytesPerLine = 3 * width
-        qImg = QtGui.QImage(img_array_object.copy(),
-                            width, height, bytesPerLine,
+        h, w = img_array_object.shape[0:2]
+        if h > w:
+            img = np.rot90(img_array_object, 1)
+            h, w = w, h  # swamp the variables after rotating
+        bytesPerLine = 3 * w
+        qImg = QtGui.QImage(img.copy(), w, h, bytesPerLine,
                             QtGui.QImage.Format_RGB888)
         pixmap = QtGui.QPixmap.fromImage(qImg)
+        width = self.width()
+        height = self.height()
+        pixmap = pixmap.scaled(width, height,
+                               QtCore.Qt.KeepAspectRatio,
+                               Qt.FastTransformation)
         mb.label_Image.setPixmap(pixmap)
 
 
