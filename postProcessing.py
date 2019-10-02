@@ -636,7 +636,7 @@ class appWindow(QMainWindow):
                 self.update_preview_img(self.im)
             userDialog = BcDialog()
             result = [userDialog.ask_for_bc()]
-        if result == [None]:
+        if not None or not '' in result:
             result = [self.base_file_name]
         self.bc_code = result
         self.mainWindow.label_barcodes.setText(', '.join(result))
@@ -1203,7 +1203,7 @@ class appWindow(QMainWindow):
                 text = 'Corrupted or incompatible image file.'
                 detail_text = (f"LibRawError opening: {imgPath}\nUsually this "
                                "indicates a corrupted or incompatible image."
-                               "\n{e}")
+                               f"\n{e}")
                 self.userNotice(text, title, detail_text)
             raise  # Pass this up to the process function for halting
         return im
