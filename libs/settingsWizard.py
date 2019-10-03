@@ -31,10 +31,10 @@ class ImageDialog(QDialog):
 
         h, w = img_array_object.shape[0:2]
         if h > w:
-            img = np.rot90(img_array_object, 1)
+            img_array_object = np.rot90(img_array_object, 1)
             h, w = w, h  # swamp the variables after rotating
         bytesPerLine = 3 * w
-        qImg = QtGui.QImage(img.copy(), w, h, bytesPerLine,
+        qImg = QtGui.QImage(img_array_object.copy(), w, h, bytesPerLine,
                             QtGui.QImage.Format_RGB888)
         pixmap = QtGui.QPixmap.fromImage(qImg)
         width = self.width()
