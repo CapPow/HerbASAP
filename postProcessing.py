@@ -636,7 +636,7 @@ class appWindow(QMainWindow):
                 self.update_preview_img(self.im)
             userDialog = BcDialog()
             result = [userDialog.ask_for_bc()]
-        if not None or not '' in result:
+        if result in [[None], ['']]:
             result = [self.base_file_name]
         self.bc_code = result
         self.mainWindow.label_barcodes.setText(', '.join(result))
