@@ -266,7 +266,6 @@ class SettingsWizard(QWizard):
         # use string methods to get the associated lineEdit name
         # use eval method to convert string to variable.
         targetField = eval(f'self.wiz.lineEdit_{buttonPressed}')
-        print(targetField)
         targetDir = QtWidgets.QFileDialog.getExistingDirectory(
                 None, 'Select a folder:', QtCore.QDir.homePath(),
                 QtWidgets.QFileDialog.ShowDirsOnly)
