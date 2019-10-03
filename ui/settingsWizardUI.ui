@@ -137,8 +137,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>669</width>
-         <height>374</height>
+         <width>792</width>
+         <height>462</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -1844,8 +1844,8 @@
    <slot>openDisplayImage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>447</x>
-     <y>363</y>
+     <x>460</x>
+     <y>409</y>
     </hint>
     <hint type="destinationlabel">
      <x>584</x>
@@ -1860,8 +1860,8 @@
    <slot>update_CatalogNumber_Preview()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>289</x>
-     <y>373</y>
+     <x>108</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>584</x>
@@ -1876,8 +1876,8 @@
    <slot>update_CatalogNumber_Preview()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>406</x>
-     <y>372</y>
+     <x>108</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>584</x>
@@ -1892,8 +1892,8 @@
    <slot>update_CatalogNumber_Preview()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>289</x>
-     <y>403</y>
+     <x>108</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>584</x>
@@ -1908,8 +1908,8 @@
    <slot>remove_pattern()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>677</x>
-     <y>477</y>
+     <x>108</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>584</x>
@@ -1924,8 +1924,8 @@
    <slot>add_pattern()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>324</x>
-     <y>477</y>
+     <x>108</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>584</x>
@@ -1940,8 +1940,8 @@
    <slot>test_bcRead()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>132</x>
-     <y>516</y>
+     <x>108</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>584</x>
@@ -1956,8 +1956,8 @@
    <slot>test_blurDetect()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>124</x>
-     <y>518</y>
+     <x>108</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>584</x>
@@ -1972,8 +1972,8 @@
    <slot>test_crcDetection()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>115</x>
-     <y>499</y>
+     <x>108</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1988,8 +1988,8 @@
    <slot>test_eqRead()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>122</x>
-     <y>520</y>
+     <x>108</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>584</x>
@@ -2004,8 +2004,8 @@
    <slot>test_scaleRead()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>122</x>
-     <y>486</y>
+     <x>108</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>584</x>
@@ -2020,8 +2020,8 @@
    <slot>test_wbDet()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>122</x>
-     <y>520</y>
+     <x>108</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>584</x>
@@ -2036,8 +2036,8 @@
    <slot>is_nameAvailable(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>211</x>
-     <y>175</y>
+     <x>108</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>575</x>
@@ -2052,8 +2052,8 @@
    <slot>save_inputs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>211</x>
-     <y>209</y>
+     <x>108</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>581</x>
@@ -2068,8 +2068,8 @@
    <slot>setFolderPath()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>685</x>
-     <y>214</y>
+     <x>808</x>
+     <y>225</y>
     </hint>
     <hint type="destinationlabel">
      <x>651</x>
@@ -2084,8 +2084,8 @@
    <slot>setFolderPath()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>685</x>
-     <y>325</y>
+     <x>808</x>
+     <y>369</y>
     </hint>
     <hint type="destinationlabel">
      <x>648</x>
@@ -2116,8 +2116,8 @@
    <slot>emit_completeChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>180</x>
-     <y>325</y>
+     <x>248</x>
+     <y>369</y>
     </hint>
     <hint type="destinationlabel">
      <x>654</x>
@@ -2132,8 +2132,8 @@
    <slot>emit_completeChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>180</x>
-     <y>419</y>
+     <x>248</x>
+     <y>485</y>
     </hint>
     <hint type="destinationlabel">
      <x>653</x>
@@ -2148,8 +2148,8 @@
    <slot>emit_completeChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>180</x>
-     <y>512</y>
+     <x>248</x>
+     <y>600</y>
     </hint>
     <hint type="destinationlabel">
      <x>649</x>
@@ -2212,8 +2212,8 @@
    <slot>emit_completeChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>138</x>
-     <y>499</y>
+     <x>108</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -2228,8 +2228,8 @@
    <slot>openDisplayImage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>183</x>
-     <y>434</y>
+     <x>108</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -2244,8 +2244,8 @@
    <slot>gen_distort_corrections()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>234</x>
-     <y>265</y>
+     <x>108</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -2260,8 +2260,8 @@
    <slot>emit_completeChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>266</x>
-     <y>258</y>
+     <x>108</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>1</x>
@@ -2277,11 +2277,43 @@
    <hints>
     <hint type="sourcelabel">
      <x>83</x>
-     <y>215</y>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
      <y>249</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_pathUnalteredRaw</sender>
+   <signal>clicked()</signal>
+   <receiver>Wizard</receiver>
+   <slot>setFolderPath()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>777</x>
+     <y>482</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>827</x>
+     <y>484</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_pathProcessedTIFF</sender>
+   <signal>clicked()</signal>
+   <receiver>Wizard</receiver>
+   <slot>setFolderPath()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>772</x>
+     <y>590</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>834</x>
+     <y>587</y>
     </hint>
    </hints>
   </connection>
