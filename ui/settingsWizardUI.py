@@ -63,7 +63,7 @@ class Ui_Wizard(object):
         self.monitor_scrollArea.setWidgetResizable(True)
         self.monitor_scrollArea.setObjectName("monitor_scrollArea")
         self.scrollAreaWidgetContents_4 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_4.setGeometry(QtCore.QRect(0, 0, 669, 374))
+        self.scrollAreaWidgetContents_4.setGeometry(QtCore.QRect(0, 0, 792, 462))
         self.scrollAreaWidgetContents_4.setObjectName("scrollAreaWidgetContents_4")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents_4)
         self.verticalLayout_3.setContentsMargins(3, 3, 3, 3)
@@ -709,6 +709,8 @@ class Ui_Wizard(object):
         self.comboBox_lensModel.currentTextChanged['QString'].connect(Wizard.gen_distort_corrections)
         self.comboBox_lensModel.currentTextChanged['QString'].connect(Wizard.emit_completeChanged)
         self.checkBox_lensCorrection.stateChanged['int'].connect(Wizard.emit_completeChanged)
+        self.pushButton_pathUnalteredRaw.clicked.connect(Wizard.setFolderPath)
+        self.pushButton_pathProcessedTIFF.clicked.connect(Wizard.setFolderPath)
         QtCore.QMetaObject.connectSlotsByName(Wizard)
 
     def retranslateUi(self, Wizard):
