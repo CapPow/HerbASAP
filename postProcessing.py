@@ -182,6 +182,7 @@ class appWindow(QMainWindow):
         # initiate the persistant settings
         # todo update this when name is decided on
         self.settings = QSettings('HerbASAP', 'HerbASAP')
+        self.setWindowIcon(QtGui.QIcon('docs/icon.png'))
         self.settings.setFallbacksEnabled(False)  # File only, no fallback to registry.
         # populate the settings based on the previous preferences
         self.populateSettings() # this also loads in the settings profile
