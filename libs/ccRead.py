@@ -544,29 +544,65 @@ class ColorchipRead:
         :return: Returns a list of the averaged whitest values
         :rtype: list
         """
-        grayImg = cv2.cvtColor(cropped_cc, cv2.COLOR_RGB2GRAY) #convert to gray
-        minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(grayImg)
-        # determine an allowable range for the floodfill
-        var_threshold = int((maxVal-minVal) * .1)
-        h,w,chn = cropped_cc.shape
-        
-        seed = maxLoc
-        mask = np.zeros((h+2,w+2),np.uint8)
-        floodflags = 8
-        floodflags |= cv2.FLOODFILL_FIXED_RANGE
-        floodflags |= cv2.FLOODFILL_MASK_ONLY
-        floodflags |= (int(maxVal) << 8)
-        num,cropped_cc,mask,rect = cv2.floodFill(cropped_cc, mask, seed,
-                                                 0,
-                                                 (var_threshold,)*3,
-                                                 (var_threshold,)*3,
-                                                 floodflags)
-        # correct for the mask expansion
-        mask = mask[1:-1, 1:-1, ...]
+
+        for i in range(10):
+            grayImg = cv2.cvtColor(cropped_cc, cv2.COLOR_RGB2GRAY)  # convert to gray
+            minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(grayImg)
+            # determine an allowable range for the floodfill
+            var_threshold = int((maxVal - minVal) * .1)
+            cropped_cc = cropped_cc
+            h, w, chn = cropped_cc.shape
+
+            seed = maxLoc
+            mask = np.zeros((h+2,w+2),np.uint8)
+            floodflags = 8
+            floodflags |= cv2.FLOODFILL_FIXED_RANGE
+            floodflags |= cv2.FLOODFILL_MASK_ONLY
+            floodflags |= (int(maxVal) << 8)
+            num,cropped_cc,mask,rect = cv2.floodFill(cropped_cc, mask, seed,
+                                                     0,
+                                                     (var_threshold,)*3,
+                                                     (var_threshold,)*3,
+                                                     floodflags)
+
+            # correct for the mask expansion
+            mask = mask[1:-1, 1:-1, ...]
+            area = h*w
+            contour_area_floor = area // 75
+            contour_area_ceiling = area // 1
+            squares = ColorchipRead.find_squares(mask,
+                                                 contour_area_floor=contour_area_floor,
+                                                 contour_area_ceiling=contour_area_ceiling)
+            # print(squares)
+            # print(len(squares), maxLoc)
+            # print(f"Old shape {cropped_cc.shape}")
+            if len(squares) == 0:
+                prop_diff_height = abs(h / 2 - maxLoc[1]) / h
+                prop_diff_width = abs(w / 2 - maxLoc[0]) / w
+
+                print(prop_diff_height, prop_diff_width)
+                if prop_diff_height > prop_diff_width and maxLoc[1] > h / 2:
+                    cropped_cc = cropped_cc[0:maxLoc[1], 0:w]
+                elif prop_diff_height > prop_diff_width and maxLoc[1] < h / 2:
+                    cropped_cc = cropped_cc[maxLoc[1]:h, 0:w]
+                elif prop_diff_height < prop_diff_width and maxLoc[0] > w / 2:
+                    cropped_cc = cropped_cc[0:h, 0:maxLoc[0]]
+                else:
+                    cropped_cc = cropped_cc[0:h, maxLoc[0]:w]
+                # print(f"New shape {cropped_cc.shape}")
+            else:
+                # pmask = Image.fromarray(mask)
+                # pmask.show()
+                break
+
+        else:
+            raise ValueError
+
         # extract the rgb values of the floodfilled sections
         extracted = cropped_cc[mask != 0]
-        # reorganize the extractedv alues
+        # reorganize the extracted values
         extracted = extracted.reshape(-1,extracted.shape[-1])
+        print("extracted")
         
         # optional code to use mean of the resulting r,g,b values
         #avg_white = extracted.mean(0)
