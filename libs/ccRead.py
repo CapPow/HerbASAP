@@ -56,6 +56,11 @@ class FRCNNLCCFailed(ColorChipError):
         default_message = 'F-RCNN could not find the colorchip within this image.'
         super().__init__(default_message)
 
+class SquareFindingFailed(ColorChipError):
+    def __init__(self):
+        default_message = 'We could not find the appropriate square with the white internal color patch.'
+        super().__init__(default_message)
+
 
 class ColorchipRead:
     def __init__(self, parent=None, *args):
@@ -534,7 +539,7 @@ class ColorchipRead:
             return None
 
     @staticmethod
-    def predict_color_chip_whitevals(cropped_cc):
+    def predict_color_chip_whitevals(cropped_cc, crc_type):
         """
         Takes a cropped CC image and determines the average RGB values of the
         whitest portion.
@@ -568,35 +573,85 @@ class ColorchipRead:
             # correct for the mask expansion
             mask = mask[1:-1, 1:-1, ...]
             area = h*w
-            contour_area_floor = area // 75
+            contour_area_floor = area // 50
             contour_area_ceiling = area // 1
             squares = ColorchipRead.find_squares(mask,
                                                  contour_area_floor=contour_area_floor,
                                                  contour_area_ceiling=contour_area_ceiling)
-            # print(squares)
-            # print(len(squares), maxLoc)
-            # print(f"Old shape {cropped_cc.shape}")
+
             if len(squares) == 0:
                 prop_diff_height = abs(h / 2 - maxLoc[1]) / h
                 prop_diff_width = abs(w / 2 - maxLoc[0]) / w
 
                 print(prop_diff_height, prop_diff_width)
                 if prop_diff_height > prop_diff_width and maxLoc[1] > h / 2:
-                    cropped_cc = cropped_cc[0:maxLoc[1], 0:w]
+                    cropped_cc = cropped_cc[0:maxLoc[1] - 2, 0:w]
                 elif prop_diff_height > prop_diff_width and maxLoc[1] < h / 2:
-                    cropped_cc = cropped_cc[maxLoc[1]:h, 0:w]
+                    cropped_cc = cropped_cc[maxLoc[1] + 2:h, 0:w]
                 elif prop_diff_height < prop_diff_width and maxLoc[0] > w / 2:
-                    cropped_cc = cropped_cc[0:h, 0:maxLoc[0]]
+                    cropped_cc = cropped_cc[0:h, 0:maxLoc[0] - 2]
                 else:
-                    cropped_cc = cropped_cc[0:h, maxLoc[0]:w]
+                    cropped_cc = cropped_cc[0:h, maxLoc[0] + 2:w]
                 # print(f"New shape {cropped_cc.shape}")
-            else:
-                # pmask = Image.fromarray(mask)
-                # pmask.show()
-                break
+                continue
 
+            good_square = False
+            for square in squares:
+                squares = sorted(squares, key=cv2.contourArea, reverse=True)
+                x_arr = square[..., 0]
+                y_arr = square[..., 1]
+                x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
+                square_width, square_height = x2 - x1, y2 - y1
+                longest_side = max(square_width, square_height)
+                shortest_side = min(square_width, square_height)
+                ratio = longest_side / shortest_side
+
+                # print(squares)
+                # print(len(squares), maxLoc)
+                # print(f"Old shape {cropped_cc.shape}")
+
+                print(f"White patch square ratio: {ratio}")
+                if crc_type in ['CameraTrax 24 ColorCard (2" x 3")',
+                                'ISA ColorGauge Nano',
+                                'X-Rite ColorChecker Passport',
+                                'X-Rite ColorChecker Classic'
+                                ]:
+                    # Longest side is roughly equal to shortest side
+                    if not (0.9 < ratio < 1.1):
+                        continue
+                    else:
+                        good_square = True
+                        break
+                elif crc_type in ['Tiffen / Kodak Q-13  (8")',
+                                  ]:
+                    # Longest side is roughly 1.6x longer than shortest side
+                    if not (1.5 < ratio < 1.7):
+                        continue
+                    else:
+                        good_square = True
+                        break
+
+            else:
+                prop_diff_height = abs(h / 2 - maxLoc[1]) / h
+                prop_diff_width = abs(w / 2 - maxLoc[0]) / w
+
+                # print(prop_diff_height, prop_diff_width)
+                if prop_diff_height > prop_diff_width and maxLoc[1] > h / 2:
+                    cropped_cc = cropped_cc[0:maxLoc[1] - 2, 0:w]
+                elif prop_diff_height > prop_diff_width and maxLoc[1] < h / 2:
+                    cropped_cc = cropped_cc[maxLoc[1] + 2:h, 0:w]
+                elif prop_diff_height < prop_diff_width and maxLoc[0] > w / 2:
+                    cropped_cc = cropped_cc[0:h, 0:maxLoc[0] - 2]
+                else:
+                    cropped_cc = cropped_cc[0:h, maxLoc[0] + 2:w]
+
+                # print(f"New shape {cropped_cc.shape}")
+
+                continue
+            if good_square:
+                break
         else:
-            raise ValueError
+            raise SquareFindingFailed
 
         # extract the rgb values of the floodfilled sections
         extracted = cropped_cc[mask != 0]

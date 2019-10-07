@@ -868,7 +868,8 @@ class appWindow(QMainWindow):
 
                 self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_location)
                 self.cropped_cc = cropped_cc
-                cc_avg_white, self.cc_blk_point = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc)
+                cc_avg_white, self.cc_blk_point = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc,
+                                                                                                    crc_type)
                 # print(f'avg BLACK: {self.cc_blk_point}')
 
                 if performWhiteBalance:
