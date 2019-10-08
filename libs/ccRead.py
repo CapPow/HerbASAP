@@ -558,10 +558,24 @@ class ColorchipRead:
         :rtype: list
         """
 
-        for i in range(10):
-            grayImg = cv2.cvtColor(cropped_cc, cv2.COLOR_RGB2GRAY)  # convert to gray
+        def _remove_wrong_white_loc(cropped_cc):
+            prop_diff_height = abs(h / 2 - maxLoc[1]) / h
+            prop_diff_width = abs(w / 2 - maxLoc[0]) / w
+
+            if prop_diff_height > prop_diff_width and maxLoc[1] > h / 2:
+                cropped_cc = cropped_cc[0:maxLoc[1] - 2, 0:w]
+            elif prop_diff_height > prop_diff_width and maxLoc[1] < h / 2:
+                cropped_cc = cropped_cc[maxLoc[1] + 2:h, 0:w]
+            elif prop_diff_height < prop_diff_width and maxLoc[0] > w / 2:
+                cropped_cc = cropped_cc[0:h, 0:maxLoc[0] - 2]
+            else:
+                cropped_cc = cropped_cc[0:h, maxLoc[0] + 2:w]
+
+            return cropped_cc
+
+        for _ in range(10):
+            grayImg = cv2.cvtColor(cropped_cc, cv2.COLOR_RGB2GRAY)
             minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(grayImg)
-            # determine an allowable range for the floodfill
             var_threshold = int((maxVal - minVal) * .1)
             cropped_cc = cropped_cc
             h, w, chn = cropped_cc.shape
@@ -578,9 +592,8 @@ class ColorchipRead:
                                                      (var_threshold,)*3,
                                                      floodflags)
 
-            # correct for the mask expansion
             mask = mask[1:-1, 1:-1, ...]
-            area = h*w
+            area = h * w
             contour_area_floor = area // 50
             contour_area_ceiling = area // 1
             squares = ColorchipRead.find_squares(mask,
@@ -588,21 +601,9 @@ class ColorchipRead:
                                                  contour_area_ceiling=contour_area_ceiling)
 
             if len(squares) == 0:
-                prop_diff_height = abs(h / 2 - maxLoc[1]) / h
-                prop_diff_width = abs(w / 2 - maxLoc[0]) / w
-
-                if prop_diff_height > prop_diff_width and maxLoc[1] > h / 2:
-                    cropped_cc = cropped_cc[0:maxLoc[1] - 2, 0:w]
-                elif prop_diff_height > prop_diff_width and maxLoc[1] < h / 2:
-                    cropped_cc = cropped_cc[maxLoc[1] + 2:h, 0:w]
-                elif prop_diff_height < prop_diff_width and maxLoc[0] > w / 2:
-                    cropped_cc = cropped_cc[0:h, 0:maxLoc[0] - 2]
-                else:
-                    cropped_cc = cropped_cc[0:h, maxLoc[0] + 2:w]
-                # print(f"New shape {cropped_cc.shape}")
+                cropped_cc = _remove_wrong_white_loc(cropped_cc)
                 continue
 
-            good_square = False
             squares = sorted(squares, key=cv2.contourArea, reverse=True)
             for square in squares:
                 x_arr = square[..., 0]
@@ -613,60 +614,23 @@ class ColorchipRead:
                 shortest_side = min(square_width, square_height)
                 ratio = longest_side / shortest_side
 
-                # print(squares)
-                # print(len(squares), maxLoc)
-                # print(f"Old shape {cropped_cc.shape}")
-
-                # print(f"White patch rectangle ratio: {ratio}")
                 if crc_type in ['Tiffen / Kodak Q-13  (8")',
-                                  ]:
+                                ]:
                     # Longest side is roughly 1.6x longer than shortest side
-                    if not (1.5 < ratio < 1.7):
-                        continue
-                    else:
-                        good_square = True
+                    if 1.45 < ratio < 1.75:
                         break
                 else:
-                    if not (0.9 < ratio < 1.1):
-                        continue
-                    else:
-                        good_square = True
+                    if 0.85 < ratio < 1.15:
                         break
-
             else:
-                prop_diff_height = abs(h / 2 - maxLoc[1]) / h
-                prop_diff_width = abs(w / 2 - maxLoc[0]) / w
-
-                # print(prop_diff_height, prop_diff_width)
-                if prop_diff_height > prop_diff_width and maxLoc[1] > h / 2:
-                    cropped_cc = cropped_cc[0:maxLoc[1] - 2, 0:w]
-                elif prop_diff_height > prop_diff_width and maxLoc[1] < h / 2:
-                    cropped_cc = cropped_cc[maxLoc[1] + 2:h, 0:w]
-                elif prop_diff_height < prop_diff_width and maxLoc[0] > w / 2:
-                    cropped_cc = cropped_cc[0:h, 0:maxLoc[0] - 2]
-                else:
-                    cropped_cc = cropped_cc[0:h, maxLoc[0] + 2:w]
-
-                # print(f"New shape {cropped_cc.shape}")
-
+                cropped_cc = _remove_wrong_white_loc(cropped_cc)
                 continue
-
-            if good_square:
-                break
+            break
         else:
             raise SquareFindingFailed
 
-        # extract the rgb values of the floodfilled sections
         extracted = cropped_cc[mask != 0]
-        # reorganize the extracted values
         extracted = extracted.reshape(-1,extracted.shape[-1])
-        
-        # optional code to use mean of the resulting r,g,b values
-        #avg_white = extracted.mean(0)
-        #avg_white = np.asarray(avg_white, dtype=int)
-        #print(avg_white)
-        
-        # get the mode for each channel value
         mode_white = np.apply_along_axis(lambda x: np.bincount(x).argmax(), axis=0, arr=extracted)
 
         return list(mode_white), minVal
