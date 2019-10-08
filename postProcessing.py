@@ -853,7 +853,6 @@ class appWindow(QMainWindow):
                 x1, y1, x2, y2 = cc_location
                 if scaleDetermination:
                     # scale determination code
-                    x1, y1, x2, y2 = cc_location
                     full_res_cc = im[y1:y2, x1:x2]
                     # useful for debugging
                     #cv2.imwrite('full_res_cc.jpg', full_res_cc)
@@ -899,6 +898,7 @@ class appWindow(QMainWindow):
 
                 self.apply_corrections()
 
+
                 # print(f"CC Position before calc.: {cc_location}")
                 width, height = original_size
                 if self.flip_value == 3:
@@ -912,6 +912,7 @@ class appWindow(QMainWindow):
 
                 cc_location = x1, y1, x2, y2
                 self.cc_location = cc_location
+
                 # print(f"CC Position after calc.: {cc_location}")
 
                 self.update_cc_info(self.cc_quadrant, cropped_cc,

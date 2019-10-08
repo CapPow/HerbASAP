@@ -140,9 +140,9 @@ class ColorchipRead:
         return abs(np.dot(d1, d2) / np.sqrt(np.dot(d1, d1) * np.dot(d2, d2)))
 
     @staticmethod
-    def find_squares(img, contour_area_floor=850, contour_area_ceiling=100000, leap=6):
+    def find_squares(img, contour_area_floor=850, contour_area_ceiling=100000, leap=6, k_size=5):
         # taken from: opencv samples
-        img = cv2.GaussianBlur(img, (5, 5), 0)
+        img = cv2.GaussianBlur(img, (k_size, k_size), 0)
         squares = []
         for gray in cv2.split(img):
             for thrs in range(0, 255, leap):
@@ -434,12 +434,18 @@ class ColorchipRead:
         # cv2.imwrite(f'ccs/o-{self.iterator}.jpg', best_image)
         x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
         if high_precision:
-            try:
-                best_image, best_square = self.high_precision_cc_crop(best_image)
-                x1, y1, x2, y2 = best_location[0] + best_square[0], best_location[1] + best_square[1], \
-                                 best_location[0] + best_square[2], best_location[1] + best_square[3]
-            except TypeError:
-                x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
+        # try:
+            best_image, best_square = self.high_precision_cc_crop(best_image)
+            ratio = 125 / partition_size
+            best_square = [best_square[0] // ratio,
+                           best_square[1] // ratio,
+                           best_square[2] // ratio,
+                           best_square[3] // ratio]
+            x1, y1, x2, y2 = best_location[0] + best_square[0], best_location[1] + best_square[1], \
+                             best_location[0] + best_square[2], best_location[1] + best_square[3]
+
+        # except TypeError:
+        #     x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
 
         # print(f"High precision took {time.time() - hpstart} seconds.")
         # cv2.imwrite(f'ccs/h-{self.iterator}.jpg', best_image)
@@ -466,7 +472,8 @@ class ColorchipRead:
         return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image, cc_crop_time
 
     def high_precision_cc_crop(self, input_img):
-        cv_image = cv2.cvtColor(input_img, cv2.COLOR_RGB2HSV)
+        # cv_image = cv2.cvtColor(input_img, cv2.COLOR_RGB2HSV)
+        cv_image = input_img
         h, w = input_img.shape[0:2]
         area = h*w
         min_crop_area = area // 4
@@ -474,6 +481,7 @@ class ColorchipRead:
 
         # identify squares in the crop
         squares = ColorchipRead.find_squares(cv_image,
+                                             leap=1,
                                              contour_area_floor=min_crop_area,
                                              contour_area_ceiling=max_crop_area)
 
@@ -583,7 +591,6 @@ class ColorchipRead:
                 prop_diff_height = abs(h / 2 - maxLoc[1]) / h
                 prop_diff_width = abs(w / 2 - maxLoc[0]) / w
 
-                print(prop_diff_height, prop_diff_width)
                 if prop_diff_height > prop_diff_width and maxLoc[1] > h / 2:
                     cropped_cc = cropped_cc[0:maxLoc[1] - 2, 0:w]
                 elif prop_diff_height > prop_diff_width and maxLoc[1] < h / 2:
@@ -596,8 +603,8 @@ class ColorchipRead:
                 continue
 
             good_square = False
+            squares = sorted(squares, key=cv2.contourArea, reverse=True)
             for square in squares:
-                squares = sorted(squares, key=cv2.contourArea, reverse=True)
                 x_arr = square[..., 0]
                 y_arr = square[..., 1]
                 x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
@@ -610,22 +617,17 @@ class ColorchipRead:
                 # print(len(squares), maxLoc)
                 # print(f"Old shape {cropped_cc.shape}")
 
-                print(f"White patch square ratio: {ratio}")
-                if crc_type in ['CameraTrax 24 ColorCard (2" x 3")',
-                                'ISA ColorGauge Nano',
-                                'X-Rite ColorChecker Passport',
-                                'X-Rite ColorChecker Classic'
-                                ]:
-                    # Longest side is roughly equal to shortest side
-                    if not (0.9 < ratio < 1.1):
+                # print(f"White patch rectangle ratio: {ratio}")
+                if crc_type in ['Tiffen / Kodak Q-13  (8")',
+                                  ]:
+                    # Longest side is roughly 1.6x longer than shortest side
+                    if not (1.5 < ratio < 1.7):
                         continue
                     else:
                         good_square = True
                         break
-                elif crc_type in ['Tiffen / Kodak Q-13  (8")',
-                                  ]:
-                    # Longest side is roughly 1.6x longer than shortest side
-                    if not (1.5 < ratio < 1.7):
+                else:
+                    if not (0.9 < ratio < 1.1):
                         continue
                     else:
                         good_square = True
@@ -648,6 +650,7 @@ class ColorchipRead:
                 # print(f"New shape {cropped_cc.shape}")
 
                 continue
+
             if good_square:
                 break
         else:
@@ -657,7 +660,6 @@ class ColorchipRead:
         extracted = cropped_cc[mask != 0]
         # reorganize the extracted values
         extracted = extracted.reshape(-1,extracted.shape[-1])
-        print("extracted")
         
         # optional code to use mean of the resulting r,g,b values
         #avg_white = extracted.mean(0)

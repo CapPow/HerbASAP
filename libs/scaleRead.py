@@ -7,6 +7,8 @@
 import cv2
 import numpy as np
 
+from libs.ccRead import ColorchipRead
+
 
 class ScaleRead:
 
@@ -135,6 +137,24 @@ class ScaleRead:
         
         return seed_pts
 
+    @staticmethod
+    def find_square_seeds(im, contour_area_floor, contour_area_ceiling):
+        squares = ColorchipRead.find_squares(im,
+                                             leap=1,
+                                             k_size=7,
+                                             contour_area_floor=contour_area_floor,
+                                             contour_area_ceiling=contour_area_ceiling)
+
+        seed_points = set()
+        for square in squares:
+            x_arr = square[..., 0]
+            y_arr = square[..., 1]
+            x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
+            square_width, square_height = x2 - x1, y2 - y1
+            cx, cy = x1 + square_width, y1 + square_height
+            seed_points.add((cx, cy))
+
+        return seed_points
 
     @staticmethod
     def find_scale(im, patch_mm_area, seed_func, to_crop, retry=True):
@@ -151,19 +171,29 @@ class ScaleRead:
         :return: Returns the rounded pixels per millimeter and 95% CI.
         '''
         # Converting to HSV as it performs better during floodfill
-        im = cv2.cvtColor(im, cv2.COLOR_RGB2HSV)
+        # im = cv2.cvtColor(im, cv2.COLOR_RGB2HSV)
+
+        # cv2.imwrite("im.jpg", im)
+
         # if the color reference card benefits from a high precision crop
         # in the Q-13s, the partial crop detection is too aggressive after high
         # precision cropping.
         if to_crop:
             im = ScaleRead.high_precision_cc_crop(im)
         h, w = im.shape[0:2]
-        # calculate a series of seed positions to start floodfilling
-        seed_pts = seed_func(h, w)
+
         # determine reasonable area limits for squares
-        area = h*w
-        contour_area_floor = area // 50
+        area = h * w
+        contour_area_floor = area // 75
         contour_area_ceiling = area // 10
+
+        # calculate a series of seed positions to start floodfilling
+        seed_pts = ScaleRead.find_square_seeds(im, contour_area_floor, contour_area_ceiling)
+        # print(f"New seed points: {seed_pts}")
+        # seed_pts = seed_func(h, w)
+        # print(f"Old seed points: {seed_pts}")
+
+
 
         #determine reasonable lower, upper thresholds, 5% of lum range
         minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(cv2.cvtColor(im, cv2.COLOR_RGB2LAB)[..., 0])
@@ -180,6 +210,8 @@ class ScaleRead:
             _, _, mask, rect = cv2.floodFill(im, mask, seed, (255,0,0),
                                              (var_threshold, )*3,
                                              (var_threshold, )*3, floodflags)
+
+            # cv2.imwrite(f"mask_{i}.jpg", mask)
 
             x1, y1, patch_w, patch_h = rect
             patch_hw = [patch_w, patch_h]
