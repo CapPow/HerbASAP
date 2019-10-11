@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="300" height="393" src="/docs/md_a_wt.png">
+  <img width="300" height="450" src="/docs/md_a_wt.png">
 </p>
 
 # HerbASAP
