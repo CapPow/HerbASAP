@@ -1,9 +1,6 @@
 ---
 layout: default
 ---
+## A project whose lab consisted of a nerd and a homo who were mentored by some hippie. Who knew they would be so productive.
 
-<p align="center">
-  <img width="300" height="450" src="md_a_wt.png">
-</p>
-
-A program created in an effort to automate image post processing for natural history collections
+Big thanks to Shaw Lab because duh they're awesome.

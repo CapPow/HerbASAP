@@ -21,6 +21,7 @@ baseurl: "/HerbASAP" # the subpath of your site, e.g. /blog
 url: "https://cappow.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username:
 github_username:  CapPow
+logo: md_a.png
 
 # Build settings
 markdown: kramdown
