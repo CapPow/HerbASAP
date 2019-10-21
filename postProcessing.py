@@ -931,7 +931,7 @@ class appWindow(QMainWindow):
                 self.process_from_queue()
                 return
 
-        #self.high_precision_wb(cc_location)
+        self.high_precision_wb(cc_location)
         # pass off what was learned and properly open image.
         # add the (mostly) corrected image to the preview
         # equipment corrections remain. let user look at this while that runs.

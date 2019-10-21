@@ -659,7 +659,8 @@ class SettingsWizard(QWizard):
         from libs.ccRead import ColorchipRead
         colorchipDetect = ColorchipRead(parent=self.wiz)
         try:
-            cc_avg_white, cc_black_point = colorchipDetect.predict_color_chip_whitevals(self.cropped_cc)
+            crc_type = self.wiz.comboBox_crcType.currentText()
+            cc_avg_white, cc_black_point = colorchipDetect.predict_color_chip_whitevals(self.cropped_cc, crc_type)
             if isinstance(cc_avg_white, list):
                 formatted_results = f"avg white RGB from CRC = {cc_avg_white}"
 
@@ -668,7 +669,7 @@ class SettingsWizard(QWizard):
             notice_text = 'Failed to calculate average white RGB value from CRC patches'
             detail_text = '\n{e}'
             self.userNotice(notice_text, notice_title, detail_text)
-            formatted_result = 'TEST FAILED'
+            formatted_results = 'TEST FAILED'
 
         self.wiz.label_whiteBalance_results.setText(formatted_results)
 
