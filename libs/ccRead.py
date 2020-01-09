@@ -36,9 +36,6 @@ from libs.models.keras_frcnn.useFRCNN import process_image_frcnn
 class ClassTransfer:
     data_transfer = None
 
-    # def __init__(self):
-    #     self.data_transfer = None
-
 
 class Canvas(QtWidgets.QLabel):
     def __init__(self, im, parent=None):
@@ -119,15 +116,28 @@ class Canvas(QtWidgets.QLabel):
 
 
 class ImageDialog(QDialog):
-    def __init__(self, img_array_object):
+    def __init__(self, img_array_object, transfer_object):
         super().__init__()
-        self.init_ui(img_array_object)
+        self.init_ui(img_array_object, transfer_object)
 
-    def init_ui(self, img_array_object):
+    def init_ui(self, img_array_object, transfer_object1):
         mb = Ui_Dialog_image()
         mb.setupUi(self)
         canv = Canvas(im=img_array_object)
-        mb.gridLayout.addWidget(canv)
+        # mb.gridLayout.addWidget(canv)
+
+
+class RedoCRCDialog(QDialog):
+    def __init__(self, im_list):
+        super().__init__()
+        self.init_ui(im_list)
+
+    def init_ui(self, im_list):
+        mb = Ui_Dialog_image()
+        mb.setupUi(self)
+        for i in im_list:
+            canv = Canvas(im=i)
+            mb.gridLayout.addWidget(canv)
 
 
 class ColorChipError(Exception):
@@ -166,7 +176,6 @@ class SquareFindingFailed(ColorChipError):
 
 
 class ColorchipRead:
-
     def __init__(self, parent=None, *args):
         super(ColorchipRead, self).__init__()
         self.parent = parent
@@ -478,6 +487,8 @@ class ColorchipRead:
                 (list(t) for t in zip(*sorted(zip(only_cc_position_uncertainty, only_cc_position_prediction, indices))))
 
             max_pred = max(position_predictions)
+
+            print(position_prediction[:5])
             for _j, position_prediction in enumerate(position_predictions):
                 try:
                     if position_prediction < (max_pred - 0.001):
@@ -556,6 +567,7 @@ class ColorchipRead:
 
         # print(f"High precision took {time.time() - hpstart} seconds.")
         # cv2.imwrite(f'ccs/h-{self.iterator}.jpg', best_image)
+
         self.iterator += 1
 
         xc = np.array([x1, x2])
@@ -742,15 +754,14 @@ class ColorchipRead:
 
             return list(mode_white), minVal
         else:
-            transfer_mwp = ClassTransfer
-            mb = ImageDialog(cropped_cc_original)
+            transfer_mwp = ClassTransfer()
+            mb = ImageDialog(cropped_cc_original, transfer_mwp)
             if not mb.exec():
                 raise SquareFindingFailed
 
             h, w, chn = cropped_cc_original.shape
 
             seed = (transfer_mwp.data_transfer.x(), transfer_mwp.data_transfer.y())
-            print(seed)
             mask = np.zeros((h + 2, w + 2), np.uint8)
             floodflags = 8
             floodflags |= cv2.FLOODFILL_FIXED_RANGE

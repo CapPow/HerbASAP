@@ -228,7 +228,10 @@ class appWindow(QMainWindow):
         # setup static UI buttons
         self.mainWindow.toolButton_delPreviousImage.pressed.connect(self.delete_previous_image)
         self.mainWindow.toolButton_editTechnicians.pressed.connect(self.edit_technician_list)
+        self.redo_crc_temp = lambda x: x
+        self.mainWindow.toolButton_redoColorRef.pressed.connect(self.redo_crc_temp)
 #       self.versionCheck()
+
 
 #    def versionCheck(self):
 #        """ checks the github repo's latest release version number against
@@ -1537,7 +1540,7 @@ class appWindow(QMainWindow):
             self.settings.remove('')
             self.populateSettings()
             self.saveSettings()
-        
+
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     w = appWindow()

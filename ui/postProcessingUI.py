@@ -2,13 +2,11 @@
 
 # Form implementation generated from reading ui file 'ui/postProcessingUI.ui'
 #
-# Created by: PyQt5 UI code generator 5.12.3
+# Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -122,16 +120,7 @@ class Ui_MainWindow(object):
         self.gridLayout_16.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
         self.gridLayout_16.setObjectName("gridLayout_16")
         spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout_16.addItem(spacerItem, 0, 3, 1, 1)
-        self.toolButton_delPreviousImage = QtWidgets.QToolButton(self.folderMonitorTab)
-        self.toolButton_delPreviousImage.setEnabled(False)
-        self.toolButton_delPreviousImage.setAutoFillBackground(False)
-        self.toolButton_delPreviousImage.setText("")
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icon/trash-2.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.toolButton_delPreviousImage.setIcon(icon)
-        self.toolButton_delPreviousImage.setObjectName("toolButton_delPreviousImage")
-        self.gridLayout_16.addWidget(self.toolButton_delPreviousImage, 1, 3, 1, 1)
+        self.gridLayout_16.addItem(spacerItem, 0, 4, 1, 1)
         self.label_cc_image = QtWidgets.QLabel(self.folderMonitorTab)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -142,7 +131,19 @@ class Ui_MainWindow(object):
         self.label_cc_image.setText("")
         self.label_cc_image.setAlignment(QtCore.Qt.AlignCenter)
         self.label_cc_image.setObjectName("label_cc_image")
-        self.gridLayout_16.addWidget(self.label_cc_image, 0, 2, 2, 1)
+        self.gridLayout_16.addWidget(self.label_cc_image, 0, 2, 3, 1)
+        self.toolButton_delPreviousImage = QtWidgets.QToolButton(self.folderMonitorTab)
+        self.toolButton_delPreviousImage.setEnabled(False)
+        self.toolButton_delPreviousImage.setAutoFillBackground(False)
+        self.toolButton_delPreviousImage.setText("")
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/icon/trash-2.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.toolButton_delPreviousImage.setIcon(icon)
+        self.toolButton_delPreviousImage.setObjectName("toolButton_delPreviousImage")
+        self.gridLayout_16.addWidget(self.toolButton_delPreviousImage, 2, 4, 1, 1)
+        self.toolButton_redoColorRef = QtWidgets.QToolButton(self.folderMonitorTab)
+        self.toolButton_redoColorRef.setObjectName("toolButton_redoColorRef")
+        self.gridLayout_16.addWidget(self.toolButton_redoColorRef, 1, 4, 1, 1)
         self.verticalLayout_4.addLayout(self.gridLayout_16)
         self.formGroupBox_sessionMetadata = QtWidgets.QGroupBox(self.folderMonitorTab)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
@@ -390,6 +391,7 @@ class Ui_MainWindow(object):
         self.label_17.setText(_translate("MainWindow", "(higher is better)"))
         self.label_24.setText(_translate("MainWindow", "CC runtime:"))
         self.label_20.setText(_translate("MainWindow", "CC white rgb:"))
+        self.toolButton_redoColorRef.setText(_translate("MainWindow", "..."))
         self.formGroupBox_sessionMetadata.setTitle(_translate("MainWindow", "Apply Session Metadata"))
         self.label_16.setText(_translate("MainWindow", "Taxon:"))
         self.label_19.setText(_translate("MainWindow", "Collector:"))
@@ -417,4 +419,5 @@ class Ui_MainWindow(object):
         self.value_LightTheme.setText(_translate("MainWindow", "Default System Settings"))
         self.label_23.setText(_translate("MainWindow", "(changes will be applied the next time the program opens)"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.settingsTab), _translate("MainWindow", "Settings"))
+
 from . import assets_rc
