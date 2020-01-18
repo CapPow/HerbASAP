@@ -141,7 +141,8 @@ class ColorchipRead:
     @staticmethod
     def find_squares(img, contour_area_floor=850, contour_area_ceiling=100000, leap=6, k_size=5):
         # taken from: opencv samples
-        img = cv2.GaussianBlur(img, (k_size, k_size), 0)
+        if k_size > 0:
+            img = cv2.GaussianBlur(img, (k_size, k_size), 0)
         squares = []
         for gray in cv2.split(img):
             for thrs in range(0, 255, leap):
@@ -557,11 +558,12 @@ class ColorchipRead:
         :rtype: list
         """
 
-        for _ in range(10):
-            grayImg = cv2.cvtColor(cropped_cc, cv2.COLOR_RGB2GRAY)
+        #cropped_cc = cropped_cc.copy()
+        #grayImg = cropped_cc.sum(axis=2)
+        grayImg = cv2.cvtColor(cropped_cc, cv2.COLOR_RGB2GRAY)
+        for _ in range(20):
             minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(grayImg)
             var_threshold = int((maxVal - minVal) * .1)
-            cropped_cc = cropped_cc
             h, w, chn = cropped_cc.shape
             if seed_pt:
                 seed = seed_pt
@@ -579,16 +581,17 @@ class ColorchipRead:
                                                      floodflags)
             mask = mask[1:-1, 1:-1, ...]
             area = h * w
-            contour_area_floor = area // 500
-            contour_area_ceiling = area // 3
+            contour_area_floor = area // 350
+            contour_area_ceiling = area // 5
+            # use a leap that assures few steps
             squares = ColorchipRead.find_squares(mask,
                                                  contour_area_floor=contour_area_floor,
-                                                 contour_area_ceiling=contour_area_ceiling)
-
+                                                 contour_area_ceiling=contour_area_ceiling,
+                                                 leap = 85)
             if len(squares) == 0:
-                cropped_cc[np.where(mask > 0)] = 0
-                print("Blacked Out a Point")
-                #cropped_cc = _remove_wrong_white_loc(cropped_cc)
+                # redact brighter values which are not "squarey"
+                badMin = np.min(grayImg[np.where(mask != 0)])
+                grayImg[np.where(grayImg >= badMin)] = 0
                 continue
 
             squares = sorted(squares, key=cv2.contourArea, reverse=True)
@@ -603,21 +606,29 @@ class ColorchipRead:
 
                 if crc_type == 'Tiffen / Kodak Q-13  (8")':
                     # Longest side is roughly 1.6x longer than shortest side
-                    if 1.45 < ratio < 1.75:
+                    if 1.40 < ratio < 1.80:
                         break
                 else:
-                    if 0.85 < ratio < 1.15:
+                    if 0.80 < ratio < 1.20:
                         break
             else:
-                cropped_cc[np.where(mask > 0)] = 0
-                print("Blacked Out a Point")
-                #cropped_cc = _remove_wrong_white_loc(cropped_cc)
+                # redact brighter values which are not "squarey"
+                badMin = np.min(grayImg[np.where(mask != 0)])
+                grayImg[np.where(grayImg >= badMin)] = 0
+                print('Cleaned up bright points')
                 continue
             break
         else:
              raise SquareFindingFailed
 
         extracted = cropped_cc[mask != 0]
+        # annotate the detected point for preview window
+        squares = ColorchipRead.find_squares(mask,
+                                             contour_area_floor=contour_area_floor,
+                                             contour_area_ceiling=contour_area_ceiling,
+                                             leap = 85)
+        square = sorted(squares, key=cv2.contourArea, reverse=True)
+        cv2.drawContours(cropped_cc, square, 0, (0,255,0), 1)
         extracted = extracted.reshape(-1,extracted.shape[-1])
         mode_white = np.apply_along_axis(lambda x: np.bincount(x).argmax(), axis=0, arr=extracted)
 

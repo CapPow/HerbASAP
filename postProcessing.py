@@ -141,7 +141,8 @@ class Canvas(QtWidgets.QLabel):
         # determine the end (e) points, adjusted for scale
         se_x, se_y= int(e_x * x_corr), int(e_y * y_corr)
         # update the seed_point attribute in the parent dialog
-        self.parent.seed_point = (se_y, se_x)
+        #self.parent.seed_point = (se_y, se_x)
+        self.parent.seed_point = (se_x, se_y)
         
 class ImageDialog(QDialog):
     def __init__(self, img_array_object):
