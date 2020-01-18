@@ -6,12 +6,6 @@
     performs post processing steps on raw format images of natural history
     specimens. Specifically designed for Herbarium sheet images.
 """
-from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtWidgets import (QWizard, QSizePolicy, QWhatsThis,
-                             QMessageBox, QDialog, QApplication)
-from PyQt5.QtCore import Qt
-from ui.imageDialogUI import Ui_Dialog_image
-
 import numpy as np
 from PIL import Image
 import cv2
@@ -31,103 +25,6 @@ if K.backend() != 'tensorflow':
     raise RuntimeError(f"Please set your keras.json to use TensorFlow. It is currently using {keras.backend.backend()}")
 # from libs.settingsWizard import ImageDialog
 from libs.models.keras_frcnn.useFRCNN import process_image_frcnn
-
-
-class ClassTransfer:
-    data_transfer = None
-
-    # def __init__(self):
-    #     self.data_transfer = None
-
-
-class Canvas(QtWidgets.QLabel):
-    def __init__(self, im, parent=None):
-        super().__init__()
-        # pixmap = QtGui.QPixmap(600, 300)
-        # self.setPixmap(pixmap)
-        self.parent = parent
-        self.setObjectName("canvas")
-        self.backDrop, self.correction = self.genPixBackDrop(im)
-        self.setPixmap(self.backDrop)
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.begin = QtCore.QPoint()
-        self.end = QtCore.QPoint()
-        # the box_size, is the point of the entire canvas.
-        # The scale corrected larger dim of the annotated rect
-        self.scaled_begin = (0, 0)
-        self.scaled_end = (0, 0)
-        self.end_pos = None
-
-    def genPixBackDrop(self, im):
-        # if it is oriented in landscape, rotate it
-        h, w = im.shape[0:2]
-        if h < w:
-            im = np.rot90(im, 3)  # 3 or 1 would be equally appropriate
-            h, w = w, h  # swap the variables after rotating
-        bytesPerLine = 3 * w
-        # odd bug here, must use .copy() to avoid a mem error.
-        # see: https://stackoverflow.com/questions/48639185/pyqt5-qimage-from-numpy-array
-        qImg = QtGui.QImage(im.copy(), w, h, bytesPerLine,
-                            QtGui.QImage.Format_RGB888)
-        pixmap = QtGui.QPixmap.fromImage(qImg)
-        width = 120
-        height = 120
-        pixmap = pixmap.scaled(width, height,
-                               QtCore.Qt.KeepAspectRatio,
-                               Qt.FastTransformation)
-        # corrections are doubled due to display image bieng opened at half res
-        h_correction = (h) / height
-        w_correction = (w) / width
-        correction = (w_correction, h_correction)
-        return pixmap, correction
-
-    def paintEvent(self, event):
-        qp = QtGui.QPainter(self)
-
-        qp.drawEllipse(40, 40, 400, 400)
-        qp.drawPixmap(self.rect(), self.backDrop)
-        # set brush to a lime green
-        # br = QtGui.QBrush(Qt.red, Qt.SolidPattern)
-        # qp.setBrush(br)
-        qp.setPen(QtGui.QPen(Qt.green, 1, Qt.SolidLine))
-        qp.drawEllipse(self.end.x() - 3, self.end.y() - 3, 6, 6)
-
-    def mousePressEvent(self, event):
-        # dialog = self.exec()
-        self.begin = event.pos()
-        self.end = event.pos()
-        print(self.end)
-        self.update()
-
-        width = self.width()
-        height = self.height()
-        end_point = event.pos()
-        # ensure the annotations are "inside the lines"
-        e_x = end_point.x()
-        if e_x < 0:
-            end_point.setX(0)
-        elif e_x > width:
-            end_point.setX(width)
-        e_y = end_point.y()
-        if e_y < 0:
-            end_point.setY(0)
-        elif e_y > height:
-            end_point.setY(height)
-        self.end = end_point
-        self.update()
-        ClassTransfer.data_transfer = end_point
-
-
-class ImageDialog(QDialog):
-    def __init__(self, img_array_object):
-        super().__init__()
-        self.init_ui(img_array_object)
-
-    def init_ui(self, img_array_object):
-        mb = Ui_Dialog_image()
-        mb.setupUi(self)
-        canv = Canvas(im=img_array_object)
-        mb.gridLayout.addWidget(canv)
 
 
 class ColorChipError(Exception):
@@ -187,10 +84,6 @@ class ColorchipRead:
         self.discriminator_output_details = self.discriminator_model.get_output_details()
 
         self.iterator = 0
-        self.manual_white_point = None
-
-    def self_white_point(self, pos):
-        self.manual_white_point = pos
 
     def ocv_to_pil(self, im):
         """
@@ -238,7 +131,7 @@ class ColorchipRead:
             cc_crop_time = round(time.time() - start, 3)
             return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), cropped_im, cc_crop_time
         except SystemError as e:
-            raise ColorChipError("System error: {e}")
+            raise ColorChipError(f"System error: {e}")
 
     @staticmethod
     def angle_cos(p0, p1, p2):
@@ -465,7 +358,6 @@ class ColorchipRead:
             hists_hsv = np.array(hists_hsv, dtype=np.uint16)
 
             position_predictions = []
-            position_start = time.time()
 
         if full_tf:
             position_prediction, position_uncertainty = self._position_with_uncertainty([hists_rgb, hists_hsv], 10)
@@ -654,7 +546,7 @@ class ColorchipRead:
             return None
 
     @staticmethod
-    def predict_color_chip_whitevals(cropped_cc, crc_type):
+    def predict_color_chip_whitevals(cropped_cc, crc_type, seed_pt=None):
         """
         Takes a cropped CC image and determines the average RGB values of the
         whitest portion.
@@ -665,31 +557,16 @@ class ColorchipRead:
         :rtype: list
         """
 
-        def _remove_wrong_white_loc(cropped_cc):
-            prop_diff_height = abs(h / 2 - maxLoc[1]) / h
-            prop_diff_width = abs(w / 2 - maxLoc[0]) / w
-
-            if prop_diff_height > prop_diff_width and maxLoc[1] > h / 2:
-                cropped_cc = cropped_cc[0:maxLoc[1] - 2, 0:w]
-            elif prop_diff_height > prop_diff_width and maxLoc[1] < h / 2:
-                cropped_cc = cropped_cc[maxLoc[1] + 2:h, 0:w]
-            elif prop_diff_height < prop_diff_width and maxLoc[0] > w / 2:
-                cropped_cc = cropped_cc[0:h, 0:maxLoc[0] - 2]
-            else:
-                cropped_cc = cropped_cc[0:h, maxLoc[0] + 2:w]
-
-            return cropped_cc
-
-        minVal = None
-        cropped_cc_original = None
         for _ in range(10):
             grayImg = cv2.cvtColor(cropped_cc, cv2.COLOR_RGB2GRAY)
             minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(grayImg)
             var_threshold = int((maxVal - minVal) * .1)
             cropped_cc = cropped_cc
             h, w, chn = cropped_cc.shape
-
-            seed = maxLoc
+            if seed_pt:
+                seed = seed_pt
+            else:
+                seed = maxLoc
             mask = np.zeros((h+2,w+2),np.uint8)
             floodflags = 8
             floodflags |= cv2.FLOODFILL_FIXED_RANGE
@@ -700,19 +577,18 @@ class ColorchipRead:
                                                      (var_threshold,)*3,
                                                      (var_threshold,)*3,
                                                      floodflags)
-            if cropped_cc_original is None:
-                cropped_cc_original = cropped_cc.copy()
-
             mask = mask[1:-1, 1:-1, ...]
             area = h * w
-            contour_area_floor = area // 50
-            contour_area_ceiling = area // 1
+            contour_area_floor = area // 500
+            contour_area_ceiling = area // 3
             squares = ColorchipRead.find_squares(mask,
                                                  contour_area_floor=contour_area_floor,
                                                  contour_area_ceiling=contour_area_ceiling)
 
             if len(squares) == 0:
-                cropped_cc = _remove_wrong_white_loc(cropped_cc)
+                cropped_cc[np.where(mask > 0)] = 0
+                print("Blacked Out a Point")
+                #cropped_cc = _remove_wrong_white_loc(cropped_cc)
                 continue
 
             squares = sorted(squares, key=cv2.contourArea, reverse=True)
@@ -725,8 +601,7 @@ class ColorchipRead:
                 shortest_side = min(square_width, square_height)
                 ratio = longest_side / shortest_side
 
-                if crc_type in ['Tiffen / Kodak Q-13  (8")',
-                                ]:
+                if crc_type == 'Tiffen / Kodak Q-13  (8")':
                     # Longest side is roughly 1.6x longer than shortest side
                     if 1.45 < ratio < 1.75:
                         break
@@ -734,41 +609,20 @@ class ColorchipRead:
                     if 0.85 < ratio < 1.15:
                         break
             else:
-                cropped_cc = _remove_wrong_white_loc(cropped_cc)
+                cropped_cc[np.where(mask > 0)] = 0
+                print("Blacked Out a Point")
+                #cropped_cc = _remove_wrong_white_loc(cropped_cc)
                 continue
-            extracted = cropped_cc[mask != 0]
-            extracted = extracted.reshape(-1, extracted.shape[-1])
-            mode_white = np.apply_along_axis(lambda x: np.bincount(x).argmax(), axis=0, arr=extracted)
-
-            return list(mode_white), minVal
+            break
         else:
-            transfer_mwp = ClassTransfer
-            mb = ImageDialog(cropped_cc_original)
-            if not mb.exec():
-                raise SquareFindingFailed
+             raise SquareFindingFailed
 
-            h, w, chn = cropped_cc_original.shape
+        extracted = cropped_cc[mask != 0]
+        extracted = extracted.reshape(-1,extracted.shape[-1])
+        mode_white = np.apply_along_axis(lambda x: np.bincount(x).argmax(), axis=0, arr=extracted)
 
-            seed = (transfer_mwp.data_transfer.x(), transfer_mwp.data_transfer.y())
-            print(seed)
-            mask = np.zeros((h + 2, w + 2), np.uint8)
-            floodflags = 8
-            floodflags |= cv2.FLOODFILL_FIXED_RANGE
-            floodflags |= cv2.FLOODFILL_MASK_ONLY
-            floodflags |= (int(maxVal) << 8)
-            num, cropped_cc, mask, rect = cv2.floodFill(cropped_cc_original, mask, seed,
-                                                        0,
-                                                        (5,) * 3,
-                                                        (5,) * 3,
-                                                        floodflags)
+        return list(mode_white), minVal
 
-            mask = mask[1:-1, 1:-1, ...]
-
-            extracted = cropped_cc[mask != 0]
-            extracted = extracted.reshape(-1, extracted.shape[-1])
-            mode_white = np.apply_along_axis(lambda x: np.bincount(x).argmax(), axis=0, arr=extracted)
-
-            return list(mode_white), minVal
 
     def test_feature(self, im, original_size, cc_size='predict'):
         """
