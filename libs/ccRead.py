@@ -374,6 +374,9 @@ class ColorchipRead:
             except IndexError:
                 break
 
+        highest_prob_images = []
+        highest_prob_positions = []
+
         if inference_type == 'find_squares':
             highest_prob_images = [np.array(part_im[k]) for k in indices]
             highest_prob_positions = [possible_positions[k] for k in indices]
