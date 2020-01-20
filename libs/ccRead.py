@@ -536,13 +536,11 @@ class ColorchipRead:
 
         #cropped_cc = cropped_cc.copy()
         #grayImg = cropped_cc.sum(axis=2)
-        #grayImg = cv2.cvtColor(cropped_cc, cv2.COLOR_RGB2GRAY)
-        grayImg = cv2.cvtColor(cropped_cc, cv2.COLOR_RGB2LAB)[...,0]
-        #cv2.minMaxLoc(cv2.cvtColor(im, cv2.COLOR_RGB2LAB)[..., 0])
+        grayImg = cv2.cvtColor(cropped_cc, cv2.COLOR_RGB2GRAY)
+        h, w, chn = cropped_cc.shape        
         for _ in range(300):
             minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(grayImg)
-            var_threshold = int((maxVal - minVal) * .1)
-            h, w, chn = cropped_cc.shape
+            var_threshold = int((maxVal - minVal) * .10)
             if seed_pt:
                 seed = seed_pt
             else:
@@ -552,7 +550,7 @@ class ColorchipRead:
             floodflags |= cv2.FLOODFILL_FIXED_RANGE
             floodflags |= cv2.FLOODFILL_MASK_ONLY
             floodflags |= (int(maxVal) << 8)
-            num,cropped_cc,mask,rect = cv2.floodFill(cropped_cc, mask, seed,
+            num,_,mask,rect = cv2.floodFill(cropped_cc, mask, seed,
                                                      0,
                                                      (var_threshold,)*3,
                                                      (var_threshold,)*3,
@@ -565,7 +563,7 @@ class ColorchipRead:
             squares = ColorchipRead.find_squares(mask,
                                                  contour_area_floor=contour_area_floor,
                                                  contour_area_ceiling=contour_area_ceiling,
-                                                 leap = 85)
+                                                 leap = 15)
             if len(squares) == 0:
                 # redact brighter values which are not "squarey"
                 badMin = np.min(grayImg[np.where(mask != 0)])
@@ -594,11 +592,10 @@ class ColorchipRead:
                 #badMin = np.min(grayImg[np.where(mask != 0)])
                 #grayImg[np.where(grayImg >= badMin)] = 0
                 grayImg[np.where(mask > 0)] = 0
-                print('Cleaned up bright points')
                 continue
             break
         else:
-             raise SquareFindingFailed
+            raise SquareFindingFailed
 
         extracted = cropped_cc[mask != 0]
         # annotate the detected point for preview window
