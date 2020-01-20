@@ -442,14 +442,12 @@ class ColorchipRead:
         area = h*w
         min_crop_area = area // 3
         max_crop_area = area // 1.01
-        
-        print(max_crop_area)
+
         # identify squares in the crop
         squares = ColorchipRead.find_squares(input_img,
                                              leap=1,
                                              contour_area_floor=min_crop_area,
                                              contour_area_ceiling=max_crop_area)
-        print(f"len of squares = {len(squares)}")
         disc_model = self.discriminator_model
         discriminator_thresh = 0.999
         best_cropped_img = input_img
