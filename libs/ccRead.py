@@ -71,7 +71,6 @@ class ColorchipRead:
         self.position_model.allocate_tensors()
         self.position_input_details = self.position_model.get_input_details()
         self.position_output_details = self.position_model.get_output_details()
-
         self.K_position_model = load_model("libs/models/mlp_proposal_k.hdf5")
         self.position_function = K.function([self.K_position_model.layers[0].input,
                                              self.K_position_model.layers[1].input,
@@ -82,8 +81,6 @@ class ColorchipRead:
         self.discriminator_model.allocate_tensors()
         self.discriminator_input_details = self.discriminator_model.get_input_details()
         self.discriminator_output_details = self.discriminator_model.get_output_details()
-
-        self.iterator = 0
 
     def ocv_to_pil(self, im):
         """
@@ -99,7 +96,7 @@ class ColorchipRead:
         pil_image = Image.fromarray(pil_image)
         return pil_image
 
-    def _position_with_uncertainty(self, x, n_iter=10):
+    def _position_with_uncertainty(self, x, n_iter=20):
         result = []
 
         for i in range(n_iter):
@@ -258,7 +255,7 @@ class ColorchipRead:
 
     def process_colorchip_small(self, im, original_size, stride_style='whole',
                                 stride=25, partition_size=125, discriminator_floor=0.90,
-                                over_crop=1, hard_cut_value=50, high_precision=False, full_tf=True):
+                                over_crop=1, hard_cut_value=50, high_precision=True):
         """
         Finds small colorchips using the quickCC model. This model is specifically trained on tiny colorchips found in
         many herbarium collections. If the colorchip is similar in size to those, and is in the same proportion to the
@@ -315,7 +312,6 @@ class ColorchipRead:
 
         squares = np.array(squares)
 
-        position_model = self.position_model
         discriminator_model = self.discriminator_model
 
         part_im = []
@@ -359,47 +355,24 @@ class ColorchipRead:
             hists_hsv = np.array(hists_hsv, dtype=np.uint16)
 
             position_predictions = []
+        position_prediction, position_uncertainty = self._position_with_uncertainty([hists_rgb, hists_hsv], 20)
 
-        if full_tf:
-            position_prediction, position_uncertainty = self._position_with_uncertainty([hists_rgb, hists_hsv], 10)
+        only_cc_position_uncertainty = position_uncertainty[0][:, 1]
+        only_cc_position_prediction = position_prediction[0][:, 1]
 
-            only_cc_position_uncertainty = position_uncertainty[0][:, 1]
-            only_cc_position_prediction = position_prediction[0][:, 1]
+        indices = [index for index in range(len(only_cc_position_prediction))]
+        position_uncertainty, position_predictions, indices = \
+            (list(t) for t in zip(*sorted(zip(only_cc_position_uncertainty, only_cc_position_prediction, indices))))
 
-            indices = [index for index in range(len(only_cc_position_prediction))]
-            position_uncertainty, position_predictions, indices = \
-                (list(t) for t in zip(*sorted(zip(only_cc_position_uncertainty, only_cc_position_prediction, indices))))
-
-            max_pred = max(position_predictions)
-            for _j, position_prediction in enumerate(position_predictions):
-                try:
-                    if position_prediction < (max_pred - 0.001):
-                        del position_prediction
-                        del position_uncertainty[_j]
-                        del indices[_j]
-                except IndexError:
-                    break
-
-        else:
-            indices = [i for i in range(len(hists_rgb))]
-            for i in indices:
-            #for i in range(len(hists_rgb)):
-                try:
-                    position_model.set_tensor(position_model.get_input_details()[0]['index'], [hists_rgb[i]])
-                    position_model.set_tensor(position_model.get_input_details()[1]['index'], [hists_hsv[i]])
-                    position_model.invoke()
-                    # outputs.append(self.position_model.get_tensor(self.position_output_details[0]['index']))
-                    position_predictions.append(position_model.get_tensor(position_model.get_output_details()[0]['index'])[0][0])
-                except:
-                    position_predictions.append(np.array([[1, 0]], dtype=np.float32).tolist())
-            # print(f"Region proposal took {time.time() - position_start}")
-
-            position_predictions, indices = (list(t) for t in zip(*sorted(zip(position_predictions, indices))))
-            position_predictions.reverse()
-            indices.reverse()
-
-        highest_prob_images = []
-        highest_prob_positions = []
+        max_pred = max(position_predictions)
+        for _j, position_prediction in enumerate(position_predictions):
+            try:
+                if position_prediction < (max_pred - 0.001):
+                    del position_prediction
+                    del position_uncertainty[_j]
+                    del indices[_j]
+            except IndexError:
+                break
 
         if inference_type == 'find_squares':
             highest_prob_images = [np.array(part_im[k]) for k in indices]
@@ -429,12 +402,9 @@ class ColorchipRead:
             else:
                 raise DiscriminatorFailed
 
-        # hpstart = time.time()
         best_image = np.array(best_image, dtype=np.uint8)
-        # cv2.imwrite(f'ccs/o-{self.iterator}.jpg', best_image)
         x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
         if high_precision:
-        # try:
             best_image, best_square = self.high_precision_cc_crop(best_image)
             ratio = 125 / partition_size
             best_square = [best_square[0] // ratio,
@@ -443,13 +413,6 @@ class ColorchipRead:
                            best_square[3] // ratio]
             x1, y1, x2, y2 = best_location[0] + best_square[0], best_location[1] + best_square[1], \
                              best_location[0] + best_square[2], best_location[1] + best_square[3]
-
-        # except TypeError:
-        #     x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
-
-        # print(f"High precision took {time.time() - hpstart} seconds.")
-        # cv2.imwrite(f'ccs/h-{self.iterator}.jpg', best_image)
-        self.iterator += 1
 
         xc = np.array([x1, x2])
         yc = np.array([y1, y2])
@@ -472,30 +435,29 @@ class ColorchipRead:
         return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image, cc_crop_time
 
     def high_precision_cc_crop(self, input_img):
-        # cv_image = cv2.cvtColor(input_img, cv2.COLOR_RGB2HSV)
-        cv_image = input_img
+        """
+        Attempts to crop a crc partition with a high degree of precision.
+        """
         h, w = input_img.shape[0:2]
         area = h*w
-        min_crop_area = area // 4
-        max_crop_area = area // 1.3
-
+        min_crop_area = area // 3
+        max_crop_area = area // 1.01
+        
+        print(max_crop_area)
         # identify squares in the crop
-        squares = ColorchipRead.find_squares(cv_image,
+        squares = ColorchipRead.find_squares(input_img,
                                              leap=1,
                                              contour_area_floor=min_crop_area,
                                              contour_area_ceiling=max_crop_area)
-
-        squares = sorted(squares, key=cv2.contourArea, reverse=True)
+        print(f"len of squares = {len(squares)}")
         disc_model = self.discriminator_model
-        best_disc = 0.5
-        # if no square > 0.5, use whole image as crop & contour
+        discriminator_thresh = 0.999
         best_cropped_img = input_img
-        best_current_square = (0, 0, w, h)
         # identify the largest area among contours
-        for i, current_square in enumerate(squares):
-            #print(current_square)
-            x_arr = current_square[..., 0]
-            y_arr = current_square[..., 1]
+        qualified_squares = []
+        for i, current_square_contour in enumerate(squares):
+            x_arr = current_square_contour[..., 0]
+            y_arr = current_square_contour[..., 1]
             x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
             current_square = (x1, y1, x2, y2)
             cropped_img = input_img[y1:y2, x1:x2]
@@ -506,11 +468,24 @@ class ColorchipRead:
                                                 [img])
             disc_model.invoke()
             disc_value = disc_model.get_tensor(disc_model.get_output_details()[0]['index'])[0][1]
-            if disc_value > best_disc:
-                best_cropped_img = cropped_img
-                best_current_square = current_square
-                best_disc = disc_value
-        return best_cropped_img, best_current_square
+            if disc_value > discriminator_thresh:
+                qualified_squares.append(current_square)
+        try:
+            qualified_squares = sorted(qualified_squares, key=lambda x: (x[2] - x[0]) *(x[3] - x[1]), reverse=False)
+            best_square = qualified_squares[0]
+            # loosen the crops only slightly for future scale det.
+            x1, y1, x2, y2 = best_square
+            x1 = max(x1-2, 0)
+            x2 = min(x2+2, w)
+            y1 = max(y1-2, 0)
+            y2 = min(y2+2, h)
+            best_cropped_img = input_img[y1:y2, x1:x2]
+        except IndexError:
+            # if failed to find a better crop use the whole image
+            best_cropped_img = input_img
+            best_square = (0, 0, w, h)
+
+        return best_cropped_img, best_square
 
     @staticmethod
     def predict_color_chip_quadrant(original_size, scaled_crop_location):
@@ -560,8 +535,10 @@ class ColorchipRead:
 
         #cropped_cc = cropped_cc.copy()
         #grayImg = cropped_cc.sum(axis=2)
-        grayImg = cv2.cvtColor(cropped_cc, cv2.COLOR_RGB2GRAY)
-        for _ in range(20):
+        #grayImg = cv2.cvtColor(cropped_cc, cv2.COLOR_RGB2GRAY)
+        grayImg = cv2.cvtColor(cropped_cc, cv2.COLOR_RGB2LAB)[...,0]
+        #cv2.minMaxLoc(cv2.cvtColor(im, cv2.COLOR_RGB2LAB)[..., 0])
+        for _ in range(300):
             minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(grayImg)
             var_threshold = int((maxVal - minVal) * .1)
             h, w, chn = cropped_cc.shape
@@ -613,8 +590,9 @@ class ColorchipRead:
                         break
             else:
                 # redact brighter values which are not "squarey"
-                badMin = np.min(grayImg[np.where(mask != 0)])
-                grayImg[np.where(grayImg >= badMin)] = 0
+                #badMin = np.min(grayImg[np.where(mask != 0)])
+                #grayImg[np.where(grayImg >= badMin)] = 0
+                grayImg[np.where(mask > 0)] = 0
                 print('Cleaned up bright points')
                 continue
             break

@@ -33,7 +33,6 @@ import sys
 import string
 import glob
 import re
-import copy
 from shutil import move as shutil_move
 # UI libs
 from PyQt5 import QtWidgets, QtCore, QtGui
@@ -1261,7 +1260,7 @@ class appWindow(QMainWindow):
             x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
             # biggest_square = (x1, y1, x2, y2)
             cc_im = cc_im[y1 + 5:y2 - 5, x1 + 5:x2 - 5]
-            cc_im1 = cv2.cvtColor(cc_im, cv2.COLOR_RGB2BGR)
+            #cc_im1 = cv2.cvtColor(cc_im, cv2.COLOR_RGB2BGR)
         except:
             return
 
@@ -1484,8 +1483,8 @@ class appWindow(QMainWindow):
         nameList = list(self.get('profiles', {}).keys())
         # if the list of profile names is empty, force the wizard.
         if nameList == []:
-            # assign 'results' to x so that it waits on the wizard to finish.
-            x = self.create_profile()
+            # assign 'results' to _ so that it waits on the wizard to finish.
+            _ = self.create_profile()
             return
         profile_comboBox.addItems(nameList)
         previously_selected_profile = self.get('selected_profile', False)
