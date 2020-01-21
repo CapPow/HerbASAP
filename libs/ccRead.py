@@ -534,75 +534,94 @@ class ColorchipRead:
         :rtype: list
         """
 
-        #cropped_cc = cropped_cc.copy()
-        #grayImg = cropped_cc.sum(axis=2)
         grayImg = cv2.cvtColor(cropped_cc, cv2.COLOR_RGB2GRAY)
+        grayImg = cv2.GaussianBlur(grayImg, (5, 5), 0)
         h, w, chn = cropped_cc.shape        
-        for _ in range(300):
-            minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(grayImg)
-            var_threshold = int((maxVal - minVal) * .10)
-            if seed_pt:
-                seed = seed_pt
-            else:
-                seed = maxLoc
+        minVal = np.min(grayImg)
+        maxVal = np.max(grayImg)
+        var_threshold = int((maxVal - minVal) * .10)
+        # determine a few parameters which will not change
+        area = h * w
+        contour_area_floor = area // 350
+        contour_area_ceiling = area // 5
+
+        if seed_pt:
+            # if we have a seed point don't fret over if it is a "good one"
             mask = np.zeros((h+2,w+2),np.uint8)
             floodflags = 8
             floodflags |= cv2.FLOODFILL_FIXED_RANGE
             floodflags |= cv2.FLOODFILL_MASK_ONLY
             floodflags |= (int(maxVal) << 8)
-            num,_,mask,rect = cv2.floodFill(cropped_cc, mask, seed,
+            num,_,mask,rect = cv2.floodFill(cropped_cc, mask, seed_pt,
                                                      0,
                                                      (var_threshold,)*3,
                                                      (var_threshold,)*3,
                                                      floodflags)
+            # correct for mask expansion
             mask = mask[1:-1, 1:-1, ...]
-            area = h * w
-            contour_area_floor = area // 350
-            contour_area_ceiling = area // 5
-            # use a leap that assures few steps
-            squares = ColorchipRead.find_squares(mask,
-                                                 contour_area_floor=contour_area_floor,
-                                                 contour_area_ceiling=contour_area_ceiling,
-                                                 leap = 15)
-            if len(squares) == 0:
-                # redact brighter values which are not "squarey"
-                badMin = np.min(grayImg[np.where(mask != 0)])
-                grayImg[np.where(grayImg >= badMin)] = 0
-                continue
-
-            squares = sorted(squares, key=cv2.contourArea, reverse=True)
-            for square in squares:
-                x_arr = square[..., 0]
-                y_arr = square[..., 1]
-                x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
-                square_width, square_height = x2 - x1, y2 - y1
-                longest_side = max(square_width, square_height)
-                shortest_side = min(square_width, square_height)
-                ratio = longest_side / shortest_side
-
-                if crc_type == 'Tiffen / Kodak Q-13  (8")':
-                    # Longest side is roughly 1.6x longer than shortest side
-                    if 1.40 < ratio < 1.80:
-                        break
-                else:
-                    if 0.80 < ratio < 1.20:
-                        break
-            else:
-                # redact brighter values which are not "squarey"
-                #badMin = np.min(grayImg[np.where(mask != 0)])
-                #grayImg[np.where(grayImg >= badMin)] = 0
-                grayImg[np.where(mask > 0)] = 0
-                continue
-            break
+            
         else:
-            raise SquareFindingFailed
+            # when we don't have a seed point find a "good one"
+            for i in range(300):
+                minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(grayImg)
+                seed = maxLoc
+                mask = np.zeros((h+2,w+2),np.uint8)
+                floodflags = 8
+                floodflags |= cv2.FLOODFILL_FIXED_RANGE
+                floodflags |= cv2.FLOODFILL_MASK_ONLY
+                floodflags |= (int(maxVal) << 8)
+                num,_,mask,rect = cv2.floodFill(cropped_cc, mask, seed,
+                                                         0,
+                                                         (var_threshold,)*3,
+                                                         (var_threshold,)*3,
+                                                         floodflags)
+                mask = mask[1:-1, 1:-1, ...]
+                
+                # use a leap that assures few steps
+                squares = ColorchipRead.find_squares(mask,
+                                                     contour_area_floor=contour_area_floor,
+                                                     contour_area_ceiling=contour_area_ceiling,
+                                                     leap = 15)
+                if len(squares) == 0:
+                    # redact brighter values which are not "squarey"
+                    badMin = np.min(grayImg[np.where(mask != 0)])
+                    grayImg[np.where(grayImg >= badMin)] = 0
+                    continue
+    
+                squares = sorted(squares, key=cv2.contourArea, reverse=True)
+                for square in squares:
+                    x_arr = square[..., 0]
+                    y_arr = square[..., 1]
+                    x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
+                    square_width, square_height = x2 - x1, y2 - y1
+                    longest_side = max(square_width, square_height)
+                    shortest_side = min(square_width, square_height)
+                    ratio = longest_side / shortest_side
+    
+                    if crc_type == 'Tiffen / Kodak Q-13  (8")':
+                        # Longest side is roughly 1.6x longer than shortest side
+                        if 1.40 < ratio < 1.80:
+                            break
+                    else:
+                        if 0.80 < ratio < 1.20:
+                            print("Match Found")
+                            break
+                else:
+                    # redact brighter values which are not "squarey"
+                    #badMin = np.min(grayImg[np.where(mask != 0)])
+                    #grayImg[np.where(grayImg >= badMin)] = 0
+                    grayImg[np.where(mask > 0)] = 0
+                    continue
+                break
+            else:
+                raise SquareFindingFailed
 
         extracted = cropped_cc[mask != 0]
         # annotate the detected point for preview window
         squares = ColorchipRead.find_squares(mask,
                                              contour_area_floor=contour_area_floor,
                                              contour_area_ceiling=contour_area_ceiling,
-                                             leap = 85)
+                                             leap = 17)
         square = sorted(squares, key=cv2.contourArea, reverse=True)
         cv2.drawContours(cropped_cc, square, 0, (0,255,0), 1)
         extracted = extracted.reshape(-1,extracted.shape[-1])

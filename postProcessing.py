@@ -80,9 +80,11 @@ class Canvas(QtWidgets.QLabel):
     def genPixBackDrop(self, im):
         # if it is oriented in landscape, rotate it
         h, w = im.shape[0:2]
-        if h < w:
+        rotated = False
+        if w < h:
             im = np.rot90(im, 3)  # 3 or 1 would be equally appropriate
             h, w = w, h  # swap the variables after rotating
+            rotated = True
         bytesPerLine = 3 * w
         # odd bug here, must use .copy() to avoid a mem error.
         # see: https://stackoverflow.com/questions/48639185/pyqt5-qimage-from-numpy-array
@@ -95,9 +97,12 @@ class Canvas(QtWidgets.QLabel):
                                QtCore.Qt.KeepAspectRatio,
                                Qt.FastTransformation)
         # corrections are doubled due to display image bieng opened at half res
-        h_correction = (h) / height
-        w_correction = (w) / width
-        correction = (w_correction, h_correction)
+        h_correction = h / height
+        w_correction = w / width
+        if rotated:
+            correction = (w_correction, h_correction)
+        else:
+            correction = (h_correction, w_correction)
         return pixmap, correction
 
     def paintEvent(self, event):
