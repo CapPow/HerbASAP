@@ -584,8 +584,9 @@ class ColorchipRead:
                                                      leap = 15)
                 if len(squares) == 0:
                     # redact brighter values which are not "squarey"
-                    badMin = np.min(grayImg[np.where(mask != 0)])
-                    grayImg[np.where(grayImg >= badMin)] = 0
+                    #badMin = np.min(grayImg[np.where(mask != 0)])
+                    #grayImg[np.where(grayImg >= badMin)] = 0
+                    grayImg[np.where(mask > 0)] = 0
                     continue
     
                 squares = sorted(squares, key=cv2.contourArea, reverse=True)
@@ -604,7 +605,7 @@ class ColorchipRead:
                             break
                     else:
                         if 0.80 < ratio < 1.20:
-                            print("Match Found")
+                           # print("Match Found")
                             break
                 else:
                     # redact brighter values which are not "squarey"
