@@ -7,7 +7,7 @@
     specimens. Specifically designed for Herbarium sheet images.
 """
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageEnhance
 import cv2
 import time
 import os
@@ -294,6 +294,7 @@ class ColorchipRead:
         """
 
         nim = im
+        fs_copy_im = im.copy()
         im = self.ocv_to_pil(im)
         im_hsv = im.convert("HSV")
         whole_extrema = im_hsv.getextrema()
@@ -303,26 +304,47 @@ class ColorchipRead:
         original_width, original_height = original_size
         cv_image = cv2.cvtColor(nim, cv2.COLOR_RGB2HSV)
         partition_area = partition_size * partition_size
-        contour_area_floor = partition_area // 10
+        contour_area_floor = partition_area // 20
         contour_area_ceiling = partition_area // 0.5
-        squares = self.find_squares(cv_image,
+
+        fs_copy_im = self.ocv_to_pil(fs_copy_im)
+        brighten = ImageEnhance.Brightness(fs_copy_im)
+        fs_copy_im = brighten.enhance(2)
+        contrast = ImageEnhance.Contrast(fs_copy_im)
+        fs_copy_im = contrast.enhance(4)
+        fs_copy_im = np.array(fs_copy_im)
+
+        squares = self.find_squares(fs_copy_im,
                                     contour_area_floor=contour_area_floor,
                                     contour_area_ceiling=contour_area_ceiling,
                                     leap=17)
 
         squares = np.array(squares)
 
+        position_model = self.position_model
         discriminator_model = self.discriminator_model
 
         part_im = []
         possible_positions = []
 
         for square in squares:
+            x_arr = square[..., 0]
+            y_arr = square[..., 1]
+            x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
+            square_width, square_height = x2 - x1, y2 - y1
+            longest_side = max(square_width, square_height)
+            shortest_side = min(square_width, square_height)
+            ratio = longest_side / shortest_side
+
+            if 0.90 < ratio < 1.10:
+                continue
+
             M = cv2.moments(square)
             cX = int(M["m10"] / M["m00"])
             cY = int(M["m01"] / M["m00"])
 
-            location = (cX - (partition_size // 2), cY - (partition_size // 2), cX + (partition_size // 2), cY + (partition_size // 2))
+            location = (cX - (partition_size // 2), cY - (partition_size // 2), cX + (partition_size // 2),
+                        cY + (partition_size // 2))
             part_image = im.crop(location)
             part_image = part_image.resize((125, 125))
             extrema = part_image.convert("HSV").getextrema()
@@ -332,13 +354,13 @@ class ColorchipRead:
                 possible_positions.append(location)
 
         if len(part_im) != 0:
-           inference_type = 'find_squares'
-           hists_rgb = []
-           hists_hsv = []
-           for im in part_im:
-               im_hsv = im.convert("HSV")
-               hists_rgb.append(im.histogram())
-               hists_hsv.append(im_hsv.histogram())
+            inference_type = 'find_squares'
+            hists_rgb = []
+            hists_hsv = []
+            for im in part_im:
+                im_hsv = im.convert("HSV")
+                hists_rgb.append(im.histogram())
+                hists_hsv.append(im_hsv.histogram())
 
         else:
             inference_type = 'legacy'
