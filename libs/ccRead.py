@@ -523,7 +523,7 @@ class ColorchipRead:
             return None
 
     @staticmethod
-    def predict_color_chip_whitevals(cropped_cc, crc_type, seed_pt=None):
+    def predict_color_chip_whitevals(cropped_cc, crc_type, seed_pt=None, use_extreme=True):
         """
         Takes a cropped CC image and determines the average RGB values of the
         whitest portion.
@@ -544,7 +544,6 @@ class ColorchipRead:
         area = h * w
         contour_area_floor = area // 350
         contour_area_ceiling = area // 5
-
         if seed_pt:
             # if we have a seed point don't fret over if it is a "good one"
             mask = np.zeros((h+2,w+2),np.uint8)
@@ -552,7 +551,7 @@ class ColorchipRead:
             floodflags |= cv2.FLOODFILL_FIXED_RANGE
             floodflags |= cv2.FLOODFILL_MASK_ONLY
             floodflags |= (int(maxVal) << 8)
-            num,_,mask,rect = cv2.floodFill(cropped_cc, mask, seed_pt,
+            num, _, mask, rect = cv2.floodFill(cropped_cc, mask, seed_pt,
                                                      0,
                                                      (var_threshold,)*3,
                                                      (var_threshold,)*3,
@@ -562,7 +561,8 @@ class ColorchipRead:
             
         else:
             # when we don't have a seed point find a "good one"
-            for i in range(300):
+            masks = []
+            for _ in range(100):
                 minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(grayImg)
                 seed = maxLoc
                 mask = np.zeros((h+2,w+2),np.uint8)
@@ -581,15 +581,16 @@ class ColorchipRead:
                 squares = ColorchipRead.find_squares(mask,
                                                      contour_area_floor=contour_area_floor,
                                                      contour_area_ceiling=contour_area_ceiling,
-                                                     leap = 15)
-                if len(squares) == 0:
-                    # redact brighter values which are not "squarey"
-                    #badMin = np.min(grayImg[np.where(mask != 0)])
-                    #grayImg[np.where(grayImg >= badMin)] = 0
-                    grayImg[np.where(mask > 0)] = 0
-                    continue
+                                                     leap=15)
+                # if len(squares) == 0:
+                #     # redact brighter values which are not "squarey"
+                #     #badMin = np.min(grayImg[np.where(mask != 0)])
+                #     #grayImg[np.where(grayImg >= badMin)] = 0
+                #     grayImg[np.where(mask > 0)] = 0
+                #     continue
     
                 squares = sorted(squares, key=cv2.contourArea, reverse=True)
+                masks.append(mask)
                 for square in squares:
                     x_arr = square[..., 0]
                     y_arr = square[..., 1]
@@ -608,23 +609,47 @@ class ColorchipRead:
                            # print("Match Found")
                             break
                 else:
-                    # redact brighter values which are not "squarey"
-                    #badMin = np.min(grayImg[np.where(mask != 0)])
-                    #grayImg[np.where(grayImg >= badMin)] = 0
-                    grayImg[np.where(mask > 0)] = 0
+                    if use_extreme:
+                        grayImg[seed[1]][seed[0]] = 0
+                    else:
+                        grayImg[mask != 0]
                     continue
-                break
             else:
-                raise SquareFindingFailed
+                if use_extreme:
+                    for i in range(len(masks)):
+                        num_dup = 0
+                        for mask in masks:
+                            occurences = np.argwhere(mask > 1)
+                            x1 = np.amin(occurences[:, 1])
+                            x2 = np.amax(occurences[:, 1])
+                            y1 = np.amin(occurences[:, 0])
+                            y2 = np.amax(occurences[:, 0])
+                            square_width, square_height = x2 - x1, y2 - y1
+                            longest_side = max(square_width, square_height)
+                            shortest_side = min(square_width, square_height)
+                            ratio = longest_side / shortest_side
+                            if 0.80 < ratio < 1.20 and np.array_equal(mask, masks[i]):
+                                num_dup += 1
+                                if num_dup >= 5:
+                                    break
+                            else:
+                                continue
+                        else:
+                            continue
+                        break
+                    else:
+                        raise SquareFindingFailed
+                else:
+                    raise SquareFindingFailed
 
         extracted = cropped_cc[mask != 0]
         # annotate the detected point for preview window
         squares = ColorchipRead.find_squares(mask,
                                              contour_area_floor=contour_area_floor,
                                              contour_area_ceiling=contour_area_ceiling,
-                                             leap = 17)
+                                             leap=17)
         square = sorted(squares, key=cv2.contourArea, reverse=True)
-        cv2.drawContours(cropped_cc, square, 0, (0,255,0), 1)
+        cv2.drawContours(cropped_cc, square, 0, (0, 255, 0), 1)
         extracted = extracted.reshape(-1,extracted.shape[-1])
         mode_white = np.apply_along_axis(lambda x: np.bincount(x).argmax(), axis=0, arr=extracted)
 
