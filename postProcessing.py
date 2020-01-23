@@ -165,8 +165,7 @@ class ImageDialog(QDialog):
         mb.gridLayout.addWidget(canv)
 
     def ask_user_for_seed(self):
-        #dialog = self.exec()
-        dialog = False
+        dialog = self.exec()
         if dialog:
             result = self.seed_point
             print(result)
@@ -189,8 +188,7 @@ class BcDialog(QDialog):
         self.mb.lineEdit_userBC.setFocus(True)
 
     def ask_for_bc(self):
-        #dialog = self.exec()
-        dialog = False
+        dialog = self.exec()
         if dialog:
             result = self.mb.lineEdit_userBC.text()
             return result
@@ -712,7 +710,7 @@ class appWindow(QMainWindow):
                     f"\n\nlaplacian={result['laplacian']}"
                     f"\nImg variance ={result['imVar']}\nnormalized "
                     f"laplacian={result['lapNorm']}")
-            #self.userNotice(notice_text, notice_title, detail_text)
+            self.userNotice(notice_text, notice_title, detail_text)
         self.is_blurry = is_blurry
         self.mainWindow.label_isBlurry.setText(str(is_blurry))
         self.mainWindow.label_lapnorm.setText(str(round(result['lapNorm'], 3)))
@@ -753,7 +751,7 @@ class appWindow(QMainWindow):
             userDialog = BcDialog()
             result = [userDialog.ask_for_bc()]
         if result in [[None], ['']]:
-            result = [f"bcFailed_{self.base_file_name}"]
+            result = [self.base_file_name]
         self.bc_code = result
         self.mainWindow.label_barcodes.setText(', '.join(result))
 
@@ -954,7 +952,6 @@ class appWindow(QMainWindow):
                 crc_type = profile.get('crcType', "ISA ColorGauge Nano")
                 if crc_type == "ISA ColorGauge Nano":  # aka small crc
                     partition_size = profile.get('partition_size', 125)
-                    partition_size = 125 # set same partition size for all tests
                     cc_location, cropped_cc, cc_crop_time = \
                         self.colorchipDetect.process_colorchip_small(reduced_img,
                                                                      original_size,
@@ -1034,7 +1031,7 @@ class appWindow(QMainWindow):
                 detail_text = ('While attempting to determine the color chip '
                                'location the following exception was rasied:'
                                f'\n{e}')
-                #self.userNotice(notice_text, notice_title, detail_text)
+                self.userNotice(notice_text, notice_title, detail_text)
                 # prepare to wipe the slate clean and exit
                 self.reset_working_variables()
                 # attempt to recover from the error
@@ -1318,7 +1315,7 @@ class appWindow(QMainWindow):
                 detail_text = (f"LibRawError opening: {imgPath}\nUsually this "
                                "indicates a corrupted or incompatible image."
                                f"\n{e}")
-                #self.userNotice(text, title, detail_text)
+                self.userNotice(text, title, detail_text)
             raise  # Pass this up to the process function for halting
         return im
 
@@ -1515,7 +1512,7 @@ class appWindow(QMainWindow):
             notice_title = 'Regex Pattern Error'
             notice_text = f'Warning, improper regex pattern.'
             detail_text = f'Regex patterns failed to compile.\n{patterns}'
-            #self.userNotice(notice_text, notice_title, detail_text)
+            self.userNotice(notice_text, notice_title, detail_text)
 
     def userAsk(self, text, title='', detailText=None):
         """ a general user dialog with yes / cancel options"""
