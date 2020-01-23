@@ -254,7 +254,7 @@ class ColorchipRead:
     def _square_first_regions(self):
         pass
 
-    def process_colorchip_small(self, im, original_size, stride_style='whole',
+    def process_colorchip_small(self, im, original_size, stride_style='quick',
                                 partition_size=125, discriminator_floor=0.99,
                                 over_crop=1, hard_cut_value=50, high_precision=True):
         """
@@ -385,8 +385,19 @@ class ColorchipRead:
                             best_location = highest_prob_positions[i]
                             print("Rerunning disciminator using rotated images was SUCCESSFUL! (3)")
                             break
-                    else:# otherwise, finally giveup
-                        raise DiscriminatorFailed
+                    else:# otherwise,if quick stride was chosen try agian using whole
+                        if stride_style == "quick":
+                            print("Trying whole stride")
+                            return self.process_colorchip_small(self, im,
+                                                                original_size,
+                                                                'whole',
+                                                                partition_size,
+                                                                discriminator_floor-0.1,
+                                                                over_crop, hard_cut_value,
+                                                                high_precision)
+                        else:
+                            # if whole was already tried.. finally.. give up.
+                            raise DiscriminatorFailed
 
         best_image = np.array(best_image, dtype=np.uint8)
         x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
@@ -417,14 +428,18 @@ class ColorchipRead:
         cc_crop_time = round(end - start, 3)
         return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image, cc_crop_time
 
-    def high_precision_cc_crop(self, input_img):
+    def high_precision_cc_crop(self, input_img, brighten_value=0):
         """
         Attempts to crop a crc partition with a high degree of precision.
         """
         h, w = input_img.shape[0:2]
         area = h*w
-        min_crop_area = area // 100
-        max_crop_area = area // 5
+        min_crop_area = area // 250
+        max_crop_area = area // 4
+        
+        
+        input_img[input_img < 155] += brighten_value
+        
         # identify squares in the crop
         squares = ColorchipRead.find_squares(input_img,
                                              contour_area_floor=min_crop_area,
@@ -432,8 +447,22 @@ class ColorchipRead:
                                              leap=1,
                                              k_size=0)
         # reduce squares to the unique ones
+        squares = [i for i in np.unique(squares, axis=0)]
+        # reduce squares to the ... squary ones...
+        squery_squares = []
+        for square in squares:
+            x_arr = square[..., 0]
+            y_arr = square[..., 1]
+            x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
+            square_width, square_height = x2 - x1, y2 - y1
+            longest_side = max(square_width, square_height)
+            shortest_side = min(square_width, square_height)
+            ratio = longest_side / shortest_side
+            if 0.70 < ratio < 1.30:
+                squery_squares.append(square)
+
         if len(squares) > 5:
-            squares =  np.array([i for i in np.unique(squares, axis=0)])
+            squares =  np.array(squery_squares)
             # generate a list of areas for each square
             areas = [cv2.contourArea(x) for x in squares]
             # modified from: https://stackoverflow.com/questions/11686720/is-there-a-numpy-builtin-to-reject-outliers-from-a-list
@@ -455,6 +484,10 @@ class ColorchipRead:
             best_square = [x1, y1, x2, y2]
             best_cropped_img = input_img[y1:y2, x1:x2]
         else:
+            # if it failed, try once more but force brightness
+            if brighten_value == 0:
+                print("trying HP crop with brigher values")
+                return self.high_precision_cc_crop(input_img, brighten_value= 80)
             # if no squares were found, just return what was passed in
             print("FAILED high precision crop")
             best_square = [0, 0, w, h]
