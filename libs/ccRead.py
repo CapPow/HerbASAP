@@ -339,7 +339,6 @@ class ColorchipRead:
         highest_prob_positions = []
 
         for i in indices:
-            #im.crop(possible_positions[indices[i]]).show()
             highest_prob_images.append(np.array(im.crop(possible_positions[i]).resize((125, 125))))
             highest_prob_positions.append(possible_positions[i])
 
@@ -598,8 +597,10 @@ class ColorchipRead:
         square = sorted(squares, key=cv2.contourArea, reverse=True)
         cv2.drawContours(cropped_cc, square, 0, (0, 255, 0), 1)
         extracted = extracted.reshape(-1,extracted.shape[-1])
-        mode_white = np.apply_along_axis(lambda x: np.bincount(x).argmax(), axis=0, arr=extracted)
-        return list(mode_white), minVal
+        #mode_white = np.apply_along_axis(lambda x: np.bincount(x).argmax(), axis=0, arr=extracted)
+        # median was selected as preferable over mode
+        median_white = np.median(extracted, axis=0)
+        return list(median_white), minVal
 
 
     def test_feature(self, im, original_size, cc_size='predict'):
