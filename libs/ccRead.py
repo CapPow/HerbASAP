@@ -47,7 +47,7 @@ class EmptyDiscriminatorArray(ColorChipError):
 
 class DiscriminatorFailed(ColorChipError):
     def __init__(self):
-        default_message = 'Discriminator could not find the best image. Try lowering the prediction floor value.'
+        default_message = 'Could not find a color reference chart. Check that it is square and parallell to the focal plane. Altering the partition size set in the settings wizard may help.'
         super().__init__(default_message)
 
 
@@ -169,6 +169,20 @@ class ColorchipRead:
         hists_rgb = []
         hists_hsv = []
 
+        #Always perform the ultraquick method
+        positions = [(0, 0, partition_size, partition_size),
+                     (0, image_height - partition_size, partition_size, image_height),
+                     (image_width - partition_size, 0, image_width, partition_size),
+                     (image_width - partition_size, image_height - partition_size, image_width, image_height)]
+
+        for position in positions:
+            partitioned_im = im.crop(position)
+            possible_positions.append(position)
+            partitioned_im_hsv = im_hsv.crop(position)
+            hists_rgb.append(partitioned_im.histogram())
+            hists_hsv.append(partitioned_im_hsv.histogram())
+
+
         if stride_style == 'whole':
             for r in range(-over_crop, (image_height - partition_size) // stride + over_crop):
                 for c in range(-over_crop, (image_width - partition_size) // stride + over_crop):
@@ -232,19 +246,6 @@ class ColorchipRead:
 
                 hists_rgb.append(hist)
                 hists_hsv.append(hist_hsv)
-
-        elif stride_style == 'ultraquick':
-            positions = [(0, 0, partition_size, partition_size),
-                         (0, image_height - partition_size, partition_size, image_height),
-                         (image_width - partition_size, 0, image_width, partition_size),
-                         (image_width - partition_size, image_height - partition_size, image_width, image_height)]
-
-            for position in positions:
-                partitioned_im = im.crop(position)
-                possible_positions.append(position)
-                partitioned_im_hsv = im_hsv.crop(position)
-                hists_rgb.append(partitioned_im.histogram())
-                hists_hsv.append(partitioned_im_hsv.histogram())
         else:
             raise InvalidStride
 
@@ -254,7 +255,7 @@ class ColorchipRead:
         pass
 
     def process_colorchip_small(self, im, original_size, stride_style='whole',
-                                stride=25, partition_size=125, discriminator_floor=0.90,
+                                stride=25, partition_size=125, discriminator_floor=0.99,
                                 over_crop=1, hard_cut_value=50, high_precision=True):
         """
         Finds small colorchips using the quickCC model. This model is specifically trained on tiny colorchips found in
@@ -292,8 +293,6 @@ class ColorchipRead:
         :return: Returns a tuple containing the bounding box (x1, y1, x2, y2) and the cropped image of the colorchip.
         :rtype: tuple
         """
-
-        nim = im
         im = self.ocv_to_pil(im)
         im_hsv = im.convert("HSV")
         whole_extrema = im_hsv.getextrema()
@@ -301,60 +300,23 @@ class ColorchipRead:
         start = time.time()
         image_width, image_height = im.size
         original_width, original_height = original_size
-        cv_image = cv2.cvtColor(nim, cv2.COLOR_RGB2HSV)
-        partition_area = partition_size * partition_size
-        contour_area_floor = partition_area // 10
-        contour_area_ceiling = partition_area // 0.5
-        squares = self.find_squares(cv_image,
-                                    contour_area_floor=contour_area_floor,
-                                    contour_area_ceiling=contour_area_ceiling,
-                                    leap=17)
-
-        squares = np.array(squares)
 
         discriminator_model = self.discriminator_model
 
-        part_im = []
-        possible_positions = []
+        hists_rgb, hists_hsv, possible_positions = self._legacy_regions(im=im, im_hsv=im_hsv,
+                                                                        image_width=image_width,
+                                                                        image_height=image_height,
+                                                                        whole_extrema=whole_extrema,
+                                                                        stride_style=stride_style, 
+                                                                        stride=stride,
+                                                                        partition_size=partition_size,
+                                                                        over_crop=over_crop,
+                                                                        hard_cut_value=hard_cut_value)
 
-        for square in squares:
-            M = cv2.moments(square)
-            cX = int(M["m10"] / M["m00"])
-            cY = int(M["m01"] / M["m00"])
+        hists_rgb = np.array(hists_rgb, dtype=np.uint16)
+        hists_hsv = np.array(hists_hsv, dtype=np.uint16)
 
-            location = (cX - (partition_size // 2), cY - (partition_size // 2), cX + (partition_size // 2), cY + (partition_size // 2))
-            part_image = im.crop(location)
-            part_image = part_image.resize((125, 125))
-            extrema = part_image.convert("HSV").getextrema()
-            extrema = extrema[1][1]
-            if whole_extrema - hard_cut_value < extrema:
-                part_im.append(part_image)
-                possible_positions.append(location)
-
-        if len(part_im) != 0:
-           inference_type = 'find_squares'
-           hists_rgb = []
-           hists_hsv = []
-           for im in part_im:
-               im_hsv = im.convert("HSV")
-               hists_rgb.append(im.histogram())
-               hists_hsv.append(im_hsv.histogram())
-
-        else:
-            inference_type = 'legacy'
-            hists_rgb, hists_hsv, possible_positions = self._legacy_regions(im=im, im_hsv=im_hsv,
-                                                                            image_width=image_width,
-                                                                            image_height=image_height,
-                                                                            whole_extrema=whole_extrema,
-                                                                            stride_style=stride_style, stride=stride,
-                                                                            partition_size=partition_size,
-                                                                            over_crop=over_crop,
-                                                                            hard_cut_value=hard_cut_value)
-
-            hists_rgb = np.array(hists_rgb, dtype=np.uint16)
-            hists_hsv = np.array(hists_hsv, dtype=np.uint16)
-
-            position_predictions = []
+        position_predictions = []
         position_prediction, position_uncertainty = self._position_with_uncertainty([hists_rgb, hists_hsv], 20)
 
         only_cc_position_uncertainty = position_uncertainty[0][:, 1]
@@ -367,7 +329,7 @@ class ColorchipRead:
         max_pred = max(position_predictions)
         for _j, position_prediction in enumerate(position_predictions):
             try:
-                if position_prediction < (max_pred - 0.001):
+                if position_prediction <= (max_pred - 0.001):
                     del position_prediction
                     del position_uncertainty[_j]
                     del indices[_j]
@@ -377,33 +339,56 @@ class ColorchipRead:
         highest_prob_images = []
         highest_prob_positions = []
 
-        if inference_type == 'find_squares':
-            highest_prob_images = [np.array(part_im[k]) for k in indices]
-            highest_prob_positions = [possible_positions[k] for k in indices]
-        else:
-            for i in indices:
-                #im.crop(possible_positions[indices[i]]).show()
-                highest_prob_images.append(np.array(im.crop(possible_positions[i]).resize((125, 125))))
-                highest_prob_positions.append(possible_positions[i])
+        for i in indices:
+            #im.crop(possible_positions[indices[i]]).show()
+            highest_prob_images.append(np.array(im.crop(possible_positions[i]).resize((125, 125))))
+            highest_prob_positions.append(possible_positions[i])
 
         highest_prob_images_pred = np.array(highest_prob_images, dtype=np.float32) / 255
 
-        if inference_type == 'find_squares':
-            best_image = Image.fromarray(highest_prob_images[0])
-            best_location = highest_prob_positions[0]
+        for i, highest_prob_image in enumerate(highest_prob_images):
+            discriminator_model.set_tensor(discriminator_model.get_input_details()[0]['index'], [highest_prob_images_pred[i]])
+            discriminator_model.invoke()
+            disc_value = discriminator_model.get_tensor(discriminator_model.get_output_details()[0]['index'])[0][1]
+            if disc_value > discriminator_floor:
+                best_image = Image.fromarray(highest_prob_image)
+                best_location = highest_prob_positions[i]
+                break            
         else:
             for i, highest_prob_image in enumerate(highest_prob_images):
-                discriminator_model.set_tensor(discriminator_model.get_input_details()[0]['index'], [highest_prob_images_pred[i]])
+                rot_image = np.rot90(highest_prob_images_pred[i])
+                discriminator_model.set_tensor(discriminator_model.get_input_details()[0]['index'], [rot_image])
                 discriminator_model.invoke()
                 disc_value = discriminator_model.get_tensor(discriminator_model.get_output_details()[0]['index'])[0][1]
-                #print(disc_value)
-                if disc_value > discriminator_floor:
-                    # print(f"Discriminator took {i} predictions before finding the colorchip.")
+                if disc_value > discriminator_floor - 0.1:
                     best_image = Image.fromarray(highest_prob_image)
                     best_location = highest_prob_positions[i]
-                    break
+                    print("Rerunning disciminator using rotated images was SUCCESSFUL! (1)")
+                    break  
             else:
-                raise DiscriminatorFailed
+                for i, highest_prob_image in enumerate(highest_prob_images):
+                    rot_image = np.rot90(highest_prob_images_pred[i], k=2)
+                    discriminator_model.set_tensor(discriminator_model.get_input_details()[0]['index'], [rot_image])
+                    discriminator_model.invoke()
+                    disc_value = discriminator_model.get_tensor(discriminator_model.get_output_details()[0]['index'])[0][1]
+                    if disc_value > discriminator_floor - 0.2:
+                        best_image = Image.fromarray(highest_prob_image)
+                        best_location = highest_prob_positions[i]
+                        print("Rerunning disciminator using rotated images was SUCCESSFUL! (2)")
+                        break  
+                else:
+                    for i, highest_prob_image in enumerate(highest_prob_images):
+                        rot_image = np.rot90(highest_prob_images_pred[i], k=3)
+                        discriminator_model.set_tensor(discriminator_model.get_input_details()[0]['index'], [rot_image])
+                        discriminator_model.invoke()
+                        disc_value = discriminator_model.get_tensor(discriminator_model.get_output_details()[0]['index'])[0][1]
+                        if disc_value > discriminator_floor - 0.3:
+                            best_image = Image.fromarray(highest_prob_image)
+                            best_location = highest_prob_positions[i]
+                            print("Rerunning disciminator using rotated images was SUCCESSFUL! (3)")
+                            break
+                    else:# otherwise, finally giveup
+                        raise DiscriminatorFailed
 
         best_image = np.array(best_image, dtype=np.uint8)
         x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]
@@ -431,10 +416,7 @@ class ColorchipRead:
                                                      int(prop_y2 * original_height)
 
         end = time.time()
-        # print(f"Color chip cropping took: {end - start} seconds using {inference_type} proposal.")
-
         cc_crop_time = round(end - start, 3)
-        print(f"Inference type: {inference_type}")
         return (scaled_x1, scaled_y1, scaled_x2, scaled_y2), best_image, cc_crop_time
 
     def high_precision_cc_crop(self, input_img):
@@ -443,48 +425,42 @@ class ColorchipRead:
         """
         h, w = input_img.shape[0:2]
         area = h*w
-        min_crop_area = area // 3
-        max_crop_area = area // 1.01
-
+        min_crop_area = area // 100
+        max_crop_area = area // 5
         # identify squares in the crop
         squares = ColorchipRead.find_squares(input_img,
-                                             leap=1,
                                              contour_area_floor=min_crop_area,
-                                             contour_area_ceiling=max_crop_area)
-        disc_model = self.discriminator_model
-        discriminator_thresh = 0.999
-        best_cropped_img = input_img
-        # identify the largest area among contours
-        qualified_squares = []
-        for i, current_square_contour in enumerate(squares):
-            x_arr = current_square_contour[..., 0]
-            y_arr = current_square_contour[..., 1]
-            x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
-            current_square = (x1, y1, x2, y2)
-            cropped_img = input_img[y1:y2, x1:x2]
-            img = np.zeros((125, 125, 3), dtype=np.float32)
-            cropped_img_t = np.array(cropped_img, dtype=np.float32) / 255
-            img[0:cropped_img_t.shape[0], 0:cropped_img_t.shape[1]] = cropped_img
-            disc_model.set_tensor(disc_model.get_input_details()[0]['index'],
-                                                [img])
-            disc_model.invoke()
-            disc_value = disc_model.get_tensor(disc_model.get_output_details()[0]['index'])[0][1]
-            if disc_value > discriminator_thresh:
-                qualified_squares.append(current_square)
-        try:
-            qualified_squares = sorted(qualified_squares, key=lambda x: (x[2] - x[0]) *(x[3] - x[1]), reverse=False)
-            best_square = qualified_squares[0]
-            # loosen the crops only slightly for future scale det.
-            x1, y1, x2, y2 = best_square
-            x1 = max(x1-2, 0)
-            x2 = min(x2+2, w)
-            y1 = max(y1-2, 0)
-            y2 = min(y2+2, h)
+                                             contour_area_ceiling=max_crop_area,
+                                             leap=1,
+                                             k_size=0)
+        # reduce squares to the unique ones
+        if len(squares) > 5:
+            squares =  np.array([i for i in np.unique(squares, axis=0)])
+            # generate a list of areas for each square
+            areas = [cv2.contourArea(x) for x in squares]
+            # modified from: https://stackoverflow.com/questions/11686720/is-there-a-numpy-builtin-to-reject-outliers-from-a-list
+            d = np.abs(areas - np.median(areas))
+            mdev = np.median(d)
+            s = d/mdev if mdev else 0.
+            # note, the s<2 is square area standard deviations from mean
+            squares = squares[s<3]
+    
+            x1 = np.min(squares[...,0])
+            y1 = np.min(squares[...,1])
+            x2 = np.max(squares[...,0])
+            y2 = np.max(squares[...,1])
+            # attempt to expand a touch for future scale det
+            x1 = max(x1-5, 0)
+            x2 = min(x2+5, w)
+            y1 = max(y1-5, 0)
+            y2 = min(y2+5, h)
+            best_square = [x1, y1, x2, y2]
             best_cropped_img = input_img[y1:y2, x1:x2]
-        except IndexError:
-            # if failed to find a better crop use the whole image
+        else:
+            # if no squares were found, just return what was passed in
+            print("FAILED high precision crop")
+            best_square = [0, 0, w, h]
             best_cropped_img = input_img
-            best_square = (0, 0, w, h)
 
         return best_cropped_img, best_square
 
@@ -508,9 +484,6 @@ class ColorchipRead:
         half_width = original_width / 2
         half_height = original_height / 2
 
-        # print(f"x1: {x1} | y1: {y1} | x2: {x2} | y2: {y2}")
-        # print(f"cx: {cx} | cy: {cy} | hw: {half_width} | hh: {half_height}")
-
         if cx > half_width and cy < half_height:
             return 1
         elif cx < half_width and cy < half_height:
@@ -533,17 +506,27 @@ class ColorchipRead:
         :return: Returns a list of the averaged whitest values
         :rtype: list
         """
+        # determine a few parameters which will not change
+        h, w, chn = cropped_cc.shape
+        area = h * w
+        contour_area_floor = area // 400
+        contour_area_ceiling = area // 8
+        filter_sigma = contour_area_floor #// 2
 
-        grayImg = cv2.cvtColor(cropped_cc, cv2.COLOR_RGB2GRAY)
-        grayImg = cv2.GaussianBlur(grayImg, (5, 5), 0)
-        h, w, chn = cropped_cc.shape        
+        filtered_img = cropped_cc.copy()
+        # bump up the dimmer end of the colors
+        filtered_img[filtered_img < 155] += 25
+        filtered_img = cv2.bilateralFilter(filtered_img,
+                                           0,
+                                           filter_sigma,
+                                           filter_sigma * 2)
+        grayImg = cv2.cvtColor(filtered_img, cv2.COLOR_RGB2GRAY)
+        cv2.normalize(grayImg, grayImg, 0, 255, cv2.NORM_MINMAX)
+
+        # determine a few parameters which will not change
         minVal = np.min(grayImg)
         maxVal = np.max(grayImg)
-        var_threshold = int((maxVal - minVal) * .10)
-        # determine a few parameters which will not change
-        area = h * w
-        contour_area_floor = area // 350
-        contour_area_ceiling = area // 5
+        var_threshold = int((maxVal - minVal) * .1)
 
         if seed_pt:
             # if we have a seed point don't fret over if it is a "good one"
@@ -552,43 +535,36 @@ class ColorchipRead:
             floodflags |= cv2.FLOODFILL_FIXED_RANGE
             floodflags |= cv2.FLOODFILL_MASK_ONLY
             floodflags |= (int(maxVal) << 8)
-            num,_,mask,rect = cv2.floodFill(cropped_cc, mask, seed_pt,
-                                                     0,
-                                                     (var_threshold,)*3,
-                                                     (var_threshold,)*3,
-                                                     floodflags)
+            num,_,mask,rect = cv2.floodFill(grayImg, mask, seed_pt, 0,
+                                            (var_threshold,)*3, #low diff
+                                            (var_threshold,)*3, #hi diff
+                                            floodflags)
             # correct for mask expansion
             mask = mask[1:-1, 1:-1, ...]
-            
         else:
             # when we don't have a seed point find a "good one"
-            for i in range(300):
+            for i in range(100):
                 minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(grayImg)
-                seed = maxLoc
                 mask = np.zeros((h+2,w+2),np.uint8)
                 floodflags = 8
                 floodflags |= cv2.FLOODFILL_FIXED_RANGE
                 floodflags |= cv2.FLOODFILL_MASK_ONLY
                 floodflags |= (int(maxVal) << 8)
-                num,_,mask,rect = cv2.floodFill(cropped_cc, mask, seed,
-                                                         0,
-                                                         (var_threshold,)*3,
-                                                         (var_threshold,)*3,
-                                                         floodflags)
+                num,_,mask,rect = cv2.floodFill(grayImg,
+                                                mask, maxLoc, 0,
+                                                (var_threshold,)*3, #low diff
+                                                (var_threshold,)*3, #hi diff
+                                                floodflags)
                 mask = mask[1:-1, 1:-1, ...]
-                
-                # use a leap that assures few steps
                 squares = ColorchipRead.find_squares(mask,
                                                      contour_area_floor=contour_area_floor,
                                                      contour_area_ceiling=contour_area_ceiling,
-                                                     leap = 15)
+                                                     leap = 3)
                 if len(squares) == 0:
                     # redact brighter values which are not "squarey"
-                    #badMin = np.min(grayImg[np.where(mask != 0)])
-                    #grayImg[np.where(grayImg >= badMin)] = 0
                     grayImg[np.where(mask > 0)] = 0
                     continue
-    
+
                 squares = sorted(squares, key=cv2.contourArea, reverse=True)
                 for square in squares:
                     x_arr = square[..., 0]
@@ -601,23 +577,20 @@ class ColorchipRead:
     
                     if crc_type == 'Tiffen / Kodak Q-13  (8")':
                         # Longest side is roughly 1.6x longer than shortest side
-                        if 1.40 < ratio < 1.80:
+                        if 1.35 < ratio < 1.85:
                             break
                     else:
-                        if 0.80 < ratio < 1.20:
-                           # print("Match Found")
+                        if 0.75 < ratio < 1.25:
                             break
                 else:
                     # redact brighter values which are not "squarey"
-                    #badMin = np.min(grayImg[np.where(mask != 0)])
-                    #grayImg[np.where(grayImg >= badMin)] = 0
                     grayImg[np.where(mask > 0)] = 0
                     continue
                 break
             else:
                 raise SquareFindingFailed
-
         extracted = cropped_cc[mask != 0]
+
         # annotate the detected point for preview window
         squares = ColorchipRead.find_squares(mask,
                                              contour_area_floor=contour_area_floor,
@@ -627,7 +600,6 @@ class ColorchipRead:
         cv2.drawContours(cropped_cc, square, 0, (0,255,0), 1)
         extracted = extracted.reshape(-1,extracted.shape[-1])
         mode_white = np.apply_along_axis(lambda x: np.bincount(x).argmax(), axis=0, arr=extracted)
-
         return list(mode_white), minVal
 
 
