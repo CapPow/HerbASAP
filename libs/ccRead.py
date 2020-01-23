@@ -388,7 +388,7 @@ class ColorchipRead:
                     else:# otherwise,if quick stride was chosen try agian using whole
                         if stride_style == "quick":
                             print("Trying whole stride")
-                            return self.process_colorchip_small(self, im,
+                            return self.process_colorchip_small(im,
                                                                 original_size,
                                                                 'whole',
                                                                 partition_size,

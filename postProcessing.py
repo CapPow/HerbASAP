@@ -1341,9 +1341,7 @@ class appWindow(QMainWindow):
 
             # replace the max channel value with avgchannel value / itself 
             cc_avg_white[maxPos] = avgChan / maxChan
-            print(cc_avg_white)
             r, g, b = cc_avg_white
-            print(r,g,b)
             # adjust green channel for the 4-to-3 channel black magicks
             g = g/2
             wb = [r, g, b, g]
