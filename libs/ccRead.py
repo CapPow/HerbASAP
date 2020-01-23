@@ -7,7 +7,7 @@
     specimens. Specifically designed for Herbarium sheet images.
 """
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageEnhance
 import cv2
 import time
 import os
@@ -300,7 +300,6 @@ class ColorchipRead:
         start = time.time()
         image_width, image_height = im.size
         original_width, original_height = original_size
-
         discriminator_model = self.discriminator_model
 
         hists_rgb, hists_hsv, possible_positions = self._legacy_regions(im=im, im_hsv=im_hsv,
@@ -496,7 +495,7 @@ class ColorchipRead:
             return None
 
     @staticmethod
-    def predict_color_chip_whitevals(cropped_cc, crc_type, seed_pt=None):
+    def predict_color_chip_whitevals(cropped_cc, crc_type, seed_pt=None, use_extreme=True):
         """
         Takes a cropped CC image and determines the average RGB values of the
         whitest portion.
@@ -566,6 +565,7 @@ class ColorchipRead:
                     continue
 
                 squares = sorted(squares, key=cv2.contourArea, reverse=True)
+                masks.append(mask)
                 for square in squares:
                     x_arr = square[..., 0]
                     y_arr = square[..., 1]
@@ -586,7 +586,6 @@ class ColorchipRead:
                     # redact brighter values which are not "squarey"
                     grayImg[np.where(mask > 0)] = 0
                     continue
-                break
             else:
                 raise SquareFindingFailed
         extracted = cropped_cc[mask != 0]
@@ -595,9 +594,9 @@ class ColorchipRead:
         squares = ColorchipRead.find_squares(mask,
                                              contour_area_floor=contour_area_floor,
                                              contour_area_ceiling=contour_area_ceiling,
-                                             leap = 17)
+                                             leap=17)
         square = sorted(squares, key=cv2.contourArea, reverse=True)
-        cv2.drawContours(cropped_cc, square, 0, (0,255,0), 1)
+        cv2.drawContours(cropped_cc, square, 0, (0, 255, 0), 1)
         extracted = extracted.reshape(-1,extracted.shape[-1])
         mode_white = np.apply_along_axis(lambda x: np.bincount(x).argmax(), axis=0, arr=extracted)
         return list(mode_white), minVal
