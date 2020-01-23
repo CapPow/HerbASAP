@@ -366,8 +366,8 @@ class appWindow(QMainWindow):
                 url = result['html_url']
                 version = result['tag_name']
                 if version.lower() != __version__.lower():
-                    message = f'A new version ( {version} ) of collBook has been released. Would you like to visit the release page?'
-                    title = 'collBook Version'
+                    message = f'A new version ( {version} ) of HerbASAP has been released. Would you like to visit the release page?'
+                    title = 'HerbASAP Version'
                     answer = self.userAsk(message, title, inclHalt = False)
                     if answer:# == QMessageBox.Yes:
                         link=url
@@ -1027,7 +1027,6 @@ class appWindow(QMainWindow):
                                     cc_crop_time, self.cc_avg_white)
             # apply corrections based on what is learned from the colorchipDetect
             except ColorChipError as e: 
-                print(e)
                 notice_title = 'Error Determining Color Chip Location'
                 notice_text = 'Critical Error: Image was NOT processed!'
                 detail_text = ('While attempting to determine the color chip '

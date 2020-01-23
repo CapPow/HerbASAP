@@ -255,7 +255,7 @@ class ColorchipRead:
         pass
 
     def process_colorchip_small(self, im, original_size, stride_style='whole',
-                                stride=25, partition_size=125, discriminator_floor=0.99,
+                                partition_size=125, discriminator_floor=0.99,
                                 over_crop=1, hard_cut_value=50, high_precision=True):
         """
         Finds small colorchips using the quickCC model. This model is specifically trained on tiny colorchips found in
@@ -301,7 +301,7 @@ class ColorchipRead:
         image_width, image_height = im.size
         original_width, original_height = original_size
         discriminator_model = self.discriminator_model
-
+        stride = partition_size // 5
         hists_rgb, hists_hsv, possible_positions = self._legacy_regions(im=im, im_hsv=im_hsv,
                                                                         image_width=image_width,
                                                                         image_height=image_height,
@@ -494,11 +494,10 @@ class ColorchipRead:
             return None
 
     @staticmethod
-    def predict_color_chip_whitevals(cropped_cc, crc_type, seed_pt=None, use_extreme=True):
+    def predict_color_chip_whitevals(cropped_cc, crc_type, seed_pt=None):
         """
         Takes a cropped CC image and determines the average RGB values of the
         whitest portion.
-
         :param cropped_cc: The cropped color chip image
         :type cropped_cc: Image
         :return: Returns a list of the averaged whitest values
@@ -507,7 +506,7 @@ class ColorchipRead:
         # determine a few parameters which will not change
         h, w, chn = cropped_cc.shape
         area = h * w
-        contour_area_floor = area // 400
+        contour_area_floor = area // 200
         contour_area_ceiling = area // 8
         filter_sigma = contour_area_floor #// 2
 
@@ -564,7 +563,6 @@ class ColorchipRead:
                     continue
 
                 squares = sorted(squares, key=cv2.contourArea, reverse=True)
-                masks.append(mask)
                 for square in squares:
                     x_arr = square[..., 0]
                     y_arr = square[..., 1]
@@ -585,6 +583,7 @@ class ColorchipRead:
                     # redact brighter values which are not "squarey"
                     grayImg[np.where(mask > 0)] = 0
                     continue
+                break
             else:
                 raise SquareFindingFailed
         extracted = cropped_cc[mask != 0]
@@ -593,10 +592,11 @@ class ColorchipRead:
         squares = ColorchipRead.find_squares(mask,
                                              contour_area_floor=contour_area_floor,
                                              contour_area_ceiling=contour_area_ceiling,
-                                             leap=17)
+                                             leap = 17)
         square = sorted(squares, key=cv2.contourArea, reverse=True)
-        cv2.drawContours(cropped_cc, square, 0, (0, 255, 0), 1)
+        cv2.drawContours(cropped_cc, square, 0, (0,255,0), 1)
         extracted = extracted.reshape(-1,extracted.shape[-1])
+
         #mode_white = np.apply_along_axis(lambda x: np.bincount(x).argmax(), axis=0, arr=extracted)
         # median was selected as preferable over mode
         median_white = np.median(extracted, axis=0)
