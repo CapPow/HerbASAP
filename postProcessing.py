@@ -27,6 +27,7 @@ __status__ = "Alpha"
 __version__ = 'v0.0.1-alpha'
 
 import time
+from datetime import date
 import os
 import platform
 import sys
@@ -336,39 +337,43 @@ class appWindow(QMainWindow):
         # setup static UI buttons
         self.mainWindow.toolButton_delPreviousImage.pressed.connect(self.delete_previous_image)
         self.mainWindow.toolButton_editTechnicians.pressed.connect(self.edit_technician_list)
-#       self.versionCheck()
+        self.versionCheck()
 
-#    def versionCheck(self):
-#        """ checks the github repo's latest release version number against
-#        local and offers the user to visit the new release page if different"""
-#        #  be sure to only do this once a day.
-#        today = str(date.today())
-#        lastChecked = self.settings.get('date_versionCheck', today)
-#        self.w.date_versionCheck = today
-#        if today != lastChecked:
-#            import requests
-#            import webbrowser
-#            apiURL = 'https://api.github.com/repos/CapPow/collBook/releases/latest'
-#            try:
-#                apiCall = requests.get(apiURL)
-#                status = str(apiCall)
-#            except ConnectionError:
-#                #  if no internet, don't bother the user.
-#                pass
-#            result = apiCall.json()
-#            if '200' in status:  # if the return looks bad, don't bother user
-#                url = result['html_url']
-#                version = result['tag_name']
-#                if version.lower() != self.w.version.lower():
-#                    message = f'A new version ( {version} ) of collBook has been released. Would you like to visit the release page?'
-#                    title = 'collBook Version'
-#                    answer = self.userAsk(message, title, inclHalt = False)
-#                    if answer:# == QMessageBox.Yes:
-#                        link=url
-#                        self.showMinimized() #  hide the app about to pop up.
-#                        #  instead display a the new release
-#                        webbrowser.open(link,autoraise=1)
-#            self.settings.saveSettings()  # save the new version check date
+    def versionCheck(self):
+        """ checks the github repo's latest release version number against
+        local and offers the user to visit the new release page if different"""
+        #  be sure to only do this once a day.
+
+        today = str(date.today())
+        lastChecked = self.get('date_versionCheck', today)
+        # save the new version check date
+        self.settings.setValue("date_versionCheck", today)
+        self.saveSettings()
+
+        if today != lastChecked:
+            import requests
+            from requests.exceptions import ConnectionError
+            import webbrowser
+            apiURL = 'https://api.github.com/repos/CapPow/HerbASAP/releases/latest'
+            try:
+                apiCall = requests.get(apiURL)
+                status = str(apiCall)
+            except ConnectionError:
+                #  if no internet, don't bother the user.
+                return
+            result = apiCall.json()
+            if '200' in status:  # if the return looks bad, don't bother user
+                url = result['html_url']
+                version = result['tag_name']
+                if version.lower() != __version__.lower():
+                    message = f'A new version ( {version} ) of collBook has been released. Would you like to visit the release page?'
+                    title = 'collBook Version'
+                    answer = self.userAsk(message, title, inclHalt = False)
+                    if answer:# == QMessageBox.Yes:
+                        link=url
+                        self.showMinimized() #  hide the app about to pop up.
+                        #  instead display a the new release
+                        webbrowser.open(link,autoraise=1)
 
     def closeEvent(self, event):
         """
@@ -957,7 +962,6 @@ class appWindow(QMainWindow):
                     cc_location, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im, pp_fix=1)
                 else:
                     cc_location, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
-
                 x1, y1, x2, y2 = cc_location
                 if scaleDetermination:
                     # scale determination code
@@ -1022,7 +1026,8 @@ class appWindow(QMainWindow):
                 self.update_cc_info(self.cc_quadrant, cropped_cc,
                                     cc_crop_time, self.cc_avg_white)
             # apply corrections based on what is learned from the colorchipDetect
-            except ColorChipError as e:                
+            except ColorChipError as e: 
+                print(e)
                 notice_title = 'Error Determining Color Chip Location'
                 notice_text = 'Critical Error: Image was NOT processed!'
                 detail_text = ('While attempting to determine the color chip '

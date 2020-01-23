@@ -582,8 +582,8 @@ class SettingsWizard(QWizard):
                 original_size, reduced_img = self.scale_images_with_info(self.img)
                 self.cc_position, self.cropped_cc, self.cc_crop_time = colorchipDetect.process_colorchip_small(reduced_img,
                                                                                                              original_size,
-                                                                                                             stride_style='quick',
-                                                                                                             high_precision=True,
+                                                                                                             stride_style='whole',
+                                                                                                             high_precision=False,
                                                                                                              partition_size=self.partition_size)
             else:
                 self.cc_position, self.cropped_cc, self.cc_crop_time = colorchipDetect.process_colorchip_big(self.img)
