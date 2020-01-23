@@ -64,6 +64,13 @@ from libs.scaleRead import ScaleRead
 from libs.settingsWizard import SettingsWizard
 
 
+if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
+    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+
+if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
+    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+
+
 class Canvas(QtWidgets.QLabel):
     def __init__(self, im, parent=None):
         super().__init__()
@@ -291,7 +298,7 @@ class appWindow(QMainWindow):
         # initiate the persistant settings
         # todo update this when name is decided on
         self.settings = QSettings('HerbASAP', 'HerbASAP')
-        #self.setWindowIcon(QtGui.QIcon('docs/icon_a.png'))
+        self.setWindowIcon(QtGui.QIcon('docs/icon_a.png'))
         self.settings.setFallbacksEnabled(False)  # File only, no fallback to registry.
         # populate the settings based on the previous preferences
         self.populateSettings() # this also loads in the settings profile
