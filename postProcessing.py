@@ -27,17 +27,17 @@ __status__ = "Alpha"
 __version__ = 'v0.0.1-alpha'
 
 import time
+from datetime import date
 import os
 import platform
 import sys
 import string
 import glob
 import re
-import copy
 from shutil import move as shutil_move
 # UI libs
 from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtWidgets import QMainWindow, QMessageBox, QDialog
+from PyQt5.QtWidgets import QMainWindow, QMessageBox, QDialog, QSizePolicy
 from PyQt5.QtCore import (QSettings, Qt, QObject, QThreadPool, QEventLoop)
 # image libs
 import rawpy
@@ -47,13 +47,13 @@ import numpy as np
 # internal libs
 from ui.styles import darkorange
 from ui.postProcessingUI import Ui_MainWindow
-
 from ui.noBcDialogUI import Ui_Dialog_noBc
 from ui.technicianNameDialogUI import Ui_technicianNameDialog
+from ui.imageDialogUI import Ui_Dialog_image
 from libs.bcRead import bcRead
 from libs.eqRead import eqRead
 from libs.blurDetect import blurDetect
-from libs.ccRead import ColorchipRead, ColorChipError
+from libs.ccRead import ColorchipRead, ColorChipError, SquareFindingFailed
 from libs.folderMonitor import Folder_Watcher
 from libs.folderMonitor import New_Image_Emitter
 from libs.boss_worker import (Boss, BCWorkerData, BlurWorkerData, EQWorkerData,
@@ -62,7 +62,116 @@ from libs.boss_worker import (Boss, BCWorkerData, BlurWorkerData, EQWorkerData,
 from libs.metaRead import MetaRead
 from libs.scaleRead import ScaleRead
 from libs.settingsWizard import SettingsWizard
-import string
+
+
+class Canvas(QtWidgets.QLabel):
+    def __init__(self, im, parent=None):
+        super().__init__()
+        # pixmap = QtGui.QPixmap(600, 300)
+        # self.setPixmap(pixmap)
+        self.parent = parent
+        self.setObjectName("canvas")
+        self.backDrop, self.correction = self.genPixBackDrop(im)
+        self.setPixmap(self.backDrop)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.end = QtCore.QPoint()
+        # the box_size, is the point of the entire canvas.
+        # The scale corrected larger dim of the annotated rect
+
+    def genPixBackDrop(self, im):
+        # if it is oriented in landscape, rotate it
+        h, w = im.shape[0:2]
+        rotated = False
+        if w < h:
+            im = np.rot90(im, 3)  # 3 or 1 would be equally appropriate
+            h, w = w, h  # swap the variables after rotating
+            rotated = True
+        bytesPerLine = 3 * w
+        # odd bug here, must use .copy() to avoid a mem error.
+        # see: https://stackoverflow.com/questions/48639185/pyqt5-qimage-from-numpy-array
+        qImg = QtGui.QImage(im.copy(), w, h, bytesPerLine,
+                            QtGui.QImage.Format_RGB888)
+        pixmap = QtGui.QPixmap.fromImage(qImg)
+        width = 120
+        height = 120
+        pixmap = pixmap.scaled(width, height,
+                               QtCore.Qt.KeepAspectRatio,
+                               Qt.FastTransformation)
+        # corrections are doubled due to display image bieng opened at half res
+        h_correction = h / height
+        w_correction = w / width
+        if rotated:
+            correction = (w_correction, h_correction)
+        else:
+            correction = (h_correction, w_correction)
+        return pixmap, correction
+
+    def paintEvent(self, event):
+        qp = QtGui.QPainter(self)
+
+        qp.drawEllipse(40, 40, 400, 400)
+        qp.drawPixmap(self.rect(), self.backDrop)
+        qp.setPen(QtGui.QPen(Qt.green, 1, Qt.SolidLine))
+        qp.drawEllipse(self.end.x() - 3, self.end.y() - 3, 6, 6)
+
+    def mousePressEvent(self, event):
+        # dialog = self.exec()
+        self.end = event.pos()
+
+        width = self.width()
+        height = self.height()
+        end_point = event.pos()
+        # ensure the annotations are "inside the lines"
+        e_x = end_point.x()
+        if e_x < 0:
+            end_point.setX(0)
+        elif e_x > width:
+            end_point.setX(width)
+        e_y = end_point.y()
+        if e_y < 0:
+            end_point.setY(0)
+        elif e_y > height:
+            end_point.setY(height)
+        self.end = end_point
+        self.update()
+        self.updateWP()
+
+    def updateWP(self):
+        # qpoint is formatted as (xpos, ypos)
+        # x col, y row
+        # save the scale corrected start / end points
+        x_corr, y_corr = self.correction
+        e_x = self.end.x()
+        e_y = self.end.y()
+        # determine the end (e) points, adjusted for scale
+        se_x, se_y= int(e_x * x_corr), int(e_y * y_corr)
+        # update the seed_point attribute in the parent dialog
+        #self.parent.seed_point = (se_y, se_x)
+        self.parent.seed_point = (se_x, se_y)
+        
+class ImageDialog(QDialog):
+    def __init__(self, img_array_object):
+        super().__init__()
+        self.init_ui(img_array_object)
+        # set an initial seed_point which fails an if check
+        self.seed_point = None
+
+    def init_ui(self, img_array_object):
+        mb = Ui_Dialog_image()
+        mb.setupUi(self)
+        _translate = QtCore.QCoreApplication.translate
+        mb.label_dialog.setText(_translate("White Point", "Failed to determine the white point from the CRC. Please CLICK THE WHITE POINT."))
+        canv = Canvas(im=img_array_object, parent=self)
+        mb.gridLayout.addWidget(canv)
+
+    def ask_user_for_seed(self):
+        dialog = self.exec()
+        if dialog:
+            result = self.seed_point
+            print(result)
+            return result
+        else:
+            return None
 
 
 class BcDialog(QDialog):
@@ -182,7 +291,7 @@ class appWindow(QMainWindow):
         # initiate the persistant settings
         # todo update this when name is decided on
         self.settings = QSettings('HerbASAP', 'HerbASAP')
-        self.setWindowIcon(QtGui.QIcon('docs/icon_a.png'))
+        #self.setWindowIcon(QtGui.QIcon('docs/icon_a.png'))
         self.settings.setFallbacksEnabled(False)  # File only, no fallback to registry.
         # populate the settings based on the previous preferences
         self.populateSettings() # this also loads in the settings profile
@@ -228,39 +337,43 @@ class appWindow(QMainWindow):
         # setup static UI buttons
         self.mainWindow.toolButton_delPreviousImage.pressed.connect(self.delete_previous_image)
         self.mainWindow.toolButton_editTechnicians.pressed.connect(self.edit_technician_list)
-#       self.versionCheck()
+        self.versionCheck()
 
-#    def versionCheck(self):
-#        """ checks the github repo's latest release version number against
-#        local and offers the user to visit the new release page if different"""
-#        #  be sure to only do this once a day.
-#        today = str(date.today())
-#        lastChecked = self.settings.get('date_versionCheck', today)
-#        self.w.date_versionCheck = today
-#        if today != lastChecked:
-#            import requests
-#            import webbrowser
-#            apiURL = 'https://api.github.com/repos/CapPow/collBook/releases/latest'
-#            try:
-#                apiCall = requests.get(apiURL)
-#                status = str(apiCall)
-#            except ConnectionError:
-#                #  if no internet, don't bother the user.
-#                pass
-#            result = apiCall.json()
-#            if '200' in status:  # if the return looks bad, don't bother user
-#                url = result['html_url']
-#                version = result['tag_name']
-#                if version.lower() != self.w.version.lower():
-#                    message = f'A new version ( {version} ) of collBook has been released. Would you like to visit the release page?'
-#                    title = 'collBook Version'
-#                    answer = self.userAsk(message, title, inclHalt = False)
-#                    if answer:# == QMessageBox.Yes:
-#                        link=url
-#                        self.showMinimized() #  hide the app about to pop up.
-#                        #  instead display a the new release
-#                        webbrowser.open(link,autoraise=1)
-#            self.settings.saveSettings()  # save the new version check date
+    def versionCheck(self):
+        """ checks the github repo's latest release version number against
+        local and offers the user to visit the new release page if different"""
+        #  be sure to only do this once a day.
+
+        today = str(date.today())
+        lastChecked = self.get('date_versionCheck', today)
+        # save the new version check date
+        self.settings.setValue("date_versionCheck", today)
+        self.saveSettings()
+
+        if today != lastChecked:
+            import requests
+            from requests.exceptions import ConnectionError
+            import webbrowser
+            apiURL = 'https://api.github.com/repos/CapPow/HerbASAP/releases/latest'
+            try:
+                apiCall = requests.get(apiURL)
+                status = str(apiCall)
+            except ConnectionError:
+                #  if no internet, don't bother the user.
+                return
+            result = apiCall.json()
+            if '200' in status:  # if the return looks bad, don't bother user
+                url = result['html_url']
+                version = result['tag_name']
+                if version.lower() != __version__.lower():
+                    message = f'A new version ( {version} ) of collBook has been released. Would you like to visit the release page?'
+                    title = 'collBook Version'
+                    answer = self.userAsk(message, title, inclHalt = False)
+                    if answer:# == QMessageBox.Yes:
+                        link=url
+                        self.showMinimized() #  hide the app about to pop up.
+                        #  instead display a the new release
+                        webbrowser.open(link,autoraise=1)
 
     def closeEvent(self, event):
         """
@@ -849,15 +962,11 @@ class appWindow(QMainWindow):
                     cc_location, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im, pp_fix=1)
                 else:
                     cc_location, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
-
                 x1, y1, x2, y2 = cc_location
                 if scaleDetermination:
                     # scale determination code
                     full_res_cc = im[y1:y2, x1:x2]
-                    # useful for debugging
-                    #cv2.imwrite('full_res_cc.jpg', full_res_cc)
                     # lookup the patch area and seed function
-
                     patch_mm_area, seed_func, to_crop = self.scaleRead.scale_params.get(crc_type)
                     self.ppmm, self.ppmm_uncertainty = self.scaleRead.find_scale(full_res_cc,
                                                                                  patch_mm_area,
@@ -867,13 +976,19 @@ class appWindow(QMainWindow):
 
                 self.cc_quadrant = self.colorchipDetect.predict_color_chip_quadrant(original_size, cc_location)
                 self.cropped_cc = cropped_cc
-                cc_avg_white, self.cc_blk_point = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc,
-                                                                                                    crc_type)
-                # print(f'avg BLACK: {self.cc_blk_point}')
-
                 if performWhiteBalance:
-                    self.cc_avg_white = cc_avg_white
-
+                    try:
+                        self.cc_avg_white, self.cc_blk_point = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc, crc_type)
+                    # if colorchipDetect fails it will raise a SquareFindingFailed error
+                    except SquareFindingFailed:
+                        # catch it and call the imageDialog
+                        seedDialog = ImageDialog(self.cropped_cc)
+                        seed_pt = seedDialog.ask_user_for_seed()
+                        if seed_pt:
+                            self.cc_avg_white, self.cc_blk_point = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc, crc_type, seed_pt=seed_pt)
+                        else:
+                            raise ColorChipError
+                            
                 if verifyRotation:
                     user_def_loc = profile.get('colorCheckerPosition', 'Upper right')
                     quad_map = ['Upper right',
@@ -881,9 +996,6 @@ class appWindow(QMainWindow):
                                 'Lower left',
                                 'Lower right']
                     user_def_quad = quad_map.index(user_def_loc) + 1
-                    # print(user_def_quad)
-                    # print(self.cc_quadrant)
-
                     # cc_quadrant starts at first,
                     # determine the proper rawpy flip value necessary
                     rotation_qty = (self.cc_quadrant - user_def_quad)
@@ -894,12 +1006,8 @@ class appWindow(QMainWindow):
                     endPos = rotation_qty + startPos  # ending index in the list
                     self.flip_value = rotations[endPos]  # value at that position
 
-                    # print(f"CC Quadrant: {self.cc_quadrant} | Defined Quadrant: {user_def_quad} | Rotation: {self.flip_value}")
-
                 self.apply_corrections()
 
-
-                # print(f"CC Position before calc.: {cc_location}")
                 width, height = original_size
                 if self.flip_value == 3:
                     x1, x2, y1, y2 = width - x2, width - x1, height - y2, height - y1
@@ -916,9 +1024,10 @@ class appWindow(QMainWindow):
                 # print(f"CC Position after calc.: {cc_location}")
 
                 self.update_cc_info(self.cc_quadrant, cropped_cc,
-                                    cc_crop_time, cc_avg_white)
+                                    cc_crop_time, self.cc_avg_white)
             # apply corrections based on what is learned from the colorchipDetect
-            except ColorChipError as e:
+            except ColorChipError as e: 
+                print(e)
                 notice_title = 'Error Determining Color Chip Location'
                 notice_text = 'Critical Error: Image was NOT processed!'
                 detail_text = ('While attempting to determine the color chip '
@@ -931,15 +1040,16 @@ class appWindow(QMainWindow):
                 self.process_from_queue()
                 return
 
-        self.high_precision_wb(cc_location)
+        # optional manually implimented white balance
+        #self.high_precision_wb(cc_location)
+
         # pass off what was learned and properly open image.
         # add the (mostly) corrected image to the preview
         # equipment corrections remain. let user look at this while that runs.
+
         self.update_preview_img(self.im)
         if profile.get('lensCorrection', True):
             # equipment corrections
-            cm_distance = profile.get('focalDistance', 25.5)
-            m_distance = round(cm_distance / 100, 5)
             eq_worker_data = EQWorkerData(self.im)
             eq_job = Job('eq_worker', eq_worker_data, self.eqRead.lensCorrect)
             self.boss_thread.request_job(eq_job)
@@ -1160,7 +1270,7 @@ class appWindow(QMainWindow):
             x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
             # biggest_square = (x1, y1, x2, y2)
             cc_im = cc_im[y1 + 5:y2 - 5, x1 + 5:x2 - 5]
-            cc_im1 = cv2.cvtColor(cc_im, cv2.COLOR_RGB2BGR)
+            #cc_im1 = cv2.cvtColor(cc_im, cv2.COLOR_RGB2BGR)
         except:
             return
 
@@ -1383,8 +1493,8 @@ class appWindow(QMainWindow):
         nameList = list(self.get('profiles', {}).keys())
         # if the list of profile names is empty, force the wizard.
         if nameList == []:
-            # assign 'results' to x so that it waits on the wizard to finish.
-            x = self.create_profile()
+            # assign 'results' to _ so that it waits on the wizard to finish.
+            _ = self.create_profile()
             return
         profile_comboBox.addItems(nameList)
         previously_selected_profile = self.get('selected_profile', False)
