@@ -24,7 +24,7 @@ __credits__ = ["Caleb Powell", "Dakila Ledesma", "Jacob Motley", "Jason Best",
                "Hong Qin", "Joey Shaw"]
 __email__ = "calebadampowell@gmail.com"
 __status__ = "Alpha"
-__version__ = 'v0.0.1-alpha'
+__version__ = 'v0.1.0-beta'
 
 import time
 from datetime import date
