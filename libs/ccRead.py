@@ -541,15 +541,19 @@ class ColorchipRead:
         area = h * w
         contour_area_floor = area // 200
         contour_area_ceiling = area // 8
-        filter_sigma = contour_area_floor #// 2
 
         filtered_img = cropped_cc.copy()
         # bump up the dimmer end of the colors
         filtered_img[filtered_img < 155] += 25
-        filtered_img = cv2.bilateralFilter(filtered_img,
-                                           0,
-                                           filter_sigma,
-                                           filter_sigma * 2)
+        # for small partitions subject to mixed pixels, 
+        # we can afford the time to apply a bilateral filter.
+        if area < 23000: # partition size of 150 has area of 22500
+            filter_sigma = contour_area_floor
+            filtered_img = cv2.bilateralFilter(filtered_img,
+                                               0,
+                                               filter_sigma,
+                                               filter_sigma * 2)
+
         grayImg = cv2.cvtColor(filtered_img, cv2.COLOR_RGB2GRAY)
         cv2.normalize(grayImg, grayImg, 0, 255, cv2.NORM_MINMAX)
 
