@@ -7,6 +7,11 @@ from keras.models import Model
 from libs.deps.keras_frcnn import roi_helpers
 import libs.deps.keras_frcnn.vgg as nn
 from libs.deps.keras_frcnn.config import Config
+from os import path
+import sys
+
+bundle_dir = getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__)))
+
 
 C = Config()
 
@@ -95,8 +100,12 @@ model_classifier_only = Model([feature_map_input, roi_input], classifier)
 
 model_classifier = Model([feature_map_input, roi_input], classifier)
 
-model_rpn.load_weights("libs/models/f_rcnn_lcc.hdf5", by_name=True)
-model_classifier.load_weights("libs/models/f_rcnn_lcc.hdf5", by_name=True)
+try:
+    model_rpn.load_weights("libs/models/f_rcnn_lcc.hdf5", by_name=True)
+    model_classifier.load_weights("libs/models/f_rcnn_lcc.hdf5", by_name=True)
+except (ValueError, OSError):
+    model_rpn.load_weights(path.join(bundle_dir, "libs/models/f_rcnn_lcc.hdf5"), by_name=True)
+    model_classifier.load_weights(path.join(bundle_dir, "libs/models/f_rcnn_lcc.hdf5"), by_name=True)
 
 model_rpn.compile(optimizer='sgd', loss='mse')
 model_classifier.compile(optimizer='sgd', loss='mse')

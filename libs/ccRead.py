@@ -10,12 +10,13 @@ import numpy as np
 from PIL import Image, ImageEnhance
 import cv2
 import time
-import os
+from os import path, environ
+import sys
 
 # Importing TensorFlow within debug messages
 import tensorflow as tf
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 # Importing Keras and making sure that Keras uses TensorFlow instead of some other backend.
 import keras
@@ -26,6 +27,8 @@ if K.backend() != 'tensorflow':
 # from libs.settingsWizard import ImageDialog
 from libs.models.keras_frcnn.useFRCNN import process_image_frcnn
 
+# Getting path for model loading within macOS bundle
+bundle_dir = getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__)))
 
 class ColorChipError(Exception):
     def __init__(self, msg='ColorChipError', *args, **kwargs):
@@ -67,17 +70,29 @@ class ColorchipRead:
     def __init__(self, parent=None, *args):
         super(ColorchipRead, self).__init__()
         self.parent = parent
-        self.position_model = tf.lite.Interpreter(model_path="libs/models/mlp_proposal.tflite")
+        try:
+            self.position_model = tf.lite.Interpreter(model_path='libs/models/mlp_proposal.tflite')
+        except (ValueError, OSError):
+            self.position_model = tf.lite.Interpreter(
+                model_path=path.join(bundle_dir, 'libs/models/mlp_proposal.tflite'))
         self.position_model.allocate_tensors()
         self.position_input_details = self.position_model.get_input_details()
         self.position_output_details = self.position_model.get_output_details()
-        self.K_position_model = load_model("libs/models/mlp_proposal_k.hdf5")
+        try:
+            self.K_position_model = load_model("libs/models/mlp_proposal_k.hdf5")
+        except (ValueError, OSError):
+            self.K_position_model = load_model(path.join(bundle_dir, "libs/models/mlp_proposal_k.hdf5"))
+
         self.position_function = K.function([self.K_position_model.layers[0].input,
                                              self.K_position_model.layers[1].input,
                                              K.learning_phase()],
-        [self.K_position_model.layers[-1].output])
-
-        self.discriminator_model = tf.lite.Interpreter(model_path="libs/models/discriminator.tflite")
+                                            [self.K_position_model.layers[-1].output])
+        try:
+            self.discriminator_model = tf.lite.Interpreter(
+                model_path='libs/models/discriminator.tflite')
+        except (ValueError, OSError):
+            self.discriminator_model = tf.lite.Interpreter(
+                model_path=path.join(bundle_dir, 'libs/models/discriminator.tflite'))
         self.discriminator_model.allocate_tensors()
         self.discriminator_input_details = self.discriminator_model.get_input_details()
         self.discriminator_output_details = self.discriminator_model.get_output_details()
