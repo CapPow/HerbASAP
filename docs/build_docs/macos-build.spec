@@ -34,6 +34,9 @@ exe = EXE(pyz,
           console=False )
 
 app = BUNDLE(exe,
+            info_plist={
+               'NSRequiresAquaSystemAppearance': 'No'
+            },
              name='HerbASAP.app',
              bundle_identifier=None,
              icon='icon_a.icns')
