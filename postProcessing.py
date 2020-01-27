@@ -298,7 +298,7 @@ class appWindow(QMainWindow):
         # initiate the persistant settings
         # todo update this when name is decided on
         self.settings = QSettings('HerbASAP', 'HerbASAP')
-        self.setWindowIcon(QtGui.QIcon('docs/icon_a.ico'))
+        self.setWindowIcon(QtGui.QIcon('docs/imgresources/icon_a.ico'))
         self.settings.setFallbacksEnabled(False)  # File only, no fallback to registry.
         # populate the settings based on the previous preferences
         self.populateSettings() # this also loads in the settings profile
@@ -1613,14 +1613,14 @@ class appWindow(QMainWindow):
         """ stores the preferences widget's selections to self.settings"""
 
         # save the version number
-#        version = self.version
-#        self.setValue('version', version)
-#        # save the laste date we checked the version number
-#        try:
-#            date_versionCheck = self.parent.w.date_versionCheck
-#        except AttributeError:  # first run may not yet have this saved.
-#            date_versionCheck = ""
-#        self.setValue('date_versionCheck', date_versionCheck)
+        version = __version__
+        self.setValue('version', version)
+        # save the laste date we checked the version number
+        try:
+            date_versionCheck = self.settings.date_versionCheck
+        except AttributeError:  # first run may not yet have this saved.
+            date_versionCheck = ""
+        self.setValue('date_versionCheck', date_versionCheck)
 
         # QComboBox
         comboBox_profiles = self.mainWindow.comboBox_profiles.currentText()

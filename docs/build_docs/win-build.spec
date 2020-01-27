@@ -4,21 +4,17 @@ block_cipher = None
 
 
 a = Analysis(['postProcessing.py'],
-             pathex=['C:\\Users\\Shawlab\\Desktop\\HerbASAP'],
+             pathex=[],
              # have to show it how to find the custom pyzbar dlls
-             binaries=[('C:/Users/Shawlab/Desktop/HerbASAP/libs/deps/pyzbar/libiconv.dll', '.'),
-                       ('C:/Users/Shawlab/Desktop/HerbASAP/libs/deps/pyzbar/libiconv-2.dll', '.'),
-                       ('C:/Users/Shawlab/Desktop/HerbASAP/libs/deps/pyzbar/libzbar-32.dll', '.'),
-                       ('C:/Users/Shawlab/Desktop/HerbASAP/libs/deps/pyzbar/libzbar-64.dll', '.'),
+             binaries=[('./libs/deps/pyzbar/*.dll', '.'),
                        (HOMEPATH + '\\pylibdmtx\\libdmtx-64.dll', '.')
                        ],
              # for Qt binary misplacement issue see below
              # https://github.com/pyinstaller/pyinstaller/issues/4293
              datas=[(HOMEPATH + '\\PyQt5\\Qt\\bin\*', 'PyQt5\\Qt\\bin'),
-		    ('C:/Users/Shawlab/Desktop/HerbASAP/libs/models/*', 'libs/models'),
-		    ('C:/Users/Shawlab/Desktop/HerbASAP/libs/models/f_rcnn_lcc.hdf5', 'libs/models'),
-		    ('C:/Users/Shawlab/Desktop/HerbASAP/ui/styles/darkorange/*', 'ui/styles/darkorange'),
-		    ('C:/Users/Shawlab/Desktop/HerbASAP/docs/icon_a.ico', 'docs/icon_a.ico')],
+		    ('./libs/models/*', 'libs/models'),
+		    ('./ui/styles/darkorange/*', 'ui/styles/darkorange'),
+		    ('./docs/imgresources/icon_a.ico', 'docs/imgresources/icon_a.ico')],
              # this tensorflow hidden import takes care lib missed by pyinstaller
              hiddenimports=["tensorflow.lite.python.interpreter_wrapper.tensorflow_wrap_interpreter_wrapper"],
              hookspath=[],
@@ -36,15 +32,15 @@ exe = EXE(pyz,
           a.binaries,
 	  a.zipfiles,
 	  a.datas,
-          #exclude_binaries=True,
+#          exclude_binaries=True,
           name='HerbASAP',
           debug=True,
           bootloader_ignore_signals=False,
           strip=False,
-          upx=False,
+          upx=True,
           console=True,
 	  runtime_tmpdir=None,
-	  icon='C:/Users/Shawlab/Desktop/HerbASAP/docs/icon_a.ico')
+	  icon='./docs/imgresources/icon_a.ico')
 
 #coll = COLLECT(exe,
 #               a.binaries,
