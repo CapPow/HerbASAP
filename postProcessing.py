@@ -170,11 +170,7 @@ class ImageDialog(QDialog):
         mb.label_dialog.setText(_translate("White Point",
                                            "Failed to determine the white point from the CRC. Please CLICK THE WHITE POINT."))
         canv = Canvas(im=img_array_object, parent=self)
-        #mb.gridLayout.addWidget(canv)
         mb.gridLayout.replaceWidget(mb.label_Image, canv)
-        #mb.gridLayout.addWidget(canv, 1, 0, 1, 1)
-        #mb.label_Image.set
-        #canv
 
     def ask_user_for_seed(self):
         dialog = self.exec()
