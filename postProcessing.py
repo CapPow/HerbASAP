@@ -534,10 +534,13 @@ class appWindow(QMainWindow):
 
         # retrieve the source image exif data
         # add Additional user comment details for the metadata
+        h, w = im.shape[0:2]
         addtl_user_comments = {
                 'avgWhiteRGB': str(self.cc_avg_white),
                 'barcodeValues': self.bc_code,
                 'isBlurry': str(self.is_blurry),
+                'origHeight':str(h),
+                'origWidth':str(w),
                 'ccQuadrant': str(self.cc_quadrant),
                 'ccLocation': str(self.cc_location),
                 'pixelsPerMM': str(self.ppmm),
