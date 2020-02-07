@@ -24,16 +24,16 @@ __credits__ = ["Caleb Powell", "Dakila Ledesma", "Jacob Motley", "Jason Best",
                "Hong Qin", "Joey Shaw"]
 __email__ = "calebadampowell@gmail.com"
 __status__ = "Alpha"
-__version__ = 'v0.0.1-alpha'
+__version__ = 'v0.1.0-beta'
 
 import time
+from datetime import date
 import os
 import platform
 import sys
 import string
 import glob
 import re
-import copy
 from shutil import move as shutil_move
 # UI libs
 from PyQt5 import QtWidgets, QtCore, QtGui
@@ -64,6 +64,13 @@ from libs.scaleRead import ScaleRead
 from libs.settingsWizard import SettingsWizard
 
 
+if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
+    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+
+if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
+    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+
+
 class Canvas(QtWidgets.QLabel):
     def __init__(self, im, parent=None):
         super().__init__()
@@ -81,9 +88,11 @@ class Canvas(QtWidgets.QLabel):
     def genPixBackDrop(self, im):
         # if it is oriented in landscape, rotate it
         h, w = im.shape[0:2]
-        if h < w:
+        rotated = False
+        if w < h:
             im = np.rot90(im, 3)  # 3 or 1 would be equally appropriate
             h, w = w, h  # swap the variables after rotating
+            rotated = True
         bytesPerLine = 3 * w
         # odd bug here, must use .copy() to avoid a mem error.
         # see: https://stackoverflow.com/questions/48639185/pyqt5-qimage-from-numpy-array
@@ -96,9 +105,12 @@ class Canvas(QtWidgets.QLabel):
                                QtCore.Qt.KeepAspectRatio,
                                Qt.FastTransformation)
         # corrections are doubled due to display image bieng opened at half res
-        h_correction = (h) / height
-        w_correction = (w) / width
-        correction = (w_correction, h_correction)
+        h_correction = h / height
+        w_correction = w / width
+        if rotated:
+            correction = (w_correction, h_correction)
+        else:
+            correction = (h_correction, w_correction)
         return pixmap, correction
 
     def paintEvent(self, event):
@@ -291,7 +303,7 @@ class appWindow(QMainWindow):
         # initiate the persistant settings
         # todo update this when name is decided on
         self.settings = QSettings('HerbASAP', 'HerbASAP')
-        #self.setWindowIcon(QtGui.QIcon('docs/icon_a.png'))
+        self.setWindowIcon(QtGui.QIcon('docs/imgresources/icon_a.ico'))
         self.settings.setFallbacksEnabled(False)  # File only, no fallback to registry.
         # populate the settings based on the previous preferences
         self.populateSettings() # this also loads in the settings profile
@@ -337,39 +349,43 @@ class appWindow(QMainWindow):
         # setup static UI buttons
         self.mainWindow.toolButton_delPreviousImage.pressed.connect(self.delete_previous_image)
         self.mainWindow.toolButton_editTechnicians.pressed.connect(self.edit_technician_list)
-#       self.versionCheck()
+        self.versionCheck()
 
-#    def versionCheck(self):
-#        """ checks the github repo's latest release version number against
-#        local and offers the user to visit the new release page if different"""
-#        #  be sure to only do this once a day.
-#        today = str(date.today())
-#        lastChecked = self.settings.get('date_versionCheck', today)
-#        self.w.date_versionCheck = today
-#        if today != lastChecked:
-#            import requests
-#            import webbrowser
-#            apiURL = 'https://api.github.com/repos/CapPow/collBook/releases/latest'
-#            try:
-#                apiCall = requests.get(apiURL)
-#                status = str(apiCall)
-#            except ConnectionError:
-#                #  if no internet, don't bother the user.
-#                pass
-#            result = apiCall.json()
-#            if '200' in status:  # if the return looks bad, don't bother user
-#                url = result['html_url']
-#                version = result['tag_name']
-#                if version.lower() != self.w.version.lower():
-#                    message = f'A new version ( {version} ) of collBook has been released. Would you like to visit the release page?'
-#                    title = 'collBook Version'
-#                    answer = self.userAsk(message, title, inclHalt = False)
-#                    if answer:# == QMessageBox.Yes:
-#                        link=url
-#                        self.showMinimized() #  hide the app about to pop up.
-#                        #  instead display a the new release
-#                        webbrowser.open(link,autoraise=1)
-#            self.settings.saveSettings()  # save the new version check date
+    def versionCheck(self):
+        """ checks the github repo's latest release version number against
+        local and offers the user to visit the new release page if different"""
+        #  be sure to only do this once a day.
+
+        today = str(date.today())
+        lastChecked = self.get('date_versionCheck', today)
+        # save the new version check date
+        self.settings.setValue("date_versionCheck", today)
+        self.saveSettings()
+
+        if today != lastChecked:
+            import requests
+            from requests.exceptions import ConnectionError
+            import webbrowser
+            apiURL = 'https://api.github.com/repos/CapPow/HerbASAP/releases/latest'
+            try:
+                apiCall = requests.get(apiURL)
+                status = str(apiCall)
+            except ConnectionError:
+                #  if no internet, don't bother the user.
+                return
+            result = apiCall.json()
+            if '200' in status:  # if the return looks bad, don't bother user
+                url = result['html_url']
+                version = result['tag_name']
+                if version.lower() != __version__.lower():
+                    message = f'A new version ( {version} ) of HerbASAP has been released. Would you like to visit the release page?'
+                    title = 'HerbASAP Version'
+                    answer = self.userAsk(message, title, inclHalt = False)
+                    if answer:# == QMessageBox.Yes:
+                        link=url
+                        self.showMinimized() #  hide the app about to pop up.
+                        #  instead display a the new release
+                        webbrowser.open(link,autoraise=1)
 
     def closeEvent(self, event):
         """
@@ -955,13 +971,11 @@ class appWindow(QMainWindow):
                         self.colorchipDetect.process_colorchip_small(reduced_img,
                                                                      original_size,
                                                                      high_precision=True,
-                                                                     partition_size=partition_size,
-                                                                     stride_style='quick')
+                                                                     partition_size=partition_size)
                 elif crc_type == 'Tiffen / Kodak Q-13  (8")':
                     cc_location, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im, pp_fix=1)
                 else:
                     cc_location, cropped_cc, cc_crop_time = self.colorchipDetect.process_colorchip_big(im)
-
                 x1, y1, x2, y2 = cc_location
                 if scaleDetermination:
                     # scale determination code
@@ -1026,7 +1040,7 @@ class appWindow(QMainWindow):
                 self.update_cc_info(self.cc_quadrant, cropped_cc,
                                     cc_crop_time, self.cc_avg_white)
             # apply corrections based on what is learned from the colorchipDetect
-            except ColorChipError as e:                
+            except ColorChipError as e: 
                 notice_title = 'Error Determining Color Chip Location'
                 notice_text = 'Critical Error: Image was NOT processed!'
                 detail_text = ('While attempting to determine the color chip '
@@ -1269,7 +1283,7 @@ class appWindow(QMainWindow):
             x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
             # biggest_square = (x1, y1, x2, y2)
             cc_im = cc_im[y1 + 5:y2 - 5, x1 + 5:x2 - 5]
-            cc_im1 = cv2.cvtColor(cc_im, cv2.COLOR_RGB2BGR)
+            #cc_im1 = cv2.cvtColor(cc_im, cv2.COLOR_RGB2BGR)
         except:
             return
 
@@ -1339,9 +1353,7 @@ class appWindow(QMainWindow):
 
             # replace the max channel value with avgchannel value / itself 
             cc_avg_white[maxPos] = avgChan / maxChan
-            print(cc_avg_white)
             r, g, b = cc_avg_white
-            print(r,g,b)
             # adjust green channel for the 4-to-3 channel black magicks
             g = g/2
             wb = [r, g, b, g]
@@ -1492,8 +1504,8 @@ class appWindow(QMainWindow):
         nameList = list(self.get('profiles', {}).keys())
         # if the list of profile names is empty, force the wizard.
         if nameList == []:
-            # assign 'results' to x so that it waits on the wizard to finish.
-            x = self.create_profile()
+            # assign 'results' to _ so that it waits on the wizard to finish.
+            _ = self.create_profile()
             return
         profile_comboBox.addItems(nameList)
         previously_selected_profile = self.get('selected_profile', False)
@@ -1609,14 +1621,14 @@ class appWindow(QMainWindow):
         """ stores the preferences widget's selections to self.settings"""
 
         # save the version number
-#        version = self.version
-#        self.setValue('version', version)
-#        # save the laste date we checked the version number
-#        try:
-#            date_versionCheck = self.parent.w.date_versionCheck
-#        except AttributeError:  # first run may not yet have this saved.
-#            date_versionCheck = ""
-#        self.setValue('date_versionCheck', date_versionCheck)
+        version = __version__
+        self.setValue('version', version)
+        # save the laste date we checked the version number
+        try:
+            date_versionCheck = self.settings.date_versionCheck
+        except AttributeError:  # first run may not yet have this saved.
+            date_versionCheck = ""
+        self.setValue('date_versionCheck', date_versionCheck)
 
         # QComboBox
         comboBox_profiles = self.mainWindow.comboBox_profiles.currentText()

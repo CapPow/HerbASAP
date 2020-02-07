@@ -20,7 +20,6 @@
 """
 
 import lensfunpy
-from lensfunpy import XMLFormatError
 import piexif
 import cv2
 import glob

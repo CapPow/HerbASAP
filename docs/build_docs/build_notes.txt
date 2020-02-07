@@ -1,0 +1,7 @@
+For windows build:
+	- it appears necessary to use tensorflow 1.14.*
+	- it is necessary to amend the astor library, otherwise it cannot find its version file
+		- easiest way is using a venv, modify the astor's __init__.py 
+		- where it opens VERSION file, comment it out and just add:
+			__version__ = "0.8.1"
+	- run pyinstaller from virtualenv by using ./env/scripts/pyinstaller ....
