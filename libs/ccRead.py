@@ -69,23 +69,16 @@ class ColorchipRead:
         super(ColorchipRead, self).__init__()
         self.parent = parent
         try: # try to load models from relative paths
-            self.position_model = tf.lite.Interpreter(model_path='libs/models/mlp_proposal.tflite')
-            self.K_position_model = load_model("libs/models/mlp_proposal_k.hdf5")
+            self.K_position_model = load_model("libs/models/mlp_proposal.hdf5")
             self.discriminator_model = tf.lite.Interpreter(
                 model_path='libs/models/discriminator.tflite')
         except (ValueError, OSError):
             # alternative loading to accomodate pyinstaller
             bundle_dir = getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__)))
-            self.position_model = tf.lite.Interpreter(
-                model_path=path.join(bundle_dir, 'libs/models/mlp_proposal.tflite'))
-
-            self.K_position_model = load_model(path.join(bundle_dir, "libs/models/mlp_proposal_k.hdf5"))
+            self.K_position_model = load_model(path.join(bundle_dir, "libs/models/mlp_proposal.hdf5"))
             self.discriminator_model = tf.lite.Interpreter(
                 model_path=path.join(bundle_dir, 'libs/models/discriminator.tflite'))
 
-        self.position_model.allocate_tensors()
-        self.position_input_details = self.position_model.get_input_details()
-        self.position_output_details = self.position_model.get_output_details()
         self.position_function = K.function([self.K_position_model.layers[0].input,
                                              self.K_position_model.layers[1].input,
                                              K.learning_phase()],
@@ -208,8 +201,24 @@ class ColorchipRead:
                         possible_positions.append((x1, y1, x2, y2))
                         partitioned_im = im.crop((x1, y1, x2, y2))
                         partitioned_im = partitioned_im.resize((125, 125))
-                        hists_rgb.append(partitioned_im.histogram())
-                        hists_hsv.append(partitioned_im_hsv.histogram())
+                        hist_rgb = partitioned_im.histogram()
+                        r = np.array(hist_rgb[20:236])
+                        g = np.array(hist_rgb[277:493])
+                        b = np.array(hist_rgb[534:-20])
+
+                        r = np.concatenate((r, g), axis=0)
+                        r = np.concatenate((r, b), axis=0)
+
+                        hist_hsv = partitioned_im_hsv.histogram()
+                        h = np.array(hist_hsv[:256])
+                        s = np.array(hist_hsv[257:513])
+                        v = np.array(hist_hsv[534:-20])
+
+                        h = np.concatenate((h, s), axis=0)
+                        h = np.concatenate((h, v), axis=0)
+
+                        hists_rgb.append(r)
+                        hists_hsv.append(h)
 
         elif stride_style == 'quick':
             for c in range(-over_crop, (image_width - partition_size) // stride + over_crop):
