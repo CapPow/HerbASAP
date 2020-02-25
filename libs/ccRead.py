@@ -275,7 +275,7 @@ class ColorchipRead:
     def _square_first_regions(self):
         pass
 
-    def process_colorchip_small(self, im, original_size, stride_style='quick',
+    def process_colorchip_small(self, im, original_size, stride_style='whole',
                                 partition_size=125, discriminator_floor=0.99,
                                 over_crop=1, hard_cut_value=50, high_precision=True):
         """
