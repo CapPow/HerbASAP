@@ -351,7 +351,7 @@ class ColorchipRead:
         pass
 
     def process_colorchip_small(self, im, original_size, stride_style='whole',
-                                partition_size=125, discriminator_floor=0.99,
+                                partition_size=125, discriminator_floor=0.90,
                                 over_crop=1, hard_cut_value=50, high_precision=True):
         """
         Finds small colorchips using the quickCC model. This model is specifically trained on tiny colorchips found in
@@ -412,7 +412,7 @@ class ColorchipRead:
         hists_hsv = np.array(hists_hsv, dtype=np.uint16)
 
         position_predictions = []
-        position_prediction, position_uncertainty = self._position_with_uncertainty([hists_rgb, hists_hsv], 20)
+        position_prediction, position_uncertainty = self._position_with_uncertainty([hists_rgb, hists_hsv], 100)
 
         only_cc_position_uncertainty = position_uncertainty[0][:, 1]
         only_cc_position_prediction = position_prediction[0][:, 1]
