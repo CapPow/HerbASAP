@@ -184,14 +184,30 @@ class ColorchipRead:
             partitioned_im = im.crop(position)
             possible_positions.append(position)
             partitioned_im_hsv = im_hsv.crop(position)
-            hists_rgb.append(partitioned_im.histogram())
-            hists_hsv.append(partitioned_im_hsv.histogram())
+            hist_rgb = partitioned_im.histogram()
+            r = np.array(hist_rgb[20:236])
+            g = np.array(hist_rgb[277:493])
+            b = np.array(hist_rgb[534:-20])
+
+            r = np.concatenate((r, g), axis=0)
+            r = np.concatenate((r, b), axis=0)
+
+            hist_hsv = partitioned_im_hsv.histogram()
+            h = np.array(hist_hsv[:256])
+            s = np.array(hist_hsv[257:513])
+            v = np.array(hist_hsv[534:-20])
+
+            h = np.concatenate((h, s), axis=0)
+            h = np.concatenate((h, v), axis=0)
+
+            hists_rgb.append(r)
+            hists_hsv.append(h)
 
 
         if stride_style == 'whole':
-            for r in range(-over_crop, (image_height - partition_size) // stride + over_crop):
-                for c in range(-over_crop, (image_width - partition_size) // stride + over_crop):
-                    x1, y1 = c * stride, r * stride
+            for row in range(-over_crop, (image_height - partition_size) // stride + over_crop):
+                for col in range(-over_crop, (image_width - partition_size) // stride + over_crop):
+                    x1, y1 = col * stride, row * stride
                     x2, y2 = x1 + partition_size, y1 + partition_size
                     partitioned_im_hsv = im_hsv.crop((x1, y1, x2, y2))
                     partitioned_im_hsv = partitioned_im_hsv.resize((125, 125))
@@ -225,48 +241,107 @@ class ColorchipRead:
                 x1, y1 = c * stride, 0
                 x2, y2 = x1 + partition_size, y1 + partition_size
                 partitioned_im = im.crop((x1, y1, x2, y2))
-                possible_positions.append((x1, y1, x2, y2))
+                partitioned_im = partitioned_im.resize((125, 125))
                 partitioned_im_hsv = im_hsv.crop((x1, y1, x2, y2))
+                partitioned_im_hsv = partitioned_im_hsv.resize((125, 125))
+                hist_rgb = partitioned_im.histogram()
+                red = np.array(hist_rgb[20:236])
+                g = np.array(hist_rgb[277:493])
+                b = np.array(hist_rgb[534:-20])
 
-                hist = partitioned_im.histogram()
+                red = np.concatenate((red, g), axis=0)
+                red = np.concatenate((red, b), axis=0)
+
                 hist_hsv = partitioned_im_hsv.histogram()
+                h = np.array(hist_hsv[:256])
+                s = np.array(hist_hsv[257:513])
+                v = np.array(hist_hsv[534:-20])
 
-                hists_rgb.append(hist)
-                hists_hsv.append(hist_hsv)
+                h = np.concatenate((h, s), axis=0)
+                h = np.concatenate((h, v), axis=0)
+
+                red = red.reshape((646,))
+                hists_rgb.append(red)
+                hists_hsv.append(h)
 
                 x1, y1 = c * stride, image_height - partition_size
                 x2, y2 = x1 + partition_size, y1 + partition_size
                 partitioned_im = im.crop((x1, y1, x2, y2))
-                possible_positions.append((x1, y1, x2, y2))
+                partitioned_im = partitioned_im.resize((125, 125))
                 partitioned_im_hsv = im_hsv.crop((x1, y1, x2, y2))
-                hist = partitioned_im.histogram()
-                hist_hsv = partitioned_im_hsv.histogram()
+                partitioned_im_hsv = partitioned_im_hsv.resize((125, 125))
+                hist_rgb = partitioned_im.histogram()
+                red = np.array(hist_rgb[20:236])
+                g = np.array(hist_rgb[277:493])
+                b = np.array(hist_rgb[534:-20])
 
-                hists_rgb.append(hist)
-                hists_hsv.append(hist_hsv)
+                red = np.concatenate((red, g), axis=0)
+                red = np.concatenate((red, b), axis=0)
+
+                hist_hsv = partitioned_im_hsv.histogram()
+                h = np.array(hist_hsv[:256])
+                s = np.array(hist_hsv[257:513])
+                v = np.array(hist_hsv[534:-20])
+
+                h = np.concatenate((h, s), axis=0)
+                h = np.concatenate((h, v), axis=0)
+
+                red = red.reshape((646,))
+                hists_rgb.append(red)
+                hists_hsv.append(h)
 
             for r in range(-over_crop, (image_height - partition_size) // stride + over_crop):
                 x1, y1 = 0, r * stride
                 x2, y2 = x1 + partition_size, y1 + partition_size
                 partitioned_im = im.crop((x1, y1, x2, y2))
-                possible_positions.append((x1, y1, x2, y2))
+                partitioned_im = partitioned_im.resize((125, 125))
                 partitioned_im_hsv = im_hsv.crop((x1, y1, x2, y2))
-                hist = partitioned_im.histogram()
-                hist_hsv = partitioned_im_hsv.histogram()
+                partitioned_im_hsv = partitioned_im_hsv.resize((125, 125))
+                hist_rgb = partitioned_im.histogram()
+                red = np.array(hist_rgb[20:236])
+                g = np.array(hist_rgb[277:493])
+                b = np.array(hist_rgb[534:-20])
 
-                hists_rgb.append(hist)
-                hists_hsv.append(hist_hsv)
+                red = np.concatenate((red, g), axis=0)
+                red = np.concatenate((red, b), axis=0)
+
+                hist_hsv = partitioned_im_hsv.histogram()
+                h = np.array(hist_hsv[:256])
+                s = np.array(hist_hsv[257:513])
+                v = np.array(hist_hsv[534:-20])
+
+                h = np.concatenate((h, s), axis=0)
+                h = np.concatenate((h, v), axis=0)
+
+                red = red.reshape((646,))
+                hists_rgb.append(red)
+                hists_hsv.append(h)
 
                 x1, y1 = image_width - partition_size, r * stride
                 x2, y2 = x1 + partition_size, y1 + partition_size
                 partitioned_im = im.crop((x1, y1, x2, y2))
-                possible_positions.append((x1, y1, x2, y2))
+                partitioned_im = partitioned_im.resize((125, 125))
                 partitioned_im_hsv = im_hsv.crop((x1, y1, x2, y2))
-                hist = partitioned_im.histogram()
-                hist_hsv = partitioned_im_hsv.histogram()
+                partitioned_im_hsv = partitioned_im_hsv.resize((125, 125))
+                hist_rgb = partitioned_im.histogram()
+                red = np.array(hist_rgb[20:236])
+                g = np.array(hist_rgb[277:493])
+                b = np.array(hist_rgb[534:-20])
 
-                hists_rgb.append(hist)
-                hists_hsv.append(hist_hsv)
+                red = np.concatenate((red, g), axis=0)
+                red = np.concatenate((red, b), axis=0)
+
+                hist_hsv = partitioned_im_hsv.histogram()
+                h = np.array(hist_hsv[:256])
+                s = np.array(hist_hsv[257:513])
+                v = np.array(hist_hsv[534:-20])
+
+                h = np.concatenate((h, s), axis=0)
+                h = np.concatenate((h, v), axis=0)
+
+                red = red.reshape((646,))
+                hists_rgb.append(red)
+                hists_hsv.append(h)
         else:
             raise InvalidStride
 
@@ -372,6 +447,7 @@ class ColorchipRead:
             if disc_value > discriminator_floor:
                 best_image = Image.fromarray(highest_prob_image)
                 best_location = highest_prob_positions[i]
+                print(f"CRC was found at {i}")
                 break            
         else:
             for i, highest_prob_image in enumerate(highest_prob_images):
