@@ -167,9 +167,10 @@ class ImageDialog(QDialog):
         mb = Ui_Dialog_image()
         mb.setupUi(self)
         _translate = QtCore.QCoreApplication.translate
-        mb.label_dialog.setText(_translate("White Point", "Failed to determine the white point from the CRC. Please CLICK THE WHITE POINT."))
+        mb.label_dialog.setText(_translate("White Point",
+                                           "Failed to determine the white point from the CRC. Please CLICK THE WHITE POINT."))
         canv = Canvas(im=img_array_object, parent=self)
-        mb.gridLayout.addWidget(canv)
+        mb.gridLayout.replaceWidget(mb.label_Image, canv)
 
     def ask_user_for_seed(self):
         dialog = self.exec()
@@ -550,10 +551,13 @@ class appWindow(QMainWindow):
 
         # retrieve the source image exif data
         # add Additional user comment details for the metadata
+        h, w = im.shape[0:2]
         addtl_user_comments = {
                 'avgWhiteRGB': str(self.cc_avg_white),
                 'barcodeValues': self.bc_code,
                 'isBlurry': str(self.is_blurry),
+                'origHeight':str(h),
+                'origWidth':str(w),
                 'ccQuadrant': str(self.cc_quadrant),
                 'ccLocation': str(self.cc_location),
                 'pixelsPerMM': str(self.ppmm),

@@ -3,4 +3,4 @@
 </p>
 
 # HerbASAP
-A program created in an effort to automate image post processing for natural history collections
+A program created to automate image post processing for natural history collections
