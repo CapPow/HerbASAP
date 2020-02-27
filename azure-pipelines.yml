@@ -12,7 +12,13 @@ stages:
         - task: UsePythonVersion@0
           inputs:
             versionSpec: '3.7'
-      
+        - script: python -m pip install --upgrade pip
+          displayName: 'update pip'
+        - script: python -m pip install wheel
+          displayName: 'install wheel'
+        - script: python -m pip install pyinstaller
+          displayName: 'install pyinstaller'
+
       - job: 'Build_PyInstaller_Mac_OSX'
         pool: 
           vmImage: 'macOS-latest'
@@ -20,3 +26,9 @@ stages:
         - task: UsePythonVersion@0
           inputs:
             versionSpec: '3.7'
+        - script: python -m pip install --upgrade pip
+          displayName: 'update pip'
+        - script: python -m pip install wheel
+          displayName: 'update wheel'
+        - script: python -m pip install pyinstaller
+          displayName: 'install pyinstaller'
