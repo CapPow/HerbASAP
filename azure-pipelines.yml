@@ -5,7 +5,7 @@ trigger:
 stages:
   - stage:
     jobs:
-      - job: 'Build PyInstaller - Windows'
+      - job: 'Build_PyInstaller_Windows'
         pool: 
           vmImage: 'windows-latest'
         steps:
@@ -13,7 +13,7 @@ stages:
           inputs:
             versionSpec: '3.7'
       
-      - job: 'Build PyInstaller - Mac OSX'
+      - job: 'Build_PyInstaller_Mac_OSX'
         pool: 
           vmImage: 'macOS-latest'
         steps:
