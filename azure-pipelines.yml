@@ -20,7 +20,7 @@ stages:
           displayName: 'install pyinstaller'
         - script: python -m pip install -r ./requirements.txt
           displayName: 'install HerbASAP requirements'
-        - script: copy ./docs/build_docs/win-build.spec ./win-build.spec
+        - script: copy .\docs\build_docs\win-build.spec .\win-build.spec
           displayName: 'copy spec file to dir root'
         - script: pyinstaller ./docs/build_docs/win-build.spec
           displayName: 'build HerbASAP pyinstaller'
