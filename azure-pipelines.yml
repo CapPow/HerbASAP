@@ -22,7 +22,7 @@ stages:
           displayName: 'install HerbASAP requirements'
         - script: copy .\docs\build_docs\win-build.spec .\win-build.spec
           displayName: 'copy spec file to dir root'
-        - script: pyinstaller ./docs/build_docs/win-build.spec
+        - script: pyinstaller ./win-build.spec
           displayName: 'build HerbASAP pyinstaller'
 
       - job: 'Build_PyInstaller_Mac_OSX'
