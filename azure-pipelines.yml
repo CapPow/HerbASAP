@@ -24,8 +24,13 @@ stages:
           displayName: 'copy spec file to dir root'
         - script: pyinstaller ./win-build.spec
           displayName: 'build HerbASAP pyinstaller'
+        - task: PublishPipelineArtifact@1
+          displayName: 'publish windows build output'
+          inputs:
+            path: '**/*.exe'
+            artifact: win-build
 
-      - job: 'Build_PyInstaller_Mac_OSX'
+      - job: 'Build_PyInstaller_MacOS'
         pool: 
           vmImage: 'macOS-latest'
         steps:
@@ -44,3 +49,8 @@ stages:
           displayName: 'copy spec file to dir root'
         - script: pyinstaller ./macos-build.spec
           displayName: 'build HerbASAP pyinstaller'
+        - task: PublishPipelineArtifact@1
+          displayName: 'publish macos build output'
+          inputs:
+            path: '**/*.app'
+            artifact: macos-build
