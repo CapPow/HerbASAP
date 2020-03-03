@@ -24,7 +24,7 @@ stages:
           displayName: 'copy spec file to dir root'
         - script: pyinstaller ./win-build.spec
           displayName: 'build HerbASAP pyinstaller'
-        - script: Write-Host $(System.DefaultWorkingDirectory)
+        - script: echo $(System.DefaultWorkingDirectory)
           displayName: 'echo default working directory'
         - task: PublishPipelineArtifact@1
           displayName: 'publish windows build output'
