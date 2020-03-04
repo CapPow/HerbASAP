@@ -54,3 +54,19 @@ stages:
           inputs:
             path: $(System.DefaultWorkingDirectory)/dist/HerbASAP.app
             artifact: macos-build
+
+      - job: 'Github_Release'
+        pool:
+          vmImage: 'windows-latest'
+        steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: 'download HerbASAP windows build'
+          inputs:
+            artifact: win-build
+        - task: DownloadPipelineArtifact@2
+          displayName: 'download HerbASAP macos build'
+          inputs:
+            artifact: macos-build
+        - script: dir $(Pipeline.Workspace)
+          displayName: 'show pipeline workspace directory contents'
+        
