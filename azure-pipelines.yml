@@ -3,7 +3,7 @@ trigger:
 - azure-pipelines
 
 stages:
-  - stage:
+  - stage: Build
     jobs:
       - job: 'Build_PyInstaller_Windows'
         pool: 
@@ -55,6 +55,8 @@ stages:
             path: $(System.DefaultWorkingDirectory)/dist/HerbASAP.app
             artifact: macos-build
 
+  - stage: Release
+    jobs:
       - job: 'Github_Release'
         pool:
           vmImage: 'windows-latest'
