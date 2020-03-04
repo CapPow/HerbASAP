@@ -26,7 +26,7 @@ stages:
           displayName: 'build HerbASAP pyinstaller'
         - script: echo $(System.DefaultWorkingDirectory)
           displayName: 'echo default working directory'
-        - script: dir $(System.DefaultWorkingDirectory)
+        - script: dir $(System.DefaultWorkingDirectory)\dist
           displayName: 'list default working directory contents'
         # - task: PublishPipelineArtifact@1
         #   displayName: 'publish windows build output'
@@ -55,7 +55,7 @@ stages:
           displayName: 'build HerbASAP pyinstaller'
         - script: echo $(System.DefaultWorkingDirectory)
           displayName: 'echo default working directory'
-        - script: ls $(System.DefaultWorkingDirectory)
+        - script: ls $(System.DefaultWorkingDirectory)/dist
           displayName: 'list default working directory contents'
         # - task: PublishPipelineArtifact@1
         #   displayName: 'publish macos build output'
