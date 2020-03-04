@@ -24,15 +24,11 @@ stages:
           displayName: 'copy spec file to dir root'
         - script: pyinstaller ./win-build.spec
           displayName: 'build HerbASAP pyinstaller'
-        - script: echo $(System.DefaultWorkingDirectory)
-          displayName: 'echo default working directory'
-        - script: dir $(System.DefaultWorkingDirectory)\dist
-          displayName: 'list default working directory contents'
-        # - task: PublishPipelineArtifact@1
-        #   displayName: 'publish windows build output'
-        #   inputs:
-        #     path: $(System.DefaultWorkingDirectory)/dist/*.exe
-        #     artifact: win-build
+        - task: PublishPipelineArtifact@1
+          displayName: 'publish windows build output'
+          inputs:
+            path: $(System.DefaultWorkingDirectory)/dist/HerbASAP.exe
+            artifact: win-build
 
       - job: 'Build_PyInstaller_MacOS'
         pool: 
@@ -53,12 +49,8 @@ stages:
           displayName: 'copy spec file to dir root'
         - script: pyinstaller ./macos-build.spec
           displayName: 'build HerbASAP pyinstaller'
-        - script: echo $(System.DefaultWorkingDirectory)
-          displayName: 'echo default working directory'
-        - script: ls $(System.DefaultWorkingDirectory)/dist
-          displayName: 'list default working directory contents'
-        # - task: PublishPipelineArtifact@1
-        #   displayName: 'publish macos build output'
-        #   inputs:
-        #     path: $(System.DefaultWorkingDirectory)/dist/*.app
-        #     artifact: macos-build
+        - task: PublishPipelineArtifact@1
+          displayName: 'publish macos build output'
+          inputs:
+            path: $(System.DefaultWorkingDirectory)/dist/HerbASAP.app
+            artifact: macos-build
