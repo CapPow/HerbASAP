@@ -49,10 +49,17 @@ stages:
           displayName: 'copy spec file to dir root'
         - script: pyinstaller ./macos-build.spec
           displayName: 'build HerbASAP pyinstaller'
-        - task: PublishPipelineArtifact@1
-          displayName: 'publish macos build output'
+        - task: ArchiveFiles@2
           inputs:
-            path: $(System.DefaultWorkingDirectory)/dist/HerbASAP.app
+            rootFolderOrFile: '$(System.DefaultWorkingDirectory)/dist/HerbASAP.app' 
+            includeRootFolder: true 
+            archiveType: 'zip'
+            archiveFile: '$(System.DefaultWorkingDirectory)/dist/HerbASAP.app.zip' 
+            replaceExistingArchive: true
+        - task: PublishPipelineArtifact@1
+          displayName: 'publish macos build'
+          inputs:
+            path: '$(System.DefaultWorkingDirectory)/dist/HerbASAP.app.zip'
             artifact: macos-build
 
   - stage: Release
