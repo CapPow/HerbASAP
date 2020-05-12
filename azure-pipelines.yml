@@ -76,6 +76,11 @@ stages:
           displayName: 'download HerbASAP macos build'
           inputs:
             artifact: macos-build
-        - script: dir $(Pipeline.Workspace)
-          displayName: 'show pipeline workspace directory contents'
-        
+        - task: GithubRelease@0
+          displayName: 'GitHub Release'
+          inputs:
+            gitHubConnection: j-h-m
+            repositoryName: j-h-m/HerbASAP
+            assets: |
+              $(Build.ArtifactStagingDirectory)/*.exe
+              $(Build.ArtifactStagingDirectory)/*.zip
