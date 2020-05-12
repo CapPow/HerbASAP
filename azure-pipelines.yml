@@ -79,7 +79,7 @@ stages:
         - task: GithubRelease@0
           displayName: 'GitHub Release'
           inputs:
-            gitHubConnection: j-h-m
+            gitHubConnection: github-j-h-m
             repositoryName: j-h-m/HerbASAP
             assets: |
               $(Build.ArtifactStagingDirectory)/*.exe
