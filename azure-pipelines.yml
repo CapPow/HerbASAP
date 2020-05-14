@@ -81,6 +81,7 @@ stages:
           inputs:
             gitHubConnection: github-j-h-m
             repositoryName: j-h-m/HerbASAP
+            addChangeLog: false
             assets: |
               $(Build.ArtifactStagingDirectory)/*.exe
               $(Build.ArtifactStagingDirectory)/*.zip
