@@ -72,10 +72,12 @@ stages:
           displayName: 'download HerbASAP windows build'
           inputs:
             artifact: win-build
+            path: $(Build.ArtifactStagingDirectory)
         - task: DownloadPipelineArtifact@2
           displayName: 'download HerbASAP macos build'
           inputs:
             artifact: macos-build
+            path: $(Build.ArtifactStagingDirectory)
         - task: GithubRelease@0
           displayName: 'GitHub Release'
           inputs:
