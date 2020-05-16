@@ -1,0 +1,88 @@
+trigger:
+- master
+
+stages:
+  - stage: Build
+    jobs:
+      - job: 'Build_PyInstaller_Windows'
+        pool: 
+          vmImage: 'windows-latest'
+        steps:
+        - task: UsePythonVersion@0
+          inputs:
+            versionSpec: '3.7'
+        - script: python -m pip install --upgrade pip
+          displayName: 'update pip'
+        - script: python -m pip install wheel
+          displayName: 'install wheel'
+        - script: python -m pip install pyinstaller
+          displayName: 'install pyinstaller'
+        - script: python -m pip install -r ./requirements.txt
+          displayName: 'install HerbASAP requirements'
+        - script: copy .\docs\build_docs\win-build.spec .\win-build.spec
+          displayName: 'copy spec file to dir root'
+        - script: pyinstaller ./win-build.spec
+          displayName: 'build HerbASAP pyinstaller'
+        - task: PublishPipelineArtifact@1
+          displayName: 'publish windows build output'
+          inputs:
+            path: $(System.DefaultWorkingDirectory)/dist/HerbASAP.exe
+            artifact: win-build
+
+      - job: 'Build_PyInstaller_MacOS'
+        pool: 
+          vmImage: 'macOS-latest'
+        steps:
+        - task: UsePythonVersion@0
+          inputs:
+            versionSpec: '3.7'
+        - script: python -m pip install --upgrade pip
+          displayName: 'update pip'
+        - script: python -m pip install wheel
+          displayName: 'update wheel'
+        - script: python -m pip install pyinstaller
+          displayName: 'install pyinstaller'
+        - script: python -m pip install -r ./requirements.txt
+          displayName: 'install HerbASAP requirements'
+        - script: cp ./docs/build_docs/macos-build.spec ./macos-build.spec
+          displayName: 'copy spec file to dir root'
+        - script: pyinstaller ./macos-build.spec
+          displayName: 'build HerbASAP pyinstaller'
+        - task: ArchiveFiles@2
+          inputs:
+            rootFolderOrFile: '$(System.DefaultWorkingDirectory)/dist/HerbASAP.app' 
+            includeRootFolder: true 
+            archiveType: 'zip'
+            archiveFile: '$(System.DefaultWorkingDirectory)/dist/HerbASAP.app.zip' 
+            replaceExistingArchive: true
+        - task: PublishPipelineArtifact@1
+          displayName: 'publish macos build'
+          inputs:
+            path: '$(System.DefaultWorkingDirectory)/dist/HerbASAP.app.zip'
+            artifact: macos-build
+
+  - stage: Release
+    jobs:
+      - job: 'Github_Release'
+        pool:
+          vmImage: 'windows-latest'
+        steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: 'download HerbASAP windows build'
+          inputs:
+            artifact: win-build
+            path: $(Build.ArtifactStagingDirectory)
+        - task: DownloadPipelineArtifact@2
+          displayName: 'download HerbASAP macos build'
+          inputs:
+            artifact: macos-build
+            path: $(Build.ArtifactStagingDirectory)
+        - task: GithubRelease@0
+          displayName: 'GitHub Release'
+          inputs:
+            gitHubConnection: github-j-h-m
+            repositoryName: j-h-m/HerbASAP
+            addChangeLog: false
+            assets: |
+              $(Build.ArtifactStagingDirectory)/*.exe
+              $(Build.ArtifactStagingDirectory)/*.zip
