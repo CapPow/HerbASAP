@@ -5,5 +5,5 @@
 # HerbASAP
 A program created to automate image post processing for natural history collections
 
-# Build Status
+## Build Status
 [![Build Status](https://dev.azure.com/FooBarLLC/HerbASAP%20fork/_apis/build/status/j-h-m.HerbASAP?branchName=master)](https://dev.azure.com/FooBarLLC/HerbASAP%20fork/_build/latest?definitionId=5&branchName=master)
