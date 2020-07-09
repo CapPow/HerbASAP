@@ -6,6 +6,7 @@
 
 import cv2
 import numpy as np
+from scipy.stats import sem, t
 
 from libs.ccRead import ColorchipRead
 
@@ -151,7 +152,7 @@ class ScaleRead:
             y_arr = square[..., 1]
             x1, y1, x2, y2 = np.min(x_arr), np.min(y_arr), np.max(x_arr), np.max(y_arr)
             square_width, square_height = x2 - x1, y2 - y1
-            cx, cy = x1 + square_width, y1 + square_height
+            cx, cy = x1 + (square_width//2), y1 + (square_height//2)
             seed_points.add((cx, cy))
 
         return seed_points
@@ -170,11 +171,6 @@ class ScaleRead:
         :type to_crop: bool
         :return: Returns the rounded pixels per millimeter and 95% CI.
         '''
-        # Converting to HSV as it performs better during floodfill
-        # im = cv2.cvtColor(im, cv2.COLOR_RGB2HSV)
-
-        # cv2.imwrite("im.jpg", im)
-
         # if the color reference card benefits from a high precision crop
         # in the Q-13s, the partial crop detection is too aggressive after high
         # precision cropping.
@@ -189,34 +185,40 @@ class ScaleRead:
 
         # calculate a series of seed positions to start floodfilling
         seed_pts = ScaleRead.find_square_seeds(im, contour_area_floor, contour_area_ceiling)
-        # print(f"New seed points: {seed_pts}")
-        # seed_pts = seed_func(h, w)
-        # print(f"Old seed points: {seed_pts}")
-
-
-
-        #determine reasonable lower, upper thresholds, 5% of lum range
+        #determine lower & upper pixel variation thresholds (5% of lum range)
         minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(cv2.cvtColor(im, cv2.COLOR_RGB2LAB)[..., 0])
         var_threshold = int((maxVal-minVal) * 0.05)
         # container to hold the results from each seed's floodfill
         pixels_per_mm = []
+        # container to hold previously identified patches        
+        patch_list = []
+        # create a mask to be copied for each seed
         orig_mask = np.zeros((h + 2, w + 2), np.uint8)
+
         for i, seed in enumerate(seed_pts):
             mask = orig_mask.copy()
             floodflags = 4
             floodflags |= (255 << 8)
             floodflags |= cv2.FLOODFILL_MASK_ONLY
+            floodflags |= cv2.FLOODFILL_FIXED_RANGE
             # retval, image, mask, rect
             _, _, mask, rect = cv2.floodFill(im, mask, seed, (255,0,0),
                                              (var_threshold, )*3,
                                              (var_threshold, )*3, floodflags)
-
-            # cv2.imwrite(f"mask_{i}.jpg", mask)
-
+            
+            #x,y,w,h = rect
             x1, y1, patch_w, patch_h = rect
             patch_hw = [patch_w, patch_h]
-
+            patch_coords = (x1, y1)
+            # verify that this mask does not already exist
+            if patch_coords in patch_list:
+                continue
+            else:
+                patch_list.append(patch_coords)
+            
+            #Verify that the aspect ratio is not > 2:1
             aspect_condition = (max(patch_hw) / min(patch_hw)) > 2
+            #Verify that the area of the space identified is within reasonable parameters
             area_condition = not (contour_area_floor < (patch_w * patch_h) < contour_area_ceiling)
             if aspect_condition or area_condition:
                 continue
@@ -229,36 +231,34 @@ class ScaleRead:
                     mask[:, -3]   # last col adjusting for mask expansion
                     ]
             if any([255 in x for x in mask_edge_vectors]):
-                #print(f"Continuing, patch number {i}")
                 continue
 
-            squares = ScaleRead.find_squares(mask,
-                                contour_area_floor=contour_area_floor,
-                                contour_area_ceiling=contour_area_ceiling)
-
-            if len(squares) > 0:
-                biggest_square = max(squares, key=cv2.contourArea)
-                square_area = cv2.contourArea(biggest_square)
-                pixels_per_mm.append( np.sqrt(square_area / patch_mm_area))
-
-            # Option to use the rectangles returned from floodfill operation
-            #x,y,w,h = rect
-            rect_area = np.sqrt(((patch_w+2) * (patch_h+2)) / patch_mm_area)
+            #adding 1 to w adjusting for mixed pixels fuzzing the measurements
+            rect_area = np.sqrt(((patch_w+0.5) * (patch_h+0.5)) / patch_mm_area)
             pixels_per_mm.append(rect_area)
 
             # useful for debugging odd scal values generation
             #cv2.imwrite(f'{i}_mask.jpg', mask)
 
         # require a minimum qty of measurements before proceeding
-        if len(pixels_per_mm) > 5:
-            ppm_std = np.std(pixels_per_mm)
+        if len(pixels_per_mm) > 10:
+            ppm_std = np.std(pixels_per_mm) * 3
             pixel_mean = np.mean(pixels_per_mm)
-            lower_bounds = pixel_mean - ppm_std # keep results within +/- 1 std
+            lower_bounds = pixel_mean - ppm_std # keep results within +/- 3 std
             upper_bounds = pixel_mean + ppm_std
-            pixels_per_mm = [x for x in pixels_per_mm if lower_bounds< x < upper_bounds]
-            # determine CI @ 95% : 1.96 SE = std / sqrt(len(array))
-            ppm_uncertainty = round(1.96 * (np.std(pixels_per_mm)/ np.sqrt(len(pixels_per_mm))), 2)
-            pixels_per_mm_avg = round(np.mean(pixels_per_mm), 2)
+            pixels_per_mm = [x for x in pixels_per_mm if (lower_bounds < x < upper_bounds)]
+            pixels_per_mm_avg = np.mean(pixels_per_mm)
+
+            # determine standard error of mean @ 90%
+            confidence=0.95
+            #std_error_mean = sem(pixels_per_mm)
+            #ppm_uncertainty = round(std_error_mean * t.ppf((confidence) / 2, len(pixels_per_mm)-1) , 3)
+            
+            ci = t.interval(confidence, len(pixels_per_mm)-1, loc=pixels_per_mm_avg, scale=sem(pixels_per_mm))
+            # assume uncertainty is evently distributed for ease of delivery
+            ppm_uncertainty = round( (ci[1] - ci[0]) / 2, 3)
+            pixels_per_mm_avg = round(pixels_per_mm_avg , 3)
+
         elif retry:
             print('RETRYING')
             # if no scale det! try Lum expansion
