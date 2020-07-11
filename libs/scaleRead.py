@@ -156,6 +156,15 @@ class ScaleRead:
             seed_points.add((cx, cy))
 
         return seed_points
+    @staticmethod
+    def correct_patch_dim(x):
+        '''
+        applies a linear correction to patch dimensions to accomodate mixed
+        pixels on lower resolution patches.
+        '''
+        if x < 100:
+            x = x + (1 - (x/100))
+        return x
 
     @staticmethod
     def find_scale(im, patch_mm_area, seed_func, to_crop, retry=True):
@@ -233,8 +242,7 @@ class ScaleRead:
             if any([255 in x for x in mask_edge_vectors]):
                 continue
 
-            #adding 1 to w adjusting for mixed pixels fuzzing the measurements
-            rect_area = np.sqrt(((patch_w+0.5) * (patch_h+0.5)) / patch_mm_area)
+            rect_area = np.sqrt((ScaleRead.correct_patch_dim(patch_w) * ScaleRead.correct_patch_dim(patch_h)) / patch_mm_area)
             pixels_per_mm.append(rect_area)
 
             # useful for debugging odd scal values generation
@@ -249,11 +257,8 @@ class ScaleRead:
             pixels_per_mm = [x for x in pixels_per_mm if (lower_bounds < x < upper_bounds)]
             pixels_per_mm_avg = np.mean(pixels_per_mm)
 
-            # determine standard error of mean @ 90%
+            # determine standard error of mean @ 95%
             confidence=0.95
-            #std_error_mean = sem(pixels_per_mm)
-            #ppm_uncertainty = round(std_error_mean * t.ppf((confidence) / 2, len(pixels_per_mm)-1) , 3)
-            
             ci = t.interval(confidence, len(pixels_per_mm)-1, loc=pixels_per_mm_avg, scale=sem(pixels_per_mm))
             # assume uncertainty is evently distributed for ease of delivery
             ppm_uncertainty = round( (ci[1] - ci[0]) / 2, 3)
