@@ -48,7 +48,7 @@ class EmptyDiscriminatorArray(ColorChipError):
 
 class DiscriminatorFailed(ColorChipError):
     def __init__(self):
-        default_message = 'Could not find a color reference chart. Check that it is square and parallell to the focal plane. Altering the partition size set in the settings wizard may help.'
+        default_message = 'Could not find a color reference chart. Altering the window size set in the settings wizard may help. Check that it is unobstructed and parallell to the focal plane.'
         super().__init__(default_message)
 
 
@@ -268,7 +268,8 @@ class ColorchipRead:
 
     def process_colorchip_small(self, im, original_size, stride_style='quick',
                                 partition_size=125, discriminator_floor=0.99,
-                                over_crop=1, hard_cut_value=50, high_precision=True):
+                                over_crop=1, hard_cut_value=50, high_precision=True,
+                                try_hard=True):
         """
         Finds small colorchips using the quickCC model. This model is specifically trained on tiny colorchips found in
         many herbarium collections. If the colorchip is similar in size to those, and is in the same proportion to the
@@ -302,6 +303,8 @@ class ColorchipRead:
         :type over_crop: int
         :param high_precision: [INFO] Will be changed soon, must rewrite docs for this parameter.
         :type high_precision: bool
+        :param try_hard: If the model should make multiple attempts to locate the CRC using various image manipulations.
+        :type try_hard: bool
         :return: Returns a tuple containing the bounding box (x1, y1, x2, y2) and the cropped image of the colorchip.
         :rtype: tuple
         """
@@ -364,52 +367,53 @@ class ColorchipRead:
                 best_image = Image.fromarray(highest_prob_image)
                 best_location = highest_prob_positions[i]
                 break            
-        else:
-            for i, highest_prob_image in enumerate(highest_prob_images):
-                rot_image = np.rot90(highest_prob_images_pred[i])
-                discriminator_model.set_tensor(discriminator_model.get_input_details()[0]['index'], [rot_image])
-                discriminator_model.invoke()
-                disc_value = discriminator_model.get_tensor(discriminator_model.get_output_details()[0]['index'])[0][1]
-                if disc_value > discriminator_floor - 0.1:
-                    best_image = Image.fromarray(highest_prob_image)
-                    best_location = highest_prob_positions[i]
-                    print("Rerunning disciminator using rotated images was SUCCESSFUL! (1)")
-                    break  
-            else:
+        else: 
+            if try_hard:
                 for i, highest_prob_image in enumerate(highest_prob_images):
-                    rot_image = np.rot90(highest_prob_images_pred[i], k=2)
+                    rot_image = np.rot90(highest_prob_images_pred[i])
                     discriminator_model.set_tensor(discriminator_model.get_input_details()[0]['index'], [rot_image])
                     discriminator_model.invoke()
                     disc_value = discriminator_model.get_tensor(discriminator_model.get_output_details()[0]['index'])[0][1]
-                    if disc_value > discriminator_floor - 0.2:
+                    if disc_value > discriminator_floor - 0.1:
                         best_image = Image.fromarray(highest_prob_image)
                         best_location = highest_prob_positions[i]
-                        print("Rerunning disciminator using rotated images was SUCCESSFUL! (2)")
+                        print("Rerunning disciminator using rotated images was SUCCESSFUL! (1)")
                         break  
                 else:
                     for i, highest_prob_image in enumerate(highest_prob_images):
-                        rot_image = np.rot90(highest_prob_images_pred[i], k=3)
+                        rot_image = np.rot90(highest_prob_images_pred[i], k=2)
                         discriminator_model.set_tensor(discriminator_model.get_input_details()[0]['index'], [rot_image])
                         discriminator_model.invoke()
                         disc_value = discriminator_model.get_tensor(discriminator_model.get_output_details()[0]['index'])[0][1]
-                        if disc_value > discriminator_floor - 0.3:
+                        if disc_value > discriminator_floor - 0.2:
                             best_image = Image.fromarray(highest_prob_image)
                             best_location = highest_prob_positions[i]
-                            print("Rerunning disciminator using rotated images was SUCCESSFUL! (3)")
-                            break
-                    else:# otherwise,if quick stride was chosen try agian using whole
-                        if stride_style == "quick":
-                            print("Trying whole stride")
-                            return self.process_colorchip_small(im,
-                                                                original_size,
-                                                                'whole',
-                                                                partition_size,
-                                                                discriminator_floor-0.1,
-                                                                over_crop, hard_cut_value,
-                                                                high_precision)
-                        else:
-                            # if whole was already tried.. finally.. give up.
-                            raise DiscriminatorFailed
+                            print("Rerunning disciminator using rotated images was SUCCESSFUL! (2)")
+                            break  
+                    else:
+                        for i, highest_prob_image in enumerate(highest_prob_images):
+                            rot_image = np.rot90(highest_prob_images_pred[i], k=3)
+                            discriminator_model.set_tensor(discriminator_model.get_input_details()[0]['index'], [rot_image])
+                            discriminator_model.invoke()
+                            disc_value = discriminator_model.get_tensor(discriminator_model.get_output_details()[0]['index'])[0][1]
+                            if disc_value > discriminator_floor - 0.3:
+                                best_image = Image.fromarray(highest_prob_image)
+                                best_location = highest_prob_positions[i]
+                                print("Rerunning disciminator using rotated images was SUCCESSFUL! (3)")
+                                break
+                        else:# otherwise,if quick stride was chosen try agian using whole
+                            if stride_style == "quick":
+                                print("Trying whole stride")
+                                return self.process_colorchip_small(im,
+                                                                    original_size,
+                                                                    'whole',
+                                                                    partition_size,
+                                                                    discriminator_floor-0.1,
+                                                                    over_crop, hard_cut_value,
+                                                                    high_precision)
+                            else:
+                                # if whole was already tried.. finally.. give up.
+                                raise DiscriminatorFailed
 
         best_image = np.array(best_image, dtype=np.uint8)
         x1, y1, x2, y2 = best_location[0], best_location[1], best_location[2], best_location[3]

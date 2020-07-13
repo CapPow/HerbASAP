@@ -45,109 +45,6 @@ class ImageDialog(QDialog):
         mb.label_Image.setPixmap(pixmap)
 
 
-class Canvas(QtWidgets.QLabel):
-
-    def __init__(self, im, parent=None):
-        super().__init__()
-        #pixmap = QtGui.QPixmap(600, 300)
-        #self.setPixmap(pixmap)
-        self.parent = parent
-        self.setObjectName("canvas")
-        self.backDrop, self.correction = self.genPixBackDrop(im)
-        self.setPixmap(self.backDrop)
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.begin = QtCore.QPoint()
-        self.end = QtCore.QPoint()
-        # the box_size, is the point of the entire canvas.
-        # The scale corrected larger dim of the annotated rect
-        self.scaled_begin = (0, 0)
-        self.scaled_end = (0, 0)
-
-    def genPixBackDrop(self, im):
-        # if it is oriented in landscape, rotate it
-        h, w = im.shape[0:2]
-        if h < w:
-            im = np.rot90(im, 3)  # 3 or 1 would be equally appropriate
-            h, w = w, h  # swap the variables after rotating
-        bytesPerLine = 3 * w
-        # odd bug here, must use .copy() to avoid a mem error.
-        # see: https://stackoverflow.com/questions/48639185/pyqt5-qimage-from-numpy-array
-        qImg = QtGui.QImage(im.copy(), w, h, bytesPerLine,
-                            QtGui.QImage.Format_RGB888)
-        pixmap = QtGui.QPixmap.fromImage(qImg)
-        width = self.parent.wiz.crc_canvas_cont.width()
-        height = self.parent.wiz.crc_canvas_cont.height()
-        pixmap = pixmap.scaled(width, height,
-                               QtCore.Qt.KeepAspectRatio,
-                               Qt.FastTransformation)
-        # corrections are doubled due to display image bieng opened at half res
-        h_correction = (h) / height
-        w_correction = (w) / width
-        correction = (w_correction, h_correction)
-        return pixmap, correction
-
-    def paintEvent(self, event):
-        qp = QtGui.QPainter(self)
-        qp.drawPixmap(self.rect(), self.backDrop)
-        # set brush to a lime green
-        br = QtGui.QBrush(QtGui.QColor('#03EA00'))
-        qp.setBrush(br)
-        qp.drawRect(QtCore.QRect(self.begin, self.end))
-
-    def mousePressEvent(self, event):
-        self.begin = event.pos()
-        self.end = event.pos()
-        self.update()
-
-    def mouseMoveEvent(self, event):
-        self.end = event.pos()
-        self.update()
-
-    def mouseReleaseEvent(self, event):
-        width = self.width()
-        height = self.height()
-        end_point = event.pos()
-        # ensure the annotations are "inside the lines"
-        e_x = end_point.x()
-        if e_x < 0:
-            end_point.setX(0)
-        elif e_x > width:
-            end_point.setX(width)
-        e_y = end_point.y()
-        if e_y < 0:
-            end_point.setY(0)
-        elif e_y > height:
-            end_point.setY(height)
-        self.end = end_point
-        self.update()
-        self.updateBoxSize()
-
-    def updateBoxSize(self):
-        # qpoint is formatted as (xpos, ypos)
-        # x col, y row
-        # save the scale corrected start / end points
-        x_corr, y_corr = self.correction
-        b_x = self.begin.x()
-        b_y = self.begin.y()
-        e_x = self.end.x()
-        e_y = self.end.y()
-        # determine the start (s) and end (e) points, adjusted for scale
-        sb_x, sb_y = int(b_x * x_corr), int(b_y * y_corr)
-        self.scaled_begin = (sb_x, sb_y)
-        se_x, se_y= int(e_x * x_corr), int(e_y * y_corr)
-        self.scaled_end = (se_x, se_y)
-        # determine the scaled lengths of x & y lines
-        x_len = abs(sb_x - se_x)
-        y_len = abs(sb_y - se_y)
-        # set the max value among the x, y lengths to the box_size
-        box_size = max(x_len, y_len)
-        
-        # You must have atleast 25 pixels to ride this ride.
-        box_size= int(box_size * 1.1)
-        # send the box_size over for correction and storage as partition_size
-        self.parent.save_corrected_partition_size(box_size)
-        
-
 class SettingsWizard(QWizard):
 
     def __init__(self, wiz_dict={}, parent=None):
@@ -162,7 +59,7 @@ class SettingsWizard(QWizard):
         self.ext = None
         self.canvas = None
         self.profile_saved = False
-        self.partition_size = 125 # a default value in case they never set one.
+        self.partition_size = 0 # a default value in case they never set one.
         self.colorCheckerDetection = False # has the crc been tested?
         self.working = False # used to hold "next" buttons until finished doing something.
 
@@ -325,19 +222,11 @@ class SettingsWizard(QWizard):
                                      use_auto_wb=True,
                                      demosaic_algorithm=rawpy.DemosaicAlgorithm.LINEAR
                                      )
-                # identify the destination for the draw-able canvas object
-                ccRead_layout = self.wiz.crc_canvas_layout
-                # create the draw-able canvas object with the image object.
-                if self.canvas:
-                    self.canvas.close()
-                self.canvas = Canvas(im, self)
-                # add it to the destination
-                ccRead_layout.addWidget(self.canvas)
                 # enable test buttons
                 self.wiz.pushButton_testbcRead.setEnabled(True)
                 self.wiz.pushButton_testBlurDetection.setEnabled(True)
                 self.wiz.pushButton_testeqRead.setEnabled(True)
-               
+
                 # store class variables concerning the file selected
                 self.img = im  # the opened image object
                 self.imgPath = imgPath  # the path to the selected file
@@ -349,7 +238,7 @@ class SettingsWizard(QWizard):
             # determine the imaging equipment, and generate correction
             self.populate_lenses()
             self.gen_distort_corrections()
-            
+
             self.working = False
             # inform the UI the loading has completed
             self.emit_completeChanged()
@@ -543,29 +432,70 @@ class SettingsWizard(QWizard):
                                     interpolation=cv2.INTER_NEAREST)
         return (image_width, image_height), reduced_im
 
-    def save_corrected_partition_size(self, box_size):
+    def crc_type_changed(self):
         """
-        given a box_size from the 'draw-able' canvas, stores a corrected
-        partition size as a class variable (to this class)
+        automatically called if the comboBox_crcType is changed. Used to
+        determine the activation state of objects in gridLayout_windowSize
+        """
+        crc_type = self.wiz.comboBox_crcType.currentText()
+        group_windowSize = self.wiz.group_windowSize
+        if crc_type == "ISA ColorGauge Nano":  # aka small crc
+            
+            group_windowSize.setEnabled(True)
+            if self.partition_size > 0:
+                self.wiz.pushButton_testCRCDetection.setEnabled(True)
+            else:
+                self.wiz.pushButton_testCRCDetection.setEnabled(False)
+                
+        else:
+            group_windowSize.setEnabled(False)
+            self.wiz.pushButton_testCRCDetection.setEnabled(True)
+    
+    def partition_size_changed(self):
+        partition_size = self.wiz.spinBox_partitionSize.value()
+        self.partition_size = partition_size
+
+    def adaptive_partition_size(self):
+        """
+        Attempts to determine, partition size which is then saved as a class
+        variable (to this class)
         """
         self.working = True
         self.emit_completeChanged()
-        # resize is necessary for the correction
+
+        from libs.ccRead import ColorchipRead
+        colorchipDetect = ColorchipRead(parent=self.wiz)
+        crc_type = self.wiz.comboBox_crcType.currentText()
         original_size, reduced_img = self.scale_images_with_info(self.img)
-        # determine a correction value to det! a partition_size, from box_size
-        ow, oh = original_size
-        nh, nw = reduced_img.shape[0:2]
-        correction_val = nh / oh
-        corrected_box_size = int(round(box_size * correction_val,0))
-        # keep a floor partition_size of 125 
-        partition_size = max([50, corrected_box_size])
-        print(f'using a {partition_size} partition_size')
-        self.partition_size = partition_size
-        self.wiz.pushButton_testCRCDetection.setEnabled(True)
-        # force a test after drawing the box
-        self.test_crcDetection()
-        self.working = False
-        self.emit_completeChanged()
+        if crc_type == "ISA ColorGauge Nano":  # aka small crc
+            for partition_size in range(75, int(max(original_size) *0.5), 15):
+                try:    
+                    cc_position, cropped_cc, cc_crop_time = colorchipDetect.process_colorchip_small(reduced_img,
+                                                                                                     original_size,
+                                                                                                     stride_style='whole',
+                                                                                                     high_precision=False,
+                                                                                                     partition_size=partition_size,
+                                                                                                     try_hard=False)
+                except Exception as e:  #If this iteration fails, continue
+                    continue
+                # if it did not fail, set partiton size to precise crop size
+                #partition_size = int(max(cropped_cc.shape[0:2]) *1.25)
+                self.cc_position = cc_position
+                self.cropped_cc = cropped_cc
+                self.cc_crop_time = cc_crop_time
+                # the change in value should trigger partition_size_changed()
+                self.wiz.spinBox_partitionSize.setValue(partition_size)
+                self.working = False
+                self.test_crcDetection()
+                break
+            else:
+                # if the loop finishes, it will throw a failure notice
+                title = 'Error Setting Window Size'
+                text = 'Failed to set the window size'
+                detail_text = ("Be the ISA ColorGague Nano visible in the example image"
+                               "If the issue persists, you can try manually setting the"
+                               "window size (125 is a good starting point)")
+                self.userNotice(text, title, detail_text)
 
     def test_crcDetection(self):
         """
@@ -583,8 +513,9 @@ class SettingsWizard(QWizard):
                 self.cc_position, self.cropped_cc, self.cc_crop_time = colorchipDetect.process_colorchip_small(reduced_img,
                                                                                                              original_size,
                                                                                                              stride_style='whole',
-                                                                                                             high_precision=False,
-                                                                                                             partition_size=self.partition_size)
+                                                                                                             high_precision=True,
+                                                                                                             partition_size=self.partition_size,
+                                                                                                             try_hard=False)
             else:
                 self.cc_position, self.cropped_cc, self.cc_crop_time = colorchipDetect.process_colorchip_big(self.img)
             
@@ -601,15 +532,14 @@ class SettingsWizard(QWizard):
 
         except Exception as e:  # really any exception here should be handled.
             notice_title = 'Error locating CRC'
-            notice_text = 'Failed to locate the CRC. Verify the CRC type '
-            ' selection and try drawing a more precise box.'
+            notice_text = 'Failed to locate the CRC. Verify the CRC type and if necessary, window size.'
             detail_text = ('The following exception was rasied:'
                            f'\n{e}')
             self.userNotice(notice_text, notice_title, detail_text)
             formatted_result = 'TEST FAILED'
             self.wiz.pushButton_test_scaleDet.setEnabled(False)
             self.wiz.pushButton_test_whiteBalance.setEnabled(False)
-        
+
         self.wiz.label_crcDetection_results.setText(formatted_result)
         self.working = False
         self.emit_completeChanged()
@@ -807,10 +737,14 @@ class SettingsWizard(QWizard):
 
         # class variables:
         # if partition_size was handed it (i.e., it is an edit profile event)
-        partition_size = d.get('partition_size', None)
-        if partition_size:
+        partition_size = d.get('partition_size', 0)
+        crc_type = d.get('crcType', '')
+        if crc_type != 'ISA ColorGauge Nano':
             self.wiz.pushButton_testCRCDetection.setEnabled(True)
-            self.partition_size = partition_size
+        elif partition_size>0:
+            self.wiz.pushButton_testCRCDetection.setEnabled(True)
+            # the change in value should trigger partition_size_changed()
+            self.wiz.spinBox_partitionSize.setValue(int(partition_size))
 
         colorCheckerDetection = d.get('colorCheckerDetection', False)
         self.colorCheckerDetection = colorCheckerDetection
@@ -922,7 +856,6 @@ class SettingsWizard(QWizard):
                 
                 # self.wiz.ccRead_setup_page1
                 "crcType": self.wiz.comboBox_crcType.currentText(),  # crcType options
-                # self.wiz.crc_canvas_layout # canvas with attributes related to partition size: self.scaled_begin, self.scaled_end
                 "partition_size": self.partition_size,
                 
                 # self.wiz.ccRead_setup_page2
