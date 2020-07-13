@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>838</width>
-    <height>676</height>
+    <height>687</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -137,8 +137,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>792</width>
-         <height>462</height>
+         <width>802</width>
+         <height>471</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -919,44 +919,18 @@
    <property name="subTitle">
     <string>Color Reference Chart Detection Setup</string>
    </property>
-   <layout class="QGridLayout" name="gridLayout_9" columnstretch="1,1,0">
-    <item row="7" column="1">
-     <widget class="QPushButton" name="pushButton_testCRCDetection">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="whatsThis">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Test CRC detection functions on the loaded example image. The results are displayed in a user dialog box for verification.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
+   <layout class="QVBoxLayout" name="verticalLayout_9">
+    <item>
+     <widget class="QLabel" name="label_33">
       <property name="text">
-       <string>Test CRC Detection</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HerbASAP has several features which depend the presence of a color reference chart (CRC). To use these features, you must select the type of CRC being used. For the best results make sure the CRC remains unobstructed, is not arbitrarily rotated, and is parallell to the focal plane. CRC location is determined using the neural networks described in Ledesma et al. 2019. &lt;/p&gt;&lt;p&gt;For the &amp;quot;ISA ColorGague Nano&amp;quot; CRC, you must set a window size which ColorNet uses for region proposals. The &amp;quot;Set Window Size&amp;quot; button will attempt to automatically determine an appropriate size, but if necessary it can be manually set.&lt;/p&gt;&lt;p&gt;For all other CRCs, you must use the &amp;quot;Test CRC Detection&amp;quot; button to ensure proper functionality.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
-    <item row="0" column="2">
-     <widget class="QLabel" name="label_24">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Draw a box over the CRC in the frame below</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignBottom|Qt::AlignHCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="8" column="1">
-     <widget class="QLabel" name="label_crcDetection_results">
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1">
+    <item>
      <layout class="QGridLayout" name="gridLayout_2" columnstretch="0,0">
       <item row="0" column="1">
        <widget class="QComboBox" name="comboBox_crcType">
@@ -1009,19 +983,48 @@
         </property>
        </widget>
       </item>
+      <item row="1" column="1">
+       <widget class="QGroupBox" name="group_windowSize">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="title">
+         <string/>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_9">
+         <item row="1" column="1">
+          <widget class="QLabel" name="label_windowSize">
+           <property name="text">
+            <string>Window Size:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QSpinBox" name="spinBox_partitionSize">
+           <property name="maximum">
+            <number>9999</number>
+           </property>
+           <property name="singleStep">
+            <number>5</number>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QPushButton" name="pushButton_setWindowSize">
+           <property name="text">
+            <string>Set Window Size</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
      </layout>
     </item>
-    <item row="5" column="1">
-     <widget class="QPushButton" name="pushButton_selectExampleImage_1">
-      <property name="whatsThis">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select an example &amp;quot;Raw&amp;quot; image file which was captured under conditions similar to those expected in your imaging project.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-      <property name="text">
-       <string>Select Example Image File</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="1">
+    <item>
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -1034,45 +1037,41 @@
       </property>
      </spacer>
     </item>
-    <item row="1" column="2" rowspan="9">
-     <widget class="QFrame" name="crc_canvas_cont">
-      <property name="minimumSize">
-       <size>
-        <width>254</width>
-        <height>343</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>254</width>
-        <height>343</height>
-       </size>
-      </property>
+    <item>
+     <widget class="QPushButton" name="pushButton_selectExampleImage_1">
       <property name="whatsThis">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If an example image file has been loaded, it should be displayed here. It is not a problem if the image is displayed upside down. Use this image to draw a box the approximate size of the CRC. The position of the box is not relevant, but the size should be as close precise as possible. The size of this box is used to set the partition size used for CRC location determination.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select an example &amp;quot;Raw&amp;quot; image file which was captured under conditions similar to those expected in your imaging project.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
-      <layout class="QVBoxLayout" name="crc_canvas_layout">
-       <property name="sizeConstraint">
-        <enum>QLayout::SetDefaultConstraint</enum>
-       </property>
-      </layout>
-     </widget>
-    </item>
-    <item row="0" column="1" rowspan="2">
-     <widget class="QLabel" name="label_33">
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HerbASAP has several features which depend the presence of a color reference chart (CRC).&lt;/p&gt;&lt;p&gt;CRC location is determined using the methods described by Ledesma et al. 2019. To use these features, you must select which CRC type is expected and draw a box the approximate size of the CRC (anywhere) in the image. The box is used to set the window size to consider for region proposals.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
+       <string>Select Example Image File</string>
       </property>
      </widget>
     </item>
-    <item row="6" column="1">
+    <item>
      <widget class="QLabel" name="label_loadedExampleFile_1">
       <property name="whatsThis">
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The example image file name loaded. If blank, no file has been loaded.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton_testCRCDetection">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="whatsThis">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Test CRC detection functions on the loaded example image. The results are displayed in a user dialog box for verification.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="text">
+       <string>Test CRC Detection</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_crcDetection_results">
       <property name="text">
        <string/>
       </property>
@@ -1721,6 +1720,7 @@
      <widget class="QLabel" name="label_saveProfile_Results">
       <property name="font">
        <font>
+        <pointsize>10</pointsize>
         <italic>true</italic>
        </font>
       </property>
@@ -1739,8 +1739,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>98</width>
-         <height>34</height>
+         <width>22</width>
+         <height>30</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -1808,6 +1808,7 @@
      <widget class="QLabel" name="label_nameAvailable">
       <property name="font">
        <font>
+        <pointsize>10</pointsize>
         <italic>true</italic>
        </font>
       </property>
@@ -1860,8 +1861,8 @@
    <slot>update_CatalogNumber_Preview()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>100</y>
+     <x>281</x>
+     <y>411</y>
     </hint>
     <hint type="destinationlabel">
      <x>584</x>
@@ -1876,8 +1877,8 @@
    <slot>update_CatalogNumber_Preview()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>100</y>
+     <x>537</x>
+     <y>411</y>
     </hint>
     <hint type="destinationlabel">
      <x>584</x>
@@ -1892,8 +1893,8 @@
    <slot>update_CatalogNumber_Preview()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>100</y>
+     <x>281</x>
+     <y>449</y>
     </hint>
     <hint type="destinationlabel">
      <x>584</x>
@@ -1908,8 +1909,8 @@
    <slot>remove_pattern()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>100</y>
+     <x>733</x>
+     <y>565</y>
     </hint>
     <hint type="destinationlabel">
      <x>584</x>
@@ -1924,8 +1925,8 @@
    <slot>add_pattern()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>100</y>
+     <x>281</x>
+     <y>565</y>
     </hint>
     <hint type="destinationlabel">
      <x>584</x>
@@ -1940,8 +1941,8 @@
    <slot>test_bcRead()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>100</y>
+     <x>123</x>
+     <y>610</y>
     </hint>
     <hint type="destinationlabel">
      <x>584</x>
@@ -1956,8 +1957,8 @@
    <slot>test_blurDetect()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>100</y>
+     <x>121</x>
+     <y>612</y>
     </hint>
     <hint type="destinationlabel">
      <x>584</x>
@@ -1972,8 +1973,8 @@
    <slot>test_crcDetection()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>100</y>
+     <x>118</x>
+     <y>591</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1988,8 +1989,8 @@
    <slot>test_eqRead()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>100</y>
+     <x>116</x>
+     <y>610</y>
     </hint>
     <hint type="destinationlabel">
      <x>584</x>
@@ -2004,8 +2005,8 @@
    <slot>test_scaleRead()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>100</y>
+     <x>116</x>
+     <y>570</y>
     </hint>
     <hint type="destinationlabel">
      <x>584</x>
@@ -2020,8 +2021,8 @@
    <slot>test_wbDet()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>100</y>
+     <x>116</x>
+     <y>610</y>
     </hint>
     <hint type="destinationlabel">
      <x>584</x>
@@ -2036,8 +2037,8 @@
    <slot>is_nameAvailable(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>100</y>
+     <x>86</x>
+     <y>88</y>
     </hint>
     <hint type="destinationlabel">
      <x>575</x>
@@ -2052,8 +2053,8 @@
    <slot>save_inputs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>100</y>
+     <x>86</x>
+     <y>92</y>
     </hint>
     <hint type="destinationlabel">
      <x>581</x>
@@ -2212,8 +2213,8 @@
    <slot>emit_completeChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>100</y>
+     <x>118</x>
+     <y>591</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -2228,11 +2229,11 @@
    <slot>openDisplayImage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>100</y>
+     <x>118</x>
+     <y>527</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-1</x>
+     <x>0</x>
      <y>401</y>
     </hint>
    </hints>
@@ -2244,8 +2245,8 @@
    <slot>gen_distort_corrections()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>100</y>
+     <x>308</x>
+     <y>294</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -2260,8 +2261,8 @@
    <slot>emit_completeChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>100</y>
+     <x>308</x>
+     <y>294</y>
     </hint>
     <hint type="destinationlabel">
      <x>1</x>
@@ -2276,8 +2277,8 @@
    <slot>emit_completeChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>83</x>
-     <y>100</y>
+     <x>98</x>
+     <y>228</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -2317,6 +2318,54 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_setWindowSize</sender>
+   <signal>clicked()</signal>
+   <receiver>Wizard</receiver>
+   <slot>adaptive_partition_size()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>304</x>
+     <y>287</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>349</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_crcType</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>Wizard</receiver>
+   <slot>crc_type_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>391</x>
+     <y>236</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2</x>
+     <y>171</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_partitionSize</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>Wizard</receiver>
+   <slot>partition_size_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>731</x>
+     <y>280</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>833</x>
+     <y>296</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openDisplayImage()</slot>
@@ -2334,5 +2383,8 @@
   <slot>setFolderPath()</slot>
   <slot>emit_completeChanged()</slot>
   <slot>gen_distort_corrections()</slot>
+  <slot>adaptive_partition_size()</slot>
+  <slot>crc_type_changed()</slot>
+  <slot>partition_size_changed()</slot>
  </slots>
 </ui>
