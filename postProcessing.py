@@ -24,7 +24,7 @@ __credits__ = ["Caleb Powell", "Dakila Ledesma", "Jacob Motley", "Jason Best",
                "Hong Qin", "Joey Shaw"]
 __email__ = "calebadampowell@gmail.com"
 __status__ = "Alpha"
-__version__ = 'v0.1.0-beta'
+__version__ = 'v0.2.0-beta'
 
 import time
 from datetime import date
@@ -376,7 +376,7 @@ class appWindow(QMainWindow):
                 if version.lower() != __version__.lower():
                     message = f'A new version ( {version} ) of HerbASAP has been released. Would you like to visit the release page?'
                     title = 'HerbASAP Version'
-                    answer = self.userAsk(message, title, inclHalt = False)
+                    answer = self.userAsk(message, title)
                     if answer:# == QMessageBox.Yes:
                         link=url
                         self.showMinimized() #  hide the app about to pop up.
