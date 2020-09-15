@@ -59,7 +59,7 @@ class SettingsWizard(QWizard):
         self.ext = None
         self.canvas = None
         self.profile_saved = False
-        self.partition_size = 0 # a default value in case they never set one.
+        
         self.colorCheckerDetection = False # has the crc been tested?
         self.working = False # used to hold "next" buttons until finished doing something.
 
@@ -478,13 +478,20 @@ class SettingsWizard(QWizard):
                                                                                                      try_hard=False)
                 except Exception as e:  #If this iteration fails, continue
                     continue
-                # if it did not fail, set partiton size to precise crop size
-                #partition_size = int(max(cropped_cc.shape[0:2]) *1.25)
+                # if it did not fail, set the successful partiton size 
+                # this process determines the minimum successful size, but
+                # it will be better generalized if it uses a slightly higher value
+                # therefore add 10px to the size
+                partition_size += 10
                 self.cc_position = cc_position
                 self.cropped_cc = cropped_cc
                 self.cc_crop_time = cc_crop_time
                 # the change in value should trigger partition_size_changed()
                 self.wiz.spinBox_partitionSize.setValue(partition_size)
+                # BOOKMARK
+                self.partition_size_changed()
+                self.wiz.pushButton_testCRCDetection.setEnabled(True)
+                
                 self.working = False
                 self.test_crcDetection()
                 break
@@ -743,9 +750,9 @@ class SettingsWizard(QWizard):
             self.wiz.pushButton_testCRCDetection.setEnabled(True)
         elif partition_size>0:
             self.wiz.pushButton_testCRCDetection.setEnabled(True)
-            # the change in value should trigger partition_size_changed()
             self.wiz.spinBox_partitionSize.setValue(int(partition_size))
-
+        # update class variable to reflect the profile partition_size
+        self.partition_size = partition_size 
         colorCheckerDetection = d.get('colorCheckerDetection', False)
         self.colorCheckerDetection = colorCheckerDetection
         # populate listWidget_patterns        
@@ -856,7 +863,7 @@ class SettingsWizard(QWizard):
                 
                 # self.wiz.ccRead_setup_page1
                 "crcType": self.wiz.comboBox_crcType.currentText(),  # crcType options
-                "partition_size": self.partition_size,
+                "partition_size": self.wiz.spinBox_partitionSize.value(), # crc partition_size used for stride
                 
                 # self.wiz.ccRead_setup_page2
                 "scaleDetermination": self.wiz.checkBox_scaleDetermination.isChecked(),  # checked = perform scale Det!

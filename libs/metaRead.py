@@ -40,11 +40,14 @@ class MetaRead:
         """
         Given an input dictionary, prepares it for storage as self.static_exif
         see: https://github.com/hMatoba/Piexif/blob/master/piexif/_exif.py
+        
+        Note, relevant details are dumped in dictionary format under:
+            exif tag '0th', under ItemDescription (#270).
         """
         static_exif = {
-                305:exif_dict.get('version', ''),
-                315:exif_dict.get('collectionName', ''),
-                33432: exif_dict.get('copywriteLicense', '')
+                305:exif_dict.get('version', ''), #Software
+                315:exif_dict.get('collectionName', ''), #Artist
+                33432: exif_dict.get('copywriteLicense', '') #Copyright
                 }
 
         static_exif[270] = exif_dict
@@ -53,7 +56,7 @@ class MetaRead:
         
     def retrieve_src_exif(self, src, addtl_user_comments):
         """
-        Given an input source (src) image file path, returns an dictionary
+        Given an input source (src) image file path, returns a dictionary
         containing the source exif data, updated with the static_exif data,
         and any additional user comments
         """
