@@ -1021,8 +1021,7 @@ class appWindow(QMainWindow):
 
                 self.apply_corrections()
 
-                # optional manually implimented white balance
-                self.im = self.high_precision_wb(cropped_cc, crc_type)
+
 
                 width, height = original_size
                 if self.flip_value == 3:
@@ -1038,6 +1037,9 @@ class appWindow(QMainWindow):
                 self.cc_location = cc_location
 
                 # print(f"CC Position after calc.: {cc_location}")
+
+                # optional manually implimented white balance
+                self.im = self.high_precision_wb(self.im, cc_location, crc_type)
 
                 self.update_cc_info(self.cc_quadrant, cropped_cc,
                                     cc_crop_time, self.cc_avg_white)
@@ -1252,19 +1254,24 @@ class appWindow(QMainWindow):
         # pass off the results to be processed
         self.process_selected_items(img_path, 'selection')
 
-    def high_precision_wb(self, cropped_cc, crc_type):
+    def high_precision_wb(self, im, cc_location, crc_type):
+        print(cc_location, im.shape)
+        x1, y1, x2, y2 = cc_location
+
+        cropped_cc = im[y1:y2, x1:x2]
         cc_avg_white, _ = self.colorchipDetect.predict_color_chip_whitevals(cropped_cc, crc_type)
-        im = self.im.transpose(2, 0, 1)
+        im = im.transpose(2, 0, 1)
         im = im.astype(np.int32)
 
         R, G, B = cc_avg_white
-        print(R, G, B)
-        # luminance = (0.2126 * R + 0.7152 * G + 0.0722 * B)
-        # luminance_factor = (abs((1 - (200 / luminance)) * 2.1) + 1) * 0.225
+        luminance = sum(cc_avg_white) / len(cc_avg_white)
+        print(luminance)
+        luminance_factor = (abs((1 - (200 / luminance)) * 2.25) + 1) * 0.15
+        print(luminance_factor)
 
-        im[0] = np.minimum(im[0] * (abs((1 - (200 / R)) * 2.1) + 1) * 0.225, 255)
-        im[1] = np.minimum(im[1] * (abs((1 - (200 / G)) * 2.1) + 1) * 0.225, 255)
-        im[2] = np.minimum(im[2] * (abs((1 - (200 / B)) * 2.1) + 1) * 0.225, 255)
+        im[0] = np.minimum(im[0] * (255 / float(R) - luminance_factor), 255)
+        im[1] = np.minimum(im[1] * (255 / float(G) - luminance_factor), 255)
+        im[2] = np.minimum(im[2] * (255 / float(B) - luminance_factor), 255)
         return im.transpose(1, 2, 0).astype(np.uint8)
 
     def openImageFile(self, imgPath,

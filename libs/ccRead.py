@@ -647,7 +647,7 @@ class ColorchipRead:
                                              contour_area_ceiling=contour_area_ceiling,
                                              leap = 17)
         square = sorted(squares, key=cv2.contourArea, reverse=True)
-        cv2.drawContours(cropped_cc, square, 0, (0,255,0), 1)
+        # cv2.drawContours(cropped_cc, square, 0, (0,255,0), 1)
         extracted = extracted.reshape(-1,extracted.shape[-1])
 
         #mode_white = np.apply_along_axis(lambda x: np.bincount(x).argmax(), axis=0, arr=extracted)
