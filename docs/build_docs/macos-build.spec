@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['postProcessing.py'],
-             pathex=['/Users/dakila/Documents/Git/HerbASAP/'],
+             pathex=[],
              # have to show it how to find the custom pyzbar dlls
              binaries=[],
              # for Qt binary misplacement issue see below
